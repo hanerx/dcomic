@@ -17,6 +17,10 @@ class DataBase {
     });
   }
 
+  resetDataBase() async{
+    await deleteDatabase("dmzj_2.db");
+  }
+
   insertCookies(String key, String value) async {
     await initDataBase();
     var batch = _database.batch();
