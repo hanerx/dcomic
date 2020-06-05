@@ -85,6 +85,10 @@ class _SettingPage extends State<SettingPage> {
                             subtitle: Text('A:也许？(要不爽哥结婚的时候再说？)'),
                           ),
                           ListTile(
+                            title: Text('Q:有没有iOS版'),
+                            subtitle: Text('A:苹果那是人开发的东西吗？99美刀呢，感觉这应用卖了也不值这个价，而且第三方APP有法律风险的('),
+                          ),
+                          ListTile(
                             title: Text('Q:用户名密码是什么？'),
                             subtitle: Text(
                                 'A:你大妈之家用户名密码是啥就是啥，没做第三方登录，大妈之家的接口爬起来太恶心了。'),
@@ -106,7 +110,7 @@ class _SettingPage extends State<SettingPage> {
                           ),
                           ListTile(
                             title: Text('Q:开发的初衷是啥？'),
-                            subtitle: Text('A:大妈之家官方的APP有点卡，现在感觉是服务器问题？'),
+                            subtitle: Text('A:大妈之家官方的APP有点卡，没想到自己的也好卡，现在感觉是服务器问题？'),
                           ),
 
                           ListTile(
