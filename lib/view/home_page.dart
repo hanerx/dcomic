@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutterdmzj/component/CardView.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
+import 'package:flutterdmzj/view/favorite_page.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -15,12 +16,12 @@ class HomePage extends StatefulWidget {
 class _HomePage extends State<HomePage> {
   List list = <Widget>[];
   static List allowedCategroy = <int>[47, 48, 52, 53, 54, 55, 56];
+  bool refreshState = false;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getSubscribe();
     getMainPage();
   }
 
@@ -29,38 +30,52 @@ class _HomePage extends State<HomePage> {
     var login = await dataBase.getLoginState();
     if (login) {
       CustomHttp http = CustomHttp();
-      var response =
-          await http.getRecommendBatchUpdate(await dataBase.getUid());
+      var uid = await dataBase.getUid();
+      var response = await http.getRecommendBatchUpdate(uid);
       if (response.statusCode == 200 && mounted) {
         setState(() {
           list.insert(
               0,
-              CardView(response.data['data']['title'],
-                  response.data['data']['data'], 3, 49));
+              CardView.action(
+                  response.data['data']['title'],
+                  response.data['data']['data'],
+                  3,
+                  49,
+                  IconButton(
+                    onPressed: () {
+                      Navigator.of(context)
+                          .push(MaterialPageRoute(builder: (context) {
+                        return FavoritePage(uid);
+                      }));
+                    },
+                    icon: Icon(Icons.arrow_forward_ios),
+                  )));
+          refreshState = false;
         });
       }
     }
   }
 
-  void getMainPage() async {
+  getMainPage() async {
     CustomHttp http = CustomHttp();
     var response = await http.getMainPageRecommend();
     if (response.statusCode == 200) {
       List data = response.data;
       if (this.mounted) {
-        setState(() => {
-              data.forEach((item) {
-                if (allowedCategroy.indexOf(item['category_id']) >= 0) {
-                  if (item['data'].length % 3 == 0) {
-                    list.add(new CardView(
-                        item['title'], item['data'], 3, item['category_id']));
-                  } else {
-                    list.add(new CardView(
-                        item['title'], item['data'], 2, item['category_id']));
-                  }
-                }
-              })
-            });
+        setState(() {
+          data.forEach((item) {
+            if (allowedCategroy.indexOf(item['category_id']) >= 0) {
+              if (item['data'].length % 3 == 0) {
+                list.add(new CardView(
+                    item['title'], item['data'], 3, item['category_id']));
+              } else {
+                list.add(new CardView(
+                    item['title'], item['data'], 2, item['category_id']));
+              }
+            }
+          });
+        });
+        await getSubscribe();
       }
     }
   }
@@ -68,11 +83,23 @@ class _HomePage extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return new Scrollbar(
-      child: new SingleChildScrollView(
-          child: Column(
-        children: list,
-      )),
+    return RefreshIndicator(
+      child: new Scrollbar(
+        child: new SingleChildScrollView(
+            child: Column(
+          children: list,
+        )),
+      ),
+      onRefresh: () async {
+        if (!refreshState) {
+          setState(() {
+            refreshState = true;
+            list.clear();
+          });
+          await getMainPage();
+        }
+        return;
+      },
     );
   }
 }
