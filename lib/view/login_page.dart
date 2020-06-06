@@ -4,11 +4,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_qq/flutter_qq.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:fluttericon/font_awesome_icons.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -65,6 +67,14 @@ class _LoginPage extends State<LoginPage> {
       Scaffold.of(context).showSnackBar(SnackBar(
         content: Text('连接爆了，网炸了？'),
       ));
+    }
+  }
+
+  _openWeb(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      print('打不开！url:$url');
     }
   }
 
@@ -172,7 +182,7 @@ class _LoginPage extends State<LoginPage> {
                           FontAwesome5.qq,
                           color: Colors.blue,
                         ),
-                        onPressed: () {
+                        onPressed: () async {
                           EasyLoading.instance
                             ..indicatorType =
                                 EasyLoadingIndicatorType.fadingCube;
@@ -183,6 +193,10 @@ class _LoginPage extends State<LoginPage> {
                           var state = false;
                           webview.onUrlChanged.listen((String url) {
                             print(url);
+//                            if (url.indexOf("wtloginmqq://") != -1) {
+//                              print("尝试拉起：$url");
+//                              _openWeb(url);
+//                            }
                             if (url == 'https://m.dmzj.com/') {
                               print(true);
                               webview
@@ -223,8 +237,16 @@ class _LoginPage extends State<LoginPage> {
                               });
                             }
                           });
+                          webview.onBack.listen((url) async {
+                            if (!await webview.canGoBack()) {
+                              webview.close();
+                              Navigator.pop(context);
+                            }
+                          });
                           webview.launch(
-                              'https://graph.qq.com/oauth2.0/authorize?client_id=101144087&redirect_uri=https://i.dmzj.com/login/qq&response_type=code&state=http://m.dmzj.com/');
+                              'https://graph.qq.com/oauth2.0/authorize?client_id=101144087&display=pc&redirect_uri=https://i.dmzj.com/login/qq&response_type=code&state=http://m.dmzj.com/',
+                            userAgent: 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.134 Safari/537.36'
+                          );
                         },
                       ),
                     )
