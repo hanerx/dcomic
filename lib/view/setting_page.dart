@@ -129,7 +129,12 @@ class _SettingPage extends State<SettingPage> {
                           ListTile(
                             title: Text('Q:用户名密码是什么？'),
                             subtitle: Text(
-                                'A:你大妈之家用户名密码是啥就是啥，没做第三方登录，大妈之家的接口爬起来太恶心了。'),
+                                'A:你大妈之家用户名密码是啥就是啥，第三方登录只有QQ，大妈之家的接口爬起来太恶心了。'),
+                          ),
+                          ListTile(
+                            title: Text('Q:QQ登录怎么不能快捷登录？'),
+                            subtitle: Text(
+                                'A:QQ的授权难搞的一批，有登录就不错了。'),
                           ),
                           ListTile(
                             title: Text('Q:有没有下载功能？'),
