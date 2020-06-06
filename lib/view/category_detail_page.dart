@@ -83,7 +83,7 @@ class _CategoryDetailPage extends State<CategoryDetailPage> {
           title: Text('分类浏览-$title'),
           actions: <Widget>[
             FlatButton(
-              child: Icon(Icons.filter_list),
+              child: Icon(Icons.filter_list,color: Colors.white,),
               onPressed: () {
                 if (dateTypeList.length == 0 || tagTypeList.length == 0) {
                   getCategoryFilter();

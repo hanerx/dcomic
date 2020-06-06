@@ -140,4 +140,8 @@ class CustomHttp {
   Future<Response<T>> getLatestList<T>(int tagId, int page) {
     return dio.get('$baseUrl/latest/$tagId/$page.json?$queryOptions');
   }
+
+  Future<Response<T>> getDarkInfo<T>(){
+    return dio.get('https://dark-dmzj.hloli.net/data.json');
+  }
 }
