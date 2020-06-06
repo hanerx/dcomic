@@ -32,12 +32,15 @@ class _FavoritePage extends State<FavoritePage> {
     var response = await http.getSubscribe(int.parse(uid), page);
     if (response.statusCode == 200 && mounted) {
       setState(() {
-        if (response.data.length == 0) {
-          refreshState = true;
-          return;
-        }
         if (page == 0) {
           list.clear();
+        }
+        if (response.data.length == 0) {
+          refreshState = true;
+          if (page == 0) {
+            list.add(Center(child: Text('看起来你没收藏啥，请先去收藏'),));
+          }
+          return;
         }
         var cardList = <Widget>[];
         var position = 0;
@@ -104,11 +107,11 @@ class _FavoritePage extends State<FavoritePage> {
       ),
       body: new Scrollbar(
           child: SingleChildScrollView(
-        controller: _controller,
-        child: Column(
-          children: list,
-        ),
-      )),
+            controller: _controller,
+            child: Column(
+              children: list,
+            ),
+          )),
     );
   }
 }

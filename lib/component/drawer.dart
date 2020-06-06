@@ -41,7 +41,7 @@ class CustomDrawerState extends State<CustomDrawer> {
     if (mounted) {
       setState(() {
         login = state;
-        nickname = '加载中';
+        nickname = state ? '加载中' : '请先登录';
       });
       getAccountInfo();
     }
@@ -82,7 +82,15 @@ class CustomDrawerState extends State<CustomDrawer> {
               httpHeaders: {'referer': 'http://images.dmzj.com'},
               progressIndicatorBuilder: (context, url, downloadProgress) =>
                   CircularProgressIndicator(value: downloadProgress.progress),
-              errorWidget: (context, url, error) => Icon(Icons.error),
+              errorWidget: (context, url, error) => CachedNetworkImage(
+                imageUrl: 'https://avatar.dmzj.com/default.png',
+                httpHeaders: {'referer': 'http://images.dmzj.com'},
+                progressIndicatorBuilder: (context, url, downloadProgress) =>
+                    CircularProgressIndicator(value: downloadProgress.progress),
+                errorWidget: (context, url, error) => Center(
+                  child: Icon(Icons.warning),
+                ),
+              ),
             ),
             otherAccountsPictures: <Widget>[
               FlatButton(
@@ -94,6 +102,8 @@ class CustomDrawerState extends State<CustomDrawer> {
                   if (login) {
                     setState(() {
                       login = false;
+                      nickname = '请先登录';
+                      avatar = 'https://avatar.dmzj.com/default.png';
                     });
                     DataBase dataBase = DataBase();
                     dataBase.setLoginState(false);
