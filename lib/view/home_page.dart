@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutterdmzj/component/CardView.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
+import 'package:flutterdmzj/view/favorite_page.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -21,7 +22,6 @@ class _HomePage extends State<HomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getSubscribe();
     getMainPage();
   }
 
@@ -30,14 +30,27 @@ class _HomePage extends State<HomePage> {
     var login = await dataBase.getLoginState();
     if (login) {
       CustomHttp http = CustomHttp();
-      var response =
-          await http.getRecommendBatchUpdate(await dataBase.getUid());
+      var uid = await dataBase.getUid();
+      var response = await http.getRecommendBatchUpdate(uid);
       if (response.statusCode == 200 && mounted) {
         setState(() {
           list.insert(
               0,
-              CardView(response.data['data']['title'],
-                  response.data['data']['data'], 3, 49));
+              CardView.action(
+                  response.data['data']['title'],
+                  response.data['data']['data'],
+                  3,
+                  49,
+                  IconButton(
+                    onPressed: () {
+                      Navigator.of(context)
+                          .push(MaterialPageRoute(builder: (context) {
+                        return FavoritePage(uid);
+                      }));
+                    },
+                    icon: Icon(Icons.arrow_forward_ios),
+                  )));
+          refreshState = false;
         });
       }
     }
@@ -61,8 +74,8 @@ class _HomePage extends State<HomePage> {
               }
             }
           });
-          refreshState = false;
         });
+        await getSubscribe();
       }
     }
   }
@@ -80,10 +93,9 @@ class _HomePage extends State<HomePage> {
       onRefresh: () async {
         if (!refreshState) {
           setState(() {
-            refreshState=true;
+            refreshState = true;
             list.clear();
           });
-          await getSubscribe();
           await getMainPage();
         }
         return;

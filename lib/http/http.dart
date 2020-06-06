@@ -47,6 +47,11 @@ class CustomHttp {
         options: buildCacheOptions(Duration(hours: 8)));
   }
 
+  Future<Response<T>> getViewPoint<T>(String comicId, String chapterId) async{
+    return dio.get(baseUrl + '/viewPoint/0/$comicId/$chapterId.json?$queryOptions',
+        options: buildCacheOptions(Duration(hours: 8)));
+  }
+
   Future<Response<T>> getSubjectDetail<T>(String subjectId) async {
     return dio.get(baseUrl + '/subject/$subjectId.json?$queryOptions');
   }

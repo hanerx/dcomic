@@ -26,12 +26,14 @@ class _ComicViewer extends State<ComicViewer> {
   final List chapterList;
   bool refreshState = false;
   ScrollController _controller = ScrollController();
+  List viewPointList = <Widget>[];
 
   _ComicViewer(this.comicId, this.chapterId, this.chapterList);
 
-  void getComic(comicId, chapterId, above) async {
+  getComic(comicId, chapterId, above) async {
     CustomHttp http = CustomHttp();
     var response = await http.getComic(comicId, chapterId);
+    getViewPoint();
     if (response.statusCode == 200 && mounted) {
       if (response.data == '章节不存在') {
         setState(() {
@@ -58,18 +60,42 @@ class _ComicViewer extends State<ComicViewer> {
         } else {
           list += tempList;
         }
+      });
+      setState(() {
         refreshState = false;
+      });
+      addReadHistory();
+    }
+  }
+
+  getViewPoint() async {
+    CustomHttp http = CustomHttp();
+    var response = await http.getViewPoint(comicId, chapterId);
+    if (response.statusCode == 200 && mounted) {
+      setState(() {
+        viewPointList.clear();
+        for (var item in response.data) {
+          viewPointList.add(Container(
+            margin: EdgeInsets.all(3),
+            child: Chip(
+              label: Text('${item['content']}'),
+              avatar: CircleAvatar(
+                child: Text('${item['num']}'),
+              )
+            ),
+          ));
+        }
       });
     }
   }
 
-  addReadHistory() async{
+  addReadHistory() async {
     DataBase dataBase = DataBase();
     bool loginState = await dataBase.getLoginState();
-    if(loginState){
-      var uid=await dataBase.getUid();
-      CustomHttp http= CustomHttp();
-      http.addReadHistory(comicId,uid);
+    if (loginState) {
+      var uid = await dataBase.getUid();
+      CustomHttp http = CustomHttp();
+      http.addReadHistory(comicId, uid);
     }
     dataBase.insertHistory(comicId, chapterId);
   }
@@ -93,7 +119,6 @@ class _ComicViewer extends State<ComicViewer> {
         getComic(comicId, chapterList[nextId], false);
       }
     });
-    addReadHistory();
   }
 
   @override
@@ -119,7 +144,7 @@ class _ComicViewer extends State<ComicViewer> {
                     chapterId = chapterList[nextId];
                     refreshState = true;
                   });
-                  getComic(comicId, chapterList[nextId], true);
+                  await getComic(comicId, chapterList[nextId], true);
                   return;
                 }
               },
@@ -133,24 +158,32 @@ class _ComicViewer extends State<ComicViewer> {
         snap: true,
         floating: true,
         actions: <Widget>[
-//          FlatButton(
-//            child: Icon(
-//              Icons.chat,
-//              color: Colors.white,
-//            ),
-//            onPressed: () {
-//              showModalBottomSheet(
-//                  context: context,
-//                  builder: (context) {
-//                    return Container(
-//                      height: 200,
-//                      child: Center(
-//                        child: Text(''),
-//                      ),
-//                    );
-//                  });
-//            },
-//          )
+          FlatButton(
+            child: Icon(
+              Icons.chat,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return Container(
+                      height: 400,
+                      padding: EdgeInsets.all(0),
+                      child: SingleChildScrollView(
+                          child: Column(
+                        children: <Widget>[
+                          Text('吐槽'),
+                          Divider(),
+                          Wrap(
+                            children: viewPointList,
+                          ),
+                        ],
+                      )),
+                    );
+                  });
+            },
+          )
         ],
       )
     ];

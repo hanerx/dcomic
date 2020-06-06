@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutterdmzj/component/drawer.dart';
 import 'package:flutterdmzj/view/category_page.dart';
 import 'package:flutterdmzj/view/download_page.dart';
@@ -15,8 +16,10 @@ void main() async {
 }
 
 class MainFrame extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
+    debugPaintSizeEnabled = false;
     // TODO: implement build
     return new MaterialApp(
         routes: {
