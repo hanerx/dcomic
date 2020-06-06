@@ -35,7 +35,7 @@ class _LatestUpdatePage extends State<LatestUpdatePage> {
               item['title'],
               item['types'],
               item['last_updatetime'],
-              item['comic_id'],
+              item['id'].toString(),
               item['authors']));
         }
         refreshState = false;
