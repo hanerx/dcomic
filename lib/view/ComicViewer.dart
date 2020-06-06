@@ -37,7 +37,9 @@ class _ComicViewer extends State<ComicViewer> {
     if (response.statusCode == 200 && mounted) {
       if (response.data == '章节不存在') {
         setState(() {
-          list.add(Text('章节不存在！'));
+          list.add(Center(
+            child: Text('章节不存在！'),
+          ));
         });
         return;
       }
@@ -78,11 +80,10 @@ class _ComicViewer extends State<ComicViewer> {
           viewPointList.add(Container(
             margin: EdgeInsets.all(3),
             child: Chip(
-              label: Text('${item['content']}'),
-              avatar: CircleAvatar(
-                child: Text('${item['num']}'),
-              )
-            ),
+                label: Text('${item['content']}'),
+                avatar: CircleAvatar(
+                  child: Text('${item['num']}'),
+                )),
           ));
         }
       });

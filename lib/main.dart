@@ -100,7 +100,7 @@ class _SearchButton extends State<SearchButton> {
                 title: Text('小彩蛋~'),
                 children: <Widget>[
                   SimpleDialogOption(
-                    child: Text('就是普通的小彩蛋~'),
+                    child: Text('我们耕耘黑暗，却守护光明'),
                     onPressed: () {
                       if (_count > 10) {
                         Navigator.push(context,
