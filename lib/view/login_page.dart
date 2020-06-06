@@ -20,9 +20,9 @@ class _LoginPage extends State<LoginPage> {
   TextEditingController _passwordController = TextEditingController();
 
   _login(context) async {
-//    EasyLoading.instance..indicatorType = EasyLoadingIndicatorType.fadingCube;
-//    EasyLoading.instance..maskType = EasyLoadingMaskType.black;
-//    EasyLoading.show(status: "登录中");
+    EasyLoading.instance..indicatorType = EasyLoadingIndicatorType.fadingCube;
+    EasyLoading.instance..maskType = EasyLoadingMaskType.black;
+    EasyLoading.show(status: "登录中");
     try {
       CustomHttp http = CustomHttp();
       var response =
@@ -47,19 +47,19 @@ class _LoginPage extends State<LoginPage> {
         EasyLoading.dismiss();
         Navigator.pop(context);
       } else if (data['code'] == 801 || data['code'] == 803) {
-//        EasyLoading.dismiss();
+        EasyLoading.dismiss();
         Scaffold.of(context).showSnackBar(SnackBar(
           content: Text('用户名或密码错误！'),
         ));
 
       } else {
-//        EasyLoading.dismiss();
+        EasyLoading.dismiss();
         Scaffold.of(context).showSnackBar(SnackBar(
           content: Text('俺也不知道啥错误，反正服务器说出问题了'),
         ));
       }
     } catch (e) {
-//      EasyLoading.dismiss();
+      EasyLoading.dismiss();
       Scaffold.of(context).showSnackBar(SnackBar(
         content: Text('连接爆了，网炸了？'),
       ));

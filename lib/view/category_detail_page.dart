@@ -44,7 +44,7 @@ class _CategoryDetailPage extends State<CategoryDetailPage> {
     }
   }
 
-  void getCategoryDetail() async {
+  getCategoryDetail() async {
     CustomHttp http = CustomHttp();
     var response = await http.getCategoryDetail(
         categoryId, filterDate, filterTag, filterType, page);
@@ -79,87 +79,60 @@ class _CategoryDetailPage extends State<CategoryDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('分类浏览-$title'),
-        actions: <Widget>[
-          FlatButton(
-            child: Icon(Icons.filter_list),
-            onPressed: () {
-              if (dateTypeList.length == 0 || tagTypeList.length == 0) {
-                getCategoryFilter();
-                return;
-              }
-              showModalBottomSheet(
-                  context: context,
-                  builder: (context) {
-                    return Container(
-                        height: 220,
-                        child: ListView(
-                          children: <Widget>[
-                            ListTile(
-                              leading: Icon(Icons.date_range),
-                              title: Text('按进度'),
-                              subtitle: Text(dateTypeList[filterDate]),
-                              trailing: PopupMenuButton(
-                                  child: Icon(Icons.arrow_drop_down),
-                                  onSelected: (int value) {
-                                    setState(() {
-                                      filterDate = value;
+        appBar: AppBar(
+          title: Text('分类浏览-$title'),
+          actions: <Widget>[
+            FlatButton(
+              child: Icon(Icons.filter_list),
+              onPressed: () {
+                if (dateTypeList.length == 0 || tagTypeList.length == 0) {
+                  getCategoryFilter();
+                  return;
+                }
+                showModalBottomSheet(
+                    context: context,
+                    builder: (context) {
+                      return Container(
+                          height: 220,
+                          child: ListView(
+                            children: <Widget>[
+                              ListTile(
+                                leading: Icon(Icons.date_range),
+                                title: Text('按进度'),
+                                subtitle: Text(dateTypeList[filterDate]),
+                                trailing: PopupMenuButton(
+                                    child: Icon(Icons.arrow_drop_down),
+                                    onSelected: (int value) {
                                       setState(() {
-                                        list.clear();
-                                        page = 0;
+                                        filterDate = value;
+                                        setState(() {
+                                          list.clear();
+                                          page = 0;
+                                        });
+                                        getCategoryDetail();
+                                        Navigator.pop(context);
                                       });
-                                      getCategoryDetail();
-                                      Navigator.pop(context);
-                                    });
-                                  },
-                                  itemBuilder: (BuildContext context) {
-                                    var data = <PopupMenuItem<int>>[];
-                                    dateTypeList.forEach((key, value) {
-                                      data.add(PopupMenuItem(
-                                        child: Text(value),
-                                        value: key,
-                                      ));
-                                    });
-                                    return data;
-                                  }),
-                            ),
-                            ListTile(
-                              leading: Icon(Icons.category),
-                              title: Text('按地域'),
-                              subtitle: Text(tagTypeList[filterTag]),
-                              trailing: PopupMenuButton(
-                                child: Icon(Icons.arrow_drop_down),
-                                onSelected: (int value) {
-                                  setState(() {
-                                    filterTag = value;
-                                    setState(() {
-                                      list.clear();
-                                      page = 0;
-                                    });
-                                    getCategoryDetail();
-                                    Navigator.pop(context);
-                                  });
-                                },
-                                itemBuilder: (context) {
-                                  var data = <PopupMenuItem<int>>[];
-                                  tagTypeList.forEach((key, value) {
-                                    data.add(PopupMenuItem(
-                                        child: Text(value), value: key));
-                                  });
-                                  return data;
-                                },
+                                    },
+                                    itemBuilder: (BuildContext context) {
+                                      var data = <PopupMenuItem<int>>[];
+                                      dateTypeList.forEach((key, value) {
+                                        data.add(PopupMenuItem(
+                                          child: Text(value),
+                                          value: key,
+                                        ));
+                                      });
+                                      return data;
+                                    }),
                               ),
-                            ),
-                            ListTile(
-                              leading: Icon(Icons.list),
-                              title: Text('按种类'),
-                              subtitle: Text(typeTypeList[filterType]),
-                              trailing: PopupMenuButton(
+                              ListTile(
+                                leading: Icon(Icons.category),
+                                title: Text('按地域'),
+                                subtitle: Text(tagTypeList[filterTag]),
+                                trailing: PopupMenuButton(
                                   child: Icon(Icons.arrow_drop_down),
                                   onSelected: (int value) {
                                     setState(() {
-                                      filterType = value;
+                                      filterTag = value;
                                       setState(() {
                                         list.clear();
                                         page = 0;
@@ -168,49 +141,88 @@ class _CategoryDetailPage extends State<CategoryDetailPage> {
                                       Navigator.pop(context);
                                     });
                                   },
-                                  itemBuilder: (BuildContext context) {
+                                  itemBuilder: (context) {
                                     var data = <PopupMenuItem<int>>[];
-                                    typeTypeList.forEach((item) {
+                                    tagTypeList.forEach((key, value) {
                                       data.add(PopupMenuItem(
-                                        child: Text(item),
-                                        value: typeTypeList.indexOf(item),
-                                      ));
+                                          child: Text(value), value: key));
                                     });
                                     return data;
-                                  }),
-                            )
-                          ],
-                        ));
-                  });
-            },
-          )
-        ],
-      ),
-      body: Scrollbar(
-        child: SingleChildScrollView(
-          controller: _controller,
-          child: Column(
-            children: <Widget>[
-              Row(
+                                  },
+                                ),
+                              ),
+                              ListTile(
+                                leading: Icon(Icons.list),
+                                title: Text('按种类'),
+                                subtitle: Text(typeTypeList[filterType]),
+                                trailing: PopupMenuButton(
+                                    child: Icon(Icons.arrow_drop_down),
+                                    onSelected: (int value) {
+                                      setState(() {
+                                        filterType = value;
+                                        setState(() {
+                                          list.clear();
+                                          page = 0;
+                                        });
+                                        getCategoryDetail();
+                                        Navigator.pop(context);
+                                      });
+                                    },
+                                    itemBuilder: (BuildContext context) {
+                                      var data = <PopupMenuItem<int>>[];
+                                      typeTypeList.forEach((item) {
+                                        data.add(PopupMenuItem(
+                                          child: Text(item),
+                                          value: typeTypeList.indexOf(item),
+                                        ));
+                                      });
+                                      return data;
+                                    }),
+                              )
+                            ],
+                          ));
+                    });
+              },
+            )
+          ],
+        ),
+        body: RefreshIndicator(
+          onRefresh: () async {
+            if (!refreshState) {
+              setState(() {
+                refreshState = true;
+                list.clear();
+                page = 0;
+              });
+              await getCategoryDetail();
+            }
+            return;
+          },
+          child: Scrollbar(
+            child: SingleChildScrollView(
+              controller: _controller,
+              child: Column(
                 children: <Widget>[
-                  Expanded(
-                    child: Text(
-                        '当前:${dateTypeList[filterDate]}-${tagTypeList[filterTag]}-${typeTypeList[filterType]}'),
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Text(
+                            '当前:${dateTypeList[filterDate]}-${tagTypeList[filterTag]}-${typeTypeList[filterType]}'),
+                      )
+                    ],
+                  ),
+                  ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: list.length,
+                    itemBuilder: (context, index) {
+                      return list[index];
+                    },
                   )
                 ],
               ),
-              ListView.builder(
-                physics: NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: list.length,
-                itemBuilder: (context, index) {
-                  return list[index];
-                },
-              )
-            ],
+            ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 }
