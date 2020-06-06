@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutterdmzj/component/drawer.dart';
 import 'package:flutterdmzj/view/category_page.dart';
 import 'package:flutterdmzj/view/download_page.dart';
 import 'package:flutterdmzj/view/history_page.dart';
 import 'package:flutterdmzj/view/home_page.dart';
+import 'package:flutterdmzj/view/latest_update_page.dart';
 import 'package:flutterdmzj/view/login_page.dart';
 import 'package:flutterdmzj/view/ranking_page.dart';
 import 'package:flutterdmzj/view/search_page.dart';
@@ -17,6 +19,7 @@ void main() async {
 class MainFrame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    debugPaintSizeEnabled = false;
     // TODO: implement build
     return new MaterialApp(
         routes: {
@@ -29,7 +32,7 @@ class MainFrame extends StatelessWidget {
         showSemanticsDebugger: false,
         showPerformanceOverlay: false,
         home: DefaultTabController(
-          length: 3,
+          length: 4,
           child: new Scaffold(
               appBar: new AppBar(
                 title: Text('DMZJ'),
@@ -44,6 +47,9 @@ class MainFrame extends StatelessWidget {
                     ),
                     new Tab(
                       text: '排行',
+                    ),
+                    new Tab(
+                      text: '最新',
                     )
                   ],
                 ),
@@ -52,7 +58,8 @@ class MainFrame extends StatelessWidget {
                 children: <Widget>[
                   new HomePage(),
                   CategoryPage(),
-                  RankingPage()
+                  RankingPage(),
+                  LatestUpdatePage(),
                 ],
               ),
               drawer: CustomDrawer()),
