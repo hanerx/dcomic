@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterdmzj/database/database.dart';
+import 'package:package_info/package_info.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingPage extends StatefulWidget {
   @override
@@ -11,6 +13,34 @@ class SettingPage extends StatefulWidget {
 }
 
 class _SettingPage extends State<SettingPage> {
+  String version = '';
+  String appName = '';
+
+  getVersionInfo() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    setState(() {
+      version = packageInfo.version;
+      appName = packageInfo.appName;
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getVersionInfo();
+  }
+
+  _openWeb(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text('哦豁，网页打不开了'),
+      ));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -31,6 +61,13 @@ class _SettingPage extends State<SettingPage> {
               },
             ),
             Divider(),
+            ListTile(
+              title: Text('检查更新'),
+              subtitle: Text('当前版本：$version'),
+              onTap: () {
+                _openWeb('https://github.com/hanerx/flutter_dmzj/releases');
+              },
+            ),
             ListTile(
               title: Text('免责声明'),
               subtitle: Text('不管有没有，先写了再说'),
@@ -86,7 +123,8 @@ class _SettingPage extends State<SettingPage> {
                           ),
                           ListTile(
                             title: Text('Q:有没有iOS版'),
-                            subtitle: Text('A:苹果那是人开发的东西吗？99美刀呢，感觉这应用卖了也不值这个价，而且第三方APP有法律风险的('),
+                            subtitle: Text(
+                                'A:苹果那是人开发的东西吗？99美刀呢，感觉这应用卖了也不值这个价，而且第三方APP有法律风险的('),
                           ),
                           ListTile(
                             title: Text('Q:用户名密码是什么？'),
@@ -110,9 +148,9 @@ class _SettingPage extends State<SettingPage> {
                           ),
                           ListTile(
                             title: Text('Q:开发的初衷是啥？'),
-                            subtitle: Text('A:大妈之家官方的APP有点卡，没想到自己的也好卡，现在感觉是服务器问题？'),
+                            subtitle:
+                                Text('A:大妈之家官方的APP有点卡，没想到自己的也好卡，现在感觉是服务器问题？'),
                           ),
-
                           ListTile(
                             title: Text('Q:源代码怎么这么丑？'),
                             subtitle: Text(
@@ -124,6 +162,13 @@ class _SettingPage extends State<SettingPage> {
               },
             ),
             ListTile(
+              title: Text('开源地址'),
+              subtitle: Text('https://github.com/hanerx/flutter_dmzj'),
+              onTap: () {
+                _openWeb("https://github.com/hanerx/flutter_dmzj");
+              },
+            ),
+            ListTile(
               title: Text('关于'),
               subtitle: Text('想不到设置里面能塞啥'),
               onTap: () {
@@ -131,8 +176,8 @@ class _SettingPage extends State<SettingPage> {
                     context: context,
                     builder: (context) {
                       return AboutDialog(
-                        applicationName: '大妈之家(?)',
-                        applicationVersion: 'v1.0.0',
+                        applicationName: '$appName',
+                        applicationVersion: '$version',
                         applicationIcon: Icon(Icons.adb),
                         children: <Widget>[
                           Text('基于flutter的第三方动漫之家简单app'),

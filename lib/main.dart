@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutterdmzj/component/drawer.dart';
 import 'package:flutterdmzj/view/category_page.dart';
+import 'package:flutterdmzj/view/dark_side_page.dart';
 import 'package:flutterdmzj/view/download_page.dart';
 import 'package:flutterdmzj/view/history_page.dart';
 import 'package:flutterdmzj/view/home_page.dart';
@@ -67,7 +68,17 @@ class MainFrame extends StatelessWidget {
   }
 }
 
-class SearchButton extends StatelessWidget {
+class SearchButton extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return _SearchButton();
+  }
+}
+
+class _SearchButton extends State<SearchButton> {
+  int _count = 0;
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -80,6 +91,32 @@ class SearchButton extends StatelessWidget {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return SearchPage();
         }));
+      },
+      onLongPress: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return SimpleDialog(
+                title: Text('小彩蛋~'),
+                children: <Widget>[
+                  SimpleDialogOption(
+                    child: Text('我们耕耘黑暗，却守护光明'),
+                    onPressed: () {
+                      if (_count > 10) {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return DarkSidePage();
+                        }));
+                      } else {
+                        setState(() {
+                          _count++;
+                        });
+                      }
+                    },
+                  )
+                ],
+              );
+            });
       },
     );
   }

@@ -1,0 +1,236 @@
+import 'dart:convert';
+
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutterdmzj/http/http.dart';
+import 'package:flutterdmzj/view/ComicViewer.dart';
+
+import 'comic_detail_page.dart';
+
+class DarkSidePage extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return _DarkSidePage();
+  }
+}
+
+class _DarkSidePage extends State<DarkSidePage> {
+  List list = <Widget>[];
+  bool refreshState = true;
+
+  getDarkInfo() async {
+    CustomHttp http = CustomHttp();
+    var response = await http.getDarkInfo();
+    if (response.statusCode == 200 && mounted) {
+      setState(() {
+        var data = jsonDecode(response.data);
+        for (var item in data) {
+          var authors = item['authors'].join('/');
+          var types = item['types'].join('/');
+          bool live = item['last_update_chapter_id'] != 0;
+          list.add(DarkCustomListTile(
+              item['cover'],
+              item['title'],
+              types,
+              item['last_updatetime'],
+              item['id'].toString(),
+              authors,
+              live,
+              item['last_update_chapter_id'].toString()));
+        }
+        refreshState = false;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getDarkInfo();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Scaffold(
+        backgroundColor: Colors.grey[800],
+        appBar: AppBar(
+          backgroundColor: Colors.black,
+          title: Text('黑暗面'),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(
+                Icons.help_outline,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return SimpleDialog(
+                        title: Text('帮助'),
+                        children: <Widget>[
+                          SimpleDialogOption(
+                            child: Text(
+                                '这里是大妈之家黑暗面，这里存储了在光明面消失的部分漫画。经过调整，我们将漫画分为三个档次，第一个是能看到详情页，那会直接跳转，第二个是有最后一章节的数据，那会跳转到浏览页，第三种是完全失败。注：本功能是通过调用别人的接口实现的，不知道什么时候就会消失，并且不一定在这里能看到详情的漫画就一定能看(有一些还是被阉割了的'),
+                          )
+                        ],
+                      );
+                    });
+              },
+            )
+          ],
+        ),
+        body: RefreshIndicator(
+          child: ListView.builder(
+              itemCount: list.length,
+              itemBuilder: (context, index) {
+                return list[index];
+              }),
+          onRefresh: () async {
+            if (!refreshState) {
+              setState(() {
+                refreshState = true;
+              });
+              await getDarkInfo();
+            }
+            return;
+          },
+        ));
+  }
+}
+
+class DarkCustomListTile extends StatelessWidget {
+  final String cover;
+  final String title;
+  final String types;
+  final int date;
+  final String authors;
+  final bool live;
+  final String lastChapterId;
+  String formatDate = '';
+  final String comicId;
+
+  DarkCustomListTile(this.cover, this.title, this.types, this.date,
+      this.comicId, this.authors, this.live, this.lastChapterId) {
+    var dateTime = DateTime.fromMicrosecondsSinceEpoch(date * 1000000);
+    formatDate = '${dateTime.year}-${dateTime.month}-${dateTime.day}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return IntrinsicHeight(
+        child: FlatButton(
+      padding: EdgeInsets.fromLTRB(1, 0, 1, 0),
+      onPressed: () async {
+        CustomHttp http = CustomHttp();
+        var response = await http.getComicDetail(comicId);
+        if (response.statusCode == 200 &&
+            response.data['chapters'].length > 0) {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return ComicDetailPage(comicId);
+          }));
+        } else if (live) {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return ComicViewer(comicId, lastChapterId, [lastChapterId]);
+          }));
+        } else {
+          Scaffold.of(context).showSnackBar(SnackBar(
+              content: Text(
+            '这本漫画是真的没有了，RIP',
+            style: TextStyle(color: Colors.red),
+          )));
+        }
+      },
+      child: Card(
+        color: Colors.grey[600],
+        child: Row(
+          children: <Widget>[
+            CachedNetworkImage(
+              imageUrl: '$cover',
+              httpHeaders: {'referer': 'http://images.dmzj.com'},
+              progressIndicatorBuilder: (context, url, downloadProgress) =>
+                  CircularProgressIndicator(value: downloadProgress.progress),
+              errorWidget: (context, url, error) => Icon(
+                Icons.error,
+                color: Colors.white,
+              ),
+              width: 100,
+            ),
+            Expanded(
+                child: Padding(
+              padding: EdgeInsets.fromLTRB(10, 2, 0, 0),
+              child: Column(
+                children: <Widget>[
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        title,
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: live ? Colors.white : Colors.red),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Row(
+                          children: <Widget>[
+                            Icon(
+                              Icons.supervisor_account,
+                              color: Colors.white,
+                            ),
+                            Text(
+                              authors,
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ],
+                        )),
+                  ),
+                  Expanded(
+                    child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Row(
+                          children: <Widget>[
+                            Icon(
+                              Icons.category,
+                              color: Colors.white,
+                            ),
+                            Text(
+                              types,
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ],
+                        )),
+                  ),
+                  Expanded(
+                    child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Row(
+                          children: <Widget>[
+                            Icon(
+                              Icons.history,
+                              color: Colors.white,
+                            ),
+                            Text(
+                              formatDate,
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ],
+                        )),
+                  )
+                ],
+              ),
+            ))
+          ],
+        ),
+      ),
+    ));
+  }
+}

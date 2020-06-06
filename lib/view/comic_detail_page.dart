@@ -349,9 +349,11 @@ class DetailCard extends StatelessWidget {
                           Icons.supervisor_account,
                           color: Colors.grey,
                         ),
-                        Text(
-                          author,
-                          overflow: TextOverflow.ellipsis,
+                        Expanded(
+                          child: Text(
+                            author,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         )
                       ],
                     ),
@@ -363,9 +365,11 @@ class DetailCard extends StatelessWidget {
                           Icons.category,
                           color: Colors.grey,
                         ),
-                        Text(
-                          types,
-                          overflow: TextOverflow.ellipsis,
+                        Expanded(
+                          child: Text(
+                            types,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         )
                       ],
                     ),
