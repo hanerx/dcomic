@@ -4,8 +4,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_qq/flutter_qq.dart';
+import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
+import 'package:fluttericon/font_awesome5_icons.dart';
+import 'package:fluttericon/font_awesome_icons.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -51,7 +56,6 @@ class _LoginPage extends State<LoginPage> {
         Scaffold.of(context).showSnackBar(SnackBar(
           content: Text('用户名或密码错误！'),
         ));
-
       } else {
         EasyLoading.dismiss();
         Scaffold.of(context).showSnackBar(SnackBar(
@@ -63,7 +67,14 @@ class _LoginPage extends State<LoginPage> {
       Scaffold.of(context).showSnackBar(SnackBar(
         content: Text('连接爆了，网炸了？'),
       ));
+    }
+  }
 
+  _openWeb(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      print('打不开！url:$url');
     }
   }
 
@@ -157,6 +168,87 @@ class _LoginPage extends State<LoginPage> {
                           },
                         );
                       },
+                    )
+                  ],
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(5),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: IconButton(
+                        icon: Icon(
+                          FontAwesome5.qq,
+                          color: Colors.blue,
+                        ),
+                        onPressed: () async {
+                          EasyLoading.instance
+                            ..indicatorType =
+                                EasyLoadingIndicatorType.fadingCube;
+                          EasyLoading.instance
+                            ..maskType = EasyLoadingMaskType.black;
+                          EasyLoading.show(status: "登录中");
+                          FlutterWebviewPlugin webview = FlutterWebviewPlugin();
+                          var state = false;
+                          webview.onUrlChanged.listen((String url) {
+                            print(url);
+//                            if (url.indexOf("wtloginmqq://") != -1) {
+//                              print("尝试拉起：$url");
+//                              _openWeb(url);
+//                            }
+                            if (url == 'https://m.dmzj.com/') {
+                              print(true);
+                              webview
+                                  .evalJavascript("document.cookie")
+                                  .then((value) async {
+                                if (!state) {
+                                  try {
+                                    state = true;
+                                    print(value);
+                                    webview.close();
+                                    DataBase dataBase = DataBase();
+                                    var data = value
+                                        .replaceAll(" ", "")
+                                        .replaceAll("\"", "")
+                                        .split(';');
+                                    print(data);
+                                    for (var item in data) {
+                                      var key =
+                                          item.substring(0, item.indexOf("="));
+                                      var value =
+                                          item.substring(item.indexOf("=") + 1);
+                                      await dataBase.insertCookies(key, value);
+                                      if (key == 'my') {
+                                        var decodeDetail = Uri.decodeComponent(
+                                            Uri.decodeComponent(value));
+                                        var list = decodeDetail.split("|");
+                                        print(list);
+                                        await dataBase.setUid(list[0]);
+                                      }
+                                    }
+                                    await dataBase.setLoginState(true);
+                                    Navigator.pop(context);
+                                  } catch (e) {
+                                    print(e);
+                                    Navigator.pop(context);
+                                  }
+                                }
+                              });
+                            }
+                          });
+                          webview.onBack.listen((url) async {
+                            if (!await webview.canGoBack()) {
+                              webview.close();
+                              Navigator.pop(context);
+                            }
+                          });
+                          webview.launch(
+                              'https://graph.qq.com/oauth2.0/authorize?client_id=101144087&display=pc&redirect_uri=https://i.dmzj.com/login/qq&response_type=code&state=http://m.dmzj.com/',
+                            userAgent: 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.134 Safari/537.36'
+                          );
+                        },
+                      ),
                     )
                   ],
                 ),
