@@ -50,6 +50,7 @@ class _ComicDetailPage extends State<ComicDetailPage> {
     super.initState();
     loadComic();
     getIfSubscribe();
+    addReadHistory();
   }
 
   @override
@@ -60,7 +61,18 @@ class _ComicDetailPage extends State<ComicDetailPage> {
       Future.delayed(Duration(milliseconds: 200)).then((e) {
         loadComic();
         getIfSubscribe();
+        addReadHistory();
       });
+    }
+  }
+
+  addReadHistory() async {
+    DataBase dataBase = DataBase();
+    bool loginState = await dataBase.getLoginState();
+    if (loginState) {
+      var uid = await dataBase.getUid();
+      CustomHttp http = CustomHttp();
+      http.addReadHistory(id, uid);
     }
   }
 
