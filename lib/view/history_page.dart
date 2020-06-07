@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
+import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:flutterdmzj/view/login_page.dart';
 
 import 'comic_detail_page.dart';
@@ -68,12 +69,12 @@ class _HistoryPage extends State<HistoryPage> {
         title: Text('历史记录'),
       ),
       body: ListView.builder(
-            itemCount: list.length,
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              return list[index];
-            }),
-      );
+          itemCount: list.length,
+          shrinkWrap: true,
+          itemBuilder: (context, index) {
+            return list[index];
+          }),
+    );
   }
 }
 
@@ -87,8 +88,7 @@ class HistoryListTile extends StatelessWidget {
 
   HistoryListTile(
       this.cover, this.title, this.chapterName, this.date, this.comicId) {
-    var dateTime = DateTime.fromMicrosecondsSinceEpoch(date * 1000000);
-    formatDate = '${dateTime.year}-${dateTime.month}-${dateTime.day}';
+    formatDate = ToolMethods.formatTimestamp(date);
   }
 
   @override

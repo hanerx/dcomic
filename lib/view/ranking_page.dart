@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterdmzj/http/http.dart';
+import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:flutterdmzj/view/comic_detail_page.dart';
 
 class RankingPage extends StatefulWidget {
@@ -81,11 +82,11 @@ class _RankingPage extends State<RankingPage> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return RefreshIndicator(
-      onRefresh: () async{
-        if(!refreshState){
+      onRefresh: () async {
+        if (!refreshState) {
           setState(() {
-            refreshState=true;
-            page=0;
+            refreshState = true;
+            page = 0;
             list.clear();
           });
           await loadRankingList();
@@ -123,15 +124,16 @@ class _RankingPage extends State<RankingPage> {
                                           leading: Icon(Icons.date_range),
                                           title: Text('按日期'),
                                           subtitle:
-                                          Text(dateTypeList[filterDate]),
+                                              Text(dateTypeList[filterDate]),
                                           trailing: PopupMenuButton(
-                                              child: Icon(Icons.arrow_drop_down),
+                                              child:
+                                                  Icon(Icons.arrow_drop_down),
                                               onSelected: (int value) {
                                                 setState(() {
                                                   filterDate = value;
                                                   setState(() {
                                                     list.clear();
-                                                    page=0;
+                                                    page = 0;
                                                   });
                                                   loadRankingList();
                                                   Navigator.pop(context);
@@ -139,7 +141,8 @@ class _RankingPage extends State<RankingPage> {
                                               },
                                               itemBuilder:
                                                   (BuildContext context) {
-                                                var data = <PopupMenuItem<int>>[];
+                                                var data =
+                                                    <PopupMenuItem<int>>[];
                                                 dateTypeList.forEach((item) {
                                                   data.add(PopupMenuItem(
                                                     child: Text(item),
@@ -153,7 +156,8 @@ class _RankingPage extends State<RankingPage> {
                                         ListTile(
                                           leading: Icon(Icons.category),
                                           title: Text('按分类'),
-                                          subtitle: Text(tagTypeList[filterTag]),
+                                          subtitle:
+                                              Text(tagTypeList[filterTag]),
                                           trailing: PopupMenuButton(
                                             child: Icon(Icons.arrow_drop_down),
                                             onSelected: (int value) {
@@ -161,7 +165,7 @@ class _RankingPage extends State<RankingPage> {
                                                 filterTag = value;
                                                 setState(() {
                                                   list.clear();
-                                                  page=0;
+                                                  page = 0;
                                                 });
                                                 loadRankingList();
                                                 Navigator.pop(context);
@@ -182,15 +186,16 @@ class _RankingPage extends State<RankingPage> {
                                           leading: Icon(Icons.list),
                                           title: Text('按种类'),
                                           subtitle:
-                                          Text(typeTypeList[filterType]),
+                                              Text(typeTypeList[filterType]),
                                           trailing: PopupMenuButton(
-                                              child: Icon(Icons.arrow_drop_down),
+                                              child:
+                                                  Icon(Icons.arrow_drop_down),
                                               onSelected: (int value) {
                                                 setState(() {
                                                   filterType = value;
                                                   setState(() {
                                                     list.clear();
-                                                    page=0;
+                                                    page = 0;
                                                   });
                                                   loadRankingList();
                                                   Navigator.pop(context);
@@ -198,7 +203,8 @@ class _RankingPage extends State<RankingPage> {
                                               },
                                               itemBuilder:
                                                   (BuildContext context) {
-                                                var data = <PopupMenuItem<int>>[];
+                                                var data =
+                                                    <PopupMenuItem<int>>[];
                                                 typeTypeList.forEach((item) {
                                                   data.add(PopupMenuItem(
                                                     child: Text(item),
@@ -243,8 +249,7 @@ class CustomListTile extends StatelessWidget {
 
   CustomListTile(this.cover, this.title, this.types, this.date, this.comicId,
       this.authors) {
-    var dateTime = DateTime.fromMicrosecondsSinceEpoch(date * 1000000);
-    formatDate = '${dateTime.year}-${dateTime.month}-${dateTime.day}';
+    formatDate = ToolMethods.formatTimestamp(date);
   }
 
   @override

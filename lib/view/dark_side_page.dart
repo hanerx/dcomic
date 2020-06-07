@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterdmzj/http/http.dart';
+import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:flutterdmzj/view/ComicViewer.dart';
 
 import 'comic_detail_page.dart';
@@ -116,8 +117,7 @@ class DarkCustomListTile extends StatelessWidget {
 
   DarkCustomListTile(this.cover, this.title, this.types, this.date,
       this.comicId, this.authors, this.live, this.lastChapterId) {
-    var dateTime = DateTime.fromMicrosecondsSinceEpoch(date * 1000000);
-    formatDate = '${dateTime.year}-${dateTime.month}-${dateTime.day}';
+    formatDate = ToolMethods.formatTimestamp(date);
   }
 
   @override

@@ -32,6 +32,9 @@ class MainFrame extends StatelessWidget {
         color: Colors.grey[400],
         showSemanticsDebugger: false,
         showPerformanceOverlay: false,
+        theme: ThemeData(
+          platform: TargetPlatform.iOS,
+        ),
         home: DefaultTabController(
           length: 4,
           child: new Scaffold(
