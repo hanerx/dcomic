@@ -4,12 +4,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_qq/flutter_qq.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
-import 'package:fluttericon/font_awesome_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LoginPage extends StatefulWidget {
