@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterdmzj/database/database.dart';
+import 'package:flutterdmzj/http/http.dart';
+import 'package:markdown_widget/markdown_widget.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -61,11 +63,54 @@ class _SettingPage extends State<SettingPage> {
               },
             ),
             Divider(),
-            ListTile(
-              title: Text('检查更新'),
-              subtitle: Text('当前版本：$version'),
-              onTap: () {
-                _openWeb('https://github.com/hanerx/flutter_dmzj/releases');
+            Builder(
+              builder: (context) {
+                return ListTile(
+                  title: Text('检查更新'),
+                  subtitle: Text('当前版本：$version'),
+                  onTap: () async {
+                    CustomHttp http = CustomHttp();
+                    var response = await http.checkUpdate();
+                    if (response.statusCode == 200 && version != '') {
+                      var lastVersion = response.data['tag_name'].substring(1);
+                      bool update = version.compareTo(lastVersion) < 0;
+                      print('$lastVersion:$update');
+                      if (update) {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title:
+                                    Text('版本点亮：${response.data['tag_name']}'),
+                                content: Container(
+                                  width: 300,
+                                  height: 300,
+                                  child: buildMarkdown(response.data['body']),
+                                ),
+                                actions: <Widget>[
+                                  FlatButton(
+                                    child: Text('更新'),
+                                    onPressed: () {
+                                      _openWeb('${response.data['html_url']}');
+                                    },
+                                  ),
+                                  FlatButton(
+                                    child: Text('取消'),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  )
+                                ],
+                              );
+                            });
+                      } else {
+                        Scaffold.of(context).showSnackBar(SnackBar(
+                          content: Text('已经是最新版本'),
+                        ));
+                      }
+                    }
+                  },
+                );
               },
             ),
             ListTile(
@@ -133,8 +178,7 @@ class _SettingPage extends State<SettingPage> {
                           ),
                           ListTile(
                             title: Text('Q:QQ登录怎么不能快捷登录？'),
-                            subtitle: Text(
-                                'A:QQ的授权难搞的一批，有登录就不错了。'),
+                            subtitle: Text('A:QQ的授权难搞的一批，有登录就不错了。'),
                           ),
                           ListTile(
                             title: Text('Q:有没有下载功能？'),
@@ -205,4 +249,6 @@ class _SettingPage extends State<SettingPage> {
           ],
         ));
   }
+
+  Widget buildMarkdown(data) => MarkdownWidget(data: data);
 }
