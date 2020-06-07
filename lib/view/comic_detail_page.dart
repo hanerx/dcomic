@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_parallax/flutter_parallax.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
+import 'package:flutterdmzj/utils/tool_methods.dart';
+import 'package:flutterdmzj/view/comment_page.dart';
 import 'package:flutterdmzj/view/login_page.dart';
 
 import 'ComicViewer.dart';
@@ -37,6 +39,8 @@ class _ComicDetailPage extends State<ComicDetailPage> {
   bool sub = false;
   bool loading = false;
   String uid = '';
+  String lastChapterId = '';
+  List lastChapterList = <Widget>[];
 
   _ComicDetailPage(this.id);
 
@@ -83,9 +87,8 @@ class _ComicDetailPage extends State<ComicDetailPage> {
           hotNum = response.data['hot_num'];
           subscribeNum = response.data['subscribe_num'];
           description = response.data['description'];
-          var date = DateTime.fromMicrosecondsSinceEpoch(
-              response.data['last_updatetime'] * 1000000);
-          updateDate = '${date.year}-${date.month}-${date.day}';
+          updateDate =
+              ToolMethods.formatTimestamp(response.data['last_updatetime']);
           temp.clear();
           response.data['status'].forEach((value) {
             temp.add(value['tag_name']);
@@ -96,13 +99,22 @@ class _ComicDetailPage extends State<ComicDetailPage> {
           List chapterData = response.data['chapters'];
           for (var item in chapterData) {
             var chapterList = <Widget>[];
+
             var chapterIdList = item['data'].map((map) {
               return map['chapter_id'].toString();
             }).toList();
 
+            if (lastChapterId == '' && item['data'].length > 0) {
+              lastChapterId = item['data'][item['data'].length - 1]
+                      ['chapter_id']
+                  .toString();
+              lastChapterList = chapterList;
+            }
+
             for (var chapter in item['data']) {
               if (last.first.length > 0 &&
                   chapter['chapter_id'].toString() == last.first[0]['value']) {
+                lastChapterId = chapter['chapter_id'].toString();
                 chapterList.add(Container(
                   width: 120,
                   margin: EdgeInsets.fromLTRB(3, 0, 3, 0),
@@ -212,8 +224,8 @@ class _ComicDetailPage extends State<ComicDetailPage> {
           actions: <Widget>[
             Builder(
               builder: (context) {
-                return FlatButton(
-                  child: Icon(
+                return IconButton(
+                  icon: Icon(
                     sub ? Icons.favorite : Icons.favorite_border,
                     color: Colors.white,
                   ),
@@ -261,8 +273,34 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                   },
                 );
               },
+            ),
+            IconButton(
+              icon: Icon(Icons.forum),
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return CommentPage(id);
+                }));
+              },
             )
           ],
+        ),
+        floatingActionButton: Builder(
+          builder: (context) {
+            return FloatingActionButton(
+              child: Icon(Icons.play_arrow),
+              onPressed: () {
+                if (lastChapterId != '') {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return ComicViewer(id, lastChapterId, lastChapterList);
+                  }));
+                } else {
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                    content: Text('好像没得记录，没法继续阅读'),
+                  ));
+                }
+              },
+            );
+          },
         ),
         body: Scrollbar(
           child: SingleChildScrollView(
