@@ -121,6 +121,10 @@ class CustomHttp {
         '$baseUrl/subscribe/read?obj_ids=$comicId&uid=$uid&type=mh?obj_ids=$comicId&uid=$uid&type=mh&channel=Android&version=2.7.017');
   }
 
+  Future<Response<T>> addReadHistory0<T>(String comicId, String uid) async {
+    return unCachedDio.get('$baseUrl/subscribe/0/$uid/$comicId?$queryOptions');
+  }
+
   Future<Response<T>> getReadHistory<T>(String uid, int page) {
     return dio.get(
         "https://interface.dmzj.com/api/getReInfo/comic/$uid/$page?$queryOptions",

@@ -6,7 +6,7 @@ class DataBase {
   DataBase();
 
   initDataBase() async {
-    _database = await openDatabase("dmzj_2.db", version: 4,
+    _database = await openDatabase("dmzj_2.db", version: 5,
         onCreate: (Database db, int version) async {
       await db.execute(
           "CREATE TABLE cookies (id INTEGER PRIMARY KEY, key TEXT, value TEXT)");
@@ -14,10 +14,15 @@ class DataBase {
           "CREATE TABLE configures (id INTEGER PRIMARY KEY, key TEXT, value TEXT)");
       await db.execute(
           "CREATE TABLE history (id INTEGER PRIMARY KEY, name TEXT, value TEXT)");
+      await db.execute(
+          "CREATE TABLE unread (id INTEGER PRIMARY KEY, comicId TEXT, timestamp INTEGER)");
+    }, onUpgrade: (Database db, int version, int x) async {
+      await db.execute(
+          "CREATE TABLE unread (id INTEGER PRIMARY KEY, comicId TEXT, timestamp INTEGER)");
     });
   }
 
-  resetDataBase() async{
+  resetDataBase() async {
     await deleteDatabase("dmzj_2.db");
   }
 
@@ -49,6 +54,34 @@ class DataBase {
     var batch = _database.batch();
     batch.query("history", where: "name='$comicId'");
     return batch.commit();
+  }
+
+  insertUnread(String comicId, int timestamp) async {
+    await initDataBase();
+    var batch = _database.batch();
+    batch.delete("unread", where: "comicId='$comicId'");
+    batch.insert('unread', {'comicId': comicId, 'timestamp': timestamp});
+    await batch.commit();
+  }
+
+  getUnread(String comicId) async {
+    await initDataBase();
+    var batch = _database.batch();
+    batch.query("unread", where: "comicId='$comicId'");
+    var data = await batch.commit();
+    return data.first;
+  }
+
+  getAllUnread() async {
+    await initDataBase();
+    var batch = _database.batch();
+    batch.query("unread");
+    var data = await batch.commit();
+    var map = <String, int>{};
+    for (var item in data.first) {
+      map[item['comicId']] = item['timestamp'];
+    }
+    return map;
   }
 
   getMy() async {

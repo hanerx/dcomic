@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterdmzj/component/LoadingRow.dart';
+import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/view/comic_detail_page.dart';
 
@@ -31,8 +32,10 @@ class _FavoritePage extends State<FavoritePage> {
 
   void getSubscribe() async {
     CustomHttp http = CustomHttp();
+    DataBase dataBase = DataBase();
     var response = await http.getSubscribe(int.parse(uid), page);
     if (response.statusCode == 200 && mounted) {
+      var unreadList = await dataBase.getAllUnread();
       setState(() {
         if (page == 0) {
           list.clear();
@@ -58,12 +61,12 @@ class _FavoritePage extends State<FavoritePage> {
             position = 0;
             cardList = <Widget>[];
           }
-          cardList.add(SubscribeCard(
-              item['sub_img'],
-              item['name'],
-              item['sub_update'],
-              item['id'].toString(),
-              item['sub_readed'] == 0));
+          bool unread = item['sub_readed'] == 0;
+          if(unreadList[item['id'].toString()] != null && unreadList[item['id'].toString()] >= item['sub_uptime'] * 1000) {
+            unread = false;
+          }
+          cardList.add(SubscribeCard(item['sub_img'], item['name'],
+              item['sub_update'], item['id'].toString(), unread));
           position++;
         }
         if (cardList.length > 0 && position < _row) {
@@ -123,7 +126,7 @@ class _FavoritePage extends State<FavoritePage> {
             onPressed: () {
               if (mounted) {
                 setState(() {
-                  list = <Widget>[Center(child: CircularProgressIndicator())];
+                  list = <Widget>[LoadingRow()];
                   refreshState = true;
                   page = 0;
                 });
