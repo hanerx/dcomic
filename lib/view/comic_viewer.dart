@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterdmzj/component/ViewPointChip.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
 
@@ -76,15 +77,12 @@ class _ComicViewer extends State<ComicViewer> {
     if (response.statusCode == 200 && mounted) {
       setState(() {
         viewPointList.clear();
+        response.data.sort((left, right) {
+          return left['num'] < right['num'] ? 1 : -1;
+        });
         for (var item in response.data) {
-          viewPointList.add(Container(
-            margin: EdgeInsets.all(3),
-            child: Chip(
-                label: Text('${item['content']}'),
-                avatar: CircleAvatar(
-                  child: Text('${item['num']}'),
-                )),
-          ));
+          viewPointList.add(ViewPointChip(
+              item['content'], item['id'].toString(), item['num']));
         }
       });
     }
@@ -130,6 +128,7 @@ class _ComicViewer extends State<ComicViewer> {
             headerSliverBuilder: _sliverBuilder,
             body: RefreshIndicator(
               child: ListView.builder(
+                  padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
                   physics: NeverScrollableScrollPhysics(),
                   itemCount: list.length,
                   itemBuilder: (context, index) {
@@ -174,7 +173,10 @@ class _ComicViewer extends State<ComicViewer> {
                       child: SingleChildScrollView(
                           child: Column(
                         children: <Widget>[
-                          Text('吐槽'),
+                          Padding(
+                            padding: EdgeInsets.all(5),
+                            child: Text('吐槽'),
+                          ),
                           Divider(),
                           Wrap(
                             children: viewPointList,

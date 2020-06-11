@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterdmzj/component/LoadingRow.dart';
+import 'package:flutterdmzj/component/LoadingTile.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/view/ranking_page.dart';
 
@@ -15,28 +17,27 @@ class _LatestUpdatePage extends State<LatestUpdatePage> {
   int filterTag = 100;
   int page = 0;
   bool refreshState = false;
-  List list = <Widget>[];
+  List list = <Widget>[LoadingTile()];
   Map tagTypeList = <int, String>{100: '全部漫画', 1: '原创漫画', 0: '译制漫画'};
   ScrollController _controller = ScrollController();
 
   getLatestList() async {
     CustomHttp http = CustomHttp();
-    var response =
-        await http.getLatestList(filterTag, page);
+    var response = await http.getLatestList(filterTag, page);
     if (response.statusCode == 200 && mounted) {
       setState(() {
+        if (page == 0) {
+          list.clear();
+        } else {
+          list.removeLast();
+        }
         if (response.data.length == 0) {
           refreshState = true;
           return;
         }
         for (var item in response.data) {
-          list.add(CustomListTile(
-              item['cover'],
-              item['title'],
-              item['types'],
-              item['last_updatetime'],
-              item['id'].toString(),
-              item['authors']));
+          list.add(CustomListTile(item['cover'], item['title'], item['types'],
+              item['last_updatetime'], item['id'].toString(), item['authors']));
         }
         refreshState = false;
       });
@@ -54,6 +55,7 @@ class _LatestUpdatePage extends State<LatestUpdatePage> {
         setState(() {
           refreshState = true;
           page++;
+          list.add(LoadingTile());
         });
         getLatestList();
       }
@@ -70,6 +72,7 @@ class _LatestUpdatePage extends State<LatestUpdatePage> {
             refreshState = true;
             page = 0;
             list.clear();
+            list.add(LoadingTile());
           });
           await getLatestList();
         }

@@ -15,7 +15,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePage extends State<HomePage> {
   List list = <Widget>[];
-  static List allowedCategroy = <int>[47, 48, 52, 53, 54, 55, 56];
+  static List allowedCategory = <int>[47, 48, 52, 53, 54, 55, 56];
   bool refreshState = false;
 
   @override
@@ -64,7 +64,7 @@ class _HomePage extends State<HomePage> {
       if (this.mounted) {
         setState(() {
           data.forEach((item) {
-            if (allowedCategroy.indexOf(item['category_id']) >= 0) {
+            if (allowedCategory.indexOf(item['category_id']) >= 0) {
               if (item['data'].length % 3 == 0) {
                 list.add(new CardView(
                     item['title'], item['data'], 3, item['category_id']));

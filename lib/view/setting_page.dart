@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
+import 'package:flutterdmzj/utils/static_language.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -38,7 +39,7 @@ class _SettingPage extends State<SettingPage> {
       await launch(url);
     } else {
       Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text('哦豁，网页打不开了'),
+        content: Text('${StaticLanguage.staticStrings['settingPage.canNotOpenWeb']}'),
       ));
     }
   }
@@ -48,14 +49,14 @@ class _SettingPage extends State<SettingPage> {
     // TODO: implement build
     return Scaffold(
         appBar: AppBar(
-          title: Text('设置'),
+          title: Text('${StaticLanguage.staticStrings['settings']}'),
         ),
         body: ListView(
           children: <Widget>[
             ListTile(
-              title: Text('清除数据库内容'),
+              title: Text('${StaticLanguage.staticStrings['settingPage.deleteDatabaseTitle']}'),
               subtitle:
-                  Text('危险操作，包括登录信息，漫画记录均会被删除，仅用于出现bug后的补救功能(也许会造成更大的bug？)'),
+                  Text('${StaticLanguage.staticStrings['settingPage.deleteDatabaseSubTitle']}'),
               onTap: () {
                 DataBase dataBase = DataBase();
                 dataBase.resetDataBase();
@@ -66,8 +67,8 @@ class _SettingPage extends State<SettingPage> {
             Builder(
               builder: (context) {
                 return ListTile(
-                  title: Text('检查更新'),
-                  subtitle: Text('当前版本：$version'),
+                  title: Text('${StaticLanguage.staticStrings['settingPage.checkUpdateTitle']}'),
+                  subtitle: Text('${StaticLanguage.staticStrings['settingPage.checkUpdateSubTitle']} $version'),
                   onTap: () async {
                     CustomHttp http = CustomHttp();
                     var response = await http.checkUpdate();

@@ -3,9 +3,10 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterdmzj/component/LoadingRow.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
-import 'package:flutterdmzj/view/ComicViewer.dart';
+import 'package:flutterdmzj/view/comic_viewer.dart';
 
 import 'comic_detail_page.dart';
 
@@ -18,15 +19,18 @@ class DarkSidePage extends StatefulWidget {
 }
 
 class _DarkSidePage extends State<DarkSidePage> {
-  List list = <Widget>[];
+  List list = <Widget>[LoadingRow()];
   bool refreshState = true;
+  bool search = false;
+  var data;
 
   getDarkInfo() async {
     CustomHttp http = CustomHttp();
     var response = await http.getDarkInfo();
     if (response.statusCode == 200 && mounted) {
       setState(() {
-        var data = jsonDecode(response.data);
+        list.clear();
+        data = jsonDecode(response.data);
         for (var item in data) {
           var authors = item['authors'].join('/');
           var types = item['types'].join('/');
@@ -60,7 +64,51 @@ class _DarkSidePage extends State<DarkSidePage> {
         backgroundColor: Colors.grey[800],
         appBar: AppBar(
           backgroundColor: Colors.black,
-          title: Text('黑暗面'),
+          title: search
+              ? TextField(
+                  style: TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: '输入关键词',
+                    hintStyle: TextStyle(color: Colors.white),
+                  ),
+                  textInputAction: TextInputAction.search,
+                  onSubmitted: (val) {
+                    setState(() {
+                      refreshState = true;
+                      list.clear();
+                      for (var item in data) {
+                        if (item['title'].indexOf(val) >= 0) {
+                          var authors = item['authors'].join('/');
+                          var types = item['types'].join('/');
+                          bool live = item['last_update_chapter_id'] != 0;
+                          list.add(DarkCustomListTile(
+                              item['cover'],
+                              item['title'],
+                              types,
+                              item['last_updatetime'],
+                              item['id'].toString(),
+                              authors,
+                              live,
+                              item['last_update_chapter_id'].toString()));
+                        }
+                      }
+                      refreshState = false;
+                      search = false;
+                    });
+                  },
+                )
+              : FlatButton(
+                  child: Text(
+                    '黑暗面',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      search = true;
+                    });
+                  },
+                ),
           actions: <Widget>[
             IconButton(
               icon: Icon(
@@ -95,6 +143,8 @@ class _DarkSidePage extends State<DarkSidePage> {
             if (!refreshState) {
               setState(() {
                 refreshState = true;
+                list.clear();
+                list.add(LoadingRow());
               });
               await getDarkInfo();
             }

@@ -13,6 +13,7 @@ class CustomHttp {
     dio = Dio();
     _cacheManager = DioCacheManager(CacheConfig(baseUrl: baseUrl));
     dio.interceptors.add(_cacheManager.interceptor);
+    dio.interceptors.add(DioCacheManager(CacheConfig(baseUrl:'https://dark-dmzj.hloli.net')).interceptor);
     unCachedDio = Dio();
   }
 
