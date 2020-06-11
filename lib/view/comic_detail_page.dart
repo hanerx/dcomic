@@ -73,6 +73,8 @@ class _ComicDetailPage extends State<ComicDetailPage> {
       var uid = await dataBase.getUid();
       CustomHttp http = CustomHttp();
       http.addReadHistory(id, uid);
+      http.addReadHistory0(id, uid);
+      dataBase.insertUnread(id, DateTime.now().millisecondsSinceEpoch);
     }
   }
 
