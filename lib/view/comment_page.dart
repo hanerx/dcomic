@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterdmzj/component/LoadingTile.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
 
@@ -24,10 +25,7 @@ class _CommentPage extends State<CommentPage> {
   bool refreshState = true;
   bool canGo = true;
   List list = <Widget>[
-    ListTile(
-      leading: CircularProgressIndicator(),
-      title: Text('加载中...'),
-    )
+    LoadingTile()
   ];
   ScrollController _controller = ScrollController();
 
@@ -97,10 +95,7 @@ class _CommentPage extends State<CommentPage> {
         setState(() {
           refreshState = true;
           page++;
-          list.add(ListTile(
-            leading: CircularProgressIndicator(),
-            title: Text('加载中...'),
-          ));
+          list.add(LoadingTile());
         });
         getComment();
       }
@@ -129,10 +124,7 @@ class _CommentPage extends State<CommentPage> {
                   }
                   refreshState = true;
                   list = <Widget>[
-                    ListTile(
-                      leading: CircularProgressIndicator(),
-                      title: Text('加载中...'),
-                    )
+                    LoadingTile()
                   ];
                 });
                 getComment();

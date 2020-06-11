@@ -1,11 +1,9 @@
-import 'package:badges/badges.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterdmzj/component/LoadingRow.dart';
+import 'package:flutterdmzj/component/SubscribeCard.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
-import 'package:flutterdmzj/view/comic_detail_page.dart';
 
 class FavoritePage extends StatefulWidget {
   final String uid;
@@ -143,78 +141,6 @@ class _FavoritePage extends State<FavoritePage> {
           children: list,
         ),
       )),
-    );
-  }
-}
-
-class SubscribeCard extends StatelessWidget {
-  final String cover;
-  final String title;
-  final String subTitle;
-  final String comicId;
-  bool isUnread = false;
-
-  SubscribeCard(
-      this.cover, this.title, this.subTitle, this.comicId, this.isUnread);
-
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    return Expanded(
-      child: FlatButton(
-        padding: EdgeInsets.all(0),
-        child: Card(
-            child: Badge(
-          position: BadgePosition.topRight(top: -5, right: -5),
-          showBadge: isUnread,
-          animationType: BadgeAnimationType.scale,
-          shape: BadgeShape.square,
-          borderRadius: 3,
-          child: _Card(cover, title, subTitle),
-          badgeContent: Text(
-            'new',
-            style: TextStyle(color: Colors.white),
-          ),
-        )),
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return ComicDetailPage(comicId);
-          }));
-        },
-      ),
-    );
-  }
-}
-
-class _Card extends StatelessWidget {
-  final String cover;
-  final String title;
-  final String subTitle;
-
-  _Card(this.cover, this.title, this.subTitle);
-
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    return Column(
-      children: <Widget>[
-        CachedNetworkImage(
-          imageUrl: '$cover',
-          httpHeaders: {'referer': 'http://images.dmzj.com'},
-          progressIndicatorBuilder: (context, url, downloadProgress) =>
-              CircularProgressIndicator(value: downloadProgress.progress),
-          errorWidget: (context, url, error) => Icon(Icons.error),
-        ),
-        Text(
-          '$title',
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        Text(
-          '最近更新：$subTitle',
-          overflow: TextOverflow.ellipsis,
-        )
-      ],
     );
   }
 }

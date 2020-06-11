@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterdmzj/utils/static_language.dart';
 
 class LoadingRow extends StatelessWidget {
   @override
@@ -10,7 +11,7 @@ class LoadingRow extends StatelessWidget {
         Padding(padding: EdgeInsets.all(10), child: CircularProgressIndicator()),
         Expanded(
           child: Center(
-            child: Text('加载中...'),
+            child: Text(StaticLanguage.staticStrings['loadingRow.loading']),
           ),
         )
       ],

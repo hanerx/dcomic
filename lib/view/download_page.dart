@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+@Deprecated('未实装页面')
 class DownloadPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -8,7 +9,7 @@ class DownloadPage extends StatefulWidget {
     return _DownloadPage();
   }
 }
-
+@Deprecated('未实装页面')
 class _DownloadPage extends State<DownloadPage> {
   @override
   Widget build(BuildContext context) {

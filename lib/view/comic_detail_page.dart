@@ -8,7 +8,7 @@ import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:flutterdmzj/view/comment_page.dart';
 import 'package:flutterdmzj/view/login_page.dart';
 
-import 'ComicViewer.dart';
+import 'comic_viewer.dart';
 
 class ComicDetailPage extends StatefulWidget {
   String id = '';
