@@ -156,7 +156,7 @@ class _LoginPage extends State<LoginPage> {
                     Builder(
                       builder: (context) {
                         return RaisedButton(
-                          color: Colors.blue,
+
                           child: Text(
                             '登录',
                             style: TextStyle(color: Colors.white),
