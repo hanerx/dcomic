@@ -20,12 +20,22 @@ void main() async {
 class MainFrame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    debugPaintSizeEnabled = true;
+    debugPaintSizeEnabled = false;
     // TODO: implement build
     return new MaterialApp(
+        darkTheme: ThemeData(
+          brightness: Brightness.dark,
+            platform: TargetPlatform.iOS,
+          floatingActionButtonTheme:FloatingActionButtonThemeData(
+            backgroundColor: Colors.black,
+            foregroundColor: Colors.white
+          ),
+          buttonTheme: ButtonThemeData(
+            buttonColor: Colors.black
+          )
+        ),
         routes: {
           "history": (BuildContext context) => new HistoryPage(),
-          "download": (BuildContext context) => new DownloadPage(),
           "settings": (BuildContext context) => new SettingPage(),
           "login": (BuildContext context) => new LoginPage()
         },
@@ -34,6 +44,9 @@ class MainFrame extends StatelessWidget {
         showPerformanceOverlay: false,
         theme: ThemeData(
           platform: TargetPlatform.iOS,
+          buttonTheme: ButtonThemeData(
+            buttonColor: Colors.blue
+          )
         ),
         home: DefaultTabController(
           length: 4,

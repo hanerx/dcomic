@@ -637,6 +637,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.2.1"
+  yin_drag_sacle:
+    dependency: "direct main"
+    description:
+      name: yin_drag_sacle
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.0.2"
 sdks:
   dart: ">=2.7.0 <3.0.0"
   flutter: ">=1.12.13+hotfix.5 <2.0.0"

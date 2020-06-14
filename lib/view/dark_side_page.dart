@@ -99,6 +99,7 @@ class _DarkSidePage extends State<DarkSidePage> {
                   },
                 )
               : FlatButton(
+                  padding: EdgeInsets.all(0),
                   child: Text(
                     '黑暗面',
                     style: TextStyle(color: Colors.white),

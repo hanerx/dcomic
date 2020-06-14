@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutterdmzj/component/ViewPointChip.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
+import 'package:yin_drag_sacle/core/drag_scale_widget.dart';
 
 class ComicViewer extends StatefulWidget {
   final String comicId;
@@ -127,13 +128,17 @@ class _ComicViewer extends State<ComicViewer> {
             controller: _controller,
             headerSliverBuilder: _sliverBuilder,
             body: RefreshIndicator(
-              child: ListView.builder(
-                  padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: list.length,
-                  itemBuilder: (context, index) {
-                    return list[index];
-                  }),
+              child:DragScaleContainer(
+                doubleTapStillScale: false,
+                maxScale: 4,
+                child: ListView.builder(
+                    padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: list.length,
+                    itemBuilder: (context, index) {
+                      return list[index];
+                    }),
+              ),
               onRefresh: () async {
                 if (refreshState == false) {
                   var nextId = chapterList.indexOf(chapterId) + 1;
