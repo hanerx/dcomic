@@ -1,5 +1,7 @@
 # 大妈之家(?)第三方APP
 
+[![](https://img.shields.io/github/v/release/hanerx/flutter_dmzj)](https://github.com/hanerx/flutter_dmzj/releases/latest) [![](https://img.shields.io/github/downloads/hanerx/flutter_dmzj/total)](https://github.com/hanerx/flutter_dmzj/releases) ![](https://img.shields.io/github/release-date/hanerx/flutter_dmzj)
+
 这是一个基于flutter实现的简单的大妈之家的APP，所有接口均来自于官方的APP抓包和网上的一些分享贴。
 
 ## 免责声明
