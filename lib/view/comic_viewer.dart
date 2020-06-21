@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
@@ -7,7 +6,6 @@ import 'package:flutterdmzj/component/LoadingRow.dart';
 import 'package:flutterdmzj/component/ViewPointChip.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
-import 'package:yin_drag_sacle/core/drag_scale_widget.dart';
 
 class ComicViewer extends StatefulWidget {
   final String comicId;
@@ -34,13 +32,15 @@ class _ComicViewer extends State<ComicViewer> {
 //  ScrollController _controller = ScrollController();
   List viewPointList = <Widget>[];
   SwiperController _controller = SwiperController();
+
+//  StreamSubscription _volumeButtonSubscription;
   String previous;
   String next;
   String pageAt;
-  int index=1;
+  int index = 1;
 
-  bool hiddenAppbar=false;
-  bool direction=false;
+  bool hiddenAppbar = false;
+  bool direction = false;
 
   _ComicViewer(this.comicId, this.chapterId, this.chapterList);
 
@@ -60,21 +60,21 @@ class _ComicViewer extends State<ComicViewer> {
         var tempList = <Widget>[];
         title = response.data['title'];
         for (var item in response.data['page_url']) {
-          tempList.add(ComicPage(item, chapterId,response.data['title']));
+          tempList.add(ComicPage(item, chapterId, response.data['title']));
         }
         if (above) {
           list = tempList + list;
-          if(chapterList.indexOf(chapterId)<chapterList.length-1){
-            previous=chapterList[chapterList.indexOf(chapterId)+1];
-          }else{
-            next=null;
+          if (chapterList.indexOf(chapterId) < chapterList.length - 1) {
+            previous = chapterList[chapterList.indexOf(chapterId) + 1];
+          } else {
+            next = null;
           }
         } else {
           list += tempList;
-          if(chapterList.indexOf(chapterId)>0){
-            next=chapterList[chapterList.indexOf(chapterId)-1];
-          }else{
-            next=null;
+          if (chapterList.indexOf(chapterId) > 0) {
+            next = chapterList[chapterList.indexOf(chapterId) - 1];
+          } else {
+            next = null;
           }
         }
       });
@@ -113,13 +113,14 @@ class _ComicViewer extends State<ComicViewer> {
     dataBase.insertHistory(comicId, chapterId);
   }
 
-  getReadDirection() async{
-    DataBase dataBase=DataBase();
-    bool direction=await dataBase.getReadDirection();
+  getReadDirection() async {
+    DataBase dataBase = DataBase();
+    bool direction = await dataBase.getReadDirection();
     setState(() {
-      this.direction=direction;
+      this.direction = direction;
     });
   }
+
 
   @override
   void initState() {
@@ -127,19 +128,37 @@ class _ComicViewer extends State<ComicViewer> {
     super.initState();
     getReadDirection();
     setState(() {
-      if(chapterList.indexOf(chapterId)>0){
-        next=chapterList[chapterList.indexOf(chapterId)-1];
-      }else{
-        next=null;
+      if (chapterList.indexOf(chapterId) > 0) {
+        next = chapterList[chapterList.indexOf(chapterId) - 1];
+      } else {
+        next = null;
       }
-      if(chapterList.indexOf(chapterId)<chapterList.length-1){
-        previous=chapterList[chapterList.indexOf(chapterId)+1];
-      }else{
-        next=null;
+      if (chapterList.indexOf(chapterId) < chapterList.length - 1) {
+        previous = chapterList[chapterList.indexOf(chapterId) + 1];
+      } else {
+        next = null;
       }
-      pageAt=chapterId;
+      pageAt = chapterId;
     });
     getComic(comicId, chapterId, false);
+//    _volumeButtonSubscription =
+//        volumeButtonEvents.listen((VolumeButtonEvent event) {
+//          if(event==VolumeButtonEvent.VOLUME_DOWN){
+//            setState(() {
+//              if(index<=list.length+1){
+//                index++;
+//              }
+//            });
+//          }else if(event==VolumeButtonEvent.VOLUME_UP){
+//            setState(() {
+//              if(index>=0){
+//                index--;
+//              }
+//            });
+//          }
+//      // do something
+//      // event is either VolumeButtonEvent.VOLUME_UP or VolumeButtonEvent.VOLUME_DOWN
+//    });
 //    _controller.addListener(() {
 //      if (_controller.position.pixels == _controller.position.maxScrollExtent &&
 //          !refreshState) {
@@ -156,27 +175,36 @@ class _ComicViewer extends State<ComicViewer> {
 //    });
   }
 
+//  @override
+//  void dispose() {
+//    super.dispose();
+//    // be sure to cancel on dispose
+//    _volumeButtonSubscription?.cancel();
+//  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: hiddenAppbar?null:AppBar(
-          title: Text('$title'),
-          actions: <Widget>[
-            FlatButton(
-              child: Icon(
-                Icons.chat,
-                color: Colors.white,
-              ),
-              onPressed: () async {
-                await getViewPoint();
-                showModalBottomSheet(
-                    context: context,
-                    builder: (context) {
-                      return Container(
-                        height: 400,
-                        padding: EdgeInsets.all(0),
-                        child: SingleChildScrollView(
-                            child: Column(
+      appBar: hiddenAppbar
+          ? null
+          : AppBar(
+              title: Text('$title'),
+              actions: <Widget>[
+                FlatButton(
+                  child: Icon(
+                    Icons.chat,
+                    color: Colors.white,
+                  ),
+                  onPressed: () async {
+                    await getViewPoint();
+                    showModalBottomSheet(
+                        context: context,
+                        builder: (context) {
+                          return Container(
+                            height: 400,
+                            padding: EdgeInsets.all(0),
+                            child: SingleChildScrollView(
+                                child: Column(
                               children: <Widget>[
                                 Padding(
                                   padding: EdgeInsets.all(5),
@@ -188,67 +216,71 @@ class _ComicViewer extends State<ComicViewer> {
                                 ),
                               ],
                             )),
-                      );
-                    });
-              },
-            )
-          ],
-        ),
-        body: Swiper(
-          scrollDirection:direction?Axis.vertical:Axis.horizontal,
-          controller: _controller,
-          index: index,
-          loop: false,
-          itemCount: list.length + 2,
-          itemBuilder: (context, index) {
-            if (index > 0 && index < list.length + 1) {
-              return list[index - 1];
-            }else if(index==list.length+1&&(next==null||next=='')){
-              return Center(child: Text('到头了！'),);
-            }else if(index==0&&(previous==null||previous=='')){
-              return Center(child: Text('到头了！'),);
-            } else {
-              return LoadingRow();
-            }
-          },
-          onIndexChanged: (index) {
-            if (refreshState == false && index == 0) {
-              if(previous==null||previous==''){
-                return;
-              }
-              setState(() {
-                refreshState = true;
-              });
-              getComic(comicId, previous, true);
+                          );
+                        });
+                  },
+                )
+              ],
+            ),
+      body: Swiper(
+        scrollDirection: direction ? Axis.vertical : Axis.horizontal,
+        controller: _controller,
+        index: index,
+        loop: false,
+        itemCount: list.length + 2,
+        itemBuilder: (context, index) {
+          if (index > 0 && index < list.length + 1) {
+            return list[index - 1];
+          } else if (index == list.length + 1 && (next == null || next == '')) {
+            return Center(
+              child: Text('到头了！'),
+            );
+          } else if (index == 0 && (previous == null || previous == '')) {
+            return Center(
+              child: Text('到头了！'),
+            );
+          } else {
+            return LoadingRow();
+          }
+        },
+        onIndexChanged: (index) {
+          if (refreshState == false && index == 0) {
+            if (previous == null || previous == '') {
               return;
             }
-            if(refreshState == false && index == list.length+1){
-              if(next==null||next==''){
-                return;
-              }
-              setState(() {
-                refreshState = true;
-              });
-              getComic(comicId, next, false);
+            setState(() {
+              refreshState = true;
+            });
+            getComic(comicId, previous, true);
+            return;
+          }
+          if (refreshState == false && index == list.length + 1) {
+            if (next == null || next == '') {
               return;
             }
-            if (index > 0 && index < list.length + 1) {
-              setState(() {
-                pageAt = list[index - 1].chapterId;
-                title=list[index-1].title;
-                this.index=index;
-              });
-            }
             setState(() {
-              hiddenAppbar=true;
+              refreshState = true;
             });
-          },
-          onTap: (index){
+            getComic(comicId, next, false);
+            return;
+          }
+          if (index > 0 && index < list.length + 1) {
             setState(() {
-              hiddenAppbar=!hiddenAppbar;
+              pageAt = list[index - 1].chapterId;
+              title = list[index - 1].title;
+              this.index = index;
             });
-          },
-        ),
+          }
+          setState(() {
+            hiddenAppbar = true;
+          });
+        },
+        onTap: (index) {
+          setState(() {
+            hiddenAppbar = !hiddenAppbar;
+          });
+        },
+      ),
     );
   }
 
