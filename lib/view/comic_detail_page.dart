@@ -129,6 +129,7 @@ class _ComicDetailPage extends State<ComicDetailPage> {
               if (last.first.length > 0 &&
                   chapter['chapter_id'].toString() == last.first[0]['value']) {
                 lastChapterId = chapter['chapter_id'].toString();
+                lastChapterList = chapterIdList;
                 chapterList.add(Container(
                   width: 120,
                   margin: EdgeInsets.fromLTRB(3, 0, 3, 0),
