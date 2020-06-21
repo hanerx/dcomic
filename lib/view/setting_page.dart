@@ -47,6 +47,7 @@ class _SettingPage extends State<SettingPage> {
     // TODO: implement initState
     super.initState();
     getVersionInfo();
+    getReadDirection();
   }
 
   _openWeb(String url) async {
