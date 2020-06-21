@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/utils/static_language.dart';
+import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -18,6 +19,7 @@ class SettingPage extends StatefulWidget {
 class _SettingPage extends State<SettingPage> {
   String version = '';
   String appName = '';
+  bool direction=false;
 
   getVersionInfo() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
@@ -25,6 +27,19 @@ class _SettingPage extends State<SettingPage> {
       version = packageInfo.version;
       appName = packageInfo.appName;
     });
+  }
+
+  getReadDirection() async{
+    DataBase dataBase=DataBase();
+    bool direction=await dataBase.getReadDirection();
+    setState(() {
+      this.direction=direction;
+    });
+  }
+
+  setReadDirection(){
+    DataBase dataBase=DataBase();
+    dataBase.setReadDirection(direction);
   }
 
   @override
@@ -54,6 +69,17 @@ class _SettingPage extends State<SettingPage> {
         body: ListView(
           children: <Widget>[
             ListTile(
+              title: Text('阅读方向'),
+              subtitle: Text('${direction?'垂直方向':'横向方向'}'),
+              onTap: (){
+                setState(() {
+                  direction=!direction;
+                });
+                setReadDirection();
+              },
+            ),
+            Divider(),
+            ListTile(
               title: Text('${StaticLanguage.staticStrings['settingPage.deleteDatabaseTitle']}'),
               subtitle:
                   Text('${StaticLanguage.staticStrings['settingPage.deleteDatabaseSubTitle']}'),
@@ -73,9 +99,8 @@ class _SettingPage extends State<SettingPage> {
                     CustomHttp http = CustomHttp();
                     var response = await http.checkUpdate();
                     if (response.statusCode == 200 && version != '') {
-                      var lastVersion = response.data['tag_name'].substring(1);
-                      bool update = version.compareTo(lastVersion) < 0;
-                      print('$lastVersion:$update');
+                      String lastVersion = response.data['tag_name'].substring(1);
+                      bool update = ToolMethods.checkVersion(version, lastVersion);
                       if (update) {
                         showDialog(
                             context: context,

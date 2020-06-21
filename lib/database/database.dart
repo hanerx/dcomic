@@ -135,4 +135,27 @@ class DataBase {
     }
     return false;
   }
+
+  setReadDirection(bool d) async {
+    await initDataBase();
+    var batch = _database.batch();
+    batch.delete("configures", where: "key='read_direction'");
+    batch.insert("configures", {'key': 'read_direction', 'value': d ? '1' : '0'});
+    await batch.commit();
+  }
+
+  getReadDirection() async{
+    await initDataBase();
+    var batch = _database.batch();
+    batch.query("configures", where: "key='read_direction'");
+    var result = await batch.commit();
+    try {
+      if (result.first[0]['value'] == '1') {
+        return true;
+      }
+    } catch (e) {
+      print(e);
+    }
+    return false;
+  }
 }

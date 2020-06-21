@@ -20,7 +20,7 @@ void main() async {
 class MainFrame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    debugPaintSizeEnabled = false;
+    debugPaintSizeEnabled = true;
     // TODO: implement build
     return new MaterialApp(
         darkTheme: ThemeData(

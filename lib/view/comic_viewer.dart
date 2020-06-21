@@ -1,6 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:flutterdmzj/component/ComicPage.dart';
+import 'package:flutterdmzj/component/LoadingRow.dart';
 import 'package:flutterdmzj/component/ViewPointChip.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
@@ -27,15 +30,23 @@ class _ComicViewer extends State<ComicViewer> {
   List list = <Widget>[];
   final List chapterList;
   bool refreshState = false;
-  ScrollController _controller = ScrollController();
+
+//  ScrollController _controller = ScrollController();
   List viewPointList = <Widget>[];
+  SwiperController _controller = SwiperController();
+  String previous;
+  String next;
+  String pageAt;
+  int index=1;
+
+  bool hiddenAppbar=false;
+  bool direction=false;
 
   _ComicViewer(this.comicId, this.chapterId, this.chapterList);
 
   getComic(comicId, chapterId, above) async {
     CustomHttp http = CustomHttp();
     var response = await http.getComic(comicId, chapterId);
-    getViewPoint();
     if (response.statusCode == 200 && mounted) {
       if (response.data == '章节不存在') {
         setState(() {
@@ -49,32 +60,34 @@ class _ComicViewer extends State<ComicViewer> {
         var tempList = <Widget>[];
         title = response.data['title'];
         for (var item in response.data['page_url']) {
-          tempList.add(CachedNetworkImage(
-            imageUrl: item,
-            httpHeaders: {'referer': 'http://images.dmzj.com'},
-            progressIndicatorBuilder: (context, url, downloadProgress) =>
-                Center(
-                    child: CircularProgressIndicator(
-                        value: downloadProgress.progress)),
-            errorWidget: (context, url, error) => Icon(Icons.error),
-          ));
+          tempList.add(ComicPage(item, chapterId,response.data['title']));
         }
         if (above) {
           list = tempList + list;
+          if(chapterList.indexOf(chapterId)<chapterList.length-1){
+            previous=chapterList[chapterList.indexOf(chapterId)+1];
+          }else{
+            next=null;
+          }
         } else {
           list += tempList;
+          if(chapterList.indexOf(chapterId)>0){
+            next=chapterList[chapterList.indexOf(chapterId)-1];
+          }else{
+            next=null;
+          }
         }
       });
       setState(() {
         refreshState = false;
       });
-      addReadHistory();
+      addReadHistory(chapterId);
     }
   }
 
   getViewPoint() async {
     CustomHttp http = CustomHttp();
-    var response = await http.getViewPoint(comicId, chapterId);
+    var response = await http.getViewPoint(comicId, pageAt);
     if (response.statusCode == 200 && mounted) {
       setState(() {
         viewPointList.clear();
@@ -89,7 +102,7 @@ class _ComicViewer extends State<ComicViewer> {
     }
   }
 
-  addReadHistory() async {
+  addReadHistory(chapterId) async {
     DataBase dataBase = DataBase();
     bool loginState = await dataBase.getLoginState();
     if (loginState) {
@@ -100,62 +113,146 @@ class _ComicViewer extends State<ComicViewer> {
     dataBase.insertHistory(comicId, chapterId);
   }
 
+  getReadDirection() async{
+    DataBase dataBase=DataBase();
+    bool direction=await dataBase.getReadDirection();
+    setState(() {
+      this.direction=direction;
+    });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getComic(comicId, chapterId, false);
-    _controller.addListener(() {
-      if (_controller.position.pixels == _controller.position.maxScrollExtent &&
-          !refreshState) {
-        var nextId = chapterList.indexOf(chapterId) - 1;
-        if (nextId < 0) {
-          return;
-        }
-        setState(() {
-          chapterId = chapterList[nextId];
-          refreshState = true;
-        });
-        getComic(comicId, chapterList[nextId], false);
+    getReadDirection();
+    setState(() {
+      if(chapterList.indexOf(chapterId)>0){
+        next=chapterList[chapterList.indexOf(chapterId)-1];
+      }else{
+        next=null;
       }
+      if(chapterList.indexOf(chapterId)<chapterList.length-1){
+        previous=chapterList[chapterList.indexOf(chapterId)+1];
+      }else{
+        next=null;
+      }
+      pageAt=chapterId;
     });
+    getComic(comicId, chapterId, false);
+//    _controller.addListener(() {
+//      if (_controller.position.pixels == _controller.position.maxScrollExtent &&
+//          !refreshState) {
+//        var nextId = chapterList.indexOf(chapterId) - 1;
+//        if (nextId < 0) {
+//          return;
+//        }
+//        setState(() {
+//          chapterId = chapterList[nextId];
+//          refreshState = true;
+//        });
+//        getComic(comicId, chapterList[nextId], false);
+//      }
+//    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: NestedScrollView(
-            controller: _controller,
-            headerSliverBuilder: _sliverBuilder,
-            body: RefreshIndicator(
-              child:DragScaleContainer(
-                doubleTapStillScale: false,
-                maxScale: 4,
-                child: ListView.builder(
-                    padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: list.length,
-                    itemBuilder: (context, index) {
-                      return list[index];
-                    }),
+        appBar: hiddenAppbar?null:AppBar(
+          title: Text('$title'),
+          actions: <Widget>[
+            FlatButton(
+              child: Icon(
+                Icons.chat,
+                color: Colors.white,
               ),
-              onRefresh: () async {
-                if (refreshState == false) {
-                  var nextId = chapterList.indexOf(chapterId) + 1;
-                  if (nextId >= chapterList.length) {
-                    return;
-                  }
-                  setState(() {
-                    chapterId = chapterList[nextId];
-                    refreshState = true;
-                  });
-                  await getComic(comicId, chapterList[nextId], true);
-                  return;
-                }
+              onPressed: () async {
+                await getViewPoint();
+                showModalBottomSheet(
+                    context: context,
+                    builder: (context) {
+                      return Container(
+                        height: 400,
+                        padding: EdgeInsets.all(0),
+                        child: SingleChildScrollView(
+                            child: Column(
+                              children: <Widget>[
+                                Padding(
+                                  padding: EdgeInsets.all(5),
+                                  child: Text('吐槽'),
+                                ),
+                                Divider(),
+                                Wrap(
+                                  children: viewPointList,
+                                ),
+                              ],
+                            )),
+                      );
+                    });
               },
-            )));
+            )
+          ],
+        ),
+        body: Swiper(
+          scrollDirection:direction?Axis.vertical:Axis.horizontal,
+          controller: _controller,
+          index: index,
+          loop: false,
+          itemCount: list.length + 2,
+          itemBuilder: (context, index) {
+            if (index > 0 && index < list.length + 1) {
+              return list[index - 1];
+            }else if(index==list.length+1&&(next==null||next=='')){
+              return Center(child: Text('到头了！'),);
+            }else if(index==0&&(previous==null||previous=='')){
+              return Center(child: Text('到头了！'),);
+            } else {
+              return LoadingRow();
+            }
+          },
+          onIndexChanged: (index) {
+            if (refreshState == false && index == 0) {
+              if(previous==null||previous==''){
+                return;
+              }
+              setState(() {
+                refreshState = true;
+              });
+              getComic(comicId, previous, true);
+              return;
+            }
+            if(refreshState == false && index == list.length+1){
+              if(next==null||next==''){
+                return;
+              }
+              setState(() {
+                refreshState = true;
+              });
+              getComic(comicId, next, false);
+              return;
+            }
+            if (index > 0 && index < list.length + 1) {
+              setState(() {
+                pageAt = list[index - 1].chapterId;
+                title=list[index-1].title;
+                this.index=index;
+              });
+            }
+            setState(() {
+              hiddenAppbar=true;
+            });
+          },
+          onTap: (index){
+            setState(() {
+              hiddenAppbar=!hiddenAppbar;
+            });
+          },
+        ),
+    );
   }
 
+  @Deprecated("用更好的AppBar替代了")
   List<Widget> _sliverBuilder(BuildContext context, bool innerBoxIsScrolled) {
     return <Widget>[
       SliverAppBar(
@@ -168,7 +265,8 @@ class _ComicViewer extends State<ComicViewer> {
               Icons.chat,
               color: Colors.white,
             ),
-            onPressed: () {
+            onPressed: () async {
+              await getViewPoint();
               showModalBottomSheet(
                   context: context,
                   builder: (context) {
