@@ -31,7 +31,7 @@ class _ViewPointChip extends State<ViewPointChip> {
         child: Chip(
             label: Text('$content'),
             avatar: CircleAvatar(
-              child: Text('$num'),
+              child: Text('${num%100}'),
             )),
         padding: EdgeInsets.all(0),
         onPressed: () {},

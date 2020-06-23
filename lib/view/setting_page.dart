@@ -20,6 +20,21 @@ class _SettingPage extends State<SettingPage> {
   String version = '';
   String appName = '';
   bool direction=false;
+  bool cover=false;
+
+  Future<bool> getCoverType() async {
+    DataBase dataBase = DataBase();
+    bool cover = await dataBase.getCoverType();
+    setState(() {
+      this.cover = cover;
+    });
+    return true;
+  }
+
+  setCoverType() {
+    DataBase dataBase = DataBase();
+    dataBase.setCoverType(cover);
+  }
 
   getVersionInfo() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
@@ -48,6 +63,7 @@ class _SettingPage extends State<SettingPage> {
     super.initState();
     getVersionInfo();
     getReadDirection();
+    getCoverType();
   }
 
   _openWeb(String url) async {
@@ -77,6 +93,16 @@ class _SettingPage extends State<SettingPage> {
                   direction=!direction;
                 });
                 setReadDirection();
+              },
+            ),
+            ListTile(
+              title: Text('图片显示'),
+              subtitle: Text('${cover ? '等比放大并裁剪' : '填充不裁剪'}'),
+              onTap: () {
+                setState(() {
+                  cover = !cover;
+                });
+                setCoverType();
               },
             ),
             Divider(),
