@@ -2,6 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutterdmzj/component/Drawer.dart';
+import 'package:flutterdmzj/database/database.dart';
+import 'package:flutterdmzj/utils/static_language.dart';
+import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:flutterdmzj/view/category_page.dart';
 import 'package:flutterdmzj/view/dark_side_page.dart';
 import 'package:flutterdmzj/view/download_page.dart';
@@ -12,6 +15,10 @@ import 'package:flutterdmzj/view/login_page.dart';
 import 'package:flutterdmzj/view/ranking_page.dart';
 import 'package:flutterdmzj/view/search_page.dart';
 import 'package:flutterdmzj/view/setting_page.dart';
+import 'package:markdown_widget/markdown_widget.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import 'http/http.dart';
 
 void main() async {
   runApp(MainFrame());
@@ -48,40 +55,124 @@ class MainFrame extends StatelessWidget {
             buttonColor: Colors.blue
           )
         ),
-        home: DefaultTabController(
-          length: 4,
-          child: new Scaffold(
-              appBar: new AppBar(
-                title: Text('DMZJ'),
-                actions: <Widget>[SearchButton()],
-                bottom: TabBar(
-                  tabs: <Widget>[
-                    new Tab(
-                      text: '首页',
-                    ),
-                    new Tab(
-                      text: '分类',
-                    ),
-                    new Tab(
-                      text: '排行',
-                    ),
-                    new Tab(
-                      text: '最新',
-                    )
-                  ],
-                ),
-              ),
-              body: TabBarView(
-                children: <Widget>[
-                  new HomePage(),
-                  CategoryPage(),
-                  RankingPage(),
-                  LatestUpdatePage(),
-                ],
-              ),
-              drawer: CustomDrawer()),
-        ));
+        home: MainPage());
   }
+}
+
+class MainPage extends StatefulWidget{
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return _MainPage();
+  }
+
+}
+
+class _MainPage extends State<MainPage>{
+
+  String version;
+
+  _openWeb(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text('${StaticLanguage.staticStrings['settingPage.canNotOpenWeb']}'),
+      ));
+    }
+  }
+
+  checkUpdate()async{
+    DataBase dataBase=DataBase();
+    version=await dataBase.getVersion();
+    CustomHttp http = CustomHttp();
+    var response = await http.checkUpdate();
+    if (response.statusCode == 200) {
+      String lastVersion = response.data['tag_name'].substring(1);
+      if(version==''){
+        dataBase.setVersion(lastVersion);
+        return;
+      }
+      bool update = ToolMethods.checkVersion(version, lastVersion);
+      if (update) {
+        dataBase.setVersion(lastVersion);
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title:
+                Text('版本点亮：${response.data['tag_name']}'),
+                content: Container(
+                  width: 300,
+                  height: 300,
+                  child: MarkdownWidget(data: response.data['body']),
+                ),
+                actions: <Widget>[
+                  FlatButton(
+                    child: Text('更新'),
+                    onPressed: () {
+                      _openWeb('${response.data['html_url']}');
+                    },
+                  ),
+                  FlatButton(
+                    child: Text('取消'),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  )
+                ],
+              );
+            });
+      }
+      print('check update success');
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    checkUpdate();
+  }
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return DefaultTabController(
+      length: 4,
+      child: new Scaffold(
+          appBar: new AppBar(
+            title: Text('DMZJ'),
+            actions: <Widget>[SearchButton()],
+            bottom: TabBar(
+              tabs: <Widget>[
+                new Tab(
+                  text: '首页',
+                ),
+                new Tab(
+                  text: '分类',
+                ),
+                new Tab(
+                  text: '排行',
+                ),
+                new Tab(
+                  text: '最新',
+                )
+              ],
+            ),
+          ),
+          body: TabBarView(
+            children: <Widget>[
+              new HomePage(),
+              CategoryPage(),
+              RankingPage(),
+              LatestUpdatePage(),
+            ],
+          ),
+          drawer: CustomDrawer()),
+    );
+  }
+
+
 }
 
 class SearchButton extends StatefulWidget {

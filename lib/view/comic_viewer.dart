@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:flutterdmzj/component/ComicPage.dart';
+import 'package:flutterdmzj/component/EndPage.dart';
 import 'package:flutterdmzj/component/LoadingRow.dart';
 import 'package:flutterdmzj/component/ViewPointChip.dart';
 import 'package:flutterdmzj/database/database.dart';
@@ -31,9 +32,8 @@ class _ComicViewer extends State<ComicViewer> {
 
 //  ScrollController _controller = ScrollController();
   List viewPointList = <Widget>[];
-  SwiperController _controller = SwiperController();
+//  SwiperController _controller = SwiperController();
 
-//  StreamSubscription _volumeButtonSubscription;
   String previous;
   String next;
   String pageAt;
@@ -41,10 +41,12 @@ class _ComicViewer extends State<ComicViewer> {
 
   bool hiddenAppbar = false;
   bool direction = false;
+  bool cover = false;
+
 
   _ComicViewer(this.comicId, this.chapterId, this.chapterList);
 
-  getComic(comicId, chapterId, above) async {
+   getComic(comicId, chapterId, above) async {
     CustomHttp http = CustomHttp();
     var response = await http.getComic(comicId, chapterId);
     if (response.statusCode == 200 && mounted) {
@@ -60,7 +62,8 @@ class _ComicViewer extends State<ComicViewer> {
         var tempList = <Widget>[];
         title = response.data['title'];
         for (var item in response.data['page_url']) {
-          tempList.add(ComicPage(item, chapterId, response.data['title']));
+          tempList
+              .add(ComicPage(item, chapterId, response.data['title'], cover));
         }
         if (above) {
           list = tempList + list;
@@ -121,6 +124,24 @@ class _ComicViewer extends State<ComicViewer> {
     });
   }
 
+  setReadDirection() {
+    DataBase dataBase = DataBase();
+    dataBase.setReadDirection(direction);
+  }
+
+  Future<bool> getCoverType() async {
+    DataBase dataBase = DataBase();
+    bool cover = await dataBase.getCoverType();
+    setState(() {
+      this.cover = cover;
+    });
+    return true;
+  }
+
+  setCoverType() {
+    DataBase dataBase = DataBase();
+    dataBase.setCoverType(cover);
+  }
 
   @override
   void initState() {
@@ -140,25 +161,11 @@ class _ComicViewer extends State<ComicViewer> {
       }
       pageAt = chapterId;
     });
-    getComic(comicId, chapterId, false);
-//    _volumeButtonSubscription =
-//        volumeButtonEvents.listen((VolumeButtonEvent event) {
-//          if(event==VolumeButtonEvent.VOLUME_DOWN){
-//            setState(() {
-//              if(index<=list.length+1){
-//                index++;
-//              }
-//            });
-//          }else if(event==VolumeButtonEvent.VOLUME_UP){
-//            setState(() {
-//              if(index>=0){
-//                index--;
-//              }
-//            });
-//          }
-//      // do something
-//      // event is either VolumeButtonEvent.VOLUME_UP or VolumeButtonEvent.VOLUME_DOWN
-//    });
+    getCoverType().then((b) {
+      getComic(comicId, chapterId, false);
+    });
+    // do something
+    // event is either VolumeButtonEvent.VOLUME_UP or VolumeButtonEvent.VOLUME_DOWN
 //    _controller.addListener(() {
 //      if (_controller.position.pixels == _controller.position.maxScrollExtent &&
 //          !refreshState) {
@@ -185,6 +192,44 @@ class _ComicViewer extends State<ComicViewer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: null,
+      endDrawer: Drawer(
+        child: ListView(
+          children: <Widget>[
+            UserAccountsDrawerHeader(
+              currentAccountPicture: CircleAvatar(
+                child: Icon(Icons.settings),
+              ),
+              accountName: Text('阅读设置'),
+              accountEmail: Text('其实你跑去设置里该也是一样的'),
+            ),
+            ListTile(
+              title: Text('阅读方向'),
+              subtitle: Text('${direction ? '垂直方向' : '横向方向'}'),
+              onTap: () {
+                setState(() {
+                  direction = !direction;
+                });
+                setReadDirection();
+              },
+            ),
+            ListTile(
+              title: Text('图片显示'),
+              subtitle: Text('${cover ? '等比放大并裁剪' : '填充不裁剪'}'),
+              onTap: () {
+                setState(() {
+                  cover = !cover;
+                  list.forEach((item) {
+                    item.cover = cover;
+                  });
+                });
+                setCoverType();
+              },
+            ),
+            Divider(),
+          ],
+        ),
+      ),
       appBar: hiddenAppbar
           ? null
           : AppBar(
@@ -224,7 +269,6 @@ class _ComicViewer extends State<ComicViewer> {
             ),
       body: Swiper(
         scrollDirection: direction ? Axis.vertical : Axis.horizontal,
-        controller: _controller,
         index: index,
         loop: false,
         itemCount: list.length + 2,
@@ -232,13 +276,9 @@ class _ComicViewer extends State<ComicViewer> {
           if (index > 0 && index < list.length + 1) {
             return list[index - 1];
           } else if (index == list.length + 1 && (next == null || next == '')) {
-            return Center(
-              child: Text('到头了！'),
-            );
+            return EndPage();
           } else if (index == 0 && (previous == null || previous == '')) {
-            return Center(
-              child: Text('到头了！'),
-            );
+            return EndPage();
           } else {
             return LoadingRow();
           }
@@ -268,6 +308,10 @@ class _ComicViewer extends State<ComicViewer> {
             setState(() {
               pageAt = list[index - 1].chapterId;
               title = list[index - 1].title;
+              this.index = index;
+            });
+          }else{
+            setState(() {
               this.index = index;
             });
           }

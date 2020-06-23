@@ -17,8 +17,7 @@ class DataBase {
       await db.execute(
           "CREATE TABLE unread (id INTEGER PRIMARY KEY, comicId TEXT, timestamp INTEGER)");
     }, onUpgrade: (Database db, int version, int x) async {
-      await db.execute(
-          "CREATE TABLE unread (id INTEGER PRIMARY KEY, comicId TEXT, timestamp INTEGER)");
+
     });
   }
 
@@ -154,8 +153,55 @@ class DataBase {
         return true;
       }
     } catch (e) {
+      print('!');
       print(e);
     }
     return false;
+  }
+
+  setCoverType(bool d) async {
+    await initDataBase();
+    var batch = _database.batch();
+    batch.delete("configures", where: "key='cover_type'");
+    batch.insert("configures", {'key': 'cover_type', 'value': d ? '1' : '0'});
+    await batch.commit();
+  }
+
+  getCoverType() async{
+    await initDataBase();
+    var batch = _database.batch();
+    batch.query("configures", where: "key='cover_type'");
+    var result = await batch.commit();
+    try {
+      if (result.first[0]['value'] == '1') {
+        return true;
+      }
+    } catch (e) {
+      print('!');
+      print(e);
+    }
+    return false;
+  }
+
+  setVersion(String version) async{
+    await initDataBase();
+    var batch = _database.batch();
+    batch.delete("configures", where: "key='latest_version'");
+    batch.insert("configures", {'key': 'latest_version', 'value': version});
+    await batch.commit();
+  }
+
+  getVersion() async{
+    await initDataBase();
+    var batch = _database.batch();
+    batch.query("configures", where: "key='latest_version'");
+    var result = await batch.commit();
+    try {
+      return result.first[0]['value'];
+    } catch (e) {
+      print('!');
+      print(e);
+    }
+    return '';
   }
 }

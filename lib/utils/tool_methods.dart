@@ -1,3 +1,5 @@
+
+
 class ToolMethods {
   static String formatTimestamp(int timestamp) {
     var dateTime = DateTime.fromMicrosecondsSinceEpoch(timestamp * 1000000);
@@ -18,4 +20,5 @@ class ToolMethods {
     }
     return false;
   }
+
 }
