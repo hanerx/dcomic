@@ -204,4 +204,50 @@ class DataBase {
     }
     return '';
   }
+
+  setClickToRead(bool click) async{
+    await initDataBase();
+    var batch = _database.batch();
+    batch.delete("configures", where: "key='read_click'");
+    batch.insert("configures", {'key': 'read_click', 'value': click ? '1' : '0'});
+    await batch.commit();
+  }
+
+  getClickToRead() async{
+    await initDataBase();
+    var batch = _database.batch();
+    batch.query("configures", where: "key='read_click'");
+    var result = await batch.commit();
+    try {
+      if (result.first[0]['value'] == '1') {
+        return true;
+      }
+    } catch (e) {
+      print('!');
+      print(e);
+    }
+    return false;
+  }
+
+  setControlSize(double size) async{
+    await initDataBase();
+    var batch = _database.batch();
+    batch.delete("configures", where: "key='control_size'");
+    batch.insert("configures", {'key': 'control_size', 'value': size.toString()});
+    await batch.commit();
+  }
+
+  getControlSize() async{
+    await initDataBase();
+    var batch = _database.batch();
+    batch.query("configures", where: "key='control_size'");
+    var result = await batch.commit();
+    try {
+      return double.parse(result.first[0]['value']);
+    } catch (e) {
+      print('!');
+      print(e);
+    }
+    return 100.0.toDouble();
+  }
 }

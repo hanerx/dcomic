@@ -1,6 +1,6 @@
 class StaticLanguage {
   static Map<String, String> staticStrings = {
-    'drawer.email': 'dmzj',
+    'drawer.email': '大妈之家第三方APP',
     'drawer.pleaseLogin': '请先登录',
     '': '缺省值',
     'favorite': '我的订阅',

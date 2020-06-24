@@ -24,12 +24,12 @@
 
 ## 下载
 
-https://github.com/hanerx/flutter_dmzj/releases
+[https://github.com/hanerx/flutter_dmzj/releases](https://github.com/hanerx/flutter_dmzj/releases)
 
 ## 开发
 
 ```
-flutter get
+flutter pub get
 flutter build apk
 ```
 
