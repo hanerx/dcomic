@@ -16,6 +16,7 @@ import 'package:flutterdmzj/view/ranking_page.dart';
 import 'package:flutterdmzj/view/search_page.dart';
 import 'package:flutterdmzj/view/setting_page.dart';
 import 'package:markdown_widget/markdown_widget.dart';
+import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'http/http.dart';
@@ -27,6 +28,7 @@ void main() async {
 class MainFrame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+//    debugPaintSizeEnabled = true;
     debugPaintSizeEnabled = false;
     // TODO: implement build
     return new MaterialApp(
@@ -72,6 +74,15 @@ class _MainPage extends State<MainPage>{
 
   String version;
 
+  getVersionInfo() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    setState(() {
+      if(ToolMethods.checkVersion(version, packageInfo.version)){
+        version=packageInfo.version;
+      }
+    });
+  }
+
   _openWeb(String url) async {
     if (await canLaunch(url)) {
       await launch(url);
@@ -85,6 +96,7 @@ class _MainPage extends State<MainPage>{
   checkUpdate()async{
     DataBase dataBase=DataBase();
     version=await dataBase.getVersion();
+    await getVersionInfo();
     CustomHttp http = CustomHttp();
     var response = await http.checkUpdate();
     if (response.statusCode == 200) {
@@ -141,7 +153,7 @@ class _MainPage extends State<MainPage>{
       length: 4,
       child: new Scaffold(
           appBar: new AppBar(
-            title: Text('DMZJ'),
+            title: Text('大妈之家(?)'),
             actions: <Widget>[SearchButton()],
             bottom: TabBar(
               tabs: <Widget>[

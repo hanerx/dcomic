@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:flutterdmzj/component/ComicPage.dart';
+import 'package:flutterdmzj/component/CustomSwiperControl.dart';
 import 'package:flutterdmzj/component/EndPage.dart';
 import 'package:flutterdmzj/component/LoadingRow.dart';
 import 'package:flutterdmzj/component/ViewPointChip.dart';
@@ -32,16 +33,19 @@ class _ComicViewer extends State<ComicViewer> {
 
 //  ScrollController _controller = ScrollController();
   List viewPointList = <Widget>[];
-//  SwiperController _controller = SwiperController();
+  SwiperController _controller = SwiperController();
 
   String previous;
   String next;
   String pageAt;
-  int index = 1;
+  int index = 0;
+  double controlSize=100;
 
   bool hiddenAppbar = false;
   bool direction = false;
   bool cover = false;
+  bool click=false;
+  bool debug=false;
 
 
   _ComicViewer(this.comicId, this.chapterId, this.chapterList);
@@ -67,6 +71,9 @@ class _ComicViewer extends State<ComicViewer> {
         }
         if (above) {
           list = tempList + list;
+          _controller.next(animation: false).then((onValue){
+            _controller.previous(animation: true);
+          });
           if (chapterList.indexOf(chapterId) < chapterList.length - 1) {
             previous = chapterList[chapterList.indexOf(chapterId) + 1];
           } else {
@@ -143,10 +150,39 @@ class _ComicViewer extends State<ComicViewer> {
     dataBase.setCoverType(cover);
   }
 
+  Future<bool> getClickRead() async {
+    DataBase dataBase = DataBase();
+    bool click = await dataBase.getClickToRead();
+    setState(() {
+      this.click = click;
+    });
+    return true;
+  }
+
+  setClickRead() {
+    DataBase dataBase = DataBase();
+    dataBase.setClickToRead(click);
+  }
+
+  getControlSize() async{
+    DataBase dataBase = DataBase();
+    double size = await dataBase.getControlSize();
+    setState(() {
+      this.controlSize=size;
+    });
+  }
+
+  setControlSize(){
+    DataBase dataBase = DataBase();
+    dataBase.setControlSize(controlSize);
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    getClickRead();
+    getControlSize();
     getReadDirection();
     setState(() {
       if (chapterList.indexOf(chapterId) > 0) {
@@ -162,8 +198,18 @@ class _ComicViewer extends State<ComicViewer> {
       pageAt = chapterId;
     });
     getCoverType().then((b) {
-      getComic(comicId, chapterId, false);
+      getComic(comicId, chapterId, false).then((v){
+        setState(() {
+          refreshState=true;
+        });
+        _controller.next().then((onValue){
+          setState(() {
+            refreshState=false;
+          });
+        });
+      });
     });
+
     // do something
     // event is either VolumeButtonEvent.VOLUME_UP or VolumeButtonEvent.VOLUME_DOWN
 //    _controller.addListener(() {
@@ -227,6 +273,45 @@ class _ComicViewer extends State<ComicViewer> {
               },
             ),
             Divider(),
+            ListTile(
+              title: Text('点击翻页'),
+              trailing: Switch(
+                value: click,
+                onChanged: (value){
+                  setState(() {
+                    click=value;
+                  });
+                  setClickRead();
+                },
+              ),
+            ),
+            ListTile(
+              title: Text('判定区域大小 ${controlSize.toInt()}'),
+              subtitle: Slider(
+                value: controlSize,
+                min: 50,
+                max: 200,
+                onChangeEnd: (value){
+                  setState(() {
+                    controlSize=value;
+                  });
+                  setControlSize();
+                },
+                onChanged: (double value) {},
+              ),
+            ),
+            ListTile(
+              title: Text('调试模式'),
+              subtitle: Text('调试模式可以看到点击翻页区域的大小，用于调整翻页区域'),
+              trailing: Switch(
+                value: debug,
+                onChanged: (value){
+                  setState(() {
+                    debug=value;
+                  });
+                },
+              ),
+            ),
           ],
         ),
       ),
@@ -267,64 +352,68 @@ class _ComicViewer extends State<ComicViewer> {
                 )
               ],
             ),
-      body: Swiper(
-        scrollDirection: direction ? Axis.vertical : Axis.horizontal,
-        index: index,
-        loop: false,
-        itemCount: list.length + 2,
-        itemBuilder: (context, index) {
-          if (index > 0 && index < list.length + 1) {
-            return list[index - 1];
-          } else if (index == list.length + 1 && (next == null || next == '')) {
-            return EndPage();
-          } else if (index == 0 && (previous == null || previous == '')) {
-            return EndPage();
-          } else {
-            return LoadingRow();
-          }
-        },
-        onIndexChanged: (index) {
-          if (refreshState == false && index == 0) {
-            if (previous == null || previous == '') {
+      body: Container(
+        child: Swiper(
+          controller: _controller,
+          control: click?CustomSwiperControl(size: controlSize,debug: debug):null,
+          scrollDirection: direction ? Axis.vertical : Axis.horizontal,
+          index: index,
+          loop: false,
+          itemCount: list.length + 2,
+          itemBuilder: (context, index) {
+            if (index > 0 && index < list.length + 1) {
+              return list[index - 1];
+            } else if (index == list.length + 1 && (next == null || next == '')) {
+              return EndPage();
+            } else if (index == 0 && (previous == null || previous == '')) {
+              return EndPage();
+            } else {
+              return LoadingRow();
+            }
+          },
+          onIndexChanged: (index) {
+            if (refreshState == false && index == 0) {
+              if (previous == null || previous == '') {
+                return;
+              }
+              setState(() {
+                refreshState = true;
+              });
+              getComic(comicId, previous, true);
               return;
             }
-            setState(() {
-              refreshState = true;
-            });
-            getComic(comicId, previous, true);
-            return;
-          }
-          if (refreshState == false && index == list.length + 1) {
-            if (next == null || next == '') {
+            if (refreshState == false && index == list.length + 1) {
+              if (next == null || next == '') {
+                return;
+              }
+              setState(() {
+                refreshState = true;
+              });
+              getComic(comicId, next, false);
               return;
             }
+            if (index > 0 && index < list.length + 1) {
+              setState(() {
+                pageAt = list[index - 1].chapterId;
+                title = list[index - 1].title;
+                this.index = index;
+              });
+            }else{
+              setState(() {
+                this.index = index;
+              });
+            }
             setState(() {
-              refreshState = true;
+              hiddenAppbar = true;
             });
-            getComic(comicId, next, false);
-            return;
-          }
-          if (index > 0 && index < list.length + 1) {
+          },
+          onTap: (index) {
             setState(() {
-              pageAt = list[index - 1].chapterId;
-              title = list[index - 1].title;
-              this.index = index;
+              hiddenAppbar = !hiddenAppbar;
             });
-          }else{
-            setState(() {
-              this.index = index;
-            });
-          }
-          setState(() {
-            hiddenAppbar = true;
-          });
-        },
-        onTap: (index) {
-          setState(() {
-            hiddenAppbar = !hiddenAppbar;
-          });
-        },
-      ),
+          },
+        ),
+      )
     );
   }
 

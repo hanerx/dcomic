@@ -71,6 +71,7 @@ class CustomDrawerState extends State<CustomDrawer> {
     // TODO: implement build
     return new Drawer(
       child: ListView(
+        padding: EdgeInsets.zero,
         children: <Widget>[
           UserAccountsDrawerHeader(
             accountName: Text('$nickname'),
