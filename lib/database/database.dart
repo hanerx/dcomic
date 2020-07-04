@@ -48,6 +48,7 @@ class DataBase {
     await batch.commit();
   }
 
+
   getHistory(String comicId) async {
     await initDataBase();
     var batch = _database.batch();
@@ -249,5 +250,27 @@ class DataBase {
       print(e);
     }
     return 100.0.toDouble();
+  }
+
+  setViewFraction(double viewFraction)async{
+    await initDataBase();
+    var batch = _database.batch();
+    batch.delete("configures", where: "key='view_fraction'");
+    batch.insert("configures", {'key': 'view_fraction', 'value': viewFraction.toString()});
+    await batch.commit();
+  }
+
+  getViewFraction() async{
+    await initDataBase();
+    var batch = _database.batch();
+    batch.query("configures", where: "key='view_fraction'");
+    var result = await batch.commit();
+    try {
+      return double.parse(result.first[0]['value']);
+    } catch (e) {
+      print('!');
+      print(e);
+    }
+    return 0.9.toDouble();
   }
 }

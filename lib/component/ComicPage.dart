@@ -7,10 +7,11 @@ class ComicPage extends StatefulWidget{
   final String url;
   final String chapterId;
   final String title;
+  final int index;
   bool cover;
 
 
-  ComicPage(this.url, this.chapterId,this.title,this.cover);
+  ComicPage(this.url, this.chapterId,this.title,this.cover,this.index);
 
   @override
   State<StatefulWidget> createState() {
@@ -37,7 +38,8 @@ class _ComicPage extends State<ComicPage>{
     return DragScaleContainer(
         doubleTapStillScale: false,
         maxScale: 4,
-        child: CachedNetworkImage(
+        child:IntrinsicHeight(
+            child: CachedNetworkImage(
           fit: cover?BoxFit.cover:BoxFit.contain,
           imageUrl: url,
           httpHeaders: {'referer': 'http://images.dmzj.com'},
@@ -46,6 +48,6 @@ class _ComicPage extends State<ComicPage>{
                   child: CircularProgressIndicator(
                       value: downloadProgress.progress)),
           errorWidget: (context, url, error) => Icon(Icons.error),
-        ));
+        )));
   }
 }
