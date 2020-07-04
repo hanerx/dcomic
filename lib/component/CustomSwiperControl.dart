@@ -28,9 +28,15 @@ class CustomSwiperControl extends SwiperPlugin {
     return new GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
-        if (previous) {
+        bool next=true;
+        bool prev=true;
+        if (!config.loop){
+          next = config.activeIndex < config.itemCount - 1;
+          prev = config.activeIndex > 0;
+        }
+        if (previous&&prev) {
           config.controller.previous(animation: true);
-        } else {
+        } else if(next) {
           config.controller.next(animation: true);
         }
       },
@@ -49,10 +55,7 @@ class CustomSwiperControl extends SwiperPlugin {
   Widget build(BuildContext context, SwiperPluginConfig config) {
 
 
-    if (!config.loop){
-      bool next = config.activeIndex < config.itemCount - 1;
-      bool prev = config.activeIndex > 0;
-    }
+
 
     Widget child;
     if (config.scrollDirection == Axis.horizontal) {
@@ -76,9 +79,7 @@ class CustomSwiperControl extends SwiperPlugin {
     }
 
     return new Container(
-      height: double.infinity,
       child: child,
-      width: double.infinity,
     );
   }
 }

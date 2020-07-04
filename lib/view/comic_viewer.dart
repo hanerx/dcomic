@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:flutterdmzj/component/ComicPage.dart';
 import 'package:flutterdmzj/component/CustomSwiperControl.dart';
@@ -8,6 +9,7 @@ import 'package:flutterdmzj/component/LoadingRow.dart';
 import 'package:flutterdmzj/component/ViewPointChip.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
+import 'package:flutter_page_indicator/flutter_page_indicator.dart';
 
 class ComicViewer extends StatefulWidget {
   final String comicId;
@@ -19,6 +21,7 @@ class ComicViewer extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
+    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
     return _ComicViewer(comicId, chapterId, chapterList);
   }
 }
@@ -40,6 +43,7 @@ class _ComicViewer extends State<ComicViewer> {
   String pageAt;
   int index = 0;
   double controlSize=100;
+  double viewFraction=0.9;
 
   bool hiddenAppbar = false;
   bool direction = false;
@@ -65,9 +69,11 @@ class _ComicViewer extends State<ComicViewer> {
       setState(() {
         var tempList = <Widget>[];
         title = response.data['title'];
+        int pageIndex=0;
         for (var item in response.data['page_url']) {
           tempList
-              .add(ComicPage(item, chapterId, response.data['title'], cover));
+              .add(ComicPage(item, chapterId, response.data['title'], cover,pageIndex));
+          pageIndex++;
         }
         if (above) {
           list = tempList + list;
@@ -81,6 +87,7 @@ class _ComicViewer extends State<ComicViewer> {
           }
         } else {
           list += tempList;
+          _controller.next();
           if (chapterList.indexOf(chapterId) > 0) {
             next = chapterList[chapterList.indexOf(chapterId) - 1];
           } else {
@@ -177,12 +184,26 @@ class _ComicViewer extends State<ComicViewer> {
     dataBase.setControlSize(controlSize);
   }
 
+  setViewFraction(){
+     DataBase dataBase=DataBase();
+     dataBase.setViewFraction(viewFraction);
+  }
+
+  getViewFraction() async{
+     DataBase dataBase=DataBase();
+     double viewFraction=await dataBase.getViewFraction();
+     setState(() {
+       this.viewFraction=viewFraction;
+     });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getClickRead();
     getControlSize();
+    getViewFraction();
     getReadDirection();
     setState(() {
       if (chapterList.indexOf(chapterId) > 0) {
@@ -210,6 +231,9 @@ class _ComicViewer extends State<ComicViewer> {
       });
     });
 
+    setHistoryWithIndex(){
+    }
+
     // do something
     // event is either VolumeButtonEvent.VOLUME_UP or VolumeButtonEvent.VOLUME_DOWN
 //    _controller.addListener(() {
@@ -234,6 +258,12 @@ class _ComicViewer extends State<ComicViewer> {
 //    // be sure to cancel on dispose
 //    _volumeButtonSubscription?.cancel();
 //  }
+  @override
+  void deactivate() {
+    // TODO: implement deactivate
+    super.deactivate();
+    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top,SystemUiOverlay.bottom]);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -241,13 +271,14 @@ class _ComicViewer extends State<ComicViewer> {
       backgroundColor: null,
       endDrawer: Drawer(
         child: ListView(
+          padding: EdgeInsets.zero,
           children: <Widget>[
             UserAccountsDrawerHeader(
               currentAccountPicture: CircleAvatar(
                 child: Icon(Icons.settings),
               ),
               accountName: Text('阅读设置'),
-              accountEmail: Text('其实你跑去设置里该也是一样的'),
+              accountEmail: Text('以后阅读的设置基本都放在这个地方了'),
             ),
             ListTile(
               title: Text('阅读方向'),
@@ -272,6 +303,7 @@ class _ComicViewer extends State<ComicViewer> {
                 setCoverType();
               },
             ),
+
             Divider(),
             ListTile(
               title: Text('点击翻页'),
@@ -292,12 +324,14 @@ class _ComicViewer extends State<ComicViewer> {
                 min: 50,
                 max: 200,
                 onChangeEnd: (value){
+                  setControlSize();
+                },
+                onChanged: (double value) {
                   setState(() {
                     controlSize=value;
                   });
-                  setControlSize();
+
                 },
-                onChanged: (double value) {},
               ),
             ),
             ListTile(
@@ -309,6 +343,23 @@ class _ComicViewer extends State<ComicViewer> {
                   setState(() {
                     debug=value;
                   });
+                },
+              ),
+            ),
+            Divider(),
+            ListTile(
+              title: Text('垂直视点（用于调整垂直显示时两章间隔）'),
+              subtitle: Slider(
+                min: 0.1,
+                max: 1.0,
+                value: viewFraction,
+                onChanged: (value){
+                  setState(() {
+                    viewFraction=value;
+                  });
+                },
+                onChangeEnd: (value){
+                  setViewFraction();
                 },
               ),
             ),
@@ -354,6 +405,8 @@ class _ComicViewer extends State<ComicViewer> {
             ),
       body: Container(
         child: Swiper(
+          indicatorLayout: PageIndicatorLayout.SLIDE,
+          viewportFraction: direction?viewFraction:1.0,
           controller: _controller,
           control: click?CustomSwiperControl(size: controlSize,debug: debug):null,
           scrollDirection: direction ? Axis.vertical : Axis.horizontal,
@@ -406,11 +459,17 @@ class _ComicViewer extends State<ComicViewer> {
             setState(() {
               hiddenAppbar = true;
             });
+            SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
           },
           onTap: (index) {
             setState(() {
               hiddenAppbar = !hiddenAppbar;
             });
+            if(!hiddenAppbar){
+              SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top,SystemUiOverlay.bottom]);
+            }else{
+              SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+            }
           },
         ),
       )

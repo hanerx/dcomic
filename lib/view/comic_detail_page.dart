@@ -2,6 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_parallax/flutter_parallax.dart';
+import 'package:flutterdmzj/component/Authors.dart';
+import 'package:flutterdmzj/component/TypeTags.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
@@ -26,8 +28,8 @@ class _ComicDetailPage extends State<ComicDetailPage> {
   String title = '加载中';
   String id = '';
   String cover = 'http://manhua.dmzj.com/css/img/mh_logo_dmzj.png?t=20131122';
-  String author = '加载中';
-  String types = '加载中';
+  List author =[];
+  List types = [];
   int hotNum = 0;
   int subscribeNum = 0;
   String description = '加载中...';
@@ -89,21 +91,20 @@ class _ComicDetailPage extends State<ComicDetailPage> {
           title = response.data['title'];
           cover = response.data['cover'];
           List temp = <String>[];
-          response.data['authors'].forEach((value) {
-            temp.add(value['tag_name']);
-          });
-          author = temp.join('/');
-          temp.clear();
-          response.data['types'].forEach((value) {
-            temp.add(value['tag_name']);
-          });
-          types = temp.join('/');
+//          response.data['authors'].forEach((value) {
+//            temp.add(value['tag_name']);
+//          });
+          author = response.data['authors'];
+//          response.data['types'].forEach((value) {
+//            temp.add(value['tag_name']);
+//          });
+          types = response.data['types'];
           hotNum = response.data['hot_num'];
           subscribeNum = response.data['subscribe_num'];
           description = response.data['description'];
           updateDate =
               ToolMethods.formatTimestamp(response.data['last_updatetime']);
-          temp.clear();
+//          temp.clear();
           response.data['status'].forEach((value) {
             temp.add(value['tag_name']);
           });
@@ -351,8 +352,8 @@ class DetailCard extends StatelessWidget {
   final String title;
   final String updateDate;
   final String status;
-  final String author;
-  final String types;
+  final List author;
+  final List types;
   final int hotNum;
   final int subscribeNum;
   final String description;
@@ -403,10 +404,7 @@ class DetailCard extends StatelessWidget {
                           color: Colors.grey,
                         ),
                         Expanded(
-                          child: Text(
-                            author,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                          child: Authors(author),
                         )
                       ],
                     ),
@@ -419,10 +417,7 @@ class DetailCard extends StatelessWidget {
                           color: Colors.grey,
                         ),
                         Expanded(
-                          child: Text(
-                            types,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                          child: TypeTags(types)
                         )
                       ],
                     ),
@@ -438,7 +433,9 @@ class DetailCard extends StatelessWidget {
                           Icons.whatshot,
                           color: Colors.grey,
                         ),
-                        Text('$hotNum')
+                        Expanded(
+                          child: Center(child: Text('$hotNum'),),
+                        )
                       ],
                     ),
                   ),
@@ -449,7 +446,7 @@ class DetailCard extends StatelessWidget {
                           Icons.favorite,
                           color: Colors.grey,
                         ),
-                        Text('$subscribeNum')
+                        Expanded(child: Center(child: Text('$subscribeNum'),),)
                       ],
                     ),
                   )
