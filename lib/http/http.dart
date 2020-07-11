@@ -57,8 +57,9 @@ class CustomHttp {
   }
 
   Future<Response<T>> getComicDetail<T>(String comicId) async {
+    Options options=await this.setHeader();
     return dio.get(baseUrl + '/comic/comic_$comicId.json?$queryOptions',
-        options: buildCacheOptions(Duration(hours: 1)));
+        options: buildCacheOptions(Duration(hours: 1),options: options));
   }
 
   Future<Response<T>> getComic<T>(String comicId, String chapterId) async {
@@ -128,12 +129,14 @@ class CustomHttp {
   }
 
   Future<Response<T>> addReadHistory<T>(String comicId, String uid) async {
+    Options options=await this.setHeader();
     return unCachedDio.get(
-        '$baseUrl/subscribe/read?obj_ids=$comicId&uid=$uid&type=mh?obj_ids=$comicId&uid=$uid&type=mh&channel=Android&version=2.7.017');
+        '$baseUrl/subscribe/read?obj_ids=$comicId&uid=$uid&type=mh?obj_ids=$comicId&uid=$uid&type=mh&channel=Android&version=2.7.017',options: options);
   }
 
   Future<Response<T>> addReadHistory0<T>(String comicId, String uid) async {
-    return unCachedDio.get('$baseUrl/subscribe/0/$uid/$comicId?$queryOptions');
+    Options options=await this.setHeader();
+    return unCachedDio.get('$baseUrl/subscribe/0/$uid/$comicId?$queryOptions',options: options);
   }
 
   Future<Response<T>> getReadHistory<T>(String uid, int page) {

@@ -28,7 +28,7 @@ class _SearchPage extends State<SearchPage> {
   ];
   List deepTabs=<Tab>[
     Tab(text: '普通搜索',),
-    Tab(text: '影藏搜索',)
+    Tab(text: '隐藏搜索',)
   ];
 
 

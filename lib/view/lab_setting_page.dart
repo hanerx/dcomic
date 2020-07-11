@@ -71,8 +71,8 @@ class _LabSettingPage extends State<LabSettingPage>{
       body: ListView(
         children: <Widget>[
           ListTile(
-            title: Text('影藏漫画搜索功能'),
-            subtitle: Text('通过调用奇葩的接口实现把一部分影藏的漫画显示出来，该功能会讲搜索变成两部分，一部分使用普通搜索，另一部分使用影藏搜索'),
+            title: Text('隐藏漫画搜索功能'),
+            subtitle: Text('通过调用奇葩的接口实现把一部分隐藏的漫画显示出来，该功能会讲搜索变成两部分，一部分使用普通搜索，另一部分使用隐藏搜索'),
             trailing: Switch(
               onChanged: (val){
                 setState(() {
