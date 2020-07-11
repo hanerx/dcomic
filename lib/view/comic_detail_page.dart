@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_parallax/flutter_parallax.dart';
 import 'package:flutterdmzj/component/Authors.dart';
+import 'package:flutterdmzj/component/CustomDrawer.dart';
 import 'package:flutterdmzj/component/TypeTags.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
@@ -142,6 +143,8 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                       style: TextStyle(color: Colors.blue),
                     ),
                     onPressed: () {
+                      DataBase dataBase=DataBase();
+                      dataBase.addReadHistory(id, title, cover, chapter['chapter_title'], chapter['chapter_id'].toString(), DateTime.now().millisecondsSinceEpoch~/1000);
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
                         return ComicViewer(id, chapter['chapter_id'].toString(),
@@ -161,6 +164,8 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                       overflow: TextOverflow.ellipsis,
                     ),
                     onPressed: () {
+                      DataBase dataBase=DataBase();
+                      dataBase.addReadHistory(id, title, cover, chapter['chapter_title'], chapter['chapter_id'].toString(), DateTime.now().millisecondsSinceEpoch~/1000);
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
                         return ComicViewer(id, chapter['chapter_id'].toString(),
@@ -290,15 +295,19 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                 );
               },
             ),
-            IconButton(
-              icon: Icon(Icons.forum),
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return CommentPage(id);
-                }));
-              },
-            )
+//            IconButton(
+//              icon: Icon(Icons.forum),
+//              onPressed: () {
+//                Navigator.push(context, MaterialPageRoute(builder: (context) {
+//                  return CommentPage(id);
+//                }));
+//              },
+//            )
           ],
+        ),
+        endDrawer: CustomDrawer(
+          child: CommentPage(id),
+          widthPercent: 0.9,
         ),
         floatingActionButton: Builder(
           builder: (context) {

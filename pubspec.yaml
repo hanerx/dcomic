@@ -11,7 +11,7 @@ description: A 3rd-party dmzj application powered by flutter
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.11+11
+version: 1.1.1+12
 
 environment:
   sdk: ">=2.2.2 <3.0.0"
@@ -33,6 +33,9 @@ dependencies:
   badges: ^1.1.1
   yin_drag_sacle: ^0.0.2
   flutter_swiper: ^1.1.6
+  event_bus: ^1.1.1
+  flutter_localizations:
+    sdk: flutter
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
