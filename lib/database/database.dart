@@ -6,7 +6,7 @@ class DataBase {
   DataBase();
 
   initDataBase() async {
-    _database = await openDatabase("dmzj_2.db", version: 5,
+    _database = await openDatabase("dmzj_2.db", version: 10,
         onCreate: (Database db, int version) async {
       await db.execute(
           "CREATE TABLE cookies (id INTEGER PRIMARY KEY, key TEXT, value TEXT)");
@@ -16,8 +16,12 @@ class DataBase {
           "CREATE TABLE history (id INTEGER PRIMARY KEY, name TEXT, value TEXT)");
       await db.execute(
           "CREATE TABLE unread (id INTEGER PRIMARY KEY, comicId TEXT, timestamp INTEGER)");
+      await db.execute(
+          "CREATE TABLE local_history (id INTEGER PRIMARY KEY, comicId TEXT, timestamp INTEGER,cover TEXT,title TEXT,last_chapter TEXT,last_chapter_id TEXT)");
     }, onUpgrade: (Database db, int version, int x) async {
-
+      print('update');
+      await db.execute(
+              "CREATE TABLE local_history (id INTEGER PRIMARY KEY, comicId TEXT, timestamp INTEGER,cover TEXT,title TEXT,last_chapter TEXT,last_chapter_id TEXT)");
     });
   }
 
@@ -45,7 +49,23 @@ class DataBase {
     var batch = _database.batch();
     batch.delete("history", where: "name='$comicId'");
     batch.insert("history", {"name": comicId, "value": chapterId});
+
     await batch.commit();
+  }
+
+  addReadHistory(String comicId,String title,String cover,String lastChapter,String lastChapterId,int timestamp)async{
+    await initDataBase();
+    var batch = _database.batch();
+    batch.delete('local_history',where: "comicId='$comicId'");
+    batch.insert("local_history", {'comicId':comicId,'title':title,'cover':cover,'last_chapter':lastChapter,'last_chapter_id':lastChapterId,'timestamp':timestamp});
+    await batch.commit();
+  }
+
+  getReadHistory() async{
+    await initDataBase();
+    var batch = _database.batch();
+    batch.query("local_history");
+    return batch.commit();
   }
 
 
@@ -273,4 +293,100 @@ class DataBase {
     }
     return 0.9.toDouble();
   }
+
+  setLabState(bool state) async{
+    await initDataBase();
+    var batch = _database.batch();
+    batch.delete("configures", where: "key='lab_state'");
+    batch.insert("configures", {'key': 'lab_state', 'value': state ? '1' : '0'});
+    await batch.commit();
+  }
+
+  getLabState() async{
+    await initDataBase();
+    var batch = _database.batch();
+    batch.query("configures", where: "key='lab_state'");
+    var result = await batch.commit();
+    try {
+      if (result.first[0]['value'] == '1') {
+        return true;
+      }
+    } catch (e) {
+      print('!');
+      print(e);
+    }
+    return false;
+  }
+
+  setDeepSearch(bool state) async{
+    await initDataBase();
+    var batch = _database.batch();
+    batch.delete("configures", where: "key='deep_search'");
+    batch.insert("configures", {'key': 'deep_search', 'value': state ? '1' : '0'});
+    await batch.commit();
+  }
+
+  getDeepSearch() async{
+    await initDataBase();
+    var batch = _database.batch();
+    batch.query("configures", where: "key='deep_search'");
+    var result = await batch.commit();
+    try {
+      if (result.first[0]['value'] == '1') {
+        return true;
+      }
+    } catch (e) {
+      print('!');
+      print(e);
+    }
+    return false;
+  }
+
+  setDarkSide(bool state) async{
+    await initDataBase();
+    var batch = _database.batch();
+    batch.delete("configures", where: "key='dark_side'");
+    batch.insert("configures", {'key': 'dark_side', 'value': state ? '1' : '0'});
+    await batch.commit();
+  }
+
+  getDarkSide() async{
+    await initDataBase();
+    var batch = _database.batch();
+    batch.query("configures", where: "key='dark_side'");
+    var result = await batch.commit();
+    try {
+      if (result.first[0]['value'] == '1') {
+        return true;
+      }
+    } catch (e) {
+      print('!');
+      print(e);
+    }
+    return false;
+  }
+
+
+  setDarkMode(int mode)async{
+    await initDataBase();
+    var batch = _database.batch();
+    batch.delete("configures", where: "key='dark_mode'");
+    batch.insert("configures", {'key': 'dark_mode', 'value': mode.toString()});
+    await batch.commit();
+  }
+
+  Future<int> getDarkMode() async{
+    await initDataBase();
+    var batch = _database.batch();
+    batch.query("configures", where: "key='dark_mode'");
+    var result = await batch.commit();
+    try {
+      return int.parse(result.first[0]['value']);
+    } catch (e) {
+      print('!');
+      print(e);
+    }
+    return 0;
+  }
+
 }

@@ -1,9 +1,13 @@
+import 'package:event_bus/event_bus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterdmzj/database/database.dart';
+import 'package:flutterdmzj/event/CustomEventBus.dart';
+import 'package:flutterdmzj/event/ThemeChangeEvent.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/utils/static_language.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
+import 'package:flutterdmzj/view/lab_setting_page.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -21,6 +25,13 @@ class _SettingPage extends State<SettingPage> {
   String appName = '';
   bool direction=false;
   bool cover=false;
+  bool labState=false;
+  int darkState=0;
+  static const List darkMode=[
+    '跟随系统',
+    '亮色',
+    '夜间'
+  ];
 
   Future<bool> getCoverType() async {
     DataBase dataBase = DataBase();
@@ -57,6 +68,28 @@ class _SettingPage extends State<SettingPage> {
     dataBase.setReadDirection(direction);
   }
 
+  getLabState() async{
+    DataBase dataBase=DataBase();
+    bool state=await dataBase.getLabState();
+    setState(() {
+      labState=state;
+    });
+  }
+
+  getDarkMode()async{
+    DataBase dataBase=DataBase();
+    int state=await dataBase.getDarkMode();
+    setState(() {
+      darkState=state;
+    });
+  }
+
+  setDarkMode(context)async{
+    DataBase dataBase=DataBase();
+    dataBase.setDarkMode(darkState);
+    eventBus.fire(ThemeChangeEvent(darkState));
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -64,6 +97,8 @@ class _SettingPage extends State<SettingPage> {
     getVersionInfo();
     getReadDirection();
     getCoverType();
+    getLabState();
+    getDarkMode();
   }
 
   _openWeb(String url) async {
@@ -105,6 +140,22 @@ class _SettingPage extends State<SettingPage> {
                 setCoverType();
               },
             ),
+            ListTile(
+              title: Text('夜间模式(需要重启应用)'),
+              subtitle: Text('当前设定:${darkMode[darkState]}'),
+              onTap: (){
+                if(darkState<darkMode.length-1){
+                  setState(() {
+                    darkState++;
+                  });
+                }else{
+                  setState(() {
+                    darkState=0;
+                  });
+                }
+                setDarkMode(context);
+              },
+            ),
             Divider(),
             ListTile(
               title: Text('${StaticLanguage.staticStrings['settingPage.deleteDatabaseTitle']}'),
@@ -114,6 +165,13 @@ class _SettingPage extends State<SettingPage> {
                 DataBase dataBase = DataBase();
                 dataBase.resetDataBase();
                 Navigator.of(context).pop();
+              },
+            ),
+            ListTile(
+              title: Text('清除所有请求缓存'),
+              subtitle: Text('该操作将会把dio http cache的托管的缓存全部清除，危险操作'),
+              onTap: (){
+                CustomHttp().clearCache();
               },
             ),
             Divider(),
@@ -286,6 +344,17 @@ class _SettingPage extends State<SettingPage> {
                         ],
                       );
                     });
+              },
+            ),
+            Divider(),
+            ListTile(
+              enabled: labState,
+              title: Text(labState?'实验功能':'占位符'),
+              subtitle: Text(labState?'恭喜你发现了彩蛋，这里是平时不会放在外面的彩蛋功能开关的地方':'想不到要拿来干啥，先占位'),
+              onTap: (){
+                Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                  return LabSettingPage();
+                }));
               },
             ),
             Divider(),

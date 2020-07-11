@@ -259,10 +259,11 @@ class _ComicViewer extends State<ComicViewer> {
 //    _volumeButtonSubscription?.cancel();
 //  }
   @override
-  void deactivate() {
+  void deactivate() async{
     // TODO: implement deactivate
     super.deactivate();
     SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top,SystemUiOverlay.bottom]);
+    await addReadHistory(pageAt);
   }
 
   @override
