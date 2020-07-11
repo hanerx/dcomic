@@ -107,6 +107,7 @@ class _CommentPage extends State<CommentPage> {
     // TODO: implement build
     return Scaffold(
       appBar: AppBar(
+        leading: Container(),
         title: Text('评论'),
         actions: <Widget>[
           FlatButton(

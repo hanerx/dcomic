@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutterdmzj/component/Drawer.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/utils/static_language.dart';
@@ -18,20 +19,82 @@ import 'package:flutterdmzj/view/setting_page.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:event_bus/event_bus.dart';
 
+import 'event/ThemeChangeEvent.dart';
 import 'http/http.dart';
 
 void main() async {
-  runApp(MainFrame());
+  runApp(App());
 }
 
-class MainFrame extends StatelessWidget {
+class App extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
-//    debugPaintSizeEnabled = true;
+    // TODO: implement build
+    return MainFrame();
+  }
+
+}
+
+class MainFrame extends StatefulWidget{
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return _MainFrame();
+  }
+}
+
+class _MainFrame extends State<MainFrame> {
+  static const List darkMode=[
+    ThemeMode.system,
+    ThemeMode.light,
+    ThemeMode.dark
+  ];
+  int darkState=0;
+  EventBus eventBus = EventBus();
+
+  getDarkState()async{
+    DataBase dataBase=DataBase();
+    int mode=await dataBase.getDarkMode();
+    setState(() {
+      darkState=mode;
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getDarkState();
+    registerEvent();
+  }
+  registerEvent() {
+    eventBus.on<ThemeChangeEvent>().listen((onData){
+      setState(() {
+        darkState=onData.mode;
+      });
+    });
+  }
+
+  @override
+  void deactivate() {
+    super.deactivate();
+    var bool = ModalRoute.of(context).isCurrent;
+    if (bool) {
+      Future.delayed(Duration(milliseconds: 200)).then((e) {
+        getDarkState();
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    debugPaintSizeEnabled = true;
     debugPaintSizeEnabled = false;
     // TODO: implement build
     return new MaterialApp(
+        themeMode: darkMode[darkState],
         darkTheme: ThemeData(
           brightness: Brightness.dark,
             platform: TargetPlatform.iOS,
@@ -48,6 +111,14 @@ class MainFrame extends StatelessWidget {
           "settings": (BuildContext context) => new SettingPage(),
           "login": (BuildContext context) => new LoginPage()
         },
+        supportedLocales: [                                   //此处
+          const Locale('zh','CH'),
+          const Locale('en','US'),
+        ],
+        localizationsDelegates: [                             //此处
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+        ],
         color: Colors.grey[400],
         showSemanticsDebugger: false,
         showPerformanceOverlay: false,
@@ -59,6 +130,8 @@ class MainFrame extends StatelessWidget {
         ),
         home: MainPage());
   }
+
+
 }
 
 class MainPage extends StatefulWidget{
@@ -222,10 +295,13 @@ class _SearchButton extends State<SearchButton> {
                     child: Text('我们耕耘黑暗，却守护光明'),
                     onPressed: () {
                       if (_count > 10) {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) {
-                          return DarkSidePage();
-                        }));
+//                        Navigator.push(context,
+//                            MaterialPageRoute(builder: (context) {
+//                          return DarkSidePage();
+//                        }));
+                      Navigator.of(context).pop();
+                      DataBase dataBase=DataBase();
+                      dataBase.setLabState(true);
                       } else {
                         setState(() {
                           _count++;
