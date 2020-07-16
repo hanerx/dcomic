@@ -389,4 +389,29 @@ class DataBase {
     return 0;
   }
 
+
+  setHorizontalDirection(bool direction)async{
+    await initDataBase();
+    var batch = _database.batch();
+    batch.delete("configures", where: "key='horizontal_direction'");
+    batch.insert("configures", {'key': 'horizontal_direction', 'value': direction ? '1' : '0'});
+    await batch.commit();
+  }
+
+  Future<bool> getHorizontalDirection() async{
+    await initDataBase();
+    var batch = _database.batch();
+    batch.query("configures", where: "key='horizontal_direction'");
+    var result = await batch.commit();
+    try {
+      if (result.first[0]['value'] == '1') {
+        return true;
+      }
+    } catch (e) {
+      print('!');
+      print(e);
+    }
+    return false;
+  }
+
 }

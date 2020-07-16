@@ -77,6 +77,7 @@ class _ComicDetailPage extends State<ComicDetailPage> {
       CustomHttp http = CustomHttp();
       http.addReadHistory(id, uid);
       http.addReadHistory0(id, uid);
+      http.addReadHistory1(id);
       dataBase.insertUnread(id, DateTime.now().millisecondsSinceEpoch);
     }
   }
@@ -327,8 +328,7 @@ class _ComicDetailPage extends State<ComicDetailPage> {
             );
           },
         ),
-        body: Scrollbar(
-          child: SingleChildScrollView(
+        body: SingleChildScrollView(
             child: new Column(
               children: <Widget>[
                 Row(
@@ -353,7 +353,7 @@ class _ComicDetailPage extends State<ComicDetailPage> {
               ],
             ),
           ),
-        ));
+        );
   }
 }
 

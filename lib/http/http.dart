@@ -139,6 +139,13 @@ class CustomHttp {
     return unCachedDio.get('$baseUrl/subscribe/0/$uid/$comicId?$queryOptions',options: options);
   }
 
+  Future<Response<T>> addReadHistory1<T>(String subId)async{
+    Options options=await this.setHeader();
+    FormData formData =
+    FormData.fromMap({'subid':int.parse(subId)});
+    return unCachedDio.post('https://i.dmzj.com/ajax/update/read',options: options,data: formData);
+  }
+
   Future<Response<T>> getReadHistory<T>(String uid, int page) {
     return dio.get(
         "https://interface.dmzj.com/api/getReInfo/comic/$uid/$page?$queryOptions",
