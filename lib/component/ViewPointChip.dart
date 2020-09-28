@@ -6,7 +6,7 @@ class ViewPointChip extends StatefulWidget {
   final String id;
   final int num;
 
-  ViewPointChip(this.content, this.id, this.num);
+  ViewPointChip({this.content, this.id, this.num});
 
   @override
   State<StatefulWidget> createState() {

@@ -1,0 +1,168 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_swiper/flutter_swiper.dart';
+
+import 'Common.dart';
+
+class HorizontalPageView extends StatefulWidget {
+  final IndexedWidgetBuilder builder;
+  final BoolCallback onTop;
+  final BoolCallback onEnd;
+  final OnPageChangeCallback onPageChange;
+  final OnPageChangeCallback onTap;
+  final int count;
+  final int index;
+  final bool left;
+  final bool right;
+  final double hitBox;
+  final bool debug;
+  final bool enableClick;
+  final PageController controller;
+
+  const HorizontalPageView(
+      {Key key,
+      this.builder,
+      this.onTop,
+      this.onEnd,
+      this.count,
+      this.index,
+      this.left,
+      this.right,
+      this.hitBox: 100,
+      this.onPageChange,
+      this.controller,
+      this.onTap,
+      this.debug = false,
+      this.enableClick})
+      : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return _HorizontalPageView();
+  }
+}
+
+class _HorizontalPageView extends State<HorizontalPageView> {
+  int index;
+  PageController _controller;
+
+  _HorizontalPageView() {
+    _controller = PageController(initialPage: 1);
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Stack(
+      children: [
+        _buildViewer(context),
+        Positioned(
+          top: 0,
+          left: 0,
+          bottom: 0,
+          child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            child: SizedBox(
+              width: widget.hitBox,
+              child: widget.debug
+                  ? Container(
+                      color: Color.fromARGB(70, 0, 0, 0),
+                    )
+                  : null,
+            ),
+            onTap: () {
+              if (_controller.hasClients) {
+                _controller.previousPage(
+                    duration: Duration(milliseconds: 200),
+                    curve: Curves.easeIn);
+              }
+            },
+          ),
+        ),
+        Positioned(
+          top: 0,
+          right: 0,
+          bottom: 0,
+          child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            child: SizedBox(
+              width: widget.hitBox,
+              child: widget.debug
+                  ? Container(
+                      color: Color.fromARGB(70, 0, 0, 0),
+                    )
+                  : null,
+            ),
+            onTap: () {
+              if (_controller.hasClients) {
+                _controller.nextPage(
+                    duration: Duration(milliseconds: 200),
+                    curve: Curves.easeIn);
+              }
+            },
+          ),
+        ),
+        Positioned(
+          left: widget.hitBox,
+          right: widget.hitBox,
+          bottom: 0,
+          top: 0,
+          child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            child: widget.debug
+                ? Container(
+                    color: Color.fromARGB(70, 0, 100, 255),
+                  )
+                : null,
+            onTap: () {
+              if (widget.onTap != null) {
+                widget.onTap(index);
+              }
+            },
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _buildViewer(BuildContext context) {
+    return PageView.builder(
+      controller: _controller,
+      onPageChanged: (index) async {
+        if (widget.onPageChange != null) {
+          widget.onPageChange(index - 1);
+        }
+        setState(() {
+          this.index = index;
+        });
+        if (index == 0 && widget.onTop != null) {
+          bool flag = await widget.onTop();
+          if (flag && _controller.hasClients) {
+            _controller.nextPage(
+                duration: Duration(seconds: 1), curve: Curves.decelerate);
+          }
+        } else if (widget.count != null &&
+            index >= widget.count &&
+            widget.onEnd != null) {
+          bool flag = await widget.onEnd();
+          if (flag && _controller.hasClients) {
+            _controller.animateToPage(index,
+                duration: Duration(seconds: 1), curve: Curves.decelerate);
+          }
+        }
+      },
+      itemCount: widget.count + 2,
+      itemBuilder: (context, index) {
+        return Common.builder(context, index, widget.count, widget.builder,
+            widget.left, widget.right,
+            dense: false);
+      },
+    );
+  }
+}

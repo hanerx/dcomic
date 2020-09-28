@@ -10,7 +10,9 @@ import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:flutterdmzj/view/comment_page.dart';
 import 'package:flutterdmzj/view/login_page.dart';
+import 'package:markdown_widget/markdown_widget.dart';
 
+import 'comic_viewer.dart';
 import 'comic_viewer.dart';
 
 class ComicDetailPage extends StatefulWidget {
@@ -29,7 +31,7 @@ class _ComicDetailPage extends State<ComicDetailPage> {
   String title = '加载中';
   String id = '';
   String cover = 'http://manhua.dmzj.com/css/img/mh_logo_dmzj.png?t=20131122';
-  List author =[];
+  List author = [];
   List types = [];
   int hotNum = 0;
   int subscribeNum = 0;
@@ -114,13 +116,24 @@ class _ComicDetailPage extends State<ComicDetailPage> {
 
           chapters.clear();
           List chapterData = response.data['chapters'];
+          print(
+              "class: ComicDetailPage, action: chapterLoading, chapterData: $chapterData");
           for (var item in chapterData) {
             var chapterList = <Widget>[];
 
+            //获取chapterId列表
             var chapterIdList = item['data'].map((map) {
               return map['chapter_id'].toString();
             }).toList();
 
+            var length = chapterIdList.length;
+            chapterIdList = List.generate(
+                length, (index) => chapterIdList[length - 1 - index]);
+
+            print(
+                "class: ComicDetailPage, action: chapterIdListLoading, chapterList: $chapterIdList");
+
+            //记录上次阅读ID
             if (lastChapterId == '' && item['data'].length > 0) {
               lastChapterId = item['data'][item['data'].length - 1]
                       ['chapter_id']
@@ -144,12 +157,20 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                       style: TextStyle(color: Colors.blue),
                     ),
                     onPressed: () {
-                      DataBase dataBase=DataBase();
-                      dataBase.addReadHistory(id, title, cover, chapter['chapter_title'], chapter['chapter_id'].toString(), DateTime.now().millisecondsSinceEpoch~/1000);
+                      DataBase dataBase = DataBase();
+                      dataBase.addReadHistory(
+                          id,
+                          title,
+                          cover,
+                          chapter['chapter_title'],
+                          chapter['chapter_id'].toString(),
+                          DateTime.now().millisecondsSinceEpoch ~/ 1000);
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
-                        return ComicViewer(id, chapter['chapter_id'].toString(),
-                            chapterIdList);
+                        return ComicViewPage(
+                            comicId: id,
+                            chapterId: chapter['chapter_id'].toString(),
+                            chapterList: chapterIdList);
                       }));
                     },
                   ),
@@ -165,12 +186,20 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                       overflow: TextOverflow.ellipsis,
                     ),
                     onPressed: () {
-                      DataBase dataBase=DataBase();
-                      dataBase.addReadHistory(id, title, cover, chapter['chapter_title'], chapter['chapter_id'].toString(), DateTime.now().millisecondsSinceEpoch~/1000);
+                      DataBase dataBase = DataBase();
+                      dataBase.addReadHistory(
+                          id,
+                          title,
+                          cover,
+                          chapter['chapter_title'],
+                          chapter['chapter_id'].toString(),
+                          DateTime.now().millisecondsSinceEpoch ~/ 1000);
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
-                        return ComicViewer(id, chapter['chapter_id'].toString(),
-                            chapterIdList);
+                        return ComicViewPage(
+                            comicId: id,
+                            chapterId: chapter['chapter_id'].toString(),
+                            chapterList: chapterIdList);
                       }));
                     },
                   ),
@@ -241,61 +270,61 @@ class _ComicDetailPage extends State<ComicDetailPage> {
     }
     // TODO: implement build
     return Scaffold(
-        appBar: AppBar(
-          title: Text(title),
-          actions: <Widget>[
-            Builder(
-              builder: (context) {
-                return IconButton(
-                  icon: Icon(
-                    sub ? Icons.favorite : Icons.favorite_border,
-                    color: Colors.white,
-                  ),
-                  onPressed: () {
-                    if (loading) {
-                      Scaffold.of(context).showSnackBar(
-                          new SnackBar(content: Text('订阅信息还在加载中!')));
-                    } else if (!login) {
-                      Scaffold.of(context).showSnackBar(new SnackBar(
-                        content: Text('请先登录!'),
-                        action: SnackBarAction(
-                          label: '去登录',
-                          onPressed: () {
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context) {
-                              return LoginPage();
-                            }));
-                          },
-                        ),
-                      ));
+      appBar: AppBar(
+        title: Text(title),
+        actions: <Widget>[
+          Builder(
+            builder: (context) {
+              return IconButton(
+                icon: Icon(
+                  sub ? Icons.favorite : Icons.favorite_border,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  if (loading) {
+                    Scaffold.of(context).showSnackBar(
+                        new SnackBar(content: Text('订阅信息还在加载中!')));
+                  } else if (!login) {
+                    Scaffold.of(context).showSnackBar(new SnackBar(
+                      content: Text('请先登录!'),
+                      action: SnackBarAction(
+                        label: '去登录',
+                        onPressed: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return LoginPage();
+                          }));
+                        },
+                      ),
+                    ));
+                  } else {
+                    CustomHttp http = CustomHttp();
+                    if (sub) {
+                      http.cancelSubscribe(id, uid).then((response) {
+                        if (response.statusCode == 200 &&
+                            response.data['code'] == 0 &&
+                            mounted) {
+                          setState(() {
+                            sub = false;
+                          });
+                        }
+                      });
                     } else {
-                      CustomHttp http = CustomHttp();
-                      if (sub) {
-                        http.cancelSubscribe(id, uid).then((response) {
-                          if (response.statusCode == 200 &&
-                              response.data['code'] == 0 &&
-                              mounted) {
-                            setState(() {
-                              sub = false;
-                            });
-                          }
-                        });
-                      } else {
-                        http.addSubscribe(id, uid).then((response) {
-                          if (response.statusCode == 200 &&
-                              response.data['code'] == 0 &&
-                              mounted) {
-                            setState(() {
-                              sub = true;
-                            });
-                          }
-                        });
-                      }
+                      http.addSubscribe(id, uid).then((response) {
+                        if (response.statusCode == 200 &&
+                            response.data['code'] == 0 &&
+                            mounted) {
+                          setState(() {
+                            sub = true;
+                          });
+                        }
+                      });
                     }
-                  },
-                );
-              },
-            ),
+                  }
+                },
+              );
+            },
+          ),
 //            IconButton(
 //              icon: Icon(Icons.forum),
 //              onPressed: () {
@@ -304,56 +333,59 @@ class _ComicDetailPage extends State<ComicDetailPage> {
 //                }));
 //              },
 //            )
-          ],
-        ),
-        endDrawer: CustomDrawer(
-          child: CommentPage(id),
-          widthPercent: 0.9,
-        ),
-        floatingActionButton: Builder(
-          builder: (context) {
-            return FloatingActionButton(
-              child: Icon(Icons.play_arrow),
-              onPressed: () {
-                if (lastChapterId != '') {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return ComicViewer(id, lastChapterId, lastChapterList);
-                  }));
-                } else {
-                  Scaffold.of(context).showSnackBar(SnackBar(
-                    content: Text('好像没得记录，没法继续阅读'),
-                  ));
-                }
-              },
-            );
-          },
-        ),
-        body: SingleChildScrollView(
-            child: new Column(
+        ],
+      ),
+      endDrawer: CustomDrawer(
+        child: CommentPage(id),
+        widthPercent: 0.9,
+      ),
+      floatingActionButton: Builder(
+        builder: (context) {
+          return FloatingActionButton(
+            child: Icon(Icons.play_arrow),
+            onPressed: () {
+              if (lastChapterId != '') {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return ComicViewPage(
+                      comicId: id,
+                      chapterId: lastChapterId,
+                      chapterList: lastChapterList);
+                }));
+              } else {
+                Scaffold.of(context).showSnackBar(SnackBar(
+                  content: Text('好像没得记录，没法继续阅读'),
+                ));
+              }
+            },
+          );
+        },
+      ),
+      body: SingleChildScrollView(
+        child: new Column(
+          children: <Widget>[
+            Row(
               children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Parallax.inside(
-                        child: Image(
-                            image: CachedNetworkImageProvider(cover,
-                                headers: {'referer': 'http://images.dmzj.com'}),
-                            fit: BoxFit.cover),
-                        mainAxisExtent: 200.0,
-                      ),
-                    )
-                  ],
-                ),
-                DetailCard(title, updateDate, status, author, types, hotNum,
-                    subscribeNum, description),
-                Card(
-                  margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                  child: Column(children: chapters),
+                Expanded(
+                  child: Parallax.inside(
+                    child: Image(
+                        image: CachedNetworkImageProvider(cover,
+                            headers: {'referer': 'http://images.dmzj.com'}),
+                        fit: BoxFit.cover),
+                    mainAxisExtent: 200.0,
+                  ),
                 )
               ],
             ),
-          ),
-        );
+            DetailCard(title, updateDate, status, author, types, hotNum,
+                subscribeNum, description),
+            Card(
+              margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+              child: Column(children: chapters),
+            )
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -425,9 +457,7 @@ class DetailCard extends StatelessWidget {
                           Icons.category,
                           color: Colors.grey,
                         ),
-                        Expanded(
-                          child: TypeTags(types)
-                        )
+                        Expanded(child: TypeTags(types))
                       ],
                     ),
                   )
@@ -443,7 +473,9 @@ class DetailCard extends StatelessWidget {
                           color: Colors.grey,
                         ),
                         Expanded(
-                          child: Center(child: Text('$hotNum'),),
+                          child: Center(
+                            child: Text('$hotNum'),
+                          ),
                         )
                       ],
                     ),
@@ -455,7 +487,11 @@ class DetailCard extends StatelessWidget {
                           Icons.favorite,
                           color: Colors.grey,
                         ),
-                        Expanded(child: Center(child: Text('$subscribeNum'),),)
+                        Expanded(
+                          child: Center(
+                            child: Text('$subscribeNum'),
+                          ),
+                        )
                       ],
                     ),
                   )

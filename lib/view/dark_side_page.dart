@@ -187,7 +187,10 @@ class DarkCustomListTile extends StatelessWidget {
           }));
         } else if (live) {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return ComicViewer(comicId, lastChapterId, [lastChapterId]);
+            return ComicViewPage(
+                comicId: comicId,
+                chapterId: lastChapterId,
+                chapterList: [lastChapterId]);
           }));
         } else {
           Scaffold.of(context).showSnackBar(SnackBar(

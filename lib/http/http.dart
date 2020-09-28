@@ -13,16 +13,20 @@ class CustomHttp {
     dio = Dio();
     _cacheManager = DioCacheManager(CacheConfig(baseUrl: baseUrl));
     dio.interceptors.add(_cacheManager.interceptor);
-    dio.interceptors.add(DioCacheManager(CacheConfig(baseUrl:'https://dark-dmzj.hloli.net')).interceptor);
-    dio.interceptors.add(DioCacheManager(CacheConfig(baseUrl:'https://sacg.dmzj.com')).interceptor);
+    dio.interceptors.add(
+        DioCacheManager(CacheConfig(baseUrl: 'https://dark-dmzj.hloli.net'))
+            .interceptor);
+    dio.interceptors.add(
+        DioCacheManager(CacheConfig(baseUrl: 'https://sacg.dmzj.com'))
+            .interceptor);
     unCachedDio = Dio();
   }
 
-  clearCache(){
+  clearCache() {
     _cacheManager.clearAll();
   }
 
-  Future<Options> setHeader() async{
+  Future<Options> setHeader() async {
     DataBase dataBase = DataBase();
     var cookies = await dataBase.getCookies();
     var cookie = '';
@@ -57,15 +61,15 @@ class CustomHttp {
   }
 
   Future<Response<T>> getComicDetail<T>(String comicId) async {
-    Options options=await this.setHeader();
+    Options options = await this.setHeader();
     return dio.get(baseUrl + '/comic/comic_$comicId.json?$queryOptions',
-        options: buildCacheOptions(Duration(hours: 1),options: options));
+        options: buildCacheOptions(Duration(hours: 1), options: options));
   }
 
   Future<Response<T>> getComic<T>(String comicId, String chapterId) async {
-    Options options=await this.setHeader();
+    Options options = await this.setHeader();
     return dio.get(baseUrl + '/chapter/$comicId/$chapterId.json?$queryOptions',
-        options: buildCacheOptions(Duration(hours: 8),options: options));
+        options: buildCacheOptions(Duration(hours: 8), options: options));
   }
 
   Future<Response<T>> getViewPoint<T>(String comicId, String chapterId) async {
@@ -107,7 +111,7 @@ class CustomHttp {
   }
 
   Future<Response<T>> getMySubscribe<T>() async {
-    Options options=await this.setHeader();
+    Options options = await this.setHeader();
     return unCachedDio.get("https://m.dmzj.com/mysubscribe", options: options);
   }
 
@@ -129,21 +133,23 @@ class CustomHttp {
   }
 
   Future<Response<T>> addReadHistory<T>(String comicId, String uid) async {
-    Options options=await this.setHeader();
+    Options options = await this.setHeader();
     return unCachedDio.get(
-        '$baseUrl/subscribe/read?obj_ids=$comicId&uid=$uid&type=mh?obj_ids=$comicId&uid=$uid&type=mh&channel=Android&version=2.7.017',options: options);
+        '$baseUrl/subscribe/read?obj_ids=$comicId&uid=$uid&type=mh?obj_ids=$comicId&uid=$uid&type=mh&channel=Android&version=2.7.017',
+        options: options);
   }
 
   Future<Response<T>> addReadHistory0<T>(String comicId, String uid) async {
-    Options options=await this.setHeader();
-    return unCachedDio.get('$baseUrl/subscribe/0/$uid/$comicId?$queryOptions',options: options);
+    Options options = await this.setHeader();
+    return unCachedDio.get('$baseUrl/subscribe/0/$uid/$comicId?$queryOptions',
+        options: options);
   }
 
-  Future<Response<T>> addReadHistory1<T>(String subId)async{
-    Options options=await this.setHeader();
-    FormData formData =
-    FormData.fromMap({'subid':int.parse(subId)});
-    return unCachedDio.post('https://i.dmzj.com/ajax/update/read',options: options,data: formData);
+  Future<Response<T>> addReadHistory1<T>(String subId) async {
+    Options options = await this.setHeader();
+    FormData formData = FormData.fromMap({'subid': int.parse(subId)});
+    return unCachedDio.post('https://i.dmzj.com/ajax/update/read',
+        options: options, data: formData);
   }
 
   Future<Response<T>> getReadHistory<T>(String uid, int page) {
@@ -181,15 +187,24 @@ class CustomHttp {
         'https://api.github.com/repos/hanerx/flutter_dmzj/releases/latest');
   }
 
-  Future<Response<T>> getAuthor<T>(int authorId){
+  Future<Response<T>> getAuthor<T>(int authorId) {
     return dio.get('$baseUrl/UCenter/author/$authorId.json?$queryOptions');
   }
 
-  Future<Response<T>> deepSearch<T>(String search){
-    return dio.get('https://sacg.dmzj.com/comicsum/search.php?s=$search&callback=');
+  Future<Response<T>> deepSearch<T>(String search) {
+    return dio
+        .get('https://sacg.dmzj.com/comicsum/search.php?s=$search&callback=');
   }
 
-  Future<Response<T>> downloadFile<T>(String url,String savePath){
-    return dio.download(url,savePath);
+  Future<Response<T>> downloadFile<T>(String url, String savePath) {
+    return dio.download(url, savePath,
+        options: Options(headers: {'referer': 'http://images.dmzj.com'}));
+  }
+
+  Future<Response<T>> getImage<T>(String url) {
+    return dio.get(url,
+        options: Options(
+            headers: {'referer': 'http://images.dmzj.com'},
+            responseType: ResponseType.bytes));
   }
 }

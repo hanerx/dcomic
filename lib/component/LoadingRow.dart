@@ -8,7 +8,8 @@ class LoadingRow extends StatelessWidget {
     // TODO: implement build
     return Row(
       children: <Widget>[
-        Padding(padding: EdgeInsets.all(10), child: CircularProgressIndicator()),
+        Padding(
+            padding: EdgeInsets.all(10), child: CircularProgressIndicator()),
         Expanded(
           child: Center(
             child: Text(StaticLanguage.staticStrings['loadingRow.loading']),
@@ -17,4 +18,6 @@ class LoadingRow extends StatelessWidget {
       ],
     );
   }
+
+  LoadingRow({Key key}) : super(key: key);
 }

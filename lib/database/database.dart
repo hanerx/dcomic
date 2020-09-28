@@ -272,18 +272,18 @@ class DataBase {
     return 100.0.toDouble();
   }
 
-  setViewFraction(double viewFraction)async{
+  setRange(double range)async{
     await initDataBase();
     var batch = _database.batch();
-    batch.delete("configures", where: "key='view_fraction'");
-    batch.insert("configures", {'key': 'view_fraction', 'value': viewFraction.toString()});
+    batch.delete("configures", where: "key='range'");
+    batch.insert("configures", {'key': 'range', 'value': range.toString()});
     await batch.commit();
   }
 
-  getViewFraction() async{
+  getRange() async{
     await initDataBase();
     var batch = _database.batch();
-    batch.query("configures", where: "key='view_fraction'");
+    batch.query("configures", where: "key='range'");
     var result = await batch.commit();
     try {
       return double.parse(result.first[0]['value']);
@@ -291,7 +291,7 @@ class DataBase {
       print('!');
       print(e);
     }
-    return 0.9.toDouble();
+    return 500.toDouble();
   }
 
   setLabState(bool state) async{
