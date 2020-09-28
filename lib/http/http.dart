@@ -101,6 +101,7 @@ class CustomHttp {
   }
 
   Future<Response<T>> login<T>(String username, String password) {
+    print("class: http, action: login, url: 'https://i.dmzj.com/api/login?callback=&nickname=$username&password=$password&type=1'");
     return unCachedDio.get(
         'https://i.dmzj.com/api/login?callback=&nickname=$username&password=$password&type=1');
   }

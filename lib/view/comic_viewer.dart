@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutterdmzj/component/CustomDrawer.dart';
 import 'package:flutterdmzj/component/comic_viewer/ComicPage.dart';
 import 'package:flutterdmzj/component/comic_viewer/HorizontalPageView.dart';
@@ -41,6 +42,14 @@ class _ComicViewPage extends State<ComicViewPage>
     _dataBase = DataBase();
     _tabController = TabController(length: 2, vsync: this);
     init();
+    SystemChrome.setEnabledSystemUIOverlays([]);
+  }
+
+  @override
+  void dispose() {
+    SystemChrome.setEnabledSystemUIOverlays(
+        [SystemUiOverlay.top, SystemUiOverlay.bottom]);
+    super.dispose();
   }
 
   init() async {
@@ -99,6 +108,13 @@ class _ComicViewPage extends State<ComicViewPage>
         onTop: Provider.of<ComicModel>(context).previousChapter,
         debug: debug,
         hitBox: hitBox,
+        onPageChange: (index){
+          SystemChrome.setEnabledSystemUIOverlays([]);
+        },
+        onTap: (index){
+          SystemChrome.setEnabledSystemUIOverlays(
+              [SystemUiOverlay.top, SystemUiOverlay.bottom]);
+        },
       );
     } else {
       return VerticalPageView(
@@ -114,6 +130,13 @@ class _ComicViewPage extends State<ComicViewPage>
         debug: debug,
         hitBox: hitBox,
         range: range,
+        onPageChange: (index){
+          SystemChrome.setEnabledSystemUIOverlays([]);
+        },
+        onTap: (index){
+          SystemChrome.setEnabledSystemUIOverlays(
+              [SystemUiOverlay.top, SystemUiOverlay.bottom]);
+        },
       );
     }
   }
