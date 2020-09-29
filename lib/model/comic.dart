@@ -61,7 +61,7 @@ class ComicModel with ChangeNotifier {
         if (chapterList.indexOf(chapterId) < chapterList.length - 1) {
           next = chapterList[chapterList.indexOf(chapterId) + 1];
         } else {
-          previous = null;
+          next = null;
         }
       }
     } catch (e) {

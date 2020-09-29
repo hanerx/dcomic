@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 
 import 'Common.dart';
@@ -45,15 +48,41 @@ class HorizontalPageView extends StatefulWidget {
 class _HorizontalPageView extends State<HorizontalPageView> {
   int index;
   PageController _controller;
+  StreamSubscription _channel;
 
   _HorizontalPageView() {
     _controller = PageController(initialPage: 1);
+    print("class: HorizontalPageView, action: listenChannel");
+    _channel = EventChannel("top.hanerx/volume")
+        .receiveBroadcastStream()
+        .listen((event) {
+      if (event == 0) {
+        print("class: HorizontalPageView, action: VolumeUp, event: $event");
+        if (_controller.hasClients) {
+          _controller.previousPage(
+              duration: Duration(milliseconds: 200), curve: Curves.easeIn);
+        }
+      } else if (event == 1) {
+        print("class: HorizontalPageView, action: VolumeDown, event: $event");
+        if (_controller.hasClients) {
+          _controller.nextPage(
+              duration: Duration(milliseconds: 200), curve: Curves.easeIn);
+        }
+      }
+    });
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override

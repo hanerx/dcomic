@@ -270,7 +270,7 @@ class CustomListTile extends StatelessWidget {
               imageUrl: '$cover',
               httpHeaders: {'referer': 'http://images.dmzj.com'},
               progressIndicatorBuilder: (context, url, downloadProgress) =>
-                  CircularProgressIndicator(value: downloadProgress.progress),
+                  Center(child: CircularProgressIndicator(value: downloadProgress.progress),),
               errorWidget: (context, url, error) => Icon(Icons.error),
               width: 100,
             ),

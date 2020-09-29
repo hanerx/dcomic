@@ -131,7 +131,8 @@ class _SettingPage extends State<SettingPage> {
               },
             ),
             ListTile(
-              title: Text('图片显示'),
+              enabled: false,
+              title: Text('图片显示（已废弃，更多设置请从阅读器侧边栏进入）'),
               subtitle: Text('${cover ? '等比放大并裁剪' : '填充不裁剪'}'),
               onTap: () {
                 setState(() {

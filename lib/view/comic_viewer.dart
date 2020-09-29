@@ -49,6 +49,11 @@ class _ComicViewPage extends State<ComicViewPage>
   void dispose() {
     SystemChrome.setEnabledSystemUIOverlays(
         [SystemUiOverlay.top, SystemUiOverlay.bottom]);
+    print("class: ComicViewer, action: volumeChannelCancel");
+    EventChannel("top.hanerx/volume")
+        .receiveBroadcastStream()
+        .listen((event) {})
+        .cancel();
     super.dispose();
   }
 
@@ -108,10 +113,10 @@ class _ComicViewPage extends State<ComicViewPage>
         onTop: Provider.of<ComicModel>(context).previousChapter,
         debug: debug,
         hitBox: hitBox,
-        onPageChange: (index){
+        onPageChange: (index) {
           SystemChrome.setEnabledSystemUIOverlays([]);
         },
-        onTap: (index){
+        onTap: (index) {
           SystemChrome.setEnabledSystemUIOverlays(
               [SystemUiOverlay.top, SystemUiOverlay.bottom]);
         },
@@ -130,10 +135,10 @@ class _ComicViewPage extends State<ComicViewPage>
         debug: debug,
         hitBox: hitBox,
         range: range,
-        onPageChange: (index){
+        onPageChange: (index) {
           SystemChrome.setEnabledSystemUIOverlays([]);
         },
-        onTap: (index){
+        onTap: (index) {
           SystemChrome.setEnabledSystemUIOverlays(
               [SystemUiOverlay.top, SystemUiOverlay.bottom]);
         },

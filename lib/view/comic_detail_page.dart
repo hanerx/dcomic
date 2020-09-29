@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_parallax/flutter_parallax.dart';
 import 'package:flutterdmzj/component/Authors.dart';
 import 'package:flutterdmzj/component/CustomDrawer.dart';
+import 'package:flutterdmzj/component/FancyFab.dart';
 import 'package:flutterdmzj/component/TypeTags.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
@@ -46,6 +47,7 @@ class _ComicDetailPage extends State<ComicDetailPage> {
   String uid = '';
   String lastChapterId = '';
   List lastChapterList = <Widget>[];
+  bool reverse = false;
 
   _ComicDetailPage(this.id);
 
@@ -95,25 +97,17 @@ class _ComicDetailPage extends State<ComicDetailPage> {
           title = response.data['title'];
           cover = response.data['cover'];
           List temp = <String>[];
-//          response.data['authors'].forEach((value) {
-//            temp.add(value['tag_name']);
-//          });
           author = response.data['authors'];
-//          response.data['types'].forEach((value) {
-//            temp.add(value['tag_name']);
-//          });
           types = response.data['types'];
           hotNum = response.data['hot_num'];
           subscribeNum = response.data['subscribe_num'];
           description = response.data['description'];
           updateDate =
               ToolMethods.formatTimestamp(response.data['last_updatetime']);
-//          temp.clear();
           response.data['status'].forEach((value) {
             temp.add(value['tag_name']);
           });
           status = temp.join('/');
-
           chapters.clear();
           List chapterData = response.data['chapters'];
           print(
@@ -206,8 +200,15 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                 ));
               }
             }
+            if (reverse) {
+              var length = chapterList.length;
+              var tempList = List.generate(
+                  length, (index) => chapterList[length - 1 - index]);
+              chapterList = tempList;
+            }
             chapters.add(Column(
               children: <Widget>[
+                Divider(),
                 Text(item['title']),
                 Divider(),
                 Wrap(
@@ -341,9 +342,15 @@ class _ComicDetailPage extends State<ComicDetailPage> {
       ),
       floatingActionButton: Builder(
         builder: (context) {
-          return FloatingActionButton(
-            child: Icon(Icons.play_arrow),
-            onPressed: () {
+          return FancyFab(
+            reverse: reverse,
+            onSort: () {
+              setState(() {
+                reverse = !reverse;
+              });
+              loadComic();
+            },
+            onPlay: () {
               if (lastChapterId != '') {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
                   return ComicViewPage(
@@ -356,6 +363,19 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                   content: Text('好像没得记录，没法继续阅读'),
                 ));
               }
+            },
+            onBlackBox: () {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return SimpleDialog(
+                      children: [
+                        SimpleDialogOption(
+                          child: Text("Ops! 你遇到了一个没有用的按钮"),
+                        )
+                      ],
+                    );
+                  });
             },
           );
         },

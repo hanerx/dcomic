@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 
 import 'Common.dart';
 
@@ -46,6 +49,7 @@ class _VerticalPageView extends State<VerticalPageView> {
   int index = 0;
   double position = 100;
   bool loading=false;
+  StreamSubscription _channel;
 
   _VerticalPageView() {
     _controller = new ScrollController(initialScrollOffset: 100);
@@ -53,6 +57,24 @@ class _VerticalPageView extends State<VerticalPageView> {
       return Common.builder(context, index, widget.count, widget.builder,
           widget.left, widget.right,
           dense: true);
+    });
+    print("class: VerticalPageView, action: listenChannel");
+    _channel=EventChannel("top.hanerx/volume").receiveBroadcastStream().listen((event) {
+      if(event==0){
+        print("class: VerticalPageView, action: VolumeUp, event: $event");
+        if (_controller.hasClients) {
+          _controller.animateTo(_controller.position.pixels - widget.range,
+              duration: Duration(milliseconds: 200),
+              curve: Curves.decelerate);
+        }
+      }else if(event==1){
+        print("class: VerticalPageView, action: VolumeDown, event: $event");
+        if (_controller.hasClients) {
+          _controller.animateTo(_controller.position.pixels + widget.range,
+              duration: Duration(milliseconds: 200),
+              curve: Curves.decelerate);
+        }
+      }
     });
     _controller.addListener(() async {
       if (_controller.hasClients) {
@@ -110,6 +132,12 @@ class _VerticalPageView extends State<VerticalPageView> {
   void initState() {
     // TODO: implement initState
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override

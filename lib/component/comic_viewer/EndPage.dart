@@ -47,20 +47,6 @@ class _EndPage extends State<EndPage> {
                     ],
                   ),
                 ),
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: OutlineButton.icon(
-                        icon: Icon(Icons.arrow_back_ios),
-                        label: Text('返回漫画详情'),
-                        onPressed: () {
-                          print("class: EndPage, action: backToDetail");
-                          Navigator.pop(context);
-                        },
-                      ),
-                    )
-                  ],
-                )
               ],
             ),
           )),
