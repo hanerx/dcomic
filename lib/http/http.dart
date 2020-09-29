@@ -188,6 +188,11 @@ class CustomHttp {
         'https://api.github.com/repos/hanerx/flutter_dmzj/releases/latest');
   }
 
+  Future<Response<T>> getReleases<T>() {
+    return dio.get(
+        'https://api.github.com/repos/hanerx/flutter_dmzj/releases');
+  }
+
   Future<Response<T>> getAuthor<T>(int authorId) {
     return dio.get('$baseUrl/UCenter/author/$authorId.json?$queryOptions');
   }

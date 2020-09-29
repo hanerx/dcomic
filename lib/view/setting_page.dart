@@ -23,15 +23,11 @@ class SettingPage extends StatefulWidget {
 class _SettingPage extends State<SettingPage> {
   String version = '';
   String appName = '';
-  bool direction=false;
-  bool cover=false;
-  bool labState=false;
-  int darkState=0;
-  static const List darkMode=[
-    '跟随系统',
-    '亮色',
-    '夜间'
-  ];
+  bool direction = false;
+  bool cover = false;
+  bool labState = false;
+  int darkState = 0;
+  static const List darkMode = ['跟随系统', '亮色', '夜间'];
 
   Future<bool> getCoverType() async {
     DataBase dataBase = DataBase();
@@ -55,37 +51,37 @@ class _SettingPage extends State<SettingPage> {
     });
   }
 
-  getReadDirection() async{
-    DataBase dataBase=DataBase();
-    bool direction=await dataBase.getReadDirection();
+  getReadDirection() async {
+    DataBase dataBase = DataBase();
+    bool direction = await dataBase.getReadDirection();
     setState(() {
-      this.direction=direction;
+      this.direction = direction;
     });
   }
 
-  setReadDirection(){
-    DataBase dataBase=DataBase();
+  setReadDirection() {
+    DataBase dataBase = DataBase();
     dataBase.setReadDirection(direction);
   }
 
-  getLabState() async{
-    DataBase dataBase=DataBase();
-    bool state=await dataBase.getLabState();
+  getLabState() async {
+    DataBase dataBase = DataBase();
+    bool state = await dataBase.getLabState();
     setState(() {
-      labState=state;
+      labState = state;
     });
   }
 
-  getDarkMode()async{
-    DataBase dataBase=DataBase();
-    int state=await dataBase.getDarkMode();
+  getDarkMode() async {
+    DataBase dataBase = DataBase();
+    int state = await dataBase.getDarkMode();
     setState(() {
-      darkState=state;
+      darkState = state;
     });
   }
 
-  setDarkMode(context)async{
-    DataBase dataBase=DataBase();
+  setDarkMode(context) async {
+    DataBase dataBase = DataBase();
     dataBase.setDarkMode(darkState);
     eventBus.fire(ThemeChangeEvent(darkState));
   }
@@ -106,7 +102,8 @@ class _SettingPage extends State<SettingPage> {
       await launch(url);
     } else {
       Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text('${StaticLanguage.staticStrings['settingPage.canNotOpenWeb']}'),
+        content: Text(
+            '${StaticLanguage.staticStrings['settingPage.canNotOpenWeb']}'),
       ));
     }
   }
@@ -122,10 +119,10 @@ class _SettingPage extends State<SettingPage> {
           children: <Widget>[
             ListTile(
               title: Text('阅读方向'),
-              subtitle: Text('${direction?'垂直方向':'横向方向'}'),
-              onTap: (){
+              subtitle: Text('${direction ? '垂直方向' : '横向方向'}'),
+              onTap: () {
                 setState(() {
-                  direction=!direction;
+                  direction = !direction;
                 });
                 setReadDirection();
               },
@@ -144,14 +141,14 @@ class _SettingPage extends State<SettingPage> {
             ListTile(
               title: Text('夜间模式(需要重启应用)'),
               subtitle: Text('当前设定:${darkMode[darkState]}'),
-              onTap: (){
-                if(darkState<darkMode.length-1){
+              onTap: () {
+                if (darkState < darkMode.length - 1) {
                   setState(() {
                     darkState++;
                   });
-                }else{
+                } else {
                   setState(() {
-                    darkState=0;
+                    darkState = 0;
                   });
                 }
                 setDarkMode(context);
@@ -159,9 +156,10 @@ class _SettingPage extends State<SettingPage> {
             ),
             Divider(),
             ListTile(
-              title: Text('${StaticLanguage.staticStrings['settingPage.deleteDatabaseTitle']}'),
-              subtitle:
-                  Text('${StaticLanguage.staticStrings['settingPage.deleteDatabaseSubTitle']}'),
+              title: Text(
+                  '${StaticLanguage.staticStrings['settingPage.deleteDatabaseTitle']}'),
+              subtitle: Text(
+                  '${StaticLanguage.staticStrings['settingPage.deleteDatabaseSubTitle']}'),
               onTap: () {
                 DataBase dataBase = DataBase();
                 dataBase.resetDataBase();
@@ -171,7 +169,7 @@ class _SettingPage extends State<SettingPage> {
             ListTile(
               title: Text('清除所有请求缓存'),
               subtitle: Text('该操作将会把dio http cache的托管的缓存全部清除，危险操作'),
-              onTap: (){
+              onTap: () {
                 CustomHttp().clearCache();
               },
             ),
@@ -179,14 +177,18 @@ class _SettingPage extends State<SettingPage> {
             Builder(
               builder: (context) {
                 return ListTile(
-                  title: Text('${StaticLanguage.staticStrings['settingPage.checkUpdateTitle']}'),
-                  subtitle: Text('${StaticLanguage.staticStrings['settingPage.checkUpdateSubTitle']} $version'),
+                  title: Text(
+                      '${StaticLanguage.staticStrings['settingPage.checkUpdateTitle']}'),
+                  subtitle: Text(
+                      '${StaticLanguage.staticStrings['settingPage.checkUpdateSubTitle']} $version'),
                   onTap: () async {
                     CustomHttp http = CustomHttp();
                     var response = await http.checkUpdate();
                     if (response.statusCode == 200 && version != '') {
-                      String lastVersion = response.data['tag_name'].substring(1);
-                      bool update = ToolMethods.checkVersion(version, lastVersion);
+                      String lastVersion =
+                          response.data['tag_name'].substring(1);
+                      bool update =
+                          ToolMethods.checkVersion(version, lastVersion);
                       if (update) {
                         showDialog(
                             context: context,
@@ -347,13 +349,41 @@ class _SettingPage extends State<SettingPage> {
                     });
               },
             ),
+            ListTile(
+              title: Text("更新日志"),
+              subtitle: Text("记录了所有版本的更新日志，方便查看每个版本的内容不同"),
+              onTap: () async {
+                CustomHttp http = CustomHttp();
+                var response = await http.getReleases();
+                if (response.statusCode == 200) {
+                  var data="";
+                  for (var item in response.data) {
+                    data+='## ${item['name']} \n##### 发布时间：${item['published_at']}\n${item['body']}\n';
+                  }
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text('更新记录'),
+                          content: Container(
+                            width: 400,
+                            height: 700,
+                            child: buildMarkdown(data),
+                          ),
+                        );
+                      });
+                }
+              },
+            ),
             Divider(),
             ListTile(
               enabled: labState,
-              title: Text(labState?'实验功能':'占位符'),
-              subtitle: Text(labState?'恭喜你发现了彩蛋，这里是平时不会放在外面的彩蛋功能开关的地方':'想不到要拿来干啥，先占位'),
-              onTap: (){
-                Navigator.of(context).push(MaterialPageRoute(builder: (context){
+              title: Text(labState ? '实验功能' : '占位符'),
+              subtitle: Text(
+                  labState ? '恭喜你发现了彩蛋，这里是平时不会放在外面的彩蛋功能开关的地方' : '想不到要拿来干啥，先占位'),
+              onTap: () {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
                   return LabSettingPage();
                 }));
               },
