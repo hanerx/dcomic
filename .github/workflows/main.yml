@@ -34,6 +34,10 @@ jobs:
       - run: cat /home/runner/work/flutter_dmzj/flutter_dmzj/android/test.properties
       - run: flutter pub get
       - run: flutter build apk
+      - uses: actions/upload-artifact@v2
+        with:
+          name: app-release.apk
+          path: build/app/outputs/flutter-apk/app-release.apk
   build-ios:
     runs-on: macos-latest
     steps:
@@ -44,7 +48,5 @@ jobs:
     - uses: subosito/flutter-action@v1
       with:
         flutter-version: '1.20.4'
-    - run: wget https://hanerx.top/key_store/${{ secrets.JKS_KEY_TOKEN }}.jks -O /home/runner/work/flutter_dmzj/flutter_dmzj/test.jks && echo -e "storePassword=${{ secrets.STORAGE_PASSWORD }}\nkeyPassword=${{ secrets.KEY_PASSWORD }}\nkeyAlias=key\nstoreFile=/home/runner/work/flutter_dmzj/flutter_dmzj/test.jks" > /home/runner/work/flutter_dmzj/flutter_dmzj/android/test.properties
-    - run: cat /home/runner/work/flutter_dmzj/flutter_dmzj/android/test.properties
     - run: flutter pub get
     - run: flutter build ios --release --no-codesign
