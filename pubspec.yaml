@@ -35,7 +35,6 @@ dependencies:
   flutter_swiper: ^1.1.6
   event_bus: ^1.1.1
   permission_handler: ^5.0.1
-  image_gallery_saver: ^1.5.0
   path_provider: ^1.6.16
   provider: ^4.3.2+2
   toast: ^0.1.5
