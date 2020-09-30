@@ -41,7 +41,7 @@ class _SubscribeCard extends State<SubscribeCard> {
         padding: EdgeInsets.all(0),
         child: Card(
             child: Badge(
-          position: BadgePosition.topRight(top: -5, right: -5),
+          position: BadgePosition.topEnd(top: -5, end: -5),
           showBadge: isUnread,
           animationType: BadgeAnimationType.scale,
           shape: BadgeShape.square,
