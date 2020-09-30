@@ -27,7 +27,6 @@ jobs:
         with:
           flutter-version: '1.20.4'
       - run: flutter pub get
-      - run: flutter test
       - run: flutter build apk
   build-ios:
     runs-on: macos-latest
@@ -40,6 +39,5 @@ jobs:
       with:
         flutter-version: '1.20.4'
     - run: flutter pub get
-    - run: flutter test
     - run: flutter build apk
     - run: flutter build ios --release --no-codesign
