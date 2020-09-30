@@ -6,9 +6,8 @@ name: Flutter
 # events but only for the master branch
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    tags:
+      - 'v*'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -38,19 +37,19 @@ jobs:
         with:
           name: app-release.apk
           path: build/app/outputs/flutter-apk/app-release.apk
-  build-ios:
-    runs-on: macos-latest
-    steps:
-    - uses: actions/checkout@v1
-    - uses: actions/setup-java@v1
-      with:
-        java-version: '12.x'
-    - uses: subosito/flutter-action@v1
-      with:
-        flutter-version: '1.20.4'
-    - run: flutter pub get
-    - run: flutter build ios --release --no-codesign
-    - uses: actions/upload-artifact@v2
-      with:
-        name: app-release.app
-        path: /Users/runner/work/flutter_dmzj/flutter_dmzj/build/ios/iphoneos/Runner.app          
+#   build-ios:
+#     runs-on: macos-latest
+#     steps:
+#     - uses: actions/checkout@v1
+#     - uses: actions/setup-java@v1
+#       with:
+#         java-version: '12.x'
+#     - uses: subosito/flutter-action@v1
+#       with:
+#         flutter-version: '1.20.4'
+#     - run: flutter pub get
+#     - run: flutter build ios --release --no-codesign
+#     - uses: actions/upload-artifact@v2
+#       with:
+#         name: app-release.app
+#         path: /Users/runner/work/flutter_dmzj/flutter_dmzj/build/ios/iphoneos/Runner.app          
