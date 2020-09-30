@@ -30,9 +30,8 @@ jobs:
           KEY_JKS: ${{ secrets.KEY_JKS }}
           STORAGE_PASSWORD: ${{ secrets.STORAGE_PASSWORD }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           HOME: /home/runner/work/flutter_dmzj/flutter_dmzj/android/test.properties
-      - run: echo "${{ secrets.KEY_JKS }}" > /home/runner/work/flutter_dmzj/flutter_dmzj/test.jks && echo -e "storePassword=${{ secrets.STORAGE_PASSWORD }}\nkeyPassword=${{ secrets.KEY_PASSWORD }}\nkeyAlias=${{ secrets.KEY_ALIAS }}\nstoreFile=/home/runner/work/flutter_dmzj/flutter_dmzj/test.jks" > /home/runner/work/flutter_dmzj/flutter_dmzj/android/test.properties
+      - run: echo "${{ secrets.KEY_JKS }}" > /home/runner/work/flutter_dmzj/flutter_dmzj/test.jks && echo -e "storePassword=${{ secrets.STORAGE_PASSWORD }}\nkeyPassword=${{ secrets.KEY_PASSWORD }}\nkeyAlias=key\nstoreFile=/home/runner/work/flutter_dmzj/flutter_dmzj/test.jks" > /home/runner/work/flutter_dmzj/flutter_dmzj/android/test.properties
       - run: cat /home/runner/work/flutter_dmzj/flutter_dmzj/android/test.properties
       - run: flutter pub get
       - run: flutter build apk
