@@ -26,6 +26,13 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           flutter-version: '1.20.4'
+        env:
+          KEY_JKS: ${{ secrets.KEY_JKS }}
+          STORAGE_PASSWORD: ${{ secrets.STORAGE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          HOME: /home/runner/work/flutter_dmzj/flutter_dmzj/android/key.properties
+          run: echo $KEY_JKS > /home/key.jks && echo storePassword=$STORAGE_PASSWORD\\nkeyPassword=$KEY_PASSWORD\\nkeyAlias=$KEY_ALIAS\\nstoreFile=/home/key.jks > $HOME
       - run: flutter pub get
       - run: flutter build apk
   build-ios:
