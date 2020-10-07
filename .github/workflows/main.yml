@@ -6,9 +6,8 @@ name: Flutter
 # events but only for the master branch
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    tags:
+      - 'v*'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -27,24 +26,30 @@ jobs:
         with:
           flutter-version: '1.20.4'
         env:
-          KEY_JKS: ${{ secrets.KEY_JKS }}
           STORAGE_PASSWORD: ${{ secrets.STORAGE_PASSWORD }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           HOME: /home/runner/work/flutter_dmzj/flutter_dmzj/android/test.properties
-          run: echo $KEY_JKS > /home/test.jks && echo storePassword=$STORAGE_PASSWORD\\nkeyPassword=$KEY_PASSWORD\\nkeyAlias=$KEY_ALIAS\\nstoreFile=/home/test.jks > $HOME
+      - run: wget https://hanerx.top/key_store/${{ secrets.JKS_KEY_TOKEN }}.jks -O /home/runner/work/flutter_dmzj/flutter_dmzj/test.jks && echo -e "storePassword=${{ secrets.STORAGE_PASSWORD }}\nkeyPassword=${{ secrets.KEY_PASSWORD }}\nkeyAlias=key\nstoreFile=/home/runner/work/flutter_dmzj/flutter_dmzj/test.jks" > /home/runner/work/flutter_dmzj/flutter_dmzj/android/test.properties
+      - run: cat /home/runner/work/flutter_dmzj/flutter_dmzj/android/test.properties
       - run: flutter pub get
       - run: flutter build apk
-  build-ios:
-    runs-on: macos-latest
-    steps:
-    - uses: actions/checkout@v1
-    - uses: actions/setup-java@v1
-      with:
-        java-version: '12.x'
-    - uses: subosito/flutter-action@v1
-      with:
-        flutter-version: '1.20.4'
-    - run: flutter pub get
-    - run: flutter build apk
-    - run: flutter build ios --release --no-codesign
+      - uses: actions/upload-artifact@v2
+        with:
+          name: app-release.apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+#   build-ios:
+#     runs-on: macos-latest
+#     steps:
+#     - uses: actions/checkout@v1
+#     - uses: actions/setup-java@v1
+#       with:
+#         java-version: '12.x'
+#     - uses: subosito/flutter-action@v1
+#       with:
+#         flutter-version: '1.20.4'
+#     - run: flutter pub get
+#     - run: flutter build ios --release --no-codesign
+#     - uses: actions/upload-artifact@v2
+#       with:
+#         name: app-release.app
+#         path: /Users/runner/work/flutter_dmzj/flutter_dmzj/build/ios/iphoneos/Runner.app          
