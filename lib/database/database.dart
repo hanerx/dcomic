@@ -1,3 +1,4 @@
+import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DataBase {
@@ -21,7 +22,7 @@ class DataBase {
     }, onUpgrade: (Database db, int version, int x) async {
       print('update');
       await db.execute(
-              "CREATE TABLE local_history (id INTEGER PRIMARY KEY, comicId TEXT, timestamp INTEGER,cover TEXT,title TEXT,last_chapter TEXT,last_chapter_id TEXT)");
+          "CREATE TABLE local_history (id INTEGER PRIMARY KEY, comicId TEXT, timestamp INTEGER,cover TEXT,title TEXT,last_chapter TEXT,last_chapter_id TEXT)");
     });
   }
 
@@ -53,21 +54,28 @@ class DataBase {
     await batch.commit();
   }
 
-  addReadHistory(String comicId,String title,String cover,String lastChapter,String lastChapterId,int timestamp)async{
+  addReadHistory(String comicId, String title, String cover, String lastChapter,
+      String lastChapterId, int timestamp) async {
     await initDataBase();
     var batch = _database.batch();
-    batch.delete('local_history',where: "comicId='$comicId'");
-    batch.insert("local_history", {'comicId':comicId,'title':title,'cover':cover,'last_chapter':lastChapter,'last_chapter_id':lastChapterId,'timestamp':timestamp});
+    batch.delete('local_history', where: "comicId='$comicId'");
+    batch.insert("local_history", {
+      'comicId': comicId,
+      'title': title,
+      'cover': cover,
+      'last_chapter': lastChapter,
+      'last_chapter_id': lastChapterId,
+      'timestamp': timestamp
+    });
     await batch.commit();
   }
 
-  getReadHistory() async{
+  getReadHistory() async {
     await initDataBase();
     var batch = _database.batch();
     batch.query("local_history");
     return batch.commit();
   }
-
 
   getHistory(String comicId) async {
     await initDataBase();
@@ -160,11 +168,12 @@ class DataBase {
     await initDataBase();
     var batch = _database.batch();
     batch.delete("configures", where: "key='read_direction'");
-    batch.insert("configures", {'key': 'read_direction', 'value': d ? '1' : '0'});
+    batch.insert(
+        "configures", {'key': 'read_direction', 'value': d ? '1' : '0'});
     await batch.commit();
   }
 
-  getReadDirection() async{
+  getReadDirection() async {
     await initDataBase();
     var batch = _database.batch();
     batch.query("configures", where: "key='read_direction'");
@@ -188,7 +197,7 @@ class DataBase {
     await batch.commit();
   }
 
-  getCoverType() async{
+  getCoverType() async {
     await initDataBase();
     var batch = _database.batch();
     batch.query("configures", where: "key='cover_type'");
@@ -204,7 +213,7 @@ class DataBase {
     return false;
   }
 
-  setVersion(String version) async{
+  setVersion(String version) async {
     await initDataBase();
     var batch = _database.batch();
     batch.delete("configures", where: "key='latest_version'");
@@ -212,7 +221,7 @@ class DataBase {
     await batch.commit();
   }
 
-  getVersion() async{
+  getVersion() async {
     await initDataBase();
     var batch = _database.batch();
     batch.query("configures", where: "key='latest_version'");
@@ -226,15 +235,16 @@ class DataBase {
     return '';
   }
 
-  setClickToRead(bool click) async{
+  setClickToRead(bool click) async {
     await initDataBase();
     var batch = _database.batch();
     batch.delete("configures", where: "key='read_click'");
-    batch.insert("configures", {'key': 'read_click', 'value': click ? '1' : '0'});
+    batch.insert(
+        "configures", {'key': 'read_click', 'value': click ? '1' : '0'});
     await batch.commit();
   }
 
-  getClickToRead() async{
+  getClickToRead() async {
     await initDataBase();
     var batch = _database.batch();
     batch.query("configures", where: "key='read_click'");
@@ -250,15 +260,16 @@ class DataBase {
     return false;
   }
 
-  setControlSize(double size) async{
+  setControlSize(double size) async {
     await initDataBase();
     var batch = _database.batch();
     batch.delete("configures", where: "key='control_size'");
-    batch.insert("configures", {'key': 'control_size', 'value': size.toString()});
+    batch.insert(
+        "configures", {'key': 'control_size', 'value': size.toString()});
     await batch.commit();
   }
 
-  getControlSize() async{
+  getControlSize() async {
     await initDataBase();
     var batch = _database.batch();
     batch.query("configures", where: "key='control_size'");
@@ -272,7 +283,7 @@ class DataBase {
     return 100.0.toDouble();
   }
 
-  setRange(double range)async{
+  setRange(double range) async {
     await initDataBase();
     var batch = _database.batch();
     batch.delete("configures", where: "key='range'");
@@ -280,7 +291,7 @@ class DataBase {
     await batch.commit();
   }
 
-  getRange() async{
+  getRange() async {
     await initDataBase();
     var batch = _database.batch();
     batch.query("configures", where: "key='range'");
@@ -294,15 +305,16 @@ class DataBase {
     return 500.toDouble();
   }
 
-  setLabState(bool state) async{
+  setLabState(bool state) async {
     await initDataBase();
     var batch = _database.batch();
     batch.delete("configures", where: "key='lab_state'");
-    batch.insert("configures", {'key': 'lab_state', 'value': state ? '1' : '0'});
+    batch
+        .insert("configures", {'key': 'lab_state', 'value': state ? '1' : '0'});
     await batch.commit();
   }
 
-  getLabState() async{
+  getLabState() async {
     await initDataBase();
     var batch = _database.batch();
     batch.query("configures", where: "key='lab_state'");
@@ -318,15 +330,16 @@ class DataBase {
     return false;
   }
 
-  setDeepSearch(bool state) async{
+  setDeepSearch(bool state) async {
     await initDataBase();
     var batch = _database.batch();
     batch.delete("configures", where: "key='deep_search'");
-    batch.insert("configures", {'key': 'deep_search', 'value': state ? '1' : '0'});
+    batch.insert(
+        "configures", {'key': 'deep_search', 'value': state ? '1' : '0'});
     await batch.commit();
   }
 
-  getDeepSearch() async{
+  getDeepSearch() async {
     await initDataBase();
     var batch = _database.batch();
     batch.query("configures", where: "key='deep_search'");
@@ -342,15 +355,16 @@ class DataBase {
     return false;
   }
 
-  setDarkSide(bool state) async{
+  setDarkSide(bool state) async {
     await initDataBase();
     var batch = _database.batch();
     batch.delete("configures", where: "key='dark_side'");
-    batch.insert("configures", {'key': 'dark_side', 'value': state ? '1' : '0'});
+    batch
+        .insert("configures", {'key': 'dark_side', 'value': state ? '1' : '0'});
     await batch.commit();
   }
 
-  getDarkSide() async{
+  getDarkSide() async {
     await initDataBase();
     var batch = _database.batch();
     batch.query("configures", where: "key='dark_side'");
@@ -366,8 +380,55 @@ class DataBase {
     return false;
   }
 
+  setBlackBox(bool state) async {
+    await initDataBase();
+    var batch = _database.batch();
+    batch.delete("configures", where: "key='black_box'");
+    batch
+        .insert("configures", {'key': 'black_box', 'value': state ? '1' : '0'});
+    await batch.commit();
+  }
 
-  setDarkMode(int mode)async{
+  getBlackBox() async {
+    await initDataBase();
+    var batch = _database.batch();
+    batch.query("configures", where: "key='black_box'");
+    var result = await batch.commit();
+    try {
+      if (result.first[0]['value'] == '1') {
+        return true;
+      }
+    } catch (e) {
+      print('!');
+      print(e);
+    }
+    return false;
+  }
+
+  setDownloadPath(String path) async {
+    await initDataBase();
+    var batch = _database.batch();
+    batch.delete("configures", where: "key='download_path'");
+    batch
+        .insert("configures", {'key': 'download_path', 'value': path});
+    await batch.commit();
+  }
+
+  getDownloadPath() async{
+    await initDataBase();
+    var batch = _database.batch();
+    batch.query("configures", where: "key='download_path'");
+    var result = await batch.commit();
+    try {
+      return result.first[0]['value'];
+    } catch (e) {
+      print('!');
+      print(e);
+    }
+    return (await getExternalStorageDirectory()).path;
+  }
+
+  setDarkMode(int mode) async {
     await initDataBase();
     var batch = _database.batch();
     batch.delete("configures", where: "key='dark_mode'");
@@ -375,7 +436,7 @@ class DataBase {
     await batch.commit();
   }
 
-  Future<int> getDarkMode() async{
+  Future<int> getDarkMode() async {
     await initDataBase();
     var batch = _database.batch();
     batch.query("configures", where: "key='dark_mode'");
@@ -389,16 +450,16 @@ class DataBase {
     return 0;
   }
 
-
-  setHorizontalDirection(bool direction)async{
+  setHorizontalDirection(bool direction) async {
     await initDataBase();
     var batch = _database.batch();
     batch.delete("configures", where: "key='horizontal_direction'");
-    batch.insert("configures", {'key': 'horizontal_direction', 'value': direction ? '1' : '0'});
+    batch.insert("configures",
+        {'key': 'horizontal_direction', 'value': direction ? '1' : '0'});
     await batch.commit();
   }
 
-  Future<bool> getHorizontalDirection() async{
+  Future<bool> getHorizontalDirection() async {
     await initDataBase();
     var batch = _database.batch();
     batch.query("configures", where: "key='horizontal_direction'");
@@ -413,5 +474,4 @@ class DataBase {
     }
     return false;
   }
-
 }

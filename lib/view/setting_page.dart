@@ -1,4 +1,5 @@
 import 'package:event_bus/event_bus.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterdmzj/database/database.dart';
@@ -27,6 +28,7 @@ class _SettingPage extends State<SettingPage> {
   bool cover = false;
   bool labState = false;
   int darkState = 0;
+  String downloadPath = '';
   static const List darkMode = ['跟随系统', '亮色', '夜间'];
 
   Future<bool> getCoverType() async {
@@ -36,6 +38,19 @@ class _SettingPage extends State<SettingPage> {
       this.cover = cover;
     });
     return true;
+  }
+
+  getDownloadPath() async {
+    DataBase dataBase = DataBase();
+    String path = await dataBase.getDownloadPath();
+    setState(() {
+      downloadPath = path;
+    });
+  }
+
+  setDownloadPath() async{
+    DataBase dataBase = DataBase();
+    dataBase.setDownloadPath(downloadPath);
   }
 
   setCoverType() {
@@ -95,6 +110,7 @@ class _SettingPage extends State<SettingPage> {
     getCoverType();
     getLabState();
     getDarkMode();
+    getDownloadPath();
   }
 
   _openWeb(String url) async {
@@ -152,6 +168,20 @@ class _SettingPage extends State<SettingPage> {
                   });
                 }
                 setDarkMode(context);
+              },
+            ),
+            Divider(),
+            ListTile(
+              title: Text('选择保存路径'),
+              subtitle: Text('$downloadPath'),
+              onTap: () async {
+                String result = await FilePicker.platform.getDirectoryPath();
+                if(result!=null){
+                  setState(() {
+                    downloadPath=result;
+                  });
+                  setDownloadPath();
+                }
               },
             ),
             Divider(),
@@ -356,9 +386,10 @@ class _SettingPage extends State<SettingPage> {
                 CustomHttp http = CustomHttp();
                 var response = await http.getReleases();
                 if (response.statusCode == 200) {
-                  var data="";
+                  var data = "";
                   for (var item in response.data) {
-                    data+='## ${item['name']} \n##### 发布时间：${item['published_at']}\n${item['body']}\n';
+                    data +=
+                        '## ${item['name']} \n##### 发布时间：${item['published_at']}\n${item['body']}\n';
                   }
                   showDialog(
                       context: context,

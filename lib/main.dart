@@ -1,12 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutterdmzj/component/Drawer.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/utils/static_language.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:flutterdmzj/view/category_page.dart';
+import 'package:flutterdmzj/view/comic_detail_page.dart';
 import 'package:flutterdmzj/view/dark_side_page.dart';
 import 'package:flutterdmzj/view/download_page.dart';
 import 'package:flutterdmzj/view/history_page.dart';
@@ -18,6 +20,7 @@ import 'package:flutterdmzj/view/search_page.dart';
 import 'package:flutterdmzj/view/setting_page.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 import 'package:package_info/package_info.dart';
+import 'package:uni_links/uni_links.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:event_bus/event_bus.dart';
 
@@ -28,16 +31,15 @@ void main() async {
   runApp(App());
 }
 
-class App extends StatelessWidget{
+class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return MainFrame();
   }
-
 }
 
-class MainFrame extends StatefulWidget{
+class MainFrame extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -46,21 +48,23 @@ class MainFrame extends StatefulWidget{
 }
 
 class _MainFrame extends State<MainFrame> {
-  static const List darkMode=[
+  static const List darkMode = [
     ThemeMode.system,
     ThemeMode.light,
     ThemeMode.dark
   ];
-  int darkState=0;
+  int darkState = 0;
   EventBus eventBus = EventBus();
 
-  getDarkState()async{
-    DataBase dataBase=DataBase();
-    int mode=await dataBase.getDarkMode();
+  getDarkState() async {
+    DataBase dataBase = DataBase();
+    int mode = await dataBase.getDarkMode();
     setState(() {
-      darkState=mode;
+      darkState = mode;
     });
   }
+
+
 
   @override
   void initState() {
@@ -69,10 +73,11 @@ class _MainFrame extends State<MainFrame> {
     getDarkState();
     registerEvent();
   }
+
   registerEvent() {
-    eventBus.on<ThemeChangeEvent>().listen((onData){
+    eventBus.on<ThemeChangeEvent>().listen((onData) {
       setState(() {
-        darkState=onData.mode;
+        darkState = onData.mode;
       });
     });
   }
@@ -96,26 +101,24 @@ class _MainFrame extends State<MainFrame> {
     return new MaterialApp(
         themeMode: darkMode[darkState],
         darkTheme: ThemeData(
-          brightness: Brightness.dark,
+            brightness: Brightness.dark,
             platform: TargetPlatform.iOS,
-          floatingActionButtonTheme:FloatingActionButtonThemeData(
-            backgroundColor: Colors.black,
-            foregroundColor: Colors.white
-          ),
-          buttonTheme: ButtonThemeData(
-            buttonColor: Colors.black
-          )
-        ),
+            floatingActionButtonTheme: FloatingActionButtonThemeData(
+                backgroundColor: Colors.black, foregroundColor: Colors.white),
+            buttonTheme: ButtonThemeData(buttonColor: Colors.black)),
         routes: {
           "history": (BuildContext context) => new HistoryPage(),
           "settings": (BuildContext context) => new SettingPage(),
-          "login": (BuildContext context) => new LoginPage()
+          "login": (BuildContext context) => new LoginPage(),
+          "download": (BuildContext context) => new DownloadPage()
         },
-        supportedLocales: [                                   //此处
-          const Locale('zh','CH'),
-          const Locale('en','US'),
+        supportedLocales: [
+          //此处
+          const Locale('zh', 'CH'),
+          const Locale('en', 'US'),
         ],
-        localizationsDelegates: [                             //此处
+        localizationsDelegates: [
+          //此处
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
         ],
@@ -123,35 +126,43 @@ class _MainFrame extends State<MainFrame> {
         showSemanticsDebugger: false,
         showPerformanceOverlay: false,
         theme: ThemeData(
-          platform: TargetPlatform.iOS,
-          buttonTheme: ButtonThemeData(
-            buttonColor: Colors.blue
-          )
-        ),
+            platform: TargetPlatform.iOS,
+            buttonTheme: ButtonThemeData(buttonColor: Colors.blue)),
         home: MainPage());
   }
-
-
 }
 
-class MainPage extends StatefulWidget{
+class MainPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
     return _MainPage();
   }
-
 }
 
-class _MainPage extends State<MainPage>{
-
+class _MainPage extends State<MainPage> {
   String version;
+
+  Future<Null> initUniLinks() async {
+    getUriLinksStream().listen((Uri event) {
+      print(
+          'class: Main, action: deepLink, raw: $event, path: ${event.path}, query: ${event.query}');
+      switch (event.path) {
+        case '/comic':
+          var params = event.queryParameters;
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+            return ComicDetailPage(params['id']);
+          }));
+          break;
+      }
+    });
+  }
 
   getVersionInfo() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     setState(() {
-      if(ToolMethods.checkVersion(version, packageInfo.version)){
-        version=packageInfo.version;
+      if (ToolMethods.checkVersion(version, packageInfo.version)) {
+        version = packageInfo.version;
       }
     });
   }
@@ -161,20 +172,21 @@ class _MainPage extends State<MainPage>{
       await launch(url);
     } else {
       Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text('${StaticLanguage.staticStrings['settingPage.canNotOpenWeb']}'),
+        content: Text(
+            '${StaticLanguage.staticStrings['settingPage.canNotOpenWeb']}'),
       ));
     }
   }
 
-  checkUpdate()async{
-    DataBase dataBase=DataBase();
-    version=await dataBase.getVersion();
+  checkUpdate() async {
+    DataBase dataBase = DataBase();
+    version = await dataBase.getVersion();
     await getVersionInfo();
     CustomHttp http = CustomHttp();
     var response = await http.checkUpdate();
     if (response.statusCode == 200) {
       String lastVersion = response.data['tag_name'].substring(1);
-      if(version==''){
+      if (version == '') {
         dataBase.setVersion(lastVersion);
         return;
       }
@@ -185,8 +197,7 @@ class _MainPage extends State<MainPage>{
             context: context,
             builder: (context) {
               return AlertDialog(
-                title:
-                Text('版本点亮：${response.data['tag_name']}'),
+                title: Text('版本点亮：${response.data['tag_name']}'),
                 content: Container(
                   width: 300,
                   height: 300,
@@ -218,7 +229,9 @@ class _MainPage extends State<MainPage>{
     // TODO: implement initState
     super.initState();
     checkUpdate();
+    initUniLinks();
   }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -256,8 +269,6 @@ class _MainPage extends State<MainPage>{
           drawer: CustomDrawer()),
     );
   }
-
-
 }
 
 class SearchButton extends StatefulWidget {
@@ -299,9 +310,9 @@ class _SearchButton extends State<SearchButton> {
 //                            MaterialPageRoute(builder: (context) {
 //                          return DarkSidePage();
 //                        }));
-                      Navigator.of(context).pop();
-                      DataBase dataBase=DataBase();
-                      dataBase.setLabState(true);
+                        Navigator.of(context).pop();
+                        DataBase dataBase = DataBase();
+                        dataBase.setLabState(true);
                       } else {
                         setState(() {
                           _count++;

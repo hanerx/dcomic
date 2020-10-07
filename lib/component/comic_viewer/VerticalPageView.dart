@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:yin_drag_sacle/core/drag_scale_widget.dart';
 
 import 'Common.dart';
 
@@ -145,10 +146,13 @@ class _VerticalPageView extends State<VerticalPageView> {
     // TODO: implement build
     return Stack(
       children: [
-        ListView.custom(
-          padding: EdgeInsets.zero,
-          controller: _controller,
-          childrenDelegate: _delegate,
+        DragScaleContainer(
+          doubleTapStillScale: false,
+          child: ListView.custom(
+            padding: EdgeInsets.zero,
+            controller: _controller,
+            childrenDelegate: _delegate,
+          ),
         ),
         Positioned(
             left: 0,

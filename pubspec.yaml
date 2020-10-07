@@ -11,7 +11,7 @@ description: A 3rd-party dmzj application powered by flutter
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.2.2+14
+version: 1.2.3+15
 
 environment:
   sdk: ">=2.2.2 <3.0.0"
@@ -38,6 +38,9 @@ dependencies:
   path_provider: ^1.6.16
   provider: ^4.3.2+2
   toast: ^0.1.5
+  uni_links: ^0.4.0
+  share: ^0.6.5+2
+  file_picker: ^2.0.6
   flutter_localizations:
     sdk: flutter
 

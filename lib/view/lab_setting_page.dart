@@ -16,6 +16,7 @@ class LabSettingPage extends StatefulWidget{
 class _LabSettingPage extends State<LabSettingPage>{
   bool search=false;
   bool darkSide=false;
+  bool blackBox=false;
 
   _openWeb(String url) async {
     if (await canLaunch(url)) {
@@ -51,6 +52,19 @@ class _LabSettingPage extends State<LabSettingPage>{
   setDarkSide(){
     DataBase dataBase=DataBase();
     dataBase.setDarkSide(darkSide);
+  }
+
+  getBlackBox() async{
+    DataBase dataBase=DataBase();
+    bool state=await dataBase.getBlackBox();
+    setState(() {
+      blackBox=state;
+    });
+  }
+
+  setBlackBox(){
+    DataBase dataBase=DataBase();
+    dataBase.setBlackBox(blackBox);
   }
 
   @override
