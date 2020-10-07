@@ -12,6 +12,7 @@ import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:flutterdmzj/view/comment_page.dart';
 import 'package:flutterdmzj/view/login_page.dart';
 import 'package:markdown_widget/markdown_widget.dart';
+import 'package:share/share.dart';
 
 import 'comic_viewer.dart';
 import 'comic_viewer.dart';
@@ -274,6 +275,12 @@ class _ComicDetailPage extends State<ComicDetailPage> {
       appBar: AppBar(
         title: Text(title),
         actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.share),
+            onPressed: (){
+              Share.share('【$title】 dmzj://dmzj.com/comic?id=$id');
+            },
+          ),
           Builder(
             builder: (context) {
               return IconButton(

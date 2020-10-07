@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-@Deprecated('未实装页面')
 class DownloadPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -9,7 +8,8 @@ class DownloadPage extends StatefulWidget {
     return _DownloadPage();
   }
 }
-@Deprecated('未实装页面')
+
+
 class _DownloadPage extends State<DownloadPage> {
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,9 @@ class _DownloadPage extends State<DownloadPage> {
       ),
       body: new Scrollbar(
           child: SingleChildScrollView(
-        child: new Row(),
+        child: new Center(
+          child: Text('还没实装~'),
+        ),
       )),
     );
   }

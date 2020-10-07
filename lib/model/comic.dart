@@ -85,7 +85,7 @@ class ComicModel with ChangeNotifier {
       if (response.statusCode == 200) {
         print(
             "class: ComicModel, action: getViewPoint, responseCode: ${response.statusCode} chapterId:$chapterId comicId:$comicId responseData: ${response.data}");
-        List<Widget> viewPoints = [];
+        List<ViewPointChip> viewPoints = [];
         for (var item in response.data) {
           viewPoints.add(ViewPointChip(
             content: item['content'],
@@ -93,7 +93,9 @@ class ComicModel with ChangeNotifier {
             id: item['id'].toString(),
           ));
         }
+        viewPoints.sort((a,b)=>b.num.compareTo(a.num));
         this.viewPoints=viewPoints;
+        print("class: ComicModel, action: getViewPoint, viewpoints: $viewPoints");
       }
     } catch (e) {
       print("action:error, chapterId:$chapterId, comicId:$comicId, error:$e");

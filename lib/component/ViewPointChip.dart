@@ -13,6 +13,12 @@ class ViewPointChip extends StatefulWidget {
     // TODO: implement createState
     return _ViewPointChip(content, id, num);
   }
+
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    // TODO: implement toString
+    return '{content: $content, id: $id, num: $num, color: ${num ~/ 100 * 100 + 400}}';
+  }
 }
 
 class _ViewPointChip extends State<ViewPointChip> {
@@ -31,7 +37,10 @@ class _ViewPointChip extends State<ViewPointChip> {
         child: Chip(
             label: Text('$content'),
             avatar: CircleAvatar(
-              child: Text('${num%100}'),
+              child: Text('${num % 100}'),
+              backgroundColor: Colors.blue[
+                  num ~/ 100 * 100 + 400 > 800 ? 800 : num ~/ 100 * 100 + 400],
+              foregroundColor: Colors.white,
             )),
         padding: EdgeInsets.all(0),
         onPressed: () {},

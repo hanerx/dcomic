@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:yin_drag_sacle/core/drag_scale_widget.dart';
 
 import 'Common.dart';
 
@@ -90,7 +91,10 @@ class _HorizontalPageView extends State<HorizontalPageView> {
     // TODO: implement build
     return Stack(
       children: [
-        _buildViewer(context),
+        DragScaleContainer(
+          doubleTapStillScale: false,
+          child: _buildViewer(context),
+        ),
         Positioned(
           top: 0,
           left: 0,
@@ -186,7 +190,7 @@ class _HorizontalPageView extends State<HorizontalPageView> {
           }
         }
       },
-      itemCount: widget.count + 2,
+      itemCount: widget.count + 1,
       itemBuilder: (context, index) {
         return Common.builder(context, index, widget.count, widget.builder,
             widget.left, widget.right,

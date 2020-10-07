@@ -22,6 +22,7 @@ class CustomDrawerState extends State<CustomDrawer> {
   String nickname = '请先登录';
   String uid = '';
   bool darkSide=false;
+  bool blackBox=false;
 
   getAccountInfo() async {
     if (login) {
@@ -58,6 +59,14 @@ class CustomDrawerState extends State<CustomDrawer> {
     });
   }
 
+  getBlackBox() async{
+    DataBase dataBase=DataBase();
+    bool state=await dataBase.getBlackBox();
+    setState(() {
+      blackBox=state;
+    });
+  }
+
   @override
   void deactivate() {
     super.deactivate();
@@ -75,6 +84,7 @@ class CustomDrawerState extends State<CustomDrawer> {
     super.initState();
     getLoginState();
     getDarkSide();
+    getBlackBox();
   }
 
   @override
@@ -163,16 +173,36 @@ class CustomDrawerState extends State<CustomDrawer> {
           Navigator.of(context).pushNamed("history");
         },
       ),
-
+      ListTile(
+        title: Text("下载管理"),
+        leading: Icon(Icons.file_download),
+        onTap: (){
+          Navigator.of(context).pop();
+          Navigator.of(context).pushNamed("download");
+        },
+      )
     ];
     if(darkSide){
       list+=<Widget>[
         Divider(),
         ListTile(title: Text('黑暗面'),leading: Icon(Icons.block),onTap: (){
+          Navigator.of(context).pop();
           Navigator.push(context, MaterialPageRoute(builder: (context){
             return DarkSidePage();
           }));
         },)
+      ];
+    }
+    if(blackBox){
+      list+=<Widget>[
+        Divider(),
+        ListTile(
+          title: Text('黑匣子'),
+          leading: Icon(Icons.inbox),
+          onTap: (){
+            Navigator.of(context).pop();
+          },
+        )
       ];
     }
     list+=<Widget>[Divider(),

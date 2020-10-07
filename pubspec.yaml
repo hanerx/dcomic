@@ -38,6 +38,9 @@ dependencies:
   path_provider: ^1.6.16
   provider: ^4.3.2+2
   toast: ^0.1.5
+  uni_links: ^0.4.0
+  share: ^0.6.5+2
+  file_picker: ^2.0.6
   flutter_localizations:
     sdk: flutter
 

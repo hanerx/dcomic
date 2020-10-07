@@ -3,10 +3,12 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:toast/toast.dart';
+import 'package:share/share.dart';
 
 class ComicPage extends StatefulWidget {
   final String url;
@@ -52,12 +54,43 @@ class _ComicPage extends State<ComicPage> {
                         // var result = await ImageGallerySaver.saveImage(
                         //     Uint8List.fromList(response.data));
                         // print(result);
-                        Directory path = await getExternalStorageDirectory();
+                        DataBase dataBase = DataBase();
+                        String path = await dataBase.getDownloadPath();
+                        String save =
+                            "$path/${DateTime.now().millisecondsSinceEpoch}${widget.url.substring(widget.url.lastIndexOf('.'))}";
+                        try {
+                          await http.downloadFile(widget.url, save);
+                          Navigator.of(context).pop();
+                          Toast.show("已保存至:$save", context,
+                              duration: Toast.LENGTH_LONG);
+                        } catch (e) {
+                          Navigator.of(context).pop();
+                          Toast.show("保存失败，请检查网络与写入权限", context,
+                              duration: Toast.LENGTH_LONG);
+                        }
+                      }
+                    },
+                  ),
+                  SimpleDialogOption(
+                    child: Text(
+                      '分享图片',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    onPressed: () async {
+                      var state = await Permission.storage.request().isGranted;
+                      if (state) {
+                        var http = new CustomHttp();
+                        // var response = await http.getImage(widget.url);
+                        // var result = await ImageGallerySaver.saveImage(
+                        //     Uint8List.fromList(response.data));
+                        // print(result);
+                        Directory path =
+                            (await getExternalCacheDirectories())[0];
                         String save =
                             "${path.path}/${DateTime.now().millisecondsSinceEpoch}${widget.url.substring(widget.url.lastIndexOf('.'))}";
                         await http.downloadFile(widget.url, save);
                         Navigator.of(context).pop();
-                        Toast.show("已保存至:$save", context,duration: Toast.LENGTH_LONG);
+                        Share.shareFiles([save], text: '来自大妈之家的分享');
                       }
                     },
                   )
