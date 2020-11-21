@@ -81,7 +81,12 @@ class DataBase {
     await initDataBase();
     var batch = _database.batch();
     batch.query("history", where: "name='$comicId'");
-    return batch.commit();
+    var data=await batch.commit();
+    try{
+      return data.first[0]['value'];
+    }catch(e){
+      return '';
+    }
   }
 
   insertUnread(String comicId, int timestamp) async {

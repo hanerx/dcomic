@@ -48,7 +48,7 @@ class _SettingPage extends State<SettingPage> {
     });
   }
 
-  setDownloadPath() async{
+  setDownloadPath() async {
     DataBase dataBase = DataBase();
     dataBase.setDownloadPath(downloadPath);
   }
@@ -135,23 +135,12 @@ class _SettingPage extends State<SettingPage> {
           children: <Widget>[
             ListTile(
               title: Text('阅读方向'),
-              subtitle: Text('${direction ? '垂直方向' : '横向方向'}'),
+              subtitle: Text('${direction ? '横向方向' : '垂直方向'}'),
               onTap: () {
                 setState(() {
                   direction = !direction;
                 });
                 setReadDirection();
-              },
-            ),
-            ListTile(
-              enabled: false,
-              title: Text('图片显示（已废弃，更多设置请从阅读器侧边栏进入）'),
-              subtitle: Text('${cover ? '等比放大并裁剪' : '填充不裁剪'}'),
-              onTap: () {
-                setState(() {
-                  cover = !cover;
-                });
-                setCoverType();
               },
             ),
             ListTile(
@@ -176,9 +165,9 @@ class _SettingPage extends State<SettingPage> {
               subtitle: Text('$downloadPath'),
               onTap: () async {
                 String result = await FilePicker.platform.getDirectoryPath();
-                if(result!=null){
+                if (result != null) {
                   setState(() {
-                    downloadPath=result;
+                    downloadPath = result;
                   });
                   setDownloadPath();
                 }

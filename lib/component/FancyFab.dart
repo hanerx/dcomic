@@ -6,8 +6,9 @@ class FancyFab extends StatefulWidget {
   final VoidCallback onSort;
   final VoidCallback onPlay;
   final VoidCallback onBlackBox;
+  final VoidCallback onDownload;
 
-  FancyFab({this.reverse: false, this.onSort, this.onPlay, this.onBlackBox});
+  FancyFab({this.reverse: false, this.onSort, this.onPlay, this.onBlackBox,this.onDownload});
 
   @override
   _FancyFabState createState() => _FancyFabState();
@@ -70,6 +71,22 @@ class _FancyFabState extends State<FancyFab>
       _animationController.reverse();
     }
     isOpened = !isOpened;
+  }
+
+  Widget download(){
+    return Container(
+      child: FloatingActionButton(
+        onPressed: (){
+          animate();
+          widget.onDownload();
+        },
+        heroTag: "download",
+        tooltip: '下载',
+        backgroundColor: Colors.deepOrange,
+        elevation: isOpened ? 16 : 0,
+        child: Icon(Icons.file_download),
+      ),
+    );
   }
 
   Widget add() {
@@ -137,6 +154,14 @@ class _FancyFabState extends State<FancyFab>
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
+        Transform(
+          transform: Matrix4.translationValues(
+            0.0,
+            _translateButton.value * 4.0,
+            0.0,
+          ),
+          child: download(),
+        ),
         Transform(
           transform: Matrix4.translationValues(
             0.0,
