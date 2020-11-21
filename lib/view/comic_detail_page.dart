@@ -8,10 +8,12 @@ import 'package:flutterdmzj/component/FancyFab.dart';
 import 'package:flutterdmzj/component/TypeTags.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
+import 'package:flutterdmzj/model/comicDetail.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:flutterdmzj/view/comment_page.dart';
 import 'package:flutterdmzj/view/login_page.dart';
 import 'package:markdown_widget/markdown_widget.dart';
+import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 
 import 'comic_viewer.dart';
@@ -25,393 +27,218 @@ class ComicDetailPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
-    return _ComicDetailPage(id);
+    return _ComicDetailPage();
   }
 }
 
 class _ComicDetailPage extends State<ComicDetailPage> {
-  String title = '加载中';
-  String id = '';
-  String cover = 'http://manhua.dmzj.com/css/img/mh_logo_dmzj.png?t=20131122';
-  List author = [];
-  List types = [];
-  int hotNum = 0;
-  int subscribeNum = 0;
-  String description = '加载中...';
-  bool error = false;
-  String updateDate = '';
-  String status = '加载中';
-  List chapters = <Widget>[];
-  bool login = false;
-  bool sub = false;
-  bool loading = false;
-  String uid = '';
-  String lastChapterId = '';
-  List lastChapterList = <Widget>[];
-  bool reverse = false;
-
-  _ComicDetailPage(this.id);
+  _ComicDetailPage();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    loadComic();
-    getIfSubscribe();
-    addReadHistory();
   }
 
   @override
   void deactivate() {
     super.deactivate();
-    var bool = ModalRoute.of(context).isCurrent;
-    if (bool) {
-      Future.delayed(Duration(milliseconds: 200)).then((e) {
-        loadComic();
-        getIfSubscribe();
-        addReadHistory();
-      });
-    }
+    // var bool = ModalRoute.of(context).isCurrent;
+    // if (bool) {
+    //   Future.delayed(Duration(milliseconds: 200)).then((e) {
+    //     loadComic();
+    //     getIfSubscribe();
+    //     addReadHistory();
+    //   });
+    // }
   }
 
-  addReadHistory() async {
-    DataBase dataBase = DataBase();
-    bool loginState = await dataBase.getLoginState();
-    if (loginState) {
-      var uid = await dataBase.getUid();
-      CustomHttp http = CustomHttp();
-      http.addReadHistory(id, uid);
-      http.addReadHistory0(id, uid);
-      http.addReadHistory1(id);
-      dataBase.insertUnread(id, DateTime.now().millisecondsSinceEpoch);
-    }
-  }
-
-  void loadComic() async {
-    try {
-      CustomHttp http = CustomHttp();
-      var response = await http.getComicDetail(id);
-      DataBase dataBase = DataBase();
-      var last = await dataBase.getHistory(id);
-      if (response.statusCode == 200 && mounted) {
-        setState(() {
-          title = response.data['title'];
-          cover = response.data['cover'];
-          List temp = <String>[];
-          author = response.data['authors'];
-          types = response.data['types'];
-          hotNum = response.data['hot_num'];
-          subscribeNum = response.data['subscribe_num'];
-          description = response.data['description'];
-          updateDate =
-              ToolMethods.formatTimestamp(response.data['last_updatetime']);
-          response.data['status'].forEach((value) {
-            temp.add(value['tag_name']);
-          });
-          status = temp.join('/');
-          chapters.clear();
-          List chapterData = response.data['chapters'];
-          print(
-              "class: ComicDetailPage, action: chapterLoading, chapterData: $chapterData");
-          for (var item in chapterData) {
-            var chapterList = <Widget>[];
-
-            //获取chapterId列表
-            var chapterIdList = item['data'].map((map) {
-              return map['chapter_id'].toString();
-            }).toList();
-
-            var length = chapterIdList.length;
-            chapterIdList = List.generate(
-                length, (index) => chapterIdList[length - 1 - index]);
-
-            print(
-                "class: ComicDetailPage, action: chapterIdListLoading, chapterList: $chapterIdList");
-
-            //记录上次阅读ID
-            if (lastChapterId == '' && item['data'].length > 0) {
-              lastChapterId = item['data'][item['data'].length - 1]
-                      ['chapter_id']
-                  .toString();
-              lastChapterList = chapterList;
-            }
-
-            for (var chapter in item['data']) {
-              if (last.first.length > 0 &&
-                  chapter['chapter_id'].toString() == last.first[0]['value']) {
-                lastChapterId = chapter['chapter_id'].toString();
-                lastChapterList = chapterIdList;
-                chapterList.add(Container(
-                  width: 120,
-                  margin: EdgeInsets.fromLTRB(3, 0, 3, 0),
-                  child: OutlineButton(
-                    child: Text(
-                      chapter['chapter_title'],
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: Colors.blue),
-                    ),
-                    onPressed: () {
-                      DataBase dataBase = DataBase();
-                      dataBase.addReadHistory(
-                          id,
-                          title,
-                          cover,
-                          chapter['chapter_title'],
-                          chapter['chapter_id'].toString(),
-                          DateTime.now().millisecondsSinceEpoch ~/ 1000);
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return ComicViewPage(
-                            comicId: id,
-                            chapterId: chapter['chapter_id'].toString(),
-                            chapterList: chapterIdList);
-                      }));
-                    },
-                  ),
-                ));
-              } else {
-                chapterList.add(Container(
-                  width: 120,
-                  margin: EdgeInsets.fromLTRB(3, 0, 3, 0),
-                  child: OutlineButton(
-                    child: Text(
-                      chapter['chapter_title'],
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    onPressed: () {
-                      DataBase dataBase = DataBase();
-                      dataBase.addReadHistory(
-                          id,
-                          title,
-                          cover,
-                          chapter['chapter_title'],
-                          chapter['chapter_id'].toString(),
-                          DateTime.now().millisecondsSinceEpoch ~/ 1000);
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return ComicViewPage(
-                            comicId: id,
-                            chapterId: chapter['chapter_id'].toString(),
-                            chapterList: chapterIdList);
-                      }));
-                    },
-                  ),
-                ));
-              }
-            }
-            if (reverse) {
-              var length = chapterList.length;
-              var tempList = List.generate(
-                  length, (index) => chapterList[length - 1 - index]);
-              chapterList = tempList;
-            }
-            chapters.add(Column(
-              children: <Widget>[
-                Divider(),
-                Text(item['title']),
-                Divider(),
-                Wrap(
-                  children: chapterList,
-                )
-              ],
-            ));
-          }
-        });
-      }
-    } catch (e) {
-      print(e);
-      setState(() {
-        error = true;
-      });
-    }
-  }
-
-  getIfSubscribe() async {
-    if (mounted) {
-      setState(() {
-        loading = true;
-      });
-    }
-    DataBase dataBase = DataBase();
-    bool loginState = await dataBase.getLoginState();
-    if (mounted) {
-      setState(() {
-        login = loginState;
-      });
-    }
-    if (login) {
-      uid = await dataBase.getUid();
-      CustomHttp http = CustomHttp();
-      var response = await http.getIfSubscribe(id, uid);
-      if (response.statusCode == 200 && mounted && response.data['code'] == 0) {
-        setState(() {
-          sub = true;
-        });
-      }
-    }
-    if (mounted) {
-      setState(() {
-        loading = false;
-      });
-    }
-  }
+  // addReadHistory() async {
+  //   DataBase dataBase = DataBase();
+  //   bool loginState = await dataBase.getLoginState();
+  //   if (loginState) {
+  //     var uid = await dataBase.getUid();
+  //     CustomHttp http = CustomHttp();
+  //     http.addReadHistory(id, uid);
+  //     http.addReadHistory0(id, uid);
+  //     http.addReadHistory1(id);
+  //     dataBase.insertUnread(id, DateTime.now().millisecondsSinceEpoch);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
-    if (error) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text('好像出了点问题！'),
-        ),
-        body: Center(
-          child: Text('漫画找不到了！'),
-        ),
-      );
-    }
-    // TODO: implement build
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.share),
-            onPressed: (){
-              Share.share('【$title】 dmzj://dmzj.com/comic?id=$id');
-            },
-          ),
-          Builder(
-            builder: (context) {
-              return IconButton(
-                icon: Icon(
-                  sub ? Icons.favorite : Icons.favorite_border,
-                  color: Colors.white,
-                ),
+//     if (error) {
+//       return Scaffold(
+//         appBar: AppBar(
+//           title: Text('好像出了点问题！'),
+//         ),
+//         body: Center(
+//           child: Text('漫画找不到了！'),
+//         ),
+//       );
+//     }
+//     // TODO: implement build
+    return ChangeNotifierProvider(
+      create: (_) => ComicDetailModel(widget.id),
+      builder: (context, child) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(Provider.of<ComicDetailModel>(context).title),
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(Icons.share),
                 onPressed: () {
-                  if (loading) {
-                    Scaffold.of(context).showSnackBar(
-                        new SnackBar(content: Text('订阅信息还在加载中!')));
-                  } else if (!login) {
-                    Scaffold.of(context).showSnackBar(new SnackBar(
-                      content: Text('请先登录!'),
-                      action: SnackBarAction(
-                        label: '去登录',
-                        onPressed: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return LoginPage();
-                          }));
-                        },
-                      ),
-                    ));
+                  Share.share(
+                      '【${Provider.of<ComicDetailModel>(context, listen: false).title}】 http://m.dmzj.com/info/${Provider.of<ComicDetailModel>(context, listen: false).comicId}.html');
+                },
+              ),
+              Builder(
+                builder: (context) {
+                  return IconButton(
+                    icon: Icon(
+                      Provider.of<ComicDetailModel>(context).sub
+                          ? Icons.favorite
+                          : Icons.favorite_border,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      if (Provider.of<ComicDetailModel>(context, listen: false)
+                          .loading) {
+                        Scaffold.of(context).showSnackBar(
+                            new SnackBar(content: Text('订阅信息还在加载中!')));
+                      } else if (!Provider.of<ComicDetailModel>(context,
+                              listen: false)
+                          .login) {
+                        Scaffold.of(context).showSnackBar(new SnackBar(
+                          content: Text('请先登录!'),
+                          action: SnackBarAction(
+                            label: '去登录',
+                            onPressed: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return LoginPage();
+                              }));
+                            },
+                          ),
+                        ));
+                      } else {
+                        Provider.of<ComicDetailModel>(context,listen: false).sub =
+                            !Provider.of<ComicDetailModel>(context,
+                                    listen: false)
+                                .sub;
+                      }
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
+          endDrawer: CustomDrawer(
+            child: CommentPage(
+                Provider.of<ComicDetailModel>(context, listen: false).comicId),
+            widthPercent: 0.9,
+          ),
+          floatingActionButton: Builder(
+            builder: (context) {
+              return FancyFab(
+                reverse: Provider.of<ComicDetailModel>(context).reverse,
+                onSort: () {
+                  Provider.of<ComicDetailModel>(context, listen: false)
+                          .reverse =
+                      !Provider.of<ComicDetailModel>(context, listen: false)
+                          .reverse;
+                },
+                onPlay: () {
+                  if (Provider.of<ComicDetailModel>(context, listen: false)
+                          .lastChapterId !=
+                      '') {
+                    // 由于navigator里面context不包含provider，所以要先放在外面
+                    var comicId =
+                        Provider.of<ComicDetailModel>(context, listen: false)
+                            .comicId;
+                    var lastChapterId =
+                        Provider.of<ComicDetailModel>(context, listen: false)
+                            .lastChapterId;
+                    var lastChapterList =
+                        Provider.of<ComicDetailModel>(context, listen: false)
+                            .lastChapterList;
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return ComicViewPage(
+                          comicId: comicId,
+                          chapterId: lastChapterId,
+                          chapterList: lastChapterList);
+                    }));
                   } else {
-                    CustomHttp http = CustomHttp();
-                    if (sub) {
-                      http.cancelSubscribe(id, uid).then((response) {
-                        if (response.statusCode == 200 &&
-                            response.data['code'] == 0 &&
-                            mounted) {
-                          setState(() {
-                            sub = false;
-                          });
-                        }
-                      });
-                    } else {
-                      http.addSubscribe(id, uid).then((response) {
-                        if (response.statusCode == 200 &&
-                            response.data['code'] == 0 &&
-                            mounted) {
-                          setState(() {
-                            sub = true;
-                          });
-                        }
-                      });
-                    }
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                      content: Text('好像没得记录，没法继续阅读'),
+                    ));
                   }
+                },
+                onBlackBox: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return SimpleDialog(
+                          children: [
+                            SimpleDialogOption(
+                              child: Text("Ops! 你遇到了一个没有用的按钮"),
+                            )
+                          ],
+                        );
+                      });
+                },
+                onDownload: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return Dialog(
+                          child: Container(),
+                        );
+                      });
                 },
               );
             },
           ),
-//            IconButton(
-//              icon: Icon(Icons.forum),
-//              onPressed: () {
-//                Navigator.push(context, MaterialPageRoute(builder: (context) {
-//                  return CommentPage(id);
-//                }));
-//              },
-//            )
-        ],
-      ),
-      endDrawer: CustomDrawer(
-        child: CommentPage(id),
-        widthPercent: 0.9,
-      ),
-      floatingActionButton: Builder(
-        builder: (context) {
-          return FancyFab(
-            reverse: reverse,
-            onSort: () {
-              setState(() {
-                reverse = !reverse;
-              });
-              loadComic();
-            },
-            onPlay: () {
-              if (lastChapterId != '') {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return ComicViewPage(
-                      comicId: id,
-                      chapterId: lastChapterId,
-                      chapterList: lastChapterList);
-                }));
-              } else {
-                Scaffold.of(context).showSnackBar(SnackBar(
-                  content: Text('好像没得记录，没法继续阅读'),
-                ));
-              }
-            },
-            onBlackBox: () {
-              showDialog(
-                  context: context,
-                  builder: (context) {
-                    return SimpleDialog(
-                      children: [
-                        SimpleDialogOption(
-                          child: Text("Ops! 你遇到了一个没有用的按钮"),
-                        )
-                      ],
-                    );
-                  });
-            },
-          );
-        },
-      ),
-      body: SingleChildScrollView(
-        child: new Column(
-          children: <Widget>[
-            Row(
+          body: SingleChildScrollView(
+            child: new Column(
               children: <Widget>[
-                Expanded(
-                  child: Parallax.inside(
-                    child: Image(
-                        image: CachedNetworkImageProvider(cover,
-                            headers: {'referer': 'http://images.dmzj.com'}),
-                        fit: BoxFit.cover),
-                    mainAxisExtent: 200.0,
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Parallax.inside(
+                        child: Image(
+                            image: CachedNetworkImageProvider(
+                                Provider.of<ComicDetailModel>(context).cover,
+                                headers: {'referer': 'http://images.dmzj.com'}),
+                            fit: BoxFit.cover),
+                        mainAxisExtent: 200.0,
+                      ),
+                    )
+                  ],
+                ),
+                DetailCard(
+                    Provider.of<ComicDetailModel>(context).title,
+                    Provider.of<ComicDetailModel>(context).updateDate,
+                    Provider.of<ComicDetailModel>(context).status,
+                    Provider.of<ComicDetailModel>(context).author,
+                    Provider.of<ComicDetailModel>(context).types,
+                    Provider.of<ComicDetailModel>(context).hotNum,
+                    Provider.of<ComicDetailModel>(context).subscribeNum,
+                    Provider.of<ComicDetailModel>(context).description),
+                Card(
+                  margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                  child: Column(
+                    children: Provider.of<ComicDetailModel>(context)
+                        .buildChapterWidgetList(context),
                   ),
                 )
               ],
             ),
-            DetailCard(title, updateDate, status, author, types, hotNum,
-                subscribeNum, description),
-            Card(
-              margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
-              child: Column(children: chapters),
-            )
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
