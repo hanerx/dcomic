@@ -1,10 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:flutterdmzj/view/comic_viewer.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 
 /// 漫画详情页，记录漫画订阅记录，漫画阅读记录，漫画下载记录，和提供章节的列表
 /// 预计多次迭代
@@ -43,8 +48,25 @@ class ComicDetailModel extends ChangeNotifier {
   ComicDetailModel(this.comicId) {
     print('class: ComicDetailModel, action: init, comicId: ${this.comicId}');
     this.getComic(this.comicId).then((value) {
-      this.getHistory(comicId).then((value) => this.getIfSubscribe(comicId));
+      this.getHistory(comicId).then((value) => this
+          .getIfSubscribe(comicId)
+          .then((value) => this.addReadHistory(comicId)));
     });
+  }
+
+  Future<void> addReadHistory(comicId) async {
+    // 添加历史记录
+    DataBase dataBase = DataBase();
+    bool loginState = await dataBase.getLoginState();
+    if (loginState) {
+      var uid = await dataBase.getUid();
+      CustomHttp http = CustomHttp();
+      http.addReadHistory(comicId, uid);
+      http.addReadHistory0(comicId, uid);
+      http.addReadHistory1(comicId);
+      http.setUpRead(comicId);
+      dataBase.insertUnread(comicId, DateTime.now().millisecondsSinceEpoch);
+    }
   }
 
   Future<void> getHistory(comicId) async {
@@ -138,41 +160,88 @@ class ComicDetailModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  Widget _buildBasicButton(context, String title, style, VoidCallback onPress,
+      {double width: 120}) {
+    return Container(
+      width: width,
+      margin: EdgeInsets.fromLTRB(3, 0, 3, 0),
+      child: OutlineButton(
+        child: Text(
+          title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: style,
+        ),
+        onPressed: onPress,
+      ),
+    );
+  }
+
   Widget _buildButton(context, chapter, chapterIdList) {
     //创建章节UI
     // print(
     //     'chapter: ${chapter['chapter_id']}, lastChapterId: $lastChapterId, status: ${chapter['chapter_id'].toString() == Provider.of<ComicDetailModel>(context).lastChapterId}');
-    return Container(
-      width: 120,
-      margin: EdgeInsets.fromLTRB(3, 0, 3, 0),
-      child: OutlineButton(
-        child: Text(
+    return _buildBasicButton(
+        context,
+        chapter['chapter_title'],
+        chapter['chapter_id'].toString() ==
+                Provider.of<ComicDetailModel>(context).lastChapterId
+            ? TextStyle(color: Colors.blue)
+            : null, () {
+      DataBase dataBase = DataBase();
+      dataBase.addReadHistory(
+          comicId,
+          title,
+          cover,
           chapter['chapter_title'],
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: chapter['chapter_id'].toString() ==
-                  Provider.of<ComicDetailModel>(context).lastChapterId
-              ? TextStyle(color: Colors.blue)
-              : null,
-        ),
-        onPressed: () {
-          DataBase dataBase = DataBase();
-          dataBase.addReadHistory(
-              comicId,
-              title,
-              cover,
-              chapter['chapter_title'],
-              chapter['chapter_id'].toString(),
-              DateTime.now().millisecondsSinceEpoch ~/ 1000);
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return ComicViewPage(
-                comicId: comicId,
-                chapterId: chapter['chapter_id'].toString(),
-                chapterList: chapterIdList);
-          }));
-        },
-      ),
-    );
+          chapter['chapter_id'].toString(),
+          DateTime.now().millisecondsSinceEpoch ~/ 1000);
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return ComicViewPage(
+            comicId: comicId,
+            chapterId: chapter['chapter_id'].toString(),
+            chapterList: chapterIdList);
+      }));
+    });
+  }
+
+  Future<List<dynamic>> downloadChapter(comicId, chapterId) async {
+    var state = await Permission.storage.request().isGranted;
+    if (state) {
+      CustomHttp http = CustomHttp();
+      var response = await http.getComic(comicId, chapterId);
+      DataBase dataBase = DataBase();
+      var path = await dataBase.getDownloadPath();
+      List data = [];
+      if (response.statusCode == 200) {
+        var directory=Directory('$path/chapters/$comicId/$chapterId');
+        if(!await directory.exists()){
+          await directory.create(recursive: true);
+        }
+        for (var item in response.data['page_url']) {
+          var taskId = await FlutterDownloader.enqueue(
+            headers:  {'referer': 'http://images.dmzj.com'},
+            url: item,
+            savedDir: '$path/chapters/$comicId/$chapterId',
+            showNotification: false,
+            // show download progress in status bar (for Android)
+            openFileFromNotification:
+                false, // click on notification to open downloaded file (for Android)
+          );
+          data.add(taskId);
+        }
+      }
+      return data;
+    }
+    return null;
+  }
+
+  Widget _buildDownloadButton(context, chapter) {
+    return _buildBasicButton(context, chapter['chapter_title'], null, () async {
+      List list =
+          await downloadChapter(comicId, chapter['chapter_id'].toString());
+      print('class: ComicDetailModel, action: downloadChapter, tasks: $list');
+    }, width: 80);
   }
 
   List<Widget> buildChapterWidgetList(context) {
@@ -211,6 +280,35 @@ class ComicDetailModel extends ChangeNotifier {
     return lists;
   }
 
+  List<Widget> buildDownloadWidgetList(context) {
+    List<Widget> lists = [];
+    for (var item in this.chapters) {
+      // 生成每版的章节列表
+      List<Widget> chapterList = item['data']
+          .map<Widget>((value) => _buildDownloadButton(context, value))
+          .toList();
+      // 反向排序
+      if (_reverse) {
+        var tempList = List.generate(chapterList.length,
+            (index) => chapterList[chapterList.length - 1 - index]);
+        chapterList = tempList;
+      }
+
+      //添加每版
+      lists.add(Column(
+        children: <Widget>[
+          Divider(),
+          Text(item['title']),
+          Divider(),
+          Wrap(
+            children: chapterList,
+          )
+        ],
+      ));
+    }
+    return lists;
+  }
+
   set reverse(bool reverse) {
     this._reverse = reverse;
     notifyListeners();
@@ -224,7 +322,8 @@ class ComicDetailModel extends ChangeNotifier {
       http.addSubscribe(comicId, uid).then((response) {
         if (response.statusCode == 200 && response.data['code'] == 0) {
           this._sub = true;
-          print('class: ComicDetailModel, action: AddSubscribe, status: ${this._sub}');
+          print(
+              'class: ComicDetailModel, action: AddSubscribe, status: ${this._sub}');
           notifyListeners();
         }
       });
@@ -232,7 +331,8 @@ class ComicDetailModel extends ChangeNotifier {
       http.cancelSubscribe(comicId, uid).then((response) {
         if (response.statusCode == 200 && response.data['code'] == 0) {
           this._sub = false;
-          print('class: ComicDetailModel, action: CancelSubscribe, status: ${this._sub}');
+          print(
+              'class: ComicDetailModel, action: CancelSubscribe, status: ${this._sub}');
           notifyListeners();
         }
       });
