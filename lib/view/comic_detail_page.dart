@@ -53,19 +53,6 @@ class _ComicDetailPage extends State<ComicDetailPage> {
     // }
   }
 
-  // addReadHistory() async {
-  //   DataBase dataBase = DataBase();
-  //   bool loginState = await dataBase.getLoginState();
-  //   if (loginState) {
-  //     var uid = await dataBase.getUid();
-  //     CustomHttp http = CustomHttp();
-  //     http.addReadHistory(id, uid);
-  //     http.addReadHistory0(id, uid);
-  //     http.addReadHistory1(id);
-  //     dataBase.insertUnread(id, DateTime.now().millisecondsSinceEpoch);
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
 //     if (error) {
@@ -123,10 +110,10 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                           ),
                         ));
                       } else {
-                        Provider.of<ComicDetailModel>(context,listen: false).sub =
-                            !Provider.of<ComicDetailModel>(context,
-                                    listen: false)
-                                .sub;
+                        Provider.of<ComicDetailModel>(context, listen: false)
+                            .sub = !Provider.of<ComicDetailModel>(context,
+                                listen: false)
+                            .sub;
                       }
                     },
                   );
@@ -190,11 +177,19 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                       });
                 },
                 onDownload: () {
+                  List<Widget> list=Provider.of<ComicDetailModel>(context,listen: false)
+                      .buildDownloadWidgetList(context);
                   showDialog(
                       context: context,
                       builder: (context) {
                         return Dialog(
-                          child: Container(),
+                          child: Container(
+                            child: SingleChildScrollView(
+                              child: Column(
+                                children: list,
+                              ),
+                            ),
+                          ),
                         );
                       });
                 },

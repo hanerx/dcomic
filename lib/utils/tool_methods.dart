@@ -1,4 +1,5 @@
-
+import 'dart:isolate';
+import 'dart:ui';
 
 class ToolMethods {
   static String formatTimestamp(int timestamp) {
@@ -21,4 +22,15 @@ class ToolMethods {
     return false;
   }
 
+  static void downloadCallback(id, status, progress) {
+    print(
+        "class: ToolMethod, action: downloadCallback, taskId: $id, status: $status, progress: $progress");
+    try {
+      final SendPort send =
+          IsolateNameServer.lookupPortByName('downloader_send_port');
+      send.send([id, status, progress]);
+    } catch (e) {
+      print('class: ToolMethod, action: downloadCallbackFailed, exception: $e');
+    }
+  }
 }

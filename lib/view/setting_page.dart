@@ -2,6 +2,7 @@ import 'package:event_bus/event_bus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/event/CustomEventBus.dart';
 import 'package:flutterdmzj/event/ThemeChangeEvent.dart';
@@ -12,6 +13,7 @@ import 'package:flutterdmzj/view/lab_setting_page.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:toast/toast.dart';
 
 class SettingPage extends StatefulWidget {
   @override
@@ -180,16 +182,126 @@ class _SettingPage extends State<SettingPage> {
               subtitle: Text(
                   '${StaticLanguage.staticStrings['settingPage.deleteDatabaseSubTitle']}'),
               onTap: () {
-                DataBase dataBase = DataBase();
-                dataBase.resetDataBase();
-                Navigator.of(context).pop();
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: Text('确认重置？'),
+                        content: Text('该操作将会重置数据库中的所有内容且不可恢复，是否重置？'),
+                        actions: [
+                          FlatButton(
+                            child: Text('取消'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          FlatButton(
+                            child: Text('确认'),
+                            onPressed: () {
+                              DataBase dataBase = DataBase();
+                              dataBase.resetDataBase();
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pop();
+                            },
+                          )
+                        ],
+                      );
+                    });
               },
             ),
             ListTile(
               title: Text('清除所有请求缓存'),
               subtitle: Text('该操作将会把dio http cache的托管的缓存全部清除，危险操作'),
               onTap: () {
-                CustomHttp().clearCache();
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: Text('确认重置？'),
+                        content:
+                            Text('该操作将会重置Dio的所有网络请求缓存，网络响应速度将会不同程度的下降，是否重置？'),
+                        actions: [
+                          FlatButton(
+                            child: Text('取消'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          FlatButton(
+                            child: Text('确认'),
+                            onPressed: () {
+                              CustomHttp().clearCache();
+                              Navigator.of(context).pop();
+                            },
+                          )
+                        ],
+                      );
+                    });
+              },
+            ),
+            Divider(),
+            ListTile(
+              title: Text('取消所有下载进程'),
+              subtitle: Text('该操作会取消所有下载进程，用于debug，危险操作'),
+              onTap: () {
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: Text('确认取消？'),
+                        content: Text('该操作将取消所有正在下载的进程，用于debug，是否确认？'),
+                        actions: [
+                          FlatButton(
+                            child: Text('取消'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          FlatButton(
+                            child: Text('确认'),
+                            onPressed: () {
+                              print('class: SettingPage, action: cancelTasks');
+                              FlutterDownloader.cancelAll();
+                              Navigator.of(context).pop();
+                            },
+                          )
+                        ],
+                      );
+                    });
+              },
+            ),
+            ListTile(
+              title: Text('查看所有数据'),
+              subtitle: Text('查看所有下载进程，用于debug'),
+              onTap: () async {
+                final tasks = await FlutterDownloader.loadTasks();
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return SimpleDialog(
+                        title: Text('下载进程列表'),
+                        titlePadding: EdgeInsets.all(10),
+                        children: tasks
+                            .map<Widget>((e) => ListTile(
+                                  dense: true,
+                                  leading: CircleAvatar(
+                                    child: Text('${e.status.value}'),
+                                  ),
+                                  title: Text('${e.taskId}'),
+                                  subtitle: Text('${e.url}'),
+                                  trailing: Text('${e.progress}%'),
+                                  onTap: () async {
+                                    if (!await FlutterDownloader.open(
+                                        taskId: e.taskId)) {
+                                      Toast.show("打开失败，请检查下载任务是否完成", context,
+                                          duration: Toast.LENGTH_LONG);
+                                    }
+                                  },
+                                  onLongPress: () {},
+                                ))
+                            .toList(),
+                      );
+                    });
               },
             ),
             Divider(),
@@ -255,6 +367,7 @@ class _SettingPage extends State<SettingPage> {
                     builder: (context) {
                       return SimpleDialog(
                         title: Text('免责声明'),
+                        titlePadding: EdgeInsets.all(10),
                         children: <Widget>[
                           SimpleDialogOption(
                             child: Text(
@@ -282,6 +395,7 @@ class _SettingPage extends State<SettingPage> {
                     builder: (context) {
                       return SimpleDialog(
                         title: Text('FAQ'),
+                        titlePadding: EdgeInsets.all(10),
                         children: <Widget>[
                           ListTile(
                             title: Text('Q:为啥会有这个东西？'),
@@ -360,7 +474,7 @@ class _SettingPage extends State<SettingPage> {
                       return AboutDialog(
                         applicationName: '$appName',
                         applicationVersion: '$version',
-                        applicationIcon: Icon(Icons.adb),
+                        applicationIcon: FlutterLogo(),
                         children: <Widget>[
                           Text('基于flutter的第三方动漫之家简单app'),
                         ],

@@ -101,7 +101,8 @@ class CustomHttp {
   }
 
   Future<Response<T>> login<T>(String username, String password) {
-    print("class: http, action: login, url: 'https://i.dmzj.com/api/login?callback=&nickname=$username&password=$password&type=1'");
+    print(
+        "class: http, action: login, url: 'https://i.dmzj.com/api/login?callback=&nickname=$username&password=$password&type=1'");
     return unCachedDio.get(
         'https://i.dmzj.com/api/login?callback=&nickname=$username&password=$password&type=1');
   }
@@ -153,6 +154,13 @@ class CustomHttp {
         options: options, data: formData);
   }
 
+  Future<Response<T>> setUpRead<T>(String subId) async {
+    Options options = await this.setHeader();
+    return unCachedDio.get(
+        'https://interface.dmzj.com/api/subscribe/upread?sub_id=$subId',
+        options: options);
+  }
+
   Future<Response<T>> getReadHistory<T>(String uid, int page) {
     return dio.get(
         "https://interface.dmzj.com/api/getReInfo/comic/$uid/$page?$queryOptions",
@@ -189,8 +197,7 @@ class CustomHttp {
   }
 
   Future<Response<T>> getReleases<T>() {
-    return dio.get(
-        'https://api.github.com/repos/hanerx/flutter_dmzj/releases');
+    return dio.get('https://api.github.com/repos/hanerx/flutter_dmzj/releases');
   }
 
   Future<Response<T>> getAuthor<T>(int authorId) {

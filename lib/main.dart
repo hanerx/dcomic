@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutterdmzj/component/Drawer.dart';
 import 'package:flutterdmzj/database/database.dart';
@@ -64,14 +65,24 @@ class _MainFrame extends State<MainFrame> {
     });
   }
 
+  initDownloader() async{
+    print("class: MainFrame, action: initDownloader");
+    WidgetsFlutterBinding.ensureInitialized();
+    await FlutterDownloader.initialize(
+        debug: true // optional: set false to disable printing logs to console
+    );
+    FlutterDownloader.registerCallback(ToolMethods.downloadCallback);
+  }
+
 
 
   @override
-  void initState() {
+  void initState(){
     // TODO: implement initState
     super.initState();
     getDarkState();
     registerEvent();
+    initDownloader();
   }
 
   registerEvent() {
