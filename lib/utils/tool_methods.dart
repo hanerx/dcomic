@@ -1,6 +1,9 @@
 import 'dart:isolate';
 import 'dart:ui';
 
+import 'package:flutterdmzj/utils/log_output.dart';
+import 'package:logger/logger.dart';
+
 class ToolMethods {
   static String formatTimestamp(int timestamp) {
     var dateTime = DateTime.fromMicrosecondsSinceEpoch(timestamp * 1000000);
@@ -23,14 +26,17 @@ class ToolMethods {
   }
 
   static void downloadCallback(id, status, progress) {
-    print(
-        "class: ToolMethod, action: downloadCallback, taskId: $id, status: $status, progress: $progress");
+    var logger=Logger(
+      printer: PrettyPrinter(),
+      output: ConsoleLogOutput(),
+    );
+    logger.i("action: downloadCallback, taskId: $id, status: $status, progress: $progress");
     try {
       final SendPort send =
           IsolateNameServer.lookupPortByName('downloader_send_port');
       send.send([id, status, progress]);
     } catch (e) {
-      print('class: ToolMethod, action: downloadCallbackFailed, exception: $e');
+      logger.w('action: downloadCallbackFailed, exception: $e');
     }
   }
 }

@@ -1,13 +1,21 @@
+import 'package:flutterdmzj/utils/log_output.dart';
+import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DataBase {
   Database _database;
+  Logger _logger;
 
-  DataBase();
+  DataBase(){
+    _logger=Logger(
+      printer: PrettyPrinter(),
+      output: ConsoleLogOutput()
+    );
+  }
 
   initDataBase() async {
-    _database = await openDatabase("dmzj_2.db", version: 10,
+    _database = await openDatabase("dmzj_2.db", version: 11,
         onCreate: (Database db, int version) async {
       await db.execute(
           "CREATE TABLE cookies (id INTEGER PRIMARY KEY, key TEXT, value TEXT)");
@@ -19,10 +27,12 @@ class DataBase {
           "CREATE TABLE unread (id INTEGER PRIMARY KEY, comicId TEXT, timestamp INTEGER)");
       await db.execute(
           "CREATE TABLE local_history (id INTEGER PRIMARY KEY, comicId TEXT, timestamp INTEGER,cover TEXT,title TEXT,last_chapter TEXT,last_chapter_id TEXT)");
+      await db.execute("CREATE TABLE download_comic_info (id INTEGER PRIMARY KEY, comicId TEXT, cover TEXT, title TEXT)");
+      await db.execute("CREATE TABLE download_chapter_info (id INTEGER PRIMARY KEY, comicId TEXT, chapterId TEXT, tasks TEXT, title TEXT)");
     }, onUpgrade: (Database db, int version, int x) async {
-      print('update');
-      await db.execute(
-          "CREATE TABLE local_history (id INTEGER PRIMARY KEY, comicId TEXT, timestamp INTEGER,cover TEXT,title TEXT,last_chapter TEXT,last_chapter_id TEXT)");
+      print('class: DataBase, action: upgrade, version: $version');
+      await db.execute("CREATE TABLE download_comic_info (id INTEGER PRIMARY KEY, comicId TEXT, cover TEXT, title TEXT)");
+      await db.execute("CREATE TABLE download_chapter_info (id INTEGER PRIMARY KEY, comicId TEXT, chapterId TEXT, tasks TEXT, title TEXT)");
     });
   }
 
@@ -149,7 +159,7 @@ class DataBase {
     try {
       return result.first[0]['value'];
     } catch (e) {
-      print(e);
+      _logger.w('action: uidNotFound, exception: $e');
     }
     return '';
   }
@@ -164,7 +174,7 @@ class DataBase {
         return true;
       }
     } catch (e) {
-      print(e);
+      _logger.w('action: loginStateNotFound, exception: $e');
     }
     return false;
   }
@@ -188,8 +198,7 @@ class DataBase {
         return true;
       }
     } catch (e) {
-      print('!');
-      print(e);
+      _logger.w('action: readDirectionNotFound, exception: $e');
     }
     return false;
   }
@@ -212,8 +221,7 @@ class DataBase {
         return true;
       }
     } catch (e) {
-      print('!');
-      print(e);
+      _logger.w('action: coverTypeNotFound, exception: $e');
     }
     return false;
   }
@@ -234,8 +242,7 @@ class DataBase {
     try {
       return result.first[0]['value'];
     } catch (e) {
-      print('!');
-      print(e);
+      _logger.w('action: versionNotFound, exception: $e');
     }
     return '';
   }
@@ -259,8 +266,7 @@ class DataBase {
         return true;
       }
     } catch (e) {
-      print('!');
-      print(e);
+      _logger.w('action: clickToReadNotFound, exception: $e');
     }
     return false;
   }
@@ -282,8 +288,7 @@ class DataBase {
     try {
       return double.parse(result.first[0]['value']);
     } catch (e) {
-      print('!');
-      print(e);
+      _logger.w('action: controlSizeNotFound, exception: $e');
     }
     return 100.0.toDouble();
   }
@@ -304,8 +309,7 @@ class DataBase {
     try {
       return double.parse(result.first[0]['value']);
     } catch (e) {
-      print('!');
-      print(e);
+        _logger.w('action: rangeNotFound, exception: $e');
     }
     return 500.toDouble();
   }
@@ -329,8 +333,7 @@ class DataBase {
         return true;
       }
     } catch (e) {
-      print('!');
-      print(e);
+      _logger.w('action: labStateNotFound, exception: $e');
     }
     return false;
   }
@@ -354,8 +357,7 @@ class DataBase {
         return true;
       }
     } catch (e) {
-      print('!');
-      print(e);
+      _logger.w('action: deepSearchNotFound, exception: $e');
     }
     return false;
   }
@@ -379,8 +381,7 @@ class DataBase {
         return true;
       }
     } catch (e) {
-      print('!');
-      print(e);
+      _logger.w('action: darkSideNotFound, exception: $e');
     }
     return false;
   }
@@ -404,8 +405,7 @@ class DataBase {
         return true;
       }
     } catch (e) {
-      print('!');
-      print(e);
+      _logger.w('action: blackBoxNotFound, exception: $e');
     }
     return false;
   }
@@ -427,8 +427,7 @@ class DataBase {
     try {
       return result.first[0]['value'];
     } catch (e) {
-      print('!');
-      print(e);
+      _logger.w('action: downloadPathNotFound, exception: $e');
     }
     return (await getExternalStorageDirectory()).path;
   }
@@ -449,8 +448,7 @@ class DataBase {
     try {
       return int.parse(result.first[0]['value']);
     } catch (e) {
-      print('!');
-      print(e);
+      _logger.w('action: darkModeNotFound, exception: $e');
     }
     return 0;
   }
@@ -474,8 +472,7 @@ class DataBase {
         return true;
       }
     } catch (e) {
-      print('!');
-      print(e);
+      _logger.w('action: horizontalDirectionNotFound, exception: $e');
     }
     return false;
   }

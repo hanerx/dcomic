@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterdmzj/database/database.dart';
+import 'package:flutterdmzj/database/downloader.dart';
 import 'package:flutterdmzj/http/http.dart';
+import 'package:flutterdmzj/model/baseModel.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:flutterdmzj/view/comic_viewer.dart';
 import 'package:path_provider/path_provider.dart';
@@ -13,7 +15,7 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 
 /// 漫画详情页，记录漫画订阅记录，漫画阅读记录，漫画下载记录，和提供章节的列表
 /// 预计多次迭代
-class ComicDetailModel extends ChangeNotifier {
+class ComicDetailModel extends BaseModel {
   //漫画ID
   final String comicId;
 
@@ -206,21 +208,26 @@ class ComicDetailModel extends ChangeNotifier {
   }
 
   Future<List<dynamic>> downloadChapter(comicId, chapterId) async {
+    DownloadProvider downloadProvider = DownloadProvider();
+    if (await downloadProvider.getChapter(chapterId) != null) {
+      return null;
+    }
     var state = await Permission.storage.request().isGranted;
     if (state) {
       CustomHttp http = CustomHttp();
       var response = await http.getComic(comicId, chapterId);
       DataBase dataBase = DataBase();
       var path = await dataBase.getDownloadPath();
-      List data = [];
+
+      List data = <String>[];
       if (response.statusCode == 200) {
-        var directory=Directory('$path/chapters/$comicId/$chapterId');
-        if(!await directory.exists()){
+        var directory = Directory('$path/chapters/$comicId/$chapterId');
+        if (!await directory.exists()) {
           await directory.create(recursive: true);
         }
         for (var item in response.data['page_url']) {
-          var taskId = await FlutterDownloader.enqueue(
-            headers:  {'referer': 'http://images.dmzj.com'},
+          String taskId = await FlutterDownloader.enqueue(
+            headers: {'referer': 'http://images.dmzj.com'},
             url: item,
             savedDir: '$path/chapters/$comicId/$chapterId',
             showNotification: false,
@@ -231,16 +238,35 @@ class ComicDetailModel extends ChangeNotifier {
           data.add(taskId);
         }
       }
+      if (await downloadProvider.getComic(comicId) == null) {
+        Comic comic = Comic();
+        comic.title = title;
+        comic.cover = cover;
+        comic.comicId = comicId;
+        await downloadProvider.insertComic(comic);
+      }
+      Chapter chapter = Chapter();
+      chapter.comicId = comicId;
+      chapter.tasks = data;
+      chapter.chapterId = chapterId;
+      chapter.title = response.data['title'];
+      await downloadProvider.insertChapter(chapter);
+      notifyListeners();
       return data;
     }
     return null;
   }
 
-  Widget _buildDownloadButton(context, chapter) {
+  Future<Widget> _buildDownloadButton(context, chapter) async {
+    DownloadProvider downloadProvider = DownloadProvider();
+    if (await downloadProvider.getChapter(chapter['chapter_id'].toString()) != null) {
+      return _buildBasicButton(context, chapter['chapter_title'], null, null,
+          width: 80);
+    }
     return _buildBasicButton(context, chapter['chapter_title'], null, () async {
       List list =
           await downloadChapter(comicId, chapter['chapter_id'].toString());
-      print('class: ComicDetailModel, action: downloadChapter, tasks: $list');
+      logger.i('action: downloadChapter, chapterId: ${chapter['chapter_id']}, tasks: $list');
     }, width: 80);
   }
 
@@ -280,13 +306,14 @@ class ComicDetailModel extends ChangeNotifier {
     return lists;
   }
 
-  List<Widget> buildDownloadWidgetList(context) {
+  Future<List<Widget>> buildDownloadWidgetList(context) async {
     List<Widget> lists = [];
     for (var item in this.chapters) {
       // 生成每版的章节列表
-      List<Widget> chapterList = item['data']
-          .map<Widget>((value) => _buildDownloadButton(context, value))
-          .toList();
+      List<Widget> chapterList = [];
+      for (var value in item['data']) {
+        chapterList.add(await _buildDownloadButton(context, value));
+      }
       // 反向排序
       if (_reverse) {
         var tempList = List.generate(chapterList.length,

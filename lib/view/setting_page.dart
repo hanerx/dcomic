@@ -10,6 +10,7 @@ import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/utils/static_language.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:flutterdmzj/view/lab_setting_page.dart';
+import 'package:logger_flutter/logger_flutter.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -302,6 +303,14 @@ class _SettingPage extends State<SettingPage> {
                             .toList(),
                       );
                     });
+              },
+            ),
+            Divider(),
+            ListTile(
+              title: Text('打开日志控制台'),
+              subtitle: Text("你也可以摇一摇打开"),
+              onTap: (){
+                LogConsole.open(context);
               },
             ),
             Divider(),
