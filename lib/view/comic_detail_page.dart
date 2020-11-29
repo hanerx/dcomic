@@ -77,7 +77,7 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                 icon: Icon(Icons.share),
                 onPressed: () {
                   Share.share(
-                      '【${Provider.of<ComicDetailModel>(context, listen: false).title}】 http://m.dmzj.com/info/${Provider.of<ComicDetailModel>(context, listen: false).comicId}.html');
+                      '【${Provider.of<ComicDetailModel>(context, listen: false).title}】 https://m.dmzj.com/info/${Provider.of<ComicDetailModel>(context, listen: false).comicId}.html');
                 },
               ),
               Builder(
@@ -176,8 +176,8 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                         );
                       });
                 },
-                onDownload: () {
-                  List<Widget> list=Provider.of<ComicDetailModel>(context,listen: false)
+                onDownload: () async{
+                  List<Widget> list=await Provider.of<ComicDetailModel>(context,listen: false)
                       .buildDownloadWidgetList(context);
                   showDialog(
                       context: context,

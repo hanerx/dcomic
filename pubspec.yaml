@@ -42,6 +42,9 @@ dependencies:
   share: ^0.6.5+2
   file_picker: ^2.0.6
   flutter_downloader: ^1.5.2
+  logger: ^0.9.4
+  logger_flutter:
+    git: https://github.com/ewertonrp/logger_flutter.git
   flutter_localizations:
     sdk: flutter
 

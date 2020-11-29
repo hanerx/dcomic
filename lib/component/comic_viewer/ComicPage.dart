@@ -16,9 +16,16 @@ class ComicPage extends StatefulWidget {
   final String title;
   final int index;
   final bool cover;
+  final bool local;
 
   const ComicPage(
-      {Key key, this.url, this.chapterId, this.title, this.index, this.cover})
+      {Key key,
+      this.url,
+      this.chapterId,
+      this.title,
+      this.index,
+      this.cover,
+      this.local: false})
       : super(key: key);
 
   @override
@@ -33,6 +40,15 @@ class _ComicPage extends State<ComicPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.local) {
+      return Image.file(
+        File(widget.url),
+        fit: widget.cover ? BoxFit.cover : BoxFit.contain,
+        errorBuilder: (context, object, stack) {
+          return Icon(Icons.error);
+        },
+      );
+    }
     // TODO: implement build
     return GestureDetector(
       onLongPress: () {

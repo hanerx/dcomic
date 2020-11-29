@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterdmzj/model/download.dart';
+import 'package:provider/provider.dart';
 
 class DownloadPage extends StatefulWidget {
   @override
@@ -9,21 +11,30 @@ class DownloadPage extends StatefulWidget {
   }
 }
 
-
 class _DownloadPage extends State<DownloadPage> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('下载管理'),
-      ),
-      body: new Scrollbar(
-          child: SingleChildScrollView(
-        child: new Center(
-          child: Text('还没实装~'),
-        ),
-      )),
+    return ChangeNotifierProvider(
+      create: (_) => DownloadModel(),
+      builder: (context, child) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text('下载管理'),
+          ),
+          body: new Scrollbar(
+              child: SingleChildScrollView(
+            child: new Center(
+              child: ListView.builder(
+                itemBuilder:
+                    Provider.of<DownloadModel>(context).buildComicListTile,
+                itemCount: Provider.of<DownloadModel>(context).length,
+                shrinkWrap: true,
+              ),
+            ),
+          )),
+        );
+      },
     );
   }
 }
