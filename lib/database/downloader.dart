@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -29,6 +31,19 @@ class Chapter {
     chapterId = map['chapterId'];
     comicId = map['comicId'];
     tasks = map['tasks'].split(',');
+  }
+
+  Future<void> delete() async{
+    try{
+      for(var item in await paths){
+        var file=File(item);
+        if(await file.exists()){
+          file.delete();
+        }
+      }
+    }catch(e){
+
+    }
   }
 
   Future<int> get progress async {
@@ -136,6 +151,12 @@ class DownloadProvider {
     return null;
   }
 
+  Future<int> deleteChapter(Chapter chapter) async{
+    await initDataBase();
+    await chapter.delete();
+    return await _database.delete('download_chapter_info',where: 'chapterId=?',whereArgs: [chapter.chapterId]);
+  }
+
   Future<Comic> insertComic(Comic comic) async {
     await initDataBase();
     comic.id = await _database.insert('download_comic_info', comic.toMap());
@@ -151,6 +172,11 @@ class DownloadProvider {
       return Comic.fromMap(maps.first);
     }
     return null;
+  }
+
+  Future<int> deleteComic(String comicId) async{
+    await initDataBase();
+    return await _database.delete('download_comic_info',where: 'comicId=?',whereArgs: [comicId]);
   }
 
   Future<List<Comic>> getAllComic() async {

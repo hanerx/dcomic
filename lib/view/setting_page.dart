@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:event_bus/event_bus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
@@ -31,6 +33,7 @@ class _SettingPage extends State<SettingPage> {
   bool cover = false;
   bool labState = false;
   int darkState = 0;
+  bool nomedia=false;
   String downloadPath = '';
   static const List darkMode = ['跟随系统', '亮色', '夜间'];
 
@@ -49,6 +52,7 @@ class _SettingPage extends State<SettingPage> {
     setState(() {
       downloadPath = path;
     });
+    getMedia();
   }
 
   setDownloadPath() async {
@@ -102,6 +106,14 @@ class _SettingPage extends State<SettingPage> {
     DataBase dataBase = DataBase();
     dataBase.setDarkMode(darkState);
     eventBus.fire(ThemeChangeEvent(darkState));
+  }
+
+  getMedia() async{
+    var file=File('$downloadPath/.nomedia');
+    var media= await file.exists();
+    setState(() {
+      nomedia=media;
+    });
   }
 
   @override
@@ -175,6 +187,30 @@ class _SettingPage extends State<SettingPage> {
                   setDownloadPath();
                 }
               },
+            ),
+            ListTile(
+              title: Text('影藏下载内容'),
+              subtitle: Text('将会在下载目录新建一个.nomedia的文件来影藏下载内容防止被媒体扫描'),
+              trailing: Switch(
+                value: nomedia,
+                onChanged: (value) async{
+                  var file=File('$downloadPath/.nomedia');
+                  if(value){
+                    if(await file.exists()){
+                      return;
+                    }else{
+                      file.create(recursive: true);
+                    }
+                  }else{
+                    if(await file.exists()){
+                      file.delete();
+                    }
+                  }
+                  setState(() {
+                    nomedia=!nomedia;
+                  });
+                },
+              ),
             ),
             Divider(),
             ListTile(
@@ -329,7 +365,7 @@ class _SettingPage extends State<SettingPage> {
                           response.data['tag_name'].substring(1);
                       bool update =
                           ToolMethods.checkVersion(version, lastVersion);
-                      if (update) {
+                      if (update||true) {
                         showDialog(
                             context: context,
                             builder: (context) {
@@ -343,9 +379,22 @@ class _SettingPage extends State<SettingPage> {
                                 ),
                                 actions: <Widget>[
                                   FlatButton(
+                                    child: Text('打开网页'),
+                                    onPressed: (){
+                                      _openWeb('${response.data['html_url']}');
+                                    },
+                                  ),
+                                  FlatButton(
                                     child: Text('更新'),
                                     onPressed: () {
-                                      _openWeb('${response.data['html_url']}');
+                                      if(response.data['assets'].length>0){
+                                        String url=response.data['assets'][0]['browser_download_url'];
+                                        print(downloadPath);
+                                        FlutterDownloader.enqueue(url: url, savedDir: '$downloadPath');
+                                        Navigator.pop(context);
+                                      }else{
+                                        _openWeb('${response.data['html_url']}');
+                                      }
                                     },
                                   ),
                                   FlatButton(
