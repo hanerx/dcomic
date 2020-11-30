@@ -65,19 +65,17 @@ class _MainFrame extends State<MainFrame> {
     });
   }
 
-  initDownloader() async{
+  initDownloader() async {
     print("class: MainFrame, action: initDownloader");
     WidgetsFlutterBinding.ensureInitialized();
     await FlutterDownloader.initialize(
         debug: true // optional: set false to disable printing logs to console
-    );
+        );
     FlutterDownloader.registerCallback(ToolMethods.downloadCallback);
   }
 
-
-
   @override
-  void initState(){
+  void initState() {
     // TODO: implement initState
     super.initState();
     getDarkState();
@@ -216,9 +214,25 @@ class _MainPage extends State<MainPage> {
                 ),
                 actions: <Widget>[
                   FlatButton(
-                    child: Text('更新'),
-                    onPressed: () {
+                    child: Text('打开网页'),
+                    onPressed: (){
                       _openWeb('${response.data['html_url']}');
+                    },
+                  ),
+                  FlatButton(
+                    child: Text('更新'),
+                    onPressed: () async {
+                      if (response.data['assets'].length > 0) {
+                        String url =
+                            response.data['assets'][0]['browser_download_url'];
+                        DataBase dataBase = DataBase();
+                        var downloadPath = await dataBase.getDownloadPath();
+                        FlutterDownloader.enqueue(
+                            url: url, savedDir: '$downloadPath');
+                        Navigator.pop(context);
+                      } else {
+                        _openWeb('${response.data['html_url']}');
+                      }
                     },
                   ),
                   FlatButton(

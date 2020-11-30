@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutterdmzj/database/downloader.dart';
 import 'package:flutterdmzj/model/baseModel.dart';
 import 'package:flutterdmzj/view/comic_viewer.dart';
+import 'package:provider/provider.dart';
 
 class DownloadChaptersModel extends BaseModel {
   final String comicId;
@@ -39,6 +40,40 @@ class DownloadChaptersModel extends BaseModel {
         title: Text('${item.title}'),
         subtitle: LinearProgressIndicator(
           value: await item.progress / item.total,
+        ),
+        trailing: IconButton(
+          icon: Icon(
+            Icons.delete,
+            color: Colors.red,
+          ),
+          onPressed: () async {
+            await showDialog(context: context,builder: (context){
+              return AlertDialog(
+                content: Text('是否删除？'),
+                actions: [
+                  FlatButton(
+                    child: Text('取消'),
+                    onPressed: (){
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  FlatButton(
+                    child: Text('确认'),
+                    onPressed: ()async{
+                      DownloadProvider downloadProvider = DownloadProvider();
+                      await downloadProvider.deleteChapter(item);
+                      if (data.length <= 1) {
+                        await downloadProvider.deleteComic(comicId);
+                      }
+                      Navigator.of(context).pop();
+                    },
+                  )
+                ],
+              );
+            });
+            Provider.of<DownloadChaptersModel>(context, listen: false)
+                .getChapters(comicId);
+          },
         ),
         onTap: () {
           Navigator.of(context).push(MaterialPageRoute(builder: (context) {
