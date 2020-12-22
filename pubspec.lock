@@ -237,6 +237,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.6.0"
+  flutter_layout_grid:
+    dependency: transitive
+    description:
+      name: flutter_layout_grid
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.10.2"
   flutter_localizations:
     dependency: "direct main"
     description: flutter
@@ -270,6 +277,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.1.2+1"
+  flutter_svg:
+    dependency: transitive
+    description:
+      name: flutter_svg
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.19.1"
   flutter_swiper:
     dependency: "direct main"
     description:
@@ -294,6 +308,20 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.3.11"
+  flutter_widget_from_html:
+    dependency: "direct main"
+    description:
+      name: flutter_widget_from_html
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.5.1+5"
+  flutter_widget_from_html_core:
+    dependency: transitive
+    description:
+      name: flutter_widget_from_html_core
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.5.1+4"
   fluttericon:
     dependency: "direct main"
     description:
@@ -478,6 +506,20 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.7.0"
+  path_drawing:
+    dependency: transitive
+    description:
+      name: path_drawing
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.4.1+1"
+  path_parsing:
+    dependency: transitive
+    description:
+      name: path_parsing
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.1.4"
   path_provider:
     dependency: "direct main"
     description:
@@ -534,6 +576,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.0.1"
+  petitparser:
+    dependency: transitive
+    description:
+      name: petitparser
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "3.0.4"
   platform:
     dependency: transitive
     description:
@@ -805,6 +854,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.9.7+15"
+  webview_flutter:
+    dependency: transitive
+    description:
+      name: webview_flutter
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.3.24"
   win32:
     dependency: transitive
     description:
@@ -819,6 +875,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.1.0"
+  xml:
+    dependency: transitive
+    description:
+      name: xml
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "4.5.1"
   yaml:
     dependency: transitive
     description:

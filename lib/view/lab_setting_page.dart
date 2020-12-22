@@ -5,65 +5,80 @@ import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/utils/static_language.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class LabSettingPage extends StatefulWidget{
+class LabSettingPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
     return _LabSettingPage();
   }
-
 }
-class _LabSettingPage extends State<LabSettingPage>{
-  bool search=false;
-  bool darkSide=false;
-  bool blackBox=false;
+
+class _LabSettingPage extends State<LabSettingPage> {
+  bool search = false;
+  bool darkSide = false;
+  bool blackBox = false;
+  bool novel = false;
 
   _openWeb(String url) async {
     if (await canLaunch(url)) {
       await launch(url);
     } else {
       Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text('${StaticLanguage.staticStrings['settingPage.canNotOpenWeb']}'),
+        content: Text(
+            '${StaticLanguage.staticStrings['settingPage.canNotOpenWeb']}'),
       ));
     }
   }
 
-  getDeepSearch()async{
-    DataBase dataBase=DataBase();
-    bool state= await dataBase.getDeepSearch();
+  getDeepSearch() async {
+    DataBase dataBase = DataBase();
+    bool state = await dataBase.getDeepSearch();
     setState(() {
-      search=state;
+      search = state;
     });
   }
 
-  setDeepSearch(){
-    DataBase dataBase=DataBase();
+  setDeepSearch() {
+    DataBase dataBase = DataBase();
     dataBase.setDeepSearch(search);
   }
 
-  getDarkSide() async{
-    DataBase dataBase=DataBase();
-    bool state=await dataBase.getDarkSide();
+  getDarkSide() async {
+    DataBase dataBase = DataBase();
+    bool state = await dataBase.getDarkSide();
     setState(() {
-      darkSide=state;
+      darkSide = state;
     });
   }
 
-  setDarkSide(){
-    DataBase dataBase=DataBase();
+  setDarkSide() {
+    DataBase dataBase = DataBase();
     dataBase.setDarkSide(darkSide);
   }
 
-  getBlackBox() async{
-    DataBase dataBase=DataBase();
-    bool state=await dataBase.getBlackBox();
+  getBlackBox() async {
+    DataBase dataBase = DataBase();
+    bool state = await dataBase.getBlackBox();
     setState(() {
-      blackBox=state;
+      blackBox = state;
     });
   }
 
-  setBlackBox(){
-    DataBase dataBase=DataBase();
+  setNovel() {
+    DataBase dataBase = DataBase();
+    dataBase.setNovelState(novel);
+  }
+
+  getNovel() async {
+    DataBase dataBase = DataBase();
+    bool state = await dataBase.getNovelState();
+    setState(() {
+      novel = state;
+    });
+  }
+
+  setBlackBox() {
+    DataBase dataBase = DataBase();
     dataBase.setBlackBox(blackBox);
   }
 
@@ -73,6 +88,7 @@ class _LabSettingPage extends State<LabSettingPage>{
     super.initState();
     getDeepSearch();
     getDarkSide();
+    getNovel();
   }
 
   @override
@@ -86,19 +102,20 @@ class _LabSettingPage extends State<LabSettingPage>{
         children: <Widget>[
           ListTile(
             title: Text('隐藏漫画搜索功能'),
-            subtitle: Text('通过调用奇葩的接口实现把一部分隐藏的漫画显示出来，该功能会讲搜索变成两部分，一部分使用普通搜索，另一部分使用隐藏搜索'),
+            subtitle: Text(
+                '通过调用奇葩的接口实现把一部分隐藏的漫画显示出来，该功能会讲搜索变成两部分，一部分使用普通搜索，另一部分使用隐藏搜索'),
             trailing: Switch(
-              onChanged: (val){
+              onChanged: (val) {
                 setState(() {
-                  search=val;
+                  search = val;
                 });
                 setDeepSearch();
               },
               value: search,
             ),
-            onTap: (){
+            onTap: () {
               setState(() {
-                search=!search;
+                search = !search;
               });
               setDeepSearch();
             },
@@ -120,37 +137,51 @@ class _LabSettingPage extends State<LabSettingPage>{
           ),
           ListTile(
             title: Text('黑暗面'),
-            subtitle: Text.rich(TextSpan(
-              children: [
-                TextSpan(text: '这个是通过GitHub上一位大佬的接口实现的影藏漫画查看功能，地址：'),
-                TextSpan(text: 'https://github.com/torta/dark-dmzj',style: TextStyle(color: Theme.of(context).accentColor)),
-                TextSpan(text: ' 长按跳转至项目')
-              ]
-            )),
+            subtitle: Text.rich(TextSpan(children: [
+              TextSpan(text: '这个是通过GitHub上一位大佬的接口实现的影藏漫画查看功能，地址：'),
+              TextSpan(
+                  text: 'https://github.com/torta/dark-dmzj',
+                  style: TextStyle(color: Theme.of(context).accentColor)),
+              TextSpan(text: ' 长按跳转至项目')
+            ])),
             trailing: Switch(
               value: darkSide,
               onChanged: (bool value) {
                 setState(() {
-                  darkSide=value;
+                  darkSide = value;
                 });
                 setDarkSide();
               },
             ),
-            onLongPress: (){
+            onLongPress: () {
               _openWeb('https://github.com/torta/dark-dmzj');
             },
-            onTap: (){
+            onTap: () {
               setState(() {
-                darkSide=!darkSide;
+                darkSide = !darkSide;
               });
               setDarkSide();
             },
           ),
           Divider(),
           ListTile(
-            enabled: false,
-            title: Text('小说功能(未实现)'),
-            subtitle: Text('不是很想实现啊，因为毕竟是个漫画app，搞啥小说啊'),
+            title: Text('小说功能'),
+            subtitle: Text('欸，我还真把卫星放下来了'),
+            trailing: Switch(
+              value: novel,
+              onChanged: (value) {
+                setState(() {
+                  novel = value;
+                });
+                setNovel();
+              },
+            ),
+            onTap: (){
+              setState(() {
+                novel = !novel;
+              });
+              setNovel();
+            },
           )
         ],
       ),

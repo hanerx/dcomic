@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/component/LoadingRow.dart';
-import 'package:flutterdmzj/component/SubscribeCard.dart';
 import 'package:flutterdmzj/database/database.dart';
-import 'package:flutterdmzj/http/http.dart';
+import 'package:flutterdmzj/view/favorite/comic_favorite_page.dart';
+import 'package:flutterdmzj/view/favorite/novel_favorite_page.dart';
+import 'package:markdown_widget/markdown_helper.dart';
 
 class FavoritePage extends StatefulWidget {
   final String uid;
@@ -13,68 +13,27 @@ class FavoritePage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
-    return _FavoritePage(uid);
+    return _FavoritePage();
   }
 }
 
 class _FavoritePage extends State<FavoritePage> {
-  final String uid;
+  bool novel = false;
 
-  _FavoritePage(this.uid);
+  _FavoritePage();
 
-  int page = 0;
-  int _row = 3;
-  List list = <Widget>[LoadingRow()];
-  ScrollController _controller = ScrollController();
-  bool refreshState = false;
-
-  void getSubscribe() async {
-    CustomHttp http = CustomHttp();
+  getNovel() async {
     DataBase dataBase = DataBase();
-    var response = await http.getSubscribe(int.parse(uid), page);
-    if (response.statusCode == 200 && mounted) {
-      var unreadList = await dataBase.getAllUnread();
-      setState(() {
-        if (page == 0) {
-          list.clear();
-        } else {
-          list.removeLast();
-        }
-        if (response.data.length == 0) {
-          refreshState = true;
-          if (page == 0) {
-            list.add(Center(
-              child: Text('看起来你没收藏啥，请先去收藏'),
-            ));
-          }
-          return;
-        }
-        var cardList = <Widget>[];
-        var position = 0;
-        for (var item in response.data) {
-          if (position >= _row) {
-            list.add(Row(
-              children: cardList,
-            ));
-            position = 0;
-            cardList = <Widget>[];
-          }
-          bool unread = item['sub_readed'] == 0;
-          if(unreadList[item['id'].toString()] != null && unreadList[item['id'].toString()] >= item['sub_uptime'] * 1000) {
-            unread = false;
-          }
-          cardList.add(SubscribeCard(item['sub_img'], item['name'],
-              item['sub_update'], item['id'].toString(), unread));
-          position++;
-        }
-        if (cardList.length > 0 && position < _row) {
-          list.add(Row(
-            children: cardList,
-          ));
-        }
-        refreshState = false;
-      });
-    }
+    bool state = await dataBase.getNovelState();
+    setState(() {
+      novel = state;
+    });
+  }
+
+  @override
+  initState() {
+    super.initState();
+    getNovel();
   }
 
 //  @override
@@ -95,52 +54,39 @@ class _FavoritePage extends State<FavoritePage> {
 //  }
 
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    getSubscribe();
-    _controller.addListener(() {
-      if (_controller.position.pixels == _controller.position.maxScrollExtent &&
-          !refreshState) {
-        setState(() {
-          refreshState = true;
-          page++;
-          list.add(LoadingRow());
-        });
-        getSubscribe();
-      }
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    List<Widget> tabs = [
+      Tab(
+        text: '漫画',
+      )
+    ];
+    List<Widget> list = [
+      ComicFavoritePage(
+        uid: widget.uid,
+      )
+    ];
+    if (novel) {
+      tabs.add(Tab(
+        text: '轻小说',
+      ));
+      list.add(NovelFavoritePage(
+        uid: widget.uid,
+      ));
+    }
     // TODO: implement build
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('我的订阅'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.refresh),
-            onPressed: () {
-              if (mounted) {
-                setState(() {
-                  list = <Widget>[LoadingRow()];
-                  refreshState = true;
-                  page = 0;
-                });
-                getSubscribe();
-              }
-            },
-          )
-        ],
-      ),
-      body: new Scrollbar(
-          child: SingleChildScrollView(
-        controller: _controller,
-        child: Column(
+    return DefaultTabController(
+      length: tabs.length,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('我的订阅'),
+          bottom: TabBar(
+            tabs: tabs,
+          ),
+        ),
+        body: TabBarView(
           children: list,
         ),
-      )),
+      ),
     );
   }
 }
