@@ -7,11 +7,8 @@ class DataBase {
   Database _database;
   Logger _logger;
 
-  DataBase(){
-    _logger=Logger(
-      printer: PrettyPrinter(),
-      output: ConsoleLogOutput()
-    );
+  DataBase() {
+    _logger = Logger(printer: PrettyPrinter(), output: ConsoleLogOutput());
   }
 
   initDataBase() async {
@@ -27,12 +24,16 @@ class DataBase {
           "CREATE TABLE unread (id INTEGER PRIMARY KEY, comicId TEXT, timestamp INTEGER)");
       await db.execute(
           "CREATE TABLE local_history (id INTEGER PRIMARY KEY, comicId TEXT, timestamp INTEGER,cover TEXT,title TEXT,last_chapter TEXT,last_chapter_id TEXT)");
-      await db.execute("CREATE TABLE download_comic_info (id INTEGER PRIMARY KEY, comicId TEXT, cover TEXT, title TEXT)");
-      await db.execute("CREATE TABLE download_chapter_info (id INTEGER PRIMARY KEY, comicId TEXT, chapterId TEXT, tasks TEXT, title TEXT)");
+      await db.execute(
+          "CREATE TABLE download_comic_info (id INTEGER PRIMARY KEY, comicId TEXT, cover TEXT, title TEXT)");
+      await db.execute(
+          "CREATE TABLE download_chapter_info (id INTEGER PRIMARY KEY, comicId TEXT, chapterId TEXT, tasks TEXT, title TEXT)");
     }, onUpgrade: (Database db, int version, int x) async {
       print('class: DataBase, action: upgrade, version: $version');
-      await db.execute("CREATE TABLE download_comic_info (id INTEGER PRIMARY KEY, comicId TEXT, cover TEXT, title TEXT)");
-      await db.execute("CREATE TABLE download_chapter_info (id INTEGER PRIMARY KEY, comicId TEXT, chapterId TEXT, tasks TEXT, title TEXT)");
+      await db.execute(
+          "CREATE TABLE download_comic_info (id INTEGER PRIMARY KEY, comicId TEXT, cover TEXT, title TEXT)");
+      await db.execute(
+          "CREATE TABLE download_chapter_info (id INTEGER PRIMARY KEY, comicId TEXT, chapterId TEXT, tasks TEXT, title TEXT)");
     });
   }
 
@@ -91,10 +92,10 @@ class DataBase {
     await initDataBase();
     var batch = _database.batch();
     batch.query("history", where: "name='$comicId'");
-    var data=await batch.commit();
-    try{
+    var data = await batch.commit();
+    try {
       return data.first[0]['value'];
-    }catch(e){
+    } catch (e) {
       return '';
     }
   }
@@ -309,7 +310,7 @@ class DataBase {
     try {
       return double.parse(result.first[0]['value']);
     } catch (e) {
-        _logger.w('action: rangeNotFound, exception: $e');
+      _logger.w('action: rangeNotFound, exception: $e');
     }
     return 500.toDouble();
   }
@@ -414,12 +415,11 @@ class DataBase {
     await initDataBase();
     var batch = _database.batch();
     batch.delete("configures", where: "key='download_path'");
-    batch
-        .insert("configures", {'key': 'download_path', 'value': path});
+    batch.insert("configures", {'key': 'download_path', 'value': path});
     await batch.commit();
   }
 
-  getDownloadPath() async{
+  getDownloadPath() async {
     await initDataBase();
     var batch = _database.batch();
     batch.query("configures", where: "key='download_path'");
@@ -475,5 +475,29 @@ class DataBase {
       _logger.w('action: horizontalDirectionNotFound, exception: $e');
     }
     return false;
+  }
+
+  Future<bool> getNovelState() async {
+    await initDataBase();
+    var batch = _database.batch();
+    batch.query("configures", where: "key='novel_state'");
+    var result = await batch.commit();
+    try {
+      if (result.first[0]['value'] == '1') {
+        return true;
+      }
+    } catch (e) {
+      _logger.w('action: NovelStateNotFound, exception: $e');
+    }
+    return false;
+  }
+
+  Future<void> setNovelState(bool novel) async {
+    await initDataBase();
+    var batch = _database.batch();
+    batch.delete("configures", where: "key='novel_state'");
+    batch.insert(
+        "configures", {'key': 'novel_state', 'value': novel ? '1' : '0'});
+    await batch.commit();
   }
 }

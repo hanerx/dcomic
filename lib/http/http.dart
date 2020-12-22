@@ -93,11 +93,11 @@ class CustomHttp {
         options: buildCacheOptions(Duration(hours: 1)));
   }
 
-  Future<Response<T>> getSubscribe<T>(int uid, int page) {
+  Future<Response<T>> getSubscribe<T>(int uid, int page, {int type: 0}) {
     return dio.get(
-        '$baseUrl/UCenter/subscribe?uid=$uid&sub_type=1&letter=all&page=0&type=0?uid=$uid&sub_type=1&letter=all&page=$page&type=0&$queryOptions',
+        '$baseUrl/UCenter/subscribe?uid=$uid&sub_type=1&letter=all&page=$page&type=$type&$queryOptions',
         options: buildCacheOptions(Duration(minutes: 5),
-            subKey: 'uid=$uid&page=$page'));
+            subKey: 'uid=$uid&page=$page&type=$type'));
   }
 
   Future<Response<T>> login<T>(String username, String password) {
@@ -219,5 +219,21 @@ class CustomHttp {
         options: Options(
             headers: {'referer': 'http://images.dmzj.com'},
             responseType: ResponseType.bytes));
+  }
+
+  Future<Response<T>> getNovelDetail<T>(int novelID) {
+    return dio.get('$baseUrl/novel/$novelID.json?$queryOptions',
+        options: buildCacheOptions(Duration(days: 1)));
+  }
+
+  Future<Response<T>> getNovelChapter<T>(int novelID) {
+    return dio.get('$baseUrl/novel/chapter/$novelID.json?$queryOptions',
+        options: buildCacheOptions(Duration(days: 1)));
+  }
+
+  Future<Response<T>> getNovel<T>(int novelID, int volumeID, int chapterID) {
+    return dio.get(
+        '$baseUrl/novel/download/${novelID}_${volumeID}_$chapterID.txt?$queryOptions',
+        options: buildCacheOptions(Duration(days: 30)));
   }
 }

@@ -7,6 +7,7 @@ import 'package:flutterdmzj/utils/static_language.dart';
 import 'package:flutterdmzj/view/dark_side_page.dart';
 import 'package:flutterdmzj/view/favorite_page.dart';
 import 'package:flutterdmzj/view/login_page.dart';
+import 'package:flutterdmzj/view/novel_pages/novel_main_page.dart';
 
 class CustomDrawer extends StatefulWidget {
   @override
@@ -21,8 +22,9 @@ class CustomDrawerState extends State<CustomDrawer> {
   String avatar = 'https://avatar.dmzj.com/default.png';
   String nickname = '请先登录';
   String uid = '';
-  bool darkSide=false;
-  bool blackBox=false;
+  bool darkSide = false;
+  bool blackBox = false;
+  bool novel = false;
 
   getAccountInfo() async {
     if (login) {
@@ -51,19 +53,27 @@ class CustomDrawerState extends State<CustomDrawer> {
     }
   }
 
-  getDarkSide() async{
-    DataBase dataBase=DataBase();
-    bool state=await dataBase.getDarkSide();
+  getDarkSide() async {
+    DataBase dataBase = DataBase();
+    bool state = await dataBase.getDarkSide();
     setState(() {
-      darkSide=state;
+      darkSide = state;
     });
   }
 
-  getBlackBox() async{
-    DataBase dataBase=DataBase();
-    bool state=await dataBase.getBlackBox();
+  getBlackBox() async {
+    DataBase dataBase = DataBase();
+    bool state = await dataBase.getBlackBox();
     setState(() {
-      blackBox=state;
+      blackBox = state;
+    });
+  }
+
+  getNovel() async {
+    DataBase dataBase = DataBase();
+    bool state = await dataBase.getNovelState();
+    setState(() {
+      novel = state;
     });
   }
 
@@ -85,25 +95,26 @@ class CustomDrawerState extends State<CustomDrawer> {
     getLoginState();
     getDarkSide();
     getBlackBox();
+    getNovel();
   }
 
   @override
   Widget build(BuildContext context) {
-    List list=buildList(context);
+    List list = buildList(context);
     // TODO: implement build
     return new Drawer(
       child: ListView.builder(
         padding: EdgeInsets.zero,
         itemCount: list.length,
-        itemBuilder: (context,index){
+        itemBuilder: (context, index) {
           return list[index];
         },
       ),
     );
   }
 
-  List<Widget> buildList(BuildContext context){
-    List<Widget> list=<Widget>[
+  List<Widget> buildList(BuildContext context) {
+    List<Widget> list = <Widget>[
       UserAccountsDrawerHeader(
         accountName: Text('$nickname'),
         accountEmail: Text(
@@ -176,36 +187,56 @@ class CustomDrawerState extends State<CustomDrawer> {
       ListTile(
         title: Text("下载管理"),
         leading: Icon(Icons.file_download),
-        onTap: (){
+        onTap: () {
           Navigator.of(context).pop();
           Navigator.of(context).pushNamed("download");
         },
       )
     ];
-    if(darkSide){
-      list+=<Widget>[
+    if (darkSide) {
+      list += <Widget>[
         Divider(),
-        ListTile(title: Text('黑暗面'),leading: Icon(Icons.block),onTap: (){
-          Navigator.of(context).pop();
-          Navigator.push(context, MaterialPageRoute(builder: (context){
-            return DarkSidePage();
-          }));
-        },)
+        ListTile(
+          title: Text('黑暗面'),
+          leading: Icon(Icons.block),
+          onTap: () {
+            Navigator.of(context).pop();
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return DarkSidePage();
+            }));
+          },
+        )
       ];
     }
-    if(blackBox){
-      list+=<Widget>[
+    if (novel) {
+      list += <Widget>[
+        Divider(),
+        ListTile(
+          title: Text('轻小说'),
+          leading: Icon(Icons.book),
+          onTap: () {
+            Navigator.of(context).pop();
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+              return NovelMainPage();
+            }));
+          },
+        )
+      ];
+    }
+    if (blackBox) {
+      list += <Widget>[
         Divider(),
         ListTile(
           title: Text('黑匣子'),
           leading: Icon(Icons.inbox),
-          onTap: (){
+          onTap: () {
             Navigator.of(context).pop();
           },
         )
       ];
     }
-    list+=<Widget>[Divider(),
+    list += <Widget>[
+      Divider(),
       ListTile(
         title: Text(StaticLanguage.staticStrings['settings']),
         leading: Icon(Icons.settings),
@@ -213,7 +244,8 @@ class CustomDrawerState extends State<CustomDrawer> {
           Navigator.of(context).pop();
           Navigator.of(context).pushNamed("settings");
         },
-      )];
+      )
+    ];
     return list;
   }
 }

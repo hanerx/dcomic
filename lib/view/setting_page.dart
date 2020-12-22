@@ -365,7 +365,7 @@ class _SettingPage extends State<SettingPage> {
                           response.data['tag_name'].substring(1);
                       bool update =
                           ToolMethods.checkVersion(version, lastVersion);
-                      if (update||true) {
+                      if (update) {
                         showDialog(
                             context: context,
                             builder: (context) {
