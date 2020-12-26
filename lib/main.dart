@@ -25,6 +25,7 @@ import 'package:uni_links/uni_links.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:event_bus/event_bus.dart';
 
+import 'component/search/SearchButton.dart';
 import 'event/ThemeChangeEvent.dart';
 import 'http/http.dart';
 
@@ -170,7 +171,7 @@ class _MainPage extends State<MainPage> {
   getVersionInfo() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     setState(() {
-      if (ToolMethods.checkVersion(version, packageInfo.version)) {
+      if (ToolMethods.checkVersion(packageInfo.version,version)) {
         version = packageInfo.version;
       }
     });
@@ -199,7 +200,7 @@ class _MainPage extends State<MainPage> {
         dataBase.setVersion(lastVersion);
         return;
       }
-      bool update = ToolMethods.checkVersion(version, lastVersion);
+      bool update = ToolMethods.checkVersion(lastVersion,version);
       if (update) {
         dataBase.setVersion(lastVersion);
         showDialog(
@@ -296,59 +297,4 @@ class _MainPage extends State<MainPage> {
   }
 }
 
-class SearchButton extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return _SearchButton();
-  }
-}
 
-class _SearchButton extends State<SearchButton> {
-  int _count = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    return FlatButton(
-      child: Icon(
-        Icons.search,
-        color: Colors.white,
-      ),
-      onPressed: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return SearchPage();
-        }));
-      },
-      onLongPress: () {
-        showDialog(
-            context: context,
-            builder: (context) {
-              return SimpleDialog(
-                title: Text('小彩蛋~'),
-                children: <Widget>[
-                  SimpleDialogOption(
-                    child: Text('我们耕耘黑暗，却守护光明'),
-                    onPressed: () {
-                      if (_count > 10) {
-//                        Navigator.push(context,
-//                            MaterialPageRoute(builder: (context) {
-//                          return DarkSidePage();
-//                        }));
-                        Navigator.of(context).pop();
-                        DataBase dataBase = DataBase();
-                        dataBase.setLabState(true);
-                      } else {
-                        setState(() {
-                          _count++;
-                        });
-                      }
-                    },
-                  )
-                ],
-              );
-            });
-      },
-    );
-  }
-}

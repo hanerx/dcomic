@@ -453,6 +453,27 @@ class DataBase {
     return 0;
   }
 
+  setBackground(int mode) async {
+    await initDataBase();
+    var batch = _database.batch();
+    batch.delete("configures", where: "key='background_color'");
+    batch.insert("configures", {'key': 'background_color', 'value': mode.toString()});
+    await batch.commit();
+  }
+
+  Future<int> getBackground() async {
+    await initDataBase();
+    var batch = _database.batch();
+    batch.query("configures", where: "key='background_color'");
+    var result = await batch.commit();
+    try {
+      return int.parse(result.first[0]['value']);
+    } catch (e) {
+      _logger.w('action: darkModeNotFound, exception: $e');
+    }
+    return 0;
+  }
+
   setHorizontalDirection(bool direction) async {
     await initDataBase();
     var batch = _database.batch();

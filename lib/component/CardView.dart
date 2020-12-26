@@ -129,3 +129,4 @@ class CardView extends StatelessWidget {
     );
   }
 }
+

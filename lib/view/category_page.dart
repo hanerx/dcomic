@@ -4,6 +4,10 @@ import 'package:flutterdmzj/component/CategoryCard.dart';
 import 'package:flutterdmzj/http/http.dart';
 
 class CategoryPage extends StatefulWidget {
+  final int type;
+
+  const CategoryPage({Key key, this.type:0}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -14,8 +18,6 @@ class CategoryPage extends StatefulWidget {
 class _CategoryPage extends State<CategoryPage> {
   List list = <Widget>[];
   static int row = 3;
-  int page = 0;
-  final int maxPage = 2;
   bool refreshState = false;
   ScrollController _controller = ScrollController();
 
@@ -24,22 +26,11 @@ class _CategoryPage extends State<CategoryPage> {
     // TODO: implement initState
     super.initState();
     getCategory();
-    _controller.addListener(() {
-      if (_controller.position.pixels == _controller.position.maxScrollExtent &&
-          !refreshState &&
-          page < maxPage) {
-        setState(() {
-          refreshState = true;
-          page++;
-        });
-        getCategory();
-      }
-    });
   }
 
   void getCategory() async {
     CustomHttp http = CustomHttp();
-    var response = await http.getCategory(page);
+    var response = await http.getCategory(widget.type);
     var cardList = <Widget>[];
     int position = 0;
     if (response.data.length == 0) {
@@ -58,7 +49,7 @@ class _CategoryPage extends State<CategoryPage> {
         cardList = <Widget>[];
         position = 0;
       }
-      cardList.add(CategoryCard(item['cover'], item['title'], item['tag_id']));
+      cardList.add(CategoryCard(item['cover'], item['title'], item['tag_id'],type: widget.type,));
       position++;
     }
     if (position > 0 && mounted) {

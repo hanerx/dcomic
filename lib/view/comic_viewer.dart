@@ -31,6 +31,18 @@ class _ComicViewPage extends State<ComicViewPage>
   bool debug = false;
   double hitBox = 100;
   double range = 500;
+  bool _show = false;
+  GlobalKey _viewerKey;
+  int backgroundColor = 0;
+  static List colors = [
+    Colors.white,
+    Colors.black,
+    Colors.brown,
+    Colors.blueGrey,
+    Color.fromARGB(100, 242, 235, 217),
+    Color.fromRGBO(239, 217, 176, 1),
+    Color.fromRGBO(255, 240, 205, 1)
+  ];
 
   DataBase _dataBase;
   TabController _tabController;
@@ -41,6 +53,7 @@ class _ComicViewPage extends State<ComicViewPage>
     super.initState();
     _dataBase = DataBase();
     _tabController = TabController(length: 2, vsync: this);
+    _viewerKey = GlobalKey();
     init();
     SystemChrome.setEnabledSystemUIOverlays([]);
   }
@@ -61,10 +74,12 @@ class _ComicViewPage extends State<ComicViewPage>
     var hitBox = await _dataBase.getControlSize();
     var range = await _dataBase.getRange();
     var direction = await _dataBase.getReadDirection();
+    var backgroundColor = await _dataBase.getBackground();
     setState(() {
       this.hitBox = hitBox;
       this.range = range;
       this.direction = direction;
+      this.backgroundColor = backgroundColor;
     });
   }
 
@@ -76,13 +91,76 @@ class _ComicViewPage extends State<ComicViewPage>
             ComicModel(widget.comicId, widget.chapterId, widget.chapterList),
         builder: (context, test) {
           return Scaffold(
-              body: _buildViewer(context),
+              backgroundColor: colors[backgroundColor],
+              body: Stack(
+                children: [
+                  _buildViewer(context),
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: _show ? 80 : 0,
+                    child: AppBar(
+                      backgroundColor: Colors.black54,
+                      title: Text('${Provider.of<ComicModel>(context).title}'),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: _show ? 70 : 0,
+                    child: Builder(
+                      builder: (context) {
+                        return BottomNavigationBar(
+                          onTap: (index) async {
+                            switch (index) {
+                              case 0:
+                                await Provider.of<ComicModel>(context,
+                                        listen: false)
+                                    .previousChapter();
+                                break;
+                              case 1:
+                                Scaffold.of(context).openEndDrawer();
+                                break;
+                              case 2:
+                                await Provider.of<ComicModel>(context,
+                                        listen: false)
+                                    .nextChapter();
+                                break;
+                            }
+                          },
+                          backgroundColor: Colors.black54,
+                          unselectedItemColor: Colors.white,
+                          unselectedLabelStyle: TextStyle(color: Colors.white),
+                          currentIndex: 1,
+                          items: [
+                            BottomNavigationBarItem(
+                              title: Text('上一话'),
+                              icon: Icon(Icons.arrow_drop_up),
+                            ),
+                            BottomNavigationBarItem(
+                              title: Text('吐槽'),
+                              icon: Icon(Icons.list),
+                            ),
+                            BottomNavigationBarItem(
+                              title: Text('下一话'),
+                              icon: Icon(Icons.arrow_drop_down),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  )
+                ],
+              ),
               endDrawer: CustomDrawer(
                 widthPercent: 0.9,
                 child: DefaultTabController(
                   length: 2,
                   child: Scaffold(
                     appBar: AppBar(
+                      backgroundColor: Colors.black54,
                       title: Text("${Provider.of<ComicModel>(context).title}"),
                       bottom: TabBar(
                         tabs: [Tab(text: "吐槽"), Tab(text: "设定")],
@@ -103,7 +181,7 @@ class _ComicViewPage extends State<ComicViewPage>
   Widget _buildViewer(BuildContext context) {
     if (direction) {
       return HorizontalPageView(
-        key: GlobalKey(),
+        key: _viewerKey,
         builder: (context, index) =>
             Provider.of<ComicModel>(context).builder(index),
         left: Provider.of<ComicModel>(context).left,
@@ -115,15 +193,25 @@ class _ComicViewPage extends State<ComicViewPage>
         hitBox: hitBox,
         onPageChange: (index) {
           SystemChrome.setEnabledSystemUIOverlays([]);
+          setState(() {
+            _show = false;
+          });
         },
         onTap: (index) {
-          SystemChrome.setEnabledSystemUIOverlays(
-              [SystemUiOverlay.top, SystemUiOverlay.bottom]);
+          setState(() {
+            _show = !_show;
+          });
+          if (_show) {
+            SystemChrome.setEnabledSystemUIOverlays(
+                [SystemUiOverlay.top, SystemUiOverlay.bottom]);
+          } else {
+            SystemChrome.setEnabledSystemUIOverlays([]);
+          }
         },
       );
     } else {
       return VerticalPageView(
-        key: GlobalKey(),
+        key: _viewerKey,
         builder: (context, index) =>
             Provider.of<ComicModel>(context).builder(index),
         refreshState: Provider.of<ComicModel>(context).refreshState,
@@ -137,10 +225,20 @@ class _ComicViewPage extends State<ComicViewPage>
         range: range,
         onPageChange: (index) {
           SystemChrome.setEnabledSystemUIOverlays([]);
+          setState(() {
+            _show = false;
+          });
         },
         onTap: (index) {
-          SystemChrome.setEnabledSystemUIOverlays(
-              [SystemUiOverlay.top, SystemUiOverlay.bottom]);
+          setState(() {
+            _show = !_show;
+          });
+          if (_show) {
+            SystemChrome.setEnabledSystemUIOverlays(
+                [SystemUiOverlay.top, SystemUiOverlay.bottom]);
+          } else {
+            SystemChrome.setEnabledSystemUIOverlays([]);
+          }
         },
       );
     }
@@ -210,6 +308,32 @@ class _ComicViewPage extends State<ComicViewPage>
               });
             },
           ),
+        ),
+        Divider(),
+        Container(
+          child: ListTile(
+            title: Text(
+              '背景颜色',
+              style: TextStyle(color: Colors.white),
+            ),
+            subtitle: Row(
+              children: colors
+                  .map<Widget>((e) => IconButton(
+                        icon: Icon(
+                          Icons.color_lens,
+                          color: e,
+                        ),
+                        onPressed: () {
+                          _dataBase.setBackground(colors.indexOf(e));
+                          setState(() {
+                            backgroundColor = colors.indexOf(e);
+                          });
+                        },
+                      ))
+                  .toList(),
+            ),
+          ),
+          decoration: BoxDecoration(color: Colors.grey),
         ),
         Divider(),
         ListTile(

@@ -27,7 +27,7 @@ class _NovelFavoritePage extends State<NovelFavoritePage> {
   int _row = 3;
   bool refreshState = false;
 
-  void getSubscribe() async {
+  Future<void> getSubscribe() async {
     CustomHttp http = CustomHttp();
     var response =
         await http.getSubscribe(int.parse(widget.uid), page, type: 1);
@@ -92,12 +92,23 @@ class _NovelFavoritePage extends State<NovelFavoritePage> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scrollbar(
-      child: SingleChildScrollView(
-        controller: _controller,
-        child: Column(
-          children: list,
+      child: RefreshIndicator(
+        onRefresh: ()async{
+          setState(() {
+            page=0;
+            refreshState=true;
+            list.clear();
+            list.add(LoadingRow());
+          });
+          await getSubscribe();
+        },
+        child: SingleChildScrollView(
+          controller: _controller,
+          child: Column(
+            children: list,
+          ),
         ),
-      ),
+      )
     );
   }
 }
