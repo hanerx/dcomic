@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/model/baseModel.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
@@ -9,6 +10,7 @@ class NovelDetailModel extends BaseModel {
   final int novelID;
 
   bool error = false;
+  bool loading = true;
 
   String title = '加载中';
   String cover = 'http://manhua.dmzj.com/css/img/mh_logo_dmzj.png?t=20131122';
@@ -23,11 +25,39 @@ class NovelDetailModel extends BaseModel {
   List chapters = [];
   List<bool> expand = [];
 
+  //用户信息
+  bool login = false;
+  bool _sub = false;
+  String uid = '';
+
   NovelDetailModel(this.novelID) {
     getNovel(novelID).then((value) {
-      getChapter(novelID);
+      getChapter(novelID).then((value) => getIfSubscribe(novelID));
     });
     logger.i('class: NovelDetailModel, action: initNovel, novelID: $novelID');
+  }
+
+  Future<void> getIfSubscribe(novelID) async {
+    //获取登录状态
+    DataBase dataBase = DataBase();
+    login = await dataBase.getLoginState();
+    //确认登录状态
+    if (login) {
+      //获取UID
+      uid = await dataBase.getUid();
+      //获取订阅信息
+      CustomHttp http = CustomHttp();
+      var response = await http.getIfSubscribe(novelID.toString(), uid,type: 1);
+      if (response.statusCode == 200 && response.data['code'] == 0) {
+        _sub = true;
+      }
+    }
+    //解锁
+    loading = false;
+    logger.i(
+        'class: NovelDetailModel, action: subscribeLoading, login: $login, uid: $uid, sub: $sub');
+    //唤醒UI
+    notifyListeners();
   }
 
   Future<void> getNovel(novelID) async {
@@ -108,5 +138,30 @@ class NovelDetailModel extends BaseModel {
                 );
               }));
     }).toList();
+  }
+
+  bool get sub => this._sub;
+
+  set sub(bool sub) {
+    CustomHttp http = CustomHttp();
+    if (sub) {
+      http.addSubscribe(novelID.toString(), uid,type: 1).then((response) {
+        if (response.statusCode == 200 && response.data['code'] == 0) {
+          this._sub = true;
+          logger.i(
+              'class: NovelDetailModel, action: AddSubscribe, status: ${this._sub}');
+          notifyListeners();
+        }
+      });
+    } else {
+      http.cancelSubscribe(novelID.toString(), uid,type: 1).then((response) {
+        if (response.statusCode == 200 && response.data['code'] == 0) {
+          this._sub = false;
+          logger.i(
+              'class: NovelDetailModel, action: CancelSubscribe, status: ${this._sub}');
+          notifyListeners();
+        }
+      });
+    }
   }
 }

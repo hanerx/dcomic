@@ -6,6 +6,7 @@ import 'package:flutterdmzj/model/novelDetail.dart';
 import 'package:provider/provider.dart';
 
 import '../comic_detail_page.dart';
+import '../login_page.dart';
 
 class NovelDetailPage extends StatefulWidget {
   final int id;
@@ -29,6 +30,47 @@ class _NovelDetailPage extends State<NovelDetailPage> {
         return Scaffold(
           appBar: AppBar(
             title: Text('${Provider.of<NovelDetailModel>(context).title}'),
+            actions: [
+              Builder(
+                builder: (context) {
+                  return IconButton(
+                    icon: Icon(
+                      Provider.of<NovelDetailModel>(context).sub
+                          ? Icons.favorite
+                          : Icons.favorite_border,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      if (Provider.of<NovelDetailModel>(context, listen: false)
+                          .loading) {
+                        Scaffold.of(context).showSnackBar(
+                            new SnackBar(content: Text('订阅信息还在加载中!')));
+                      } else if (!Provider.of<NovelDetailModel>(context,
+                          listen: false)
+                          .login) {
+                        Scaffold.of(context).showSnackBar(new SnackBar(
+                          content: Text('请先登录!'),
+                          action: SnackBarAction(
+                            label: '去登录',
+                            onPressed: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                    return LoginPage();
+                                  }));
+                            },
+                          ),
+                        ));
+                      } else {
+                        Provider.of<NovelDetailModel>(context, listen: false)
+                            .sub = !Provider.of<NovelDetailModel>(context,
+                            listen: false)
+                            .sub;
+                      }
+                    },
+                  );
+                },
+              ),
+            ],
           ),
           body: SingleChildScrollView(
             child: new Column(

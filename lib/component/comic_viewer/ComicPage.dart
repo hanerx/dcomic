@@ -125,7 +125,15 @@ class _ComicPage extends State<ComicPage> {
             child: CircularProgressIndicator(value: downloadProgress.progress),
           ),
         )),
-        errorWidget: (context, url, error) => Icon(Icons.error),
+        errorWidget: (context, url, error) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.error,color: Colors.redAccent,),
+              Text('$error',style: TextStyle(color: Colors.redAccent),)
+            ],
+          ),
+        ),
       ),
     );
   }

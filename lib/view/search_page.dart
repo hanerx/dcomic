@@ -1,9 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/component/DeepSearchTab.dart';
-import 'package:flutterdmzj/component/SearchListTile.dart';
-import 'package:flutterdmzj/component/SearchTab.dart';
+import 'package:flutterdmzj/component/search/NovelSearchTab.dart';
+import 'file:///C:/Users/hanerx/AndroidStudioProjects/flutter_dmzj/lib/component/search/DeepSearchTab.dart';
+import 'file:///C:/Users/hanerx/AndroidStudioProjects/flutter_dmzj/lib/component/search/SearchListTile.dart';
+import 'file:///C:/Users/hanerx/AndroidStudioProjects/flutter_dmzj/lib/component/search/SearchTab.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
 
@@ -22,15 +23,7 @@ class _SearchPage extends State<SearchPage> {
   FocusNode _node = FocusNode();
   String keyword = '';
   bool deepSearch=false;
-
-  List normalTabs=<Tab>[
-    Tab(text: '普通搜索',),
-  ];
-  List deepTabs=<Tab>[
-    Tab(text: '普通搜索',),
-    Tab(text: '隐藏搜索',)
-  ];
-
+  bool novelSearch=false;
 
 
 
@@ -42,26 +35,43 @@ class _SearchPage extends State<SearchPage> {
     });
   }
 
+  getNovelSearch()async{
+    DataBase dataBase=DataBase();
+    bool state=await dataBase.getNovelState();
+    setState(() {
+      novelSearch=state;
+    });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getDeepSearch();
+    getNovelSearch();
   }
 
   @override
   Widget build(BuildContext context) {
-
+    List tabs=<Tab>[
+      Tab(text: '普通搜索',),
+    ];
     List views=<Widget>[
       SearchTab(key: UniqueKey(),keyword: keyword),
-
     ];
+    if(novelSearch){
+      tabs.add(Tab(text: '轻小说搜索',));
+      views.add(NovelSearchTab(keyword: keyword,key: UniqueKey(),));
+    }
     if(deepSearch){
+      tabs.add(Tab(text: '隐藏搜索',));
       views.add(DeepSearchTab(key:UniqueKey(),keyword: keyword,));
     }
+
+
     // TODO: implement build
     return DefaultTabController(
-      length: deepSearch?2:1,
+      length: tabs.length,
       child: Scaffold(
         appBar: AppBar(
           title: TextField(
@@ -83,7 +93,7 @@ class _SearchPage extends State<SearchPage> {
             },
           ),
           bottom: TabBar(
-            tabs: deepSearch?deepTabs:normalTabs,
+            tabs: tabs,
           ),
           actions: <Widget>[
             FlatButton(

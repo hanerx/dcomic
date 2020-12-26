@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:flutterdmzj/model/novel.dart';
 import 'package:provider/provider.dart';
@@ -27,7 +28,26 @@ class NovelViewerPage extends StatefulWidget {
   }
 }
 
-class _NovelViewerPage extends State<NovelViewerPage> {
+class _NovelViewerPage extends State<NovelViewerPage>
+    with SingleTickerProviderStateMixin {
+  bool _show = false;
+  ScrollController _controller;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _controller=ScrollController();
+    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top,SystemUiOverlay.bottom]);
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -36,23 +56,109 @@ class _NovelViewerPage extends State<NovelViewerPage> {
           widget.volumeID, widget.chapterID),
       builder: (context, child) {
         return Scaffold(
-          appBar: AppBar(
-            title: Text('${Provider.of<NovelModel>(context).title}'),
-          ),
           endDrawer: Drawer(
             child: Scaffold(
-              appBar: AppBar(title: Text('目录'),),
+              appBar: AppBar(
+                title: Text('目录'),
+                backgroundColor: Colors.black54,
+              ),
               body: SingleChildScrollView(
                 child: ExpansionPanelList(
-                  expansionCallback:
-                  Provider.of<NovelModel>(context).setExpand,
-                  children: Provider.of<NovelModel>(context).buildChapterWidget(context),
+                  expansionCallback: Provider.of<NovelModel>(context).setExpand,
+                  children: Provider.of<NovelModel>(context)
+                      .buildChapterWidget(context),
                 ),
               ),
             ),
           ),
-          body: SingleChildScrollView(
-            child: HtmlWidget(Provider.of<NovelModel>(context).data),
+          body: GestureDetector(
+            onTap: () {
+              setState(() {
+                _show=!_show;
+              });
+              if(_show){
+                SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top,SystemUiOverlay.bottom]);
+              }else{
+                SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+              }
+            },
+            child: Stack(
+              children: [
+                Container(
+                  constraints: BoxConstraints(
+                    minHeight: double.infinity,
+                    minWidth: double.infinity
+                  ),
+                  child: SingleChildScrollView(
+                    controller: _controller,
+                    child: Column(
+                      children: [
+                        HtmlWidget(Provider.of<NovelModel>(context).data),
+                        Container(
+                          height: 70,
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: _show?80:0,
+                  child: AppBar(
+                    title: Text('${Provider.of<NovelModel>(context).title}'),
+                    backgroundColor: Colors.black54,
+                  ),
+                ),
+
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  height: _show?70:0,
+                  child: Builder(
+                    builder: (context){
+                      return BottomNavigationBar(
+                        onTap: (index)async{
+                          switch(index){
+                            case 0:
+                              await Provider.of<NovelModel>(context,listen: false).previous();
+                              _controller.animateTo(0, duration: Duration(microseconds: 100), curve: Curves.easeIn);
+                              break;
+                            case 1:
+                              Scaffold.of(context).openEndDrawer();
+                              break;
+                            case 2:
+                              await Provider.of<NovelModel>(context,listen: false).next();
+                              _controller.animateTo(0, duration: Duration(microseconds: 100), curve: Curves.easeIn);
+                              break;
+                          }
+                        },
+                        backgroundColor: Colors.black54,
+                        unselectedItemColor: Colors.white,
+                        unselectedLabelStyle: TextStyle(color: Colors.white),
+                        currentIndex: 1,
+                        items: [
+                          BottomNavigationBarItem(
+                            title: Text('上一话'),
+                            icon: Icon(Icons.arrow_drop_up),
+                          ),
+                          BottomNavigationBarItem(
+                            title: Text('目录'),
+                            icon: Icon(Icons.list),
+                          ),
+                          BottomNavigationBarItem(
+                            title: Text('下一话'),
+                            icon: Icon(Icons.arrow_drop_down),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                )
+              ],
+            ),
           ),
         );
       },

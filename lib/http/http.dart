@@ -44,8 +44,13 @@ class CustomHttp {
         options: buildCacheOptions(Duration(days: 1)));
   }
 
-  Future<Response<T>> getCategory<T>(int page) async {
-    return dio.get(baseUrl + '/$page/category.json?$queryOptions',
+  Future<Response<T>> getNovelMainPageRecommend<T>() async {
+    return dio.get(baseUrl + "/novel/recommend.json?$queryOptions",
+        options: buildCacheOptions(Duration(days: 1)));
+  }
+
+  Future<Response<T>> getCategory<T>(int type) async {
+    return dio.get(baseUrl + '/$type/category.json?$queryOptions',
         options: buildCacheOptions(Duration(days: 3)));
   }
 
@@ -57,6 +62,16 @@ class CustomHttp {
   Future<Response<T>> getRankList<T>(
       int date, int type, int tag, int page) async {
     return dio.get(baseUrl + '/rank/$tag/$date/$type/$page.json?$queryOptions',
+        options: buildCacheOptions(Duration(hours: 2)));
+  }
+
+  Future<Response<T>> getNovelFilterTags<T>() async {
+    return dio.get(baseUrl + '/novel/tag.json?$queryOptions',
+        options: buildCacheOptions(Duration(days: 7)));
+  }
+
+  Future<Response<T>> getNovelRankList<T>(int type, int tag, int page) async {
+    return dio.get(baseUrl + '/novel/rank/$type/$tag/$page.json?$queryOptions',
         options: buildCacheOptions(Duration(hours: 2)));
   }
 
@@ -82,8 +97,8 @@ class CustomHttp {
     return dio.get(baseUrl + '/subject/$subjectId.json?$queryOptions');
   }
 
-  Future<Response<T>> getCategoryFilter<T>() async {
-    return dio.get(baseUrl + '/classify/filter.json?$queryOptions');
+  Future<Response<T>> getCategoryFilter<T>({int novel:0}) async {
+    return dio.get(baseUrl + '/${novel==0?'classify':'novel'}/filter.json?$queryOptions');
   }
 
   Future<Response<T>> getCategoryDetail<T>(
@@ -91,6 +106,12 @@ class CustomHttp {
     return dio.get(
         '$baseUrl/classify/$categoryId-$date-$tag/$type/$page.json?$queryOptions',
         options: buildCacheOptions(Duration(hours: 1)));
+  }
+
+  Future<Response<T>> getNovelCategoryDetail<T>(int categoryId, int tag, int type, int page)async{
+      return dio.get(
+          '$baseUrl/novel/$categoryId/$tag/$type/$page.json?$queryOptions',
+          options: buildCacheOptions(Duration(hours: 1)));
   }
 
   Future<Response<T>> getSubscribe<T>(int uid, int page, {int type: 0}) {
@@ -117,20 +138,24 @@ class CustomHttp {
     return unCachedDio.get("https://m.dmzj.com/mysubscribe", options: options);
   }
 
-  Future<Response<T>> getIfSubscribe<T>(String comicId, String uid) async {
-    return unCachedDio.get('$baseUrl/subscribe/0/$uid/$comicId?$queryOptions');
+  Future<Response<T>> getIfSubscribe<T>(String comicId, String uid,
+      {int type: 0}) async {
+    return unCachedDio
+        .get('$baseUrl/subscribe/$type/$uid/$comicId?$queryOptions');
   }
 
-  Future<Response<T>> cancelSubscribe<T>(String comicId, String uid) async {
+  Future<Response<T>> cancelSubscribe<T>(String comicId, String uid,
+      {int type: 0}) async {
     _cacheManager.delete("$baseUrl/UCenter/subscribe");
     return unCachedDio.get(
-        '$baseUrl/subscribe/cancel?obj_ids=$comicId&uid=$uid&type=mh?obj_ids=$comicId&uid=$uid&type=mh&channel=Android&version=2.7.017');
+        '$baseUrl/subscribe/cancel?obj_ids=$comicId&uid=$uid&type=${type == 0 ? 'mh' : 'xs'}&$queryOptions');
   }
 
-  Future<Response<T>> addSubscribe<T>(String comicId, String uid) async {
+  Future<Response<T>> addSubscribe<T>(String comicId, String uid,
+      {int type: 0}) async {
     _cacheManager.delete("$baseUrl/UCenter/subscribe");
-    FormData formData =
-        FormData.fromMap({"obj_ids": comicId, "uid": uid, 'type': 'mh'});
+    FormData formData = FormData.fromMap(
+        {"obj_ids": comicId, "uid": uid, 'type': type == 0 ? 'mh' : 'xs'});
     return unCachedDio.post('$baseUrl/subscribe/add', data: formData);
   }
 
@@ -172,14 +197,19 @@ class CustomHttp {
         '$baseUrl/recommend/batchUpdate?uid=$uid&category_id=49&$queryOptions');
   }
 
-  Future<Response<T>> search<T>(String keyword, int page) {
+  Future<Response<T>> search<T>(String keyword, int page,{int type:0}) {
     return dio.get(
-        '$baseUrl/search/show/0/${Uri.encodeComponent(keyword)}/$page.json?$queryOptions');
+        '$baseUrl/search/show/$type/${Uri.encodeComponent(keyword)}/$page.json?$queryOptions');
   }
 
   Future<Response<T>> getLatestList<T>(int tagId, int page) {
     return dio.get('$baseUrl/latest/$tagId/$page.json?$queryOptions');
   }
+
+  Future<Response<T>> getNovelLatestList<T>(int page) {
+    return dio.get('$baseUrl/novel/recentUpdate/$page.json?$queryOptions');
+  }
+
 
   Future<Response<T>> getDarkInfo<T>() {
     return dio.get('https://dark-dmzj.hloli.net/data.json');

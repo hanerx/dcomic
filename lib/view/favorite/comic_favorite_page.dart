@@ -24,7 +24,7 @@ class _ComicFavoritePage extends State<ComicFavoritePage> {
   int _row = 3;
   bool refreshState = false;
 
-  void getSubscribe() async {
+  Future<void> getSubscribe() async {
     CustomHttp http = CustomHttp();
     DataBase dataBase = DataBase();
     var response = await http.getSubscribe(int.parse(widget.uid), page);
@@ -96,11 +96,22 @@ class _ComicFavoritePage extends State<ComicFavoritePage> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return new Scrollbar(
-        child: SingleChildScrollView(
-      controller: _controller,
-      child: Column(
-        children: list,
-      ),
-    ));
+        child: RefreshIndicator(
+          onRefresh: ()async{
+            setState(() {
+              page=0;
+              refreshState=true;
+              list.clear();
+              list.add(LoadingRow());
+            });
+            await getSubscribe();
+          },
+          child: SingleChildScrollView(
+            controller: _controller,
+            child: Column(
+              children: list,
+            ),
+          ),
+        ));
   }
 }

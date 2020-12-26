@@ -16,12 +16,27 @@ class NovelModel extends BaseModel {
 
   List<bool> expand = [];
 
+  List chapterList=[];
+
   NovelModel(
       this.title, this.chapters, this.novelID, this.volumeID, this.chapterID) {
+    initChapterList();
     getNovel(novelID, volumeID, chapterID);
     expand = chapters.map<bool>((e) => false).toList();
     logger.i(
         'class: NovelModel, action: init, novelID: $novelID, volumeID: $volumeID, chapterID: $chapterID');
+  }
+
+  void initChapterList(){
+    for(var item in chapters){
+      for(var chapter in item['chapters']){
+        chapterList.add({
+          'chapterID':chapter['chapter_id'],
+          'volumeID':item['volume_id'],
+          'title':chapter['chapter_name']
+        });
+      }
+    }
   }
 
   Future<void> getNovel(int novelID, int volumeID, int chapterID) async {
@@ -43,6 +58,34 @@ class NovelModel extends BaseModel {
     if (panelIndex < chapters.length) {
       expand[panelIndex] = !isExpanded;
       notifyListeners();
+    }
+  }
+
+  Future<void> next() async{
+    for(var i=0;i<chapterList.length;i++){
+      if(chapterList[i]['chapterID']==chapterID&&chapterList[i]['volumeID']==volumeID){
+        if(i<chapterList.length-1){
+          volumeID=chapterList[i+1]['volumeID'];
+          chapterID=chapterList[i+1]['chapterID'];
+          title=chapterList[i+1]['title'];
+          await getNovel(novelID, volumeID, chapterID);
+          break;
+        }
+      }
+    }
+  }
+
+  Future<void> previous() async{
+    for(var i=0;i<chapterList.length;i++){
+      if(chapterList[i]['chapterID']==chapterID&&chapterList[i]['volumeID']==volumeID){
+        if(i>0){
+          volumeID=chapterList[i-1]['volumeID'];
+          chapterID=chapterList[i-1]['chapterID'];
+          title=chapterList[i-1]['title'];
+          await getNovel(novelID, volumeID, chapterID);
+          break;
+        }
+      }
     }
   }
 
@@ -68,6 +111,7 @@ class NovelModel extends BaseModel {
                     volumeID = e['volume_id'];
                     chapterID = e['chapters'][index]['chapter_id'];
                     getNovel(novelID, volumeID, chapterID);
+                    Navigator.pop(context);
                   },
                 );
               }));
