@@ -75,6 +75,7 @@ class _SearchPage extends State<SearchPage> {
       child: Scaffold(
         appBar: AppBar(
           title: TextField(
+            enableInteractiveSelection: true,
             focusNode: _node,
             autofocus: true,
             controller: _controller,

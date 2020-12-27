@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutterdmzj/component/comic_viewer/ClickPage.dart';
 import 'package:flutterdmzj/component/comic_viewer/EndPage.dart';
 import 'package:flutterdmzj/component/comic_viewer/EndPageDense.dart';
 import 'package:flutterdmzj/component/comic_viewer/LoadingPanel.dart';
+import 'package:flutterdmzj/component/comic_viewer/VerticalPageView.dart';
 
 typedef BoolCallback = Future<bool> Function();
 typedef OnPageChangeCallback = void Function(int index);
@@ -14,13 +16,21 @@ class Common {
         "class: ComicCommon, action: buildPage, index: $index, count: $count");
     if (index == 0) {
       if (!left) {
-        return LoadingPanel();
+        if(dense&&count<4){
+          return ClickPage(left: true,);
+        }else{
+          return LoadingPanel();
+        }
       } else {
         return dense ? EndPageDense() : EndPage();
       }
-    } else if (count != null && index == count) {
+    } else if (count != null && index == count-1) {
       if (!right) {
-        return LoadingPanel();
+        if(dense&&count<4){
+          return ClickPage(left: false);
+        }else{
+          return LoadingPanel();
+        }
       } else {
         return dense ? EndPageDense() : EndPage();
       }

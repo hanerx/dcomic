@@ -155,6 +155,9 @@ class ComicDetailModel extends BaseModel {
     } catch (e) {
       //出现加载问题
       this.error = true;
+      description='错误代码: $e';
+      title='加载出错';
+      status='加载失败';
       print(
           'class: ComicDetailModel, action: detailLoadingFailed, comicId: ${this.comicId}, exception: $e');
     }

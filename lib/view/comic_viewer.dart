@@ -106,52 +106,67 @@ class _ComicViewPage extends State<ComicViewPage>
                     ),
                   ),
                   Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: _show ? 70 : 0,
-                    child: Builder(
-                      builder: (context) {
-                        return BottomNavigationBar(
-                          onTap: (index) async {
-                            switch (index) {
-                              case 0:
-                                await Provider.of<ComicModel>(context,
-                                        listen: false)
-                                    .previousChapter();
-                                break;
-                              case 1:
-                                Scaffold.of(context).openEndDrawer();
-                                break;
-                              case 2:
-                                await Provider.of<ComicModel>(context,
-                                        listen: false)
-                                    .nextChapter();
-                                break;
-                            }
-                          },
-                          backgroundColor: Colors.black54,
-                          unselectedItemColor: Colors.white,
-                          unselectedLabelStyle: TextStyle(color: Colors.white),
-                          currentIndex: 1,
-                          items: [
-                            BottomNavigationBarItem(
-                              title: Text('上一话'),
-                              icon: Icon(Icons.arrow_drop_up),
-                            ),
-                            BottomNavigationBarItem(
-                              title: Text('吐槽'),
-                              icon: Icon(Icons.list),
-                            ),
-                            BottomNavigationBarItem(
-                              title: Text('下一话'),
-                              icon: Icon(Icons.arrow_drop_down),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                  )
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      height: _show ? 106 : 0,
+                      child: Column(
+                        children: [
+                          _buildSlider(context),
+                          Builder(
+                            builder: (context) {
+                              return BottomNavigationBar(
+                                onTap: (index) async {
+                                  switch (index) {
+                                    case 0:
+                                      await Provider.of<ComicModel>(context,
+                                              listen: false)
+                                          .previousChapter();
+                                      if (direction) {
+                                        horizontalKey.currentState.moveToTop();
+                                      } else {
+                                        verticalKey.currentState.moveToTop();
+                                      }
+                                      break;
+                                    case 1:
+                                      Scaffold.of(context).openEndDrawer();
+                                      break;
+                                    case 2:
+                                      await Provider.of<ComicModel>(context,
+                                              listen: false)
+                                          .nextChapter();
+                                      if (direction) {
+                                        horizontalKey.currentState.moveToTop();
+                                      } else {
+                                        verticalKey.currentState.moveToTop();
+                                      }
+                                      break;
+                                  }
+                                },
+                                backgroundColor: Colors.black54,
+                                unselectedItemColor: Colors.white,
+                                unselectedLabelStyle:
+                                    TextStyle(color: Colors.white),
+                                currentIndex: 1,
+                                items: [
+                                  BottomNavigationBarItem(
+                                    title: Text('上一话'),
+                                    icon: Icon(Icons.arrow_drop_up),
+                                  ),
+                                  BottomNavigationBarItem(
+                                    title: Text('吐槽'),
+                                    icon: Icon(Icons.list),
+                                  ),
+                                  BottomNavigationBarItem(
+                                    title: Text('下一话'),
+                                    icon: Icon(Icons.arrow_drop_down),
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                        ],
+                      ))
                 ],
               ),
               endDrawer: CustomDrawer(
@@ -181,7 +196,7 @@ class _ComicViewPage extends State<ComicViewPage>
   Widget _buildViewer(BuildContext context) {
     if (direction) {
       return HorizontalPageView(
-        key: _viewerKey,
+        key: horizontalKey,
         builder: (context, index) =>
             Provider.of<ComicModel>(context).builder(index),
         left: Provider.of<ComicModel>(context).left,
@@ -192,10 +207,11 @@ class _ComicViewPage extends State<ComicViewPage>
         debug: debug,
         hitBox: hitBox,
         onPageChange: (index) {
-          SystemChrome.setEnabledSystemUIOverlays([]);
-          setState(() {
-            _show = false;
-          });
+          // SystemChrome.setEnabledSystemUIOverlays([]);
+          // setState(() {
+          //   _show = false;
+          // });
+          Provider.of<ComicModel>(context, listen: false).index = index;
         },
         onTap: (index) {
           setState(() {
@@ -211,23 +227,24 @@ class _ComicViewPage extends State<ComicViewPage>
       );
     } else {
       return VerticalPageView(
-        key: _viewerKey,
+        key: verticalKey,
         builder: (context, index) =>
             Provider.of<ComicModel>(context).builder(index),
         refreshState: Provider.of<ComicModel>(context).refreshState,
         left: Provider.of<ComicModel>(context).left,
         right: Provider.of<ComicModel>(context).right,
-        count: Provider.of<ComicModel>(context).length + 1,
+        count: Provider.of<ComicModel>(context).length + 2,
         onEnd: Provider.of<ComicModel>(context).nextChapter,
         onTop: Provider.of<ComicModel>(context).previousChapter,
         debug: debug,
         hitBox: hitBox,
         range: range,
         onPageChange: (index) {
-          SystemChrome.setEnabledSystemUIOverlays([]);
-          setState(() {
-            _show = false;
-          });
+          // SystemChrome.setEnabledSystemUIOverlays([]);
+          // setState(() {
+          //   _show = false;
+          // });
+          Provider.of<ComicModel>(context, listen: false).index = index;
         },
         onTap: (index) {
           setState(() {
@@ -351,5 +368,43 @@ class _ComicViewPage extends State<ComicViewPage>
         )
       ],
     );
+  }
+
+  Widget _buildSlider(context) {
+    if (direction) {
+      return Container(
+        color: Colors.black54,
+        child: Slider(
+          value: Provider.of<ComicModel>(context).index.toDouble()+1,
+          min: 0,
+          max: Provider.of<ComicModel>(context).length.toDouble() >= 1
+              ? Provider.of<ComicModel>(context).length.toDouble()+1
+              : 1,
+          divisions: Provider.of<ComicModel>(context).length >= 1
+              ? Provider.of<ComicModel>(context).length+1
+              : 1,
+          onChanged: (index) {
+            if (index >= 1&&index<Provider.of<ComicModel>(context, listen: false).length+1) {
+              Provider.of<ComicModel>(context, listen: false).index =
+                  index.toInt();
+              if (direction) {
+                horizontalKey.currentState.animateToPage(index.toInt()+1);
+              }
+            }
+          },
+          label: '${Provider.of<ComicModel>(context).index+1}',
+        ),
+      );
+    } else {
+      return Container(
+        color: Colors.black54,
+        child: Slider(
+          min: 0,
+          value: 0,
+          max: 100,
+          onChanged: null,
+        ),
+      );
+    }
   }
 }

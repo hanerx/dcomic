@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutterdmzj/utils/log_output.dart';
 import 'package:logger/logger.dart';
 
+
 class ToolMethods {
   static String formatTimestamp(int timestamp) {
     var dateTime = DateTime.fromMicrosecondsSinceEpoch(timestamp * 1000000);
@@ -41,4 +42,6 @@ class ToolMethods {
       logger.w('action: downloadCallbackFailed, exception: $e');
     }
   }
+
+
 }
