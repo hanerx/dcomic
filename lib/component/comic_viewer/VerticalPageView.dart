@@ -6,6 +6,8 @@ import 'package:yin_drag_sacle/core/drag_scale_widget.dart';
 
 import 'Common.dart';
 
+GlobalKey<_VerticalPageView> verticalKey = GlobalKey();
+
 class VerticalPageView extends StatefulWidget {
   final IndexedWidgetBuilder builder;
   final BoolCallback onTop;
@@ -34,7 +36,8 @@ class VerticalPageView extends StatefulWidget {
       this.onPageChange,
       this.onTap,
       this.hitBox: 100,
-      this.debug: false, this.range:500})
+      this.debug: false,
+      this.range: 500})
       : super(key: key);
 
   @override
@@ -49,31 +52,27 @@ class _VerticalPageView extends State<VerticalPageView> {
   CustomDelegate _delegate;
   int index = 0;
   double position = 100;
-  bool loading=false;
+  bool loading = false;
   StreamSubscription _channel;
 
   _VerticalPageView() {
     _controller = new ScrollController(initialScrollOffset: 100);
-    _delegate = new CustomDelegate((context, index) {
-      return Common.builder(context, index, widget.count, widget.builder,
-          widget.left, widget.right,
-          dense: true);
-    });
+
     print("class: VerticalPageView, action: listenChannel");
-    _channel=EventChannel("top.hanerx/volume").receiveBroadcastStream().listen((event) {
-      if(event==0){
+    _channel = EventChannel("top.hanerx/volume")
+        .receiveBroadcastStream()
+        .listen((event) {
+      if (event == 0) {
         print("class: VerticalPageView, action: VolumeUp, event: $event");
         if (_controller.hasClients) {
           _controller.animateTo(_controller.position.pixels - widget.range,
-              duration: Duration(milliseconds: 200),
-              curve: Curves.decelerate);
+              duration: Duration(milliseconds: 200), curve: Curves.decelerate);
         }
-      }else if(event==1){
+      } else if (event == 1) {
         print("class: VerticalPageView, action: VolumeDown, event: $event");
         if (_controller.hasClients) {
           _controller.animateTo(_controller.position.pixels + widget.range,
-              duration: Duration(milliseconds: 200),
-              curve: Curves.decelerate);
+              duration: Duration(milliseconds: 200), curve: Curves.decelerate);
         }
       }
     });
@@ -81,46 +80,50 @@ class _VerticalPageView extends State<VerticalPageView> {
       if (_controller.hasClients) {
         if ((_controller.position.pixels - position).abs() > 500) {
           if (widget.onPageChange != null) {
-            widget.onPageChange(_delegate.last);
+            widget.onPageChange(_delegate.first);
           }
           setState(() {
             position = _controller.position.pixels;
             index = _delegate.last - 1;
           });
         }
-        if (_controller.position.maxScrollExtent >
-                500 &&
+        if (widget.count>=4&&
             _controller.position.pixels >=
                 _controller.position.maxScrollExtent &&
             widget.onEnd != null &&
-            !widget.refreshState&&!loading) {
+            !widget.refreshState &&
+            !loading) {
           setState(() {
-            loading=true;
+            loading = true;
           });
           bool flag = await widget.onEnd();
-          if(flag){
-            await Future.delayed(Duration(seconds: 1));
-            if(mounted){
+          if (flag) {
+            _controller.animateTo(100,
+                duration: Duration(microseconds: 500),
+                curve: Curves.decelerate);
+            if (mounted) {
               setState(() {
-                loading=false;
+                loading = false;
               });
             }
           }
-        } else if (_controller.position.maxScrollExtent >
-            500&&
+        } else if (widget.count>=4&&
             _controller.position.pixels <
                 _controller.position.minScrollExtent &&
             widget.onTop != null &&
-            !widget.refreshState&&!loading) {
+            !widget.refreshState &&
+            !loading) {
           setState(() {
-            loading=true;
+            loading = true;
           });
           bool flag = await widget.onTop();
-          if(flag){
-            await Future.delayed(Duration(seconds: 1));
-            if(mounted){
+          if (flag) {
+            _controller.animateTo(100,
+                duration: Duration(microseconds: 500),
+                curve: Curves.decelerate);
+            if (mounted) {
               setState(() {
-                loading=false;
+                loading = false;
               });
             }
           }
@@ -141,8 +144,20 @@ class _VerticalPageView extends State<VerticalPageView> {
     super.dispose();
   }
 
+  Future<void> moveToTop() async {
+    if (_controller.hasClients) {
+      _controller.animateTo(100,
+          duration: Duration(microseconds: 500), curve: Curves.decelerate);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    _delegate = new CustomDelegate((context, index) {
+      return Common.builder(context, index, widget.count, widget.builder,
+          widget.left, widget.right,
+          dense: true);
+    }, widget.count);
     // TODO: implement build
     return Stack(
       children: [
@@ -170,7 +185,8 @@ class _VerticalPageView extends State<VerticalPageView> {
               ),
               onTap: () {
                 if (_controller.hasClients) {
-                  _controller.animateTo(_controller.position.pixels - widget.range,
+                  _controller.animateTo(
+                      _controller.position.pixels - widget.range,
                       duration: Duration(milliseconds: 200),
                       curve: Curves.decelerate);
                 }
@@ -192,7 +208,8 @@ class _VerticalPageView extends State<VerticalPageView> {
               ),
               onTap: () {
                 if (_controller.hasClients) {
-                  _controller.animateTo(_controller.position.pixels + widget.range,
+                  _controller.animateTo(
+                      _controller.position.pixels + widget.range,
                       duration: Duration(milliseconds: 200),
                       curve: Curves.decelerate);
                 }
@@ -220,13 +237,34 @@ class _VerticalPageView extends State<VerticalPageView> {
       ],
     );
   }
+
+  double get value {
+    if (_controller.hasClients) {
+      return _controller.position.pixels;
+    }
+    return 100;
+  }
+
+  double get max {
+    if (_controller.hasClients) {
+      return _controller.position.maxScrollExtent;
+    }
+    return 100;
+  }
+
+  set value(double value) {
+    if (_controller.hasClients) {
+      _controller.animateTo(value,
+          duration: Duration(microseconds: 500), curve: Curves.decelerate);
+    }
+  }
 }
 
 class CustomDelegate extends SliverChildBuilderDelegate {
   int last = 0;
   int first = 0;
 
-  CustomDelegate(builder) : super(builder);
+  CustomDelegate(builder, int count) : super(builder, childCount: count);
 
   @override
   double estimateMaxScrollOffset(int firstIndex, int lastIndex,

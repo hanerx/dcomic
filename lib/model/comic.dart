@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutterdmzj/component/ViewPointChip.dart';
 import 'package:flutterdmzj/component/comic_viewer/ComicPage.dart';
+import 'package:flutterdmzj/component/comic_viewer/VerticalPageView.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/database/downloader.dart';
 import 'package:flutterdmzj/http/http.dart';
@@ -25,6 +26,8 @@ class ComicModel extends BaseModel {
   List<Widget> pages = [];
   List<Widget> viewPoints = [];
 
+  int _index=0;
+
   ComicModel(this.comicId, this.chapterId, this.chapterList) {
     getComic(chapterId, comicId).then((value) {
       logger.i(
@@ -43,10 +46,11 @@ class ComicModel extends BaseModel {
     DownloadProvider downloadProvider = DownloadProvider();
     var localData = await downloadProvider.getChapter(chapterId);
     if (localData != null) {
-      logger.i('action: loadLocalData, chapter: $chapterId, tasks: ${localData.tasks}');
-      title=localData.title;
+      logger.i(
+          'action: loadLocalData, chapter: $chapterId, tasks: ${localData.tasks}');
+      title = localData.title;
       List<Widget> pages = [];
-      List<String> paths=await localData.paths;
+      List<String> paths = await localData.paths;
       logger.i('action: loadLocalPath, paths: $paths');
       for (var item in paths) {
         pages.add(ComicPage(
@@ -180,4 +184,11 @@ class ComicModel extends BaseModel {
   bool get left => previous == null || previous == '';
 
   bool get right => next == null || next == '';
+
+  int get index => this._index;
+
+  set index(int index) {
+    this._index = index;
+    notifyListeners();
+  }
 }

@@ -7,6 +7,8 @@ import 'package:yin_drag_sacle/core/drag_scale_widget.dart';
 
 import 'Common.dart';
 
+GlobalKey<_HorizontalPageView> horizontalKey=GlobalKey();
+
 class HorizontalPageView extends StatefulWidget {
   final IndexedWidgetBuilder builder;
   final BoolCallback onTop;
@@ -84,6 +86,18 @@ class _HorizontalPageView extends State<HorizontalPageView> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+  }
+
+  Future<void> moveToTop()async{
+    if (_controller.hasClients) {
+      _controller.animateToPage(1, duration: Duration(microseconds: 500), curve: Curves.decelerate);
+    }
+  }
+
+  Future<void> animateToPage(int index)async{
+    if (_controller.hasClients) {
+      _controller.animateToPage(index, duration: Duration(microseconds: 500), curve: Curves.decelerate);
+    }
   }
 
   @override
@@ -177,16 +191,17 @@ class _HorizontalPageView extends State<HorizontalPageView> {
         if (index == 0 && widget.onTop != null) {
           bool flag = await widget.onTop();
           if (flag && _controller.hasClients) {
-            _controller.nextPage(
-                duration: Duration(seconds: 1), curve: Curves.decelerate);
+            // _controller.nextPage(
+            //     duration: Duration(seconds: 1), curve: Curves.decelerate);
+            _controller.animateToPage(1, duration: Duration(microseconds: 500), curve: Curves.decelerate);
           }
         } else if (widget.count != null &&
             index >= widget.count &&
             widget.onEnd != null) {
           bool flag = await widget.onEnd();
           if (flag && _controller.hasClients) {
-            _controller.animateToPage(index,
-                duration: Duration(seconds: 1), curve: Curves.decelerate);
+            _controller.animateToPage(1,
+                duration: Duration(microseconds: 500), curve: Curves.decelerate);
           }
         }
       },

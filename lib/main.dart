@@ -6,18 +6,17 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutterdmzj/component/Drawer.dart';
 import 'package:flutterdmzj/database/database.dart';
+import 'package:flutterdmzj/utils/ChineseCupertinoLocalizations.dart';
 import 'package:flutterdmzj/utils/static_language.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:flutterdmzj/view/category_page.dart';
 import 'package:flutterdmzj/view/comic_detail_page.dart';
-import 'package:flutterdmzj/view/dark_side_page.dart';
 import 'package:flutterdmzj/view/download_page.dart';
 import 'package:flutterdmzj/view/history_page.dart';
 import 'package:flutterdmzj/view/home_page.dart';
 import 'package:flutterdmzj/view/latest_update_page.dart';
 import 'package:flutterdmzj/view/login_page.dart';
 import 'package:flutterdmzj/view/ranking_page.dart';
-import 'package:flutterdmzj/view/search_page.dart';
 import 'package:flutterdmzj/view/setting_page.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 import 'package:package_info/package_info.dart';
@@ -131,6 +130,8 @@ class _MainFrame extends State<MainFrame> {
           //此处
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
+          DefaultCupertinoLocalizations.delegate,
+          ChineseCupertinoLocalizations.delegate
         ],
         color: Colors.grey[400],
         showSemanticsDebugger: false,
