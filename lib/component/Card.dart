@@ -38,12 +38,15 @@ class CustomCard extends StatelessWidget {
           child: new Container(
         child: Column(
           children: <Widget>[
-            CachedNetworkImage(
-              imageUrl: '$imageUrl',
-              httpHeaders: {'referer': 'http://images.dmzj.com'},
-              progressIndicatorBuilder: (context, url, downloadProgress) =>
-                  CircularProgressIndicator(value: downloadProgress.progress),
-              errorWidget: (context, url, error) => Icon(Icons.error),
+            ClipRRect(
+              child: CachedNetworkImage(
+                imageUrl: '$imageUrl',
+                httpHeaders: {'referer': 'http://images.dmzj.com'},
+                progressIndicatorBuilder: (context, url, downloadProgress) =>
+                    CircularProgressIndicator(value: downloadProgress.progress),
+                errorWidget: (context, url, error) => Icon(Icons.error),
+              ),
+              borderRadius: BorderRadius.circular(5),
             ),
             Text(
               '$title',

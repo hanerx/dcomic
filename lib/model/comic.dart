@@ -28,6 +28,10 @@ class ComicModel extends BaseModel {
 
   int _index=0;
 
+  //用户信息
+  bool login = false;
+  String uid = '';
+
   ComicModel(this.comicId, this.chapterId, this.chapterList) {
     getComic(chapterId, comicId).then((value) {
       logger.i(
@@ -119,6 +123,19 @@ class ComicModel extends BaseModel {
   Future<void> setReadHistory(String chapterId, String comicId) async {
     DataBase dataBase = DataBase();
     await dataBase.insertHistory(comicId, chapterId);
+    login = await dataBase.getLoginState();
+    //确认登录状态
+    if (login) {
+      //获取UID
+      uid = await dataBase.getUid();
+      CustomHttp http=CustomHttp();
+      http.addHistoryNew(int.parse(comicId), uid, int.parse(chapterId),page: index);
+    }
+    //解锁
+    logger.i(
+        'class: ComicModel, action: addReadHistory, login: $login, uid: $uid');
+    //唤醒UI
+    notifyListeners();
   }
 
   Future<void> getViewPoint(String chapterId, String comicId) async {

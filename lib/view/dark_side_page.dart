@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutterdmzj/component/LoadingRow.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
@@ -19,7 +20,7 @@ class DarkSidePage extends StatefulWidget {
 }
 
 class _DarkSidePage extends State<DarkSidePage> {
-  List list = <Widget>[LoadingRow()];
+  List list = <Widget>[];
   bool refreshState = true;
   bool search = false;
   var data;
@@ -54,7 +55,7 @@ class _DarkSidePage extends State<DarkSidePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getDarkInfo();
+    // getDarkInfo();
   }
 
   @override
@@ -134,21 +135,34 @@ class _DarkSidePage extends State<DarkSidePage> {
             )
           ],
         ),
-        body: RefreshIndicator(
+        body: EasyRefresh(
+          firstRefresh: true,
+          firstRefreshWidget: LoadingRow(),
           child: ListView.builder(
               itemCount: list.length,
               itemBuilder: (context, index) {
                 return list[index];
               }),
+          header: ClassicalHeader(
+              refreshedText: '刷新完成',
+              refreshFailedText: '刷新失败',
+              refreshingText: '刷新中',
+              refreshText: '下拉刷新',
+              refreshReadyText: '释放刷新',
+              textColor: Colors.white),
+          footer: ClassicalFooter(
+              loadReadyText: '下拉加载更多',
+              loadFailedText: '加载失败',
+              loadingText: '加载中',
+              loadedText: '加载完成',
+              noMoreText: '没有更多内容了',
+              textColor: Colors.white),
           onRefresh: () async {
-            if (!refreshState) {
-              setState(() {
-                refreshState = true;
-                list.clear();
-                list.add(LoadingRow());
-              });
-              await getDarkInfo();
-            }
+            setState(() {
+              refreshState = true;
+              list.clear();
+            });
+            await getDarkInfo();
             return;
           },
         ));
@@ -208,7 +222,10 @@ class DarkCustomListTile extends StatelessWidget {
               imageUrl: '$cover',
               httpHeaders: {'referer': 'http://images.dmzj.com'},
               progressIndicatorBuilder: (context, url, downloadProgress) =>
-                  Center(child: CircularProgressIndicator(value: downloadProgress.progress),),
+                  Center(
+                child:
+                    CircularProgressIndicator(value: downloadProgress.progress),
+              ),
               errorWidget: (context, url, error) => Icon(
                 Icons.error,
                 color: Colors.white,

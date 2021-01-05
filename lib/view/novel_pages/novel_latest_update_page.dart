@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutterdmzj/component/LoadingTile.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
@@ -20,30 +21,24 @@ class NovelLatestUpdatePage extends StatefulWidget{
 class _NovelLatestUpdatePage extends State<NovelLatestUpdatePage>{
   int page = 0;
   bool refreshState = false;
-  List list = <Widget>[LoadingTile()];
-  ScrollController _controller = ScrollController();
+  List list = <Widget>[];
 
   getLatestList() async {
-    CustomHttp http = CustomHttp();
-    var response = await http.getNovelLatestList(page);
-    if (response.statusCode == 200 && mounted) {
-      setState(() {
-        if (page == 0) {
-          list.clear();
-        } else {
-          list.removeLast();
-        }
-        if (response.data.length == 0) {
-          refreshState = true;
-          return;
-        }
-        for (var item in response.data) {
-          list.add(_CustomListTile(item['cover'], item['name'], item['types'].join('/'),
-              item['last_update_time'], item['id'], item['authors']));
-        }
-        refreshState = false;
-      });
-    }
+      CustomHttp http = CustomHttp();
+      var response = await http.getNovelLatestList(page);
+      if (response.statusCode == 200 && mounted) {
+        setState(() {
+          if (response.data.length == 0) {
+            refreshState = true;
+            return;
+          }
+          for (var item in response.data) {
+            list.add(_CustomListTile(item['cover'], item['name'], item['types'].join('/'),
+                item['last_update_time'], item['id'], item['authors']));
+          }
+          refreshState = false;
+        });
+      }
   }
 
   @override
@@ -51,53 +46,46 @@ class _NovelLatestUpdatePage extends State<NovelLatestUpdatePage>{
     // TODO: implement initState
     super.initState();
     getLatestList();
-    _controller.addListener(() {
-      if (_controller.position.pixels == _controller.position.maxScrollExtent &&
-          !refreshState) {
-        setState(() {
-          refreshState = true;
-          page++;
-          list.add(LoadingTile());
-        });
-        getLatestList();
-      }
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return RefreshIndicator(
-      onRefresh: () async {
-        if (!refreshState) {
-          setState(() {
-            refreshState = true;
-            page = 0;
-            list.clear();
-            list.add(LoadingTile());
-          });
-          await getLatestList();
-        }
-        return;
+    return EasyRefresh(
+      scrollController: ScrollController(),
+      onRefresh: ()async{
+        setState(() {
+          refreshState = true;
+          page = 0;
+          list.clear();
+        });
+        await getLatestList();
       },
-      child: Scrollbar(
-        child: SingleChildScrollView(
-          controller: _controller,
-          child: Container(
-              margin: EdgeInsets.fromLTRB(3, 0, 0, 10),
-              child: Column(
-                children: <Widget>[
-                  ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: list.length,
-                    itemBuilder: (context, index) {
-                      return list[index];
-                    },
-                  )
-                ],
-              )),
-        ),
+      onLoad: ()async{
+        setState(() {
+          refreshState = true;
+          page++;
+        });
+        await getLatestList();
+      },
+      header: ClassicalHeader(
+          refreshedText: '刷新完成',
+          refreshFailedText: '刷新失败',
+          refreshingText: '刷新中',
+          refreshText: '下拉刷新',
+          refreshReadyText: '释放刷新'),
+      footer: ClassicalFooter(
+          loadReadyText: '下拉加载更多',
+          loadFailedText: '加载失败',
+          loadingText: '加载中',
+          loadedText: '加载完成',
+          noMoreText: '没有更多内容了'
+      ),
+      child: ListView.builder(
+        itemCount: list.length,
+        itemBuilder: (context, index) {
+          return list[index];
+        },
       ),
     );
   }

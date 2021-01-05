@@ -3,11 +3,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
+import 'package:flutterdmzj/model/systemSettingModel.dart';
 import 'package:flutterdmzj/utils/static_language.dart';
 import 'package:flutterdmzj/view/dark_side_page.dart';
 import 'package:flutterdmzj/view/favorite_page.dart';
 import 'package:flutterdmzj/view/login_page.dart';
 import 'package:flutterdmzj/view/novel_pages/novel_main_page.dart';
+import 'package:provider/provider.dart';
 
 class CustomDrawer extends StatefulWidget {
   @override
@@ -25,6 +27,12 @@ class CustomDrawerState extends State<CustomDrawer> {
   bool darkSide = false;
   bool blackBox = false;
   bool novel = false;
+
+  static const List darkMode=[
+    Icons.brightness_4,
+    Icons.brightness_5,
+    Icons.brightness_2
+  ];
 
   getAccountInfo() async {
     if (login) {
@@ -137,6 +145,18 @@ class CustomDrawerState extends State<CustomDrawer> {
           ),
         ),
         otherAccountsPictures: <Widget>[
+          FlatButton(
+            child: Icon(darkMode[Provider.of<SystemSettingModel>(context).darkState],color: Colors.white,),
+            onPressed: (){
+              if (Provider.of<SystemSettingModel>(context,listen: false).darkState < darkMode.length - 1) {
+                Provider.of<SystemSettingModel>(context,listen: false).darkState++;
+              } else {
+                Provider.of<SystemSettingModel>(context,listen: false).darkState=0;
+              }
+            },
+            shape: CircleBorder(),
+            padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+          ),
           FlatButton(
             child: Icon(
               login ? Icons.exit_to_app : Icons.group_add,

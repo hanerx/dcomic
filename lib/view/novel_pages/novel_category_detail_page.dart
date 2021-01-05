@@ -1,10 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/view/novel_pages/novel_detail_page.dart';
-
-import '../ranking_page.dart';
 
 class NovelCategoryDetailPage extends StatefulWidget {
   final int categoryId;
@@ -28,7 +27,6 @@ class _NovelCategoryDetailPage extends State<NovelCategoryDetailPage> {
   List list = <Widget>[];
   List typeTypeList = <String>['按人气', '按更新'];
   List tagTypeList = <String>['全部', '连载中', '已完结'];
-  ScrollController _controller = ScrollController();
 
   getCategoryDetail() async {
     CustomHttp http = CustomHttp();
@@ -52,46 +50,65 @@ class _NovelCategoryDetailPage extends State<NovelCategoryDetailPage> {
   void initState() {
     super.initState();
     getCategoryDetail();
-    _controller.addListener(() {
-      if (_controller.position.pixels == _controller.position.maxScrollExtent &&
-          !refreshState) {
-        setState(() {
-          refreshState = true;
-          page++;
-        });
-        getCategoryDetail();
-      }
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('分类浏览-${widget.title}'),
-          actions: <Widget>[
-            FlatButton(
-              child: Icon(
-                Icons.filter_list,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                showModalBottomSheet(
-                    context: context,
-                    builder: (context) {
-                      return Container(
-                          height: 140,
-                          child: ListView(
-                            children: <Widget>[
-                              ListTile(
-                                leading: Icon(Icons.category),
-                                title: Text('按地域'),
-                                subtitle: Text(tagTypeList[filterTag]),
-                                trailing: PopupMenuButton(
+      appBar: AppBar(
+        title: Text('分类浏览-${widget.title}'),
+        actions: <Widget>[
+          FlatButton(
+            child: Icon(
+              Icons.filter_list,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return Container(
+                        height: 140,
+                        child: ListView(
+                          children: <Widget>[
+                            ListTile(
+                              leading: Icon(Icons.category),
+                              title: Text('按地域'),
+                              subtitle: Text(tagTypeList[filterTag]),
+                              trailing: PopupMenuButton(
+                                child: Icon(Icons.arrow_drop_down),
+                                onSelected: (int value) {
+                                  setState(() {
+                                    filterTag = value;
+                                    setState(() {
+                                      list.clear();
+                                      page = 0;
+                                    });
+                                    getCategoryDetail();
+                                    Navigator.pop(context);
+                                  });
+                                },
+                                itemBuilder: (context) {
+                                  var data = <PopupMenuItem<int>>[];
+                                  tagTypeList.forEach((item) {
+                                    data.add(PopupMenuItem(
+                                      child: Text(item),
+                                      value: tagTypeList.indexOf(item),
+                                    ));
+                                  });
+                                  return data;
+                                },
+                              ),
+                            ),
+                            ListTile(
+                              leading: Icon(Icons.list),
+                              title: Text('按种类'),
+                              subtitle: Text(typeTypeList[filterType]),
+                              trailing: PopupMenuButton(
                                   child: Icon(Icons.arrow_drop_down),
                                   onSelected: (int value) {
                                     setState(() {
-                                      filterTag = value;
+                                      filterType = value;
                                       setState(() {
                                         list.clear();
                                         page = 0;
@@ -100,91 +117,75 @@ class _NovelCategoryDetailPage extends State<NovelCategoryDetailPage> {
                                       Navigator.pop(context);
                                     });
                                   },
-                                  itemBuilder: (context) {
+                                  itemBuilder: (BuildContext context) {
                                     var data = <PopupMenuItem<int>>[];
-                                    tagTypeList.forEach((item) {
+                                    typeTypeList.forEach((item) {
                                       data.add(PopupMenuItem(
                                         child: Text(item),
-                                        value: tagTypeList.indexOf(item),
+                                        value: typeTypeList.indexOf(item),
                                       ));
                                     });
                                     return data;
-                                  },
-                                ),
-                              ),
-                              ListTile(
-                                leading: Icon(Icons.list),
-                                title: Text('按种类'),
-                                subtitle: Text(typeTypeList[filterType]),
-                                trailing: PopupMenuButton(
-                                    child: Icon(Icons.arrow_drop_down),
-                                    onSelected: (int value) {
-                                      setState(() {
-                                        filterType = value;
-                                        setState(() {
-                                          list.clear();
-                                          page = 0;
-                                        });
-                                        getCategoryDetail();
-                                        Navigator.pop(context);
-                                      });
-                                    },
-                                    itemBuilder: (BuildContext context) {
-                                      var data = <PopupMenuItem<int>>[];
-                                      typeTypeList.forEach((item) {
-                                        data.add(PopupMenuItem(
-                                          child: Text(item),
-                                          value: typeTypeList.indexOf(item),
-                                        ));
-                                      });
-                                      return data;
-                                    }),
-                              )
-                            ],
-                          ));
-                    });
+                                  }),
+                            )
+                          ],
+                        ));
+                  });
+            },
+          )
+        ],
+      ),
+      body: Column(
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.all(7),
+                child: Text(
+                    '当前:${tagTypeList[filterTag]}-${typeTypeList[filterType]}'),
+              ),
+            ],
+          ),
+          Expanded(
+            child: EasyRefresh(
+              onRefresh: () async {
+                setState(() {
+                  refreshState = true;
+                  page = 0;
+                  list.clear();
+                });
+                await getCategoryDetail();
               },
-            )
-          ],
-        ),
-        body: RefreshIndicator(
-          onRefresh: () async {
-            if (!refreshState) {
-              setState(() {
-                refreshState = true;
-                list.clear();
-                page = 0;
-              });
-              await getCategoryDetail();
-            }
-            return;
-          },
-          child: Scrollbar(
-            child: SingleChildScrollView(
-              controller: _controller,
-              child: Column(
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Text(
-                            '当前:${tagTypeList[filterTag]}-${typeTypeList[filterType]}'),
-                      )
-                    ],
-                  ),
-                  ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: list.length,
-                    itemBuilder: (context, index) {
-                      return list[index];
-                    },
-                  )
-                ],
+              onLoad: () async {
+                setState(() {
+                  refreshState = true;
+                  page++;
+                });
+                await getCategoryDetail();
+              },
+              header: ClassicalHeader(
+                  refreshedText: '刷新完成',
+                  refreshFailedText: '刷新失败',
+                  refreshingText: '刷新中',
+                  refreshText: '下拉刷新',
+                  refreshReadyText: '释放刷新'),
+              footer: ClassicalFooter(
+                  loadReadyText: '下拉加载更多',
+                  loadFailedText: '加载失败',
+                  loadingText: '加载中',
+                  loadedText: '加载完成',
+                  noMoreText: '没有更多内容了'),
+              child: ListView.builder(
+                itemCount: list.length,
+                itemBuilder: (context, index) {
+                  return list[index];
+                },
               ),
             ),
-          ),
-        ));
+          )
+        ],
+      ),
+    );
   }
 }
 

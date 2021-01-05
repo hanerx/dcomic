@@ -38,7 +38,7 @@ class _SubscribeCard extends State<SubscribeCard> {
     // TODO: implement build
     return Expanded(
       child: FlatButton(
-        padding: EdgeInsets.all(0),
+        padding: EdgeInsets.all(1),
         child: Card(
             child: Badge(
           position: BadgePosition.topEnd(top: -5, end: -5),

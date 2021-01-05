@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:yin_drag_sacle/core/drag_scale_widget.dart';
 
 import 'Common.dart';
@@ -49,15 +50,20 @@ class VerticalPageView extends StatefulWidget {
 
 class _VerticalPageView extends State<VerticalPageView> {
   ScrollController _controller;
+  EasyRefreshController _easyRefreshController;
   CustomDelegate _delegate;
   int index = 0;
   double position = 100;
   bool loading = false;
   StreamSubscription _channel;
 
-  _VerticalPageView() {
-    _controller = new ScrollController(initialScrollOffset: 100);
+  _VerticalPageView() {}
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _controller = new ScrollController(initialScrollOffset: 0);
     print("class: VerticalPageView, action: listenChannel");
     _channel = EventChannel("top.hanerx/volume")
         .receiveBroadcastStream()
@@ -80,62 +86,57 @@ class _VerticalPageView extends State<VerticalPageView> {
       if (_controller.hasClients) {
         if ((_controller.position.pixels - position).abs() > 500) {
           if (widget.onPageChange != null) {
-            widget.onPageChange(_delegate.first);
+            widget.onPageChange((_delegate.first+_delegate.last)~/2);
           }
           setState(() {
             position = _controller.position.pixels;
-            index = _delegate.last - 1;
+            index = (_delegate.first+_delegate.last)~/2;
           });
         }
-        if (widget.count>=4&&
-            _controller.position.pixels >=
-                _controller.position.maxScrollExtent &&
-            widget.onEnd != null &&
-            !widget.refreshState &&
-            !loading) {
-          setState(() {
-            loading = true;
-          });
-          bool flag = await widget.onEnd();
-          if (flag) {
-            _controller.animateTo(100,
-                duration: Duration(microseconds: 500),
-                curve: Curves.decelerate);
-            if (mounted) {
-              setState(() {
-                loading = false;
-              });
-            }
-          }
-        } else if (widget.count>=4&&
-            _controller.position.pixels <
-                _controller.position.minScrollExtent &&
-            widget.onTop != null &&
-            !widget.refreshState &&
-            !loading) {
-          setState(() {
-            loading = true;
-          });
-          bool flag = await widget.onTop();
-          if (flag) {
-            _controller.animateTo(100,
-                duration: Duration(microseconds: 500),
-                curve: Curves.decelerate);
-            if (mounted) {
-              setState(() {
-                loading = false;
-              });
-            }
-          }
-        }
+        // if (widget.count>=4&&
+        //     _controller.position.pixels >=
+        //         _controller.position.maxScrollExtent &&
+        //     widget.onEnd != null &&
+        //     !widget.refreshState &&
+        //     !loading) {
+        //   setState(() {
+        //     loading = true;
+        //   });
+        //   bool flag = await widget.onEnd();
+        //   if (flag) {
+        //     _controller.animateTo(100,
+        //         duration: Duration(microseconds: 500),
+        //         curve: Curves.decelerate);
+        //     if (mounted) {
+        //       setState(() {
+        //         loading = false;
+        //       });
+        //     }
+        //   }
+        // } else if (widget.count>=4&&
+        //     _controller.position.pixels <
+        //         _controller.position.minScrollExtent &&
+        //     widget.onTop != null &&
+        //     !widget.refreshState &&
+        //     !loading) {
+        //   setState(() {
+        //     loading = true;
+        //   });
+        //   bool flag = await widget.onTop();
+        //   if (flag) {
+        //     _controller.animateTo(100,
+        //         duration: Duration(microseconds: 500),
+        //         curve: Curves.decelerate);
+        //     if (mounted) {
+        //       setState(() {
+        //         loading = false;
+        //       });
+        //     }
+        //   }
+        // }
       }
     });
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
+    _easyRefreshController=EasyRefreshController();
   }
 
   @override
@@ -146,7 +147,7 @@ class _VerticalPageView extends State<VerticalPageView> {
 
   Future<void> moveToTop() async {
     if (_controller.hasClients) {
-      _controller.animateTo(100,
+      _controller.animateTo(0,
           duration: Duration(microseconds: 500), curve: Curves.decelerate);
     }
   }
@@ -154,19 +155,53 @@ class _VerticalPageView extends State<VerticalPageView> {
   @override
   Widget build(BuildContext context) {
     _delegate = new CustomDelegate((context, index) {
-      return Common.builder(context, index, widget.count, widget.builder,
-          widget.left, widget.right,
+      return Common.builderVertical(context, index, widget.count,
+          widget.builder, widget.left, widget.right,
           dense: true);
     }, widget.count);
     // TODO: implement build
     return Stack(
       children: [
-        DragScaleContainer(
-          doubleTapStillScale: false,
-          child: ListView.custom(
-            padding: EdgeInsets.zero,
-            controller: _controller,
-            childrenDelegate: _delegate,
+        Container(
+          width: double.infinity,
+          height: double.infinity,
+          child: Center(
+            child: EasyRefresh(
+              controller: _easyRefreshController,
+              taskIndependence: true,
+              onRefresh: () async {
+                bool flag=await widget.onTop();
+                _easyRefreshController.resetLoadState();
+                _easyRefreshController.finishRefresh(success: true,noMore: widget.left);
+              },
+              onLoad: () async {
+                bool flag=await widget.onEnd();
+                if(flag){
+                  this.moveToTop();
+                }
+                _easyRefreshController.resetRefreshState();
+                _easyRefreshController.finishLoad(success: true,noMore: widget.right);
+              },
+              header: ClassicalHeader(
+                  refreshedText: '加载完成',
+                  refreshFailedText: '加载失败',
+                  refreshingText: '加载中',
+                  refreshText: '下拉加载上一话',
+                  refreshReadyText: '释放加载上一话',
+                  noMoreText: '没有更多内容了'
+              ),
+              footer: ClassicalFooter(
+                  loadReadyText: '上拉加载下一话',
+                  loadFailedText: '加载失败',
+                  loadingText: '加载中',
+                  loadedText: '加载完成',
+                  noMoreText: '没有更多内容了'),
+              child: ListView.custom(
+                padding: EdgeInsets.zero,
+                controller: _controller,
+                childrenDelegate: _delegate,
+              ),
+            ),
           ),
         ),
         Positioned(
@@ -249,7 +284,7 @@ class _VerticalPageView extends State<VerticalPageView> {
     if (_controller.hasClients) {
       return _controller.position.maxScrollExtent;
     }
-    return 100;
+    return 0;
   }
 
   set value(double value) {
@@ -258,6 +293,7 @@ class _VerticalPageView extends State<VerticalPageView> {
           duration: Duration(microseconds: 500), curve: Curves.decelerate);
     }
   }
+
 }
 
 class CustomDelegate extends SliverChildBuilderDelegate {

@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutterdmzj/database/database.dart';
 
 class CustomHttp {
@@ -177,6 +180,18 @@ class CustomHttp {
     FormData formData = FormData.fromMap({'subid': int.parse(subId)});
     return unCachedDio.post('https://i.dmzj.com/ajax/update/read',
         options: options, data: formData);
+  }
+
+  Future<Response<T>> addHistoryNew<T>(int comicId, String uid,int chapterId,{int page:1}) async{
+    Map map = {
+      comicId.toString(): chapterId.toString(),
+      "comicId": comicId.toString(),
+      "chapterId": chapterId.toString(),
+      "page": page,
+      "time": DateTime.now().millisecondsSinceEpoch/1000
+    };
+    var json = Uri.encodeComponent(jsonEncode(map));
+    return unCachedDio.get("https://interface.dmzj.com/api/record/getRe?st=comic&uid=$uid&callback=record_jsonpCallback&json=[$json]&type=3");
   }
 
   Future<Response<T>> setUpRead<T>(String subId) async {

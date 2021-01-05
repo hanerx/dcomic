@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutterdmzj/component/Drawer.dart';
 import 'package:flutterdmzj/database/database.dart';
+import 'package:flutterdmzj/model/systemSettingModel.dart';
 import 'package:flutterdmzj/utils/ChineseCupertinoLocalizations.dart';
 import 'package:flutterdmzj/utils/static_language.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
@@ -20,6 +22,7 @@ import 'package:flutterdmzj/view/ranking_page.dart';
 import 'package:flutterdmzj/view/setting_page.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 import 'package:package_info/package_info.dart';
+import 'package:provider/provider.dart';
 import 'package:uni_links/uni_links.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:event_bus/event_bus.dart';
@@ -36,7 +39,12 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return MainFrame();
+    return MultiProvider(providers: [
+      ChangeNotifierProvider<SystemSettingModel>(
+        create: (_) => SystemSettingModel(),
+        lazy: false,
+      )
+    ], child: MainFrame());
   }
 }
 
@@ -49,22 +57,6 @@ class MainFrame extends StatefulWidget {
 }
 
 class _MainFrame extends State<MainFrame> {
-  static const List darkMode = [
-    ThemeMode.system,
-    ThemeMode.light,
-    ThemeMode.dark
-  ];
-  int darkState = 0;
-  EventBus eventBus = EventBus();
-
-  getDarkState() async {
-    DataBase dataBase = DataBase();
-    int mode = await dataBase.getDarkMode();
-    setState(() {
-      darkState = mode;
-    });
-  }
-
   initDownloader() async {
     print("class: MainFrame, action: initDownloader");
     WidgetsFlutterBinding.ensureInitialized();
@@ -74,32 +66,31 @@ class _MainFrame extends State<MainFrame> {
     FlutterDownloader.registerCallback(ToolMethods.downloadCallback);
   }
 
+  initEasyRefresh() {
+    EasyRefresh.defaultHeader = ClassicalHeader(
+        refreshedText: '刷新完成',
+        refreshFailedText: '刷新失败',
+        refreshingText: '刷新中',
+        refreshText: '下拉刷新',
+        refreshReadyText: '释放刷新');
+    EasyRefresh.defaultFooter = ClassicalFooter(
+        loadReadyText: '下拉加载更多',
+        loadFailedText: '加载失败',
+        loadingText: '加载中',
+        loadedText: '加载完成',
+        noMoreText: '没有更多内容了');
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getDarkState();
-    registerEvent();
     initDownloader();
-  }
-
-  registerEvent() {
-    eventBus.on<ThemeChangeEvent>().listen((onData) {
-      setState(() {
-        darkState = onData.mode;
-      });
-    });
   }
 
   @override
   void deactivate() {
     super.deactivate();
-    var bool = ModalRoute.of(context).isCurrent;
-    if (bool) {
-      Future.delayed(Duration(milliseconds: 200)).then((e) {
-        getDarkState();
-      });
-    }
   }
 
   @override
@@ -108,7 +99,7 @@ class _MainFrame extends State<MainFrame> {
     debugPaintSizeEnabled = false;
     // TODO: implement build
     return new MaterialApp(
-        themeMode: darkMode[darkState],
+        themeMode: Provider.of<SystemSettingModel>(context).themeMode,
         darkTheme: ThemeData(
             brightness: Brightness.dark,
             platform: TargetPlatform.iOS,
@@ -131,7 +122,7 @@ class _MainFrame extends State<MainFrame> {
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           DefaultCupertinoLocalizations.delegate,
-          ChineseCupertinoLocalizations.delegate
+          ChineseCupertinoLocalizations.delegate,
         ],
         color: Colors.grey[400],
         showSemanticsDebugger: false,
@@ -172,7 +163,7 @@ class _MainPage extends State<MainPage> {
   getVersionInfo() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     setState(() {
-      if (ToolMethods.checkVersion(packageInfo.version,version)) {
+      if (ToolMethods.checkVersion(packageInfo.version, version)) {
         version = packageInfo.version;
       }
     });
@@ -201,7 +192,7 @@ class _MainPage extends State<MainPage> {
         dataBase.setVersion(lastVersion);
         return;
       }
-      bool update = ToolMethods.checkVersion(lastVersion,version);
+      bool update = ToolMethods.checkVersion(lastVersion, version);
       if (update) {
         dataBase.setVersion(lastVersion);
         showDialog(
@@ -217,7 +208,7 @@ class _MainPage extends State<MainPage> {
                 actions: <Widget>[
                   FlatButton(
                     child: Text('打开网页'),
-                    onPressed: (){
+                    onPressed: () {
                       _openWeb('${response.data['html_url']}');
                     },
                   ),
@@ -231,6 +222,22 @@ class _MainPage extends State<MainPage> {
                         var downloadPath = await dataBase.getDownloadPath();
                         FlutterDownloader.enqueue(
                             url: url, savedDir: '$downloadPath');
+                        Navigator.pop(context);
+                      } else {
+                        _openWeb('${response.data['html_url']}');
+                      }
+                    },
+                  ),
+                  FlatButton(
+                    child: Text('镜像更新'),
+                    onPressed: ()async{
+                      if (response.data['assets'].length > 0) {
+                        String url =
+                        response.data['assets'][0]['browser_download_url'];
+                        DataBase dataBase = DataBase();
+                        var downloadPath = await dataBase.getDownloadPath();
+                        FlutterDownloader.enqueue(
+                            url: 'https://divine-boat-417a.hanerx.workers.dev/$url', savedDir: '$downloadPath');
                         Navigator.pop(context);
                       } else {
                         _openWeb('${response.data['html_url']}');
@@ -297,5 +304,3 @@ class _MainPage extends State<MainPage> {
     );
   }
 }
-
-

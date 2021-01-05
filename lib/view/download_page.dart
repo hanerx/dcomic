@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutterdmzj/model/download.dart';
 import 'package:provider/provider.dart';
 
@@ -22,12 +23,18 @@ class _DownloadPage extends State<DownloadPage> {
             appBar: AppBar(
               title: Text('下载管理'),
             ),
-            body: RefreshIndicator(
+            body: EasyRefresh(
               onRefresh: () async {
                 await Provider.of<DownloadModel>(context, listen: false)
                     .getComic();
                 return true;
               },
+              header: ClassicalHeader(
+                  refreshedText: '刷新完成',
+                  refreshFailedText: '刷新失败',
+                  refreshingText: '刷新中',
+                  refreshText: '下拉刷新',
+                  refreshReadyText: '释放刷新'),
               child: ListView.builder(
                 itemBuilder:
                     Provider.of<DownloadModel>(context).buildComicListTile,

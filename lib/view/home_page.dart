@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutterdmzj/component/CardView.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
@@ -83,23 +84,23 @@ class _HomePage extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return RefreshIndicator(
-      child: new Scrollbar(
-        child: new SingleChildScrollView(
-            child: Column(
-          children: list,
-        )),
-      ),
-      onRefresh: () async {
-        if (!refreshState) {
-          setState(() {
-            refreshState = true;
-            list.clear();
-          });
-          await getMainPage();
-        }
-        return;
+    return EasyRefresh(
+      onRefresh: ()async{
+        setState(() {
+          refreshState=true;
+          list.clear();
+        });
+        await getMainPage();
       },
+      header: ClassicalHeader(
+          refreshedText: '刷新完成',
+          refreshFailedText: '刷新失败',
+          refreshingText: '刷新中',
+          refreshText: '下拉刷新',
+          refreshReadyText: '释放刷新'),
+      child: Column(
+        children: list,
+      ),
     );
   }
 }

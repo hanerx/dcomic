@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:flutterdmzj/model/novel.dart';
 import 'package:provider/provider.dart';
@@ -84,22 +85,27 @@ class _NovelViewerPage extends State<NovelViewerPage>
             },
             child: Stack(
               children: [
-                Container(
-                  constraints: BoxConstraints(
-                    minHeight: double.infinity,
-                    minWidth: double.infinity
-                  ),
+                EasyRefresh(
                   child: SingleChildScrollView(
-                    controller: _controller,
-                    child: Column(
-                      children: [
-                        HtmlWidget(Provider.of<NovelModel>(context).data),
-                        Container(
-                          height: 70,
-                        )
-                      ],
-                    ),
+                      controller: _controller,
+                      child: Column(
+                        children: [
+                          HtmlWidget(Provider.of<NovelModel>(context).data),
+                          Container(
+                            height: 70,
+                          )
+                        ],
+                      ),
                   ),
+                  onRefresh: ()async{
+                    await Provider.of<NovelModel>(context,listen: false).previous();
+                  },
+                  onLoad: ()async{
+                    await Provider.of<NovelModel>(context,listen: false).next();
+                    if(_controller.hasClients){
+                      _controller.animateTo(0, duration: Duration(microseconds: 100), curve: Curves.easeIn);
+                    }
+                  },
                 ),
                 Positioned(
                   top: 0,
