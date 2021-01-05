@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutterdmzj/component/CardView.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/view/novel_pages/novel_detail_page.dart';
@@ -51,7 +52,8 @@ class _NovelHomePage extends State<NovelHomePage> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return RefreshIndicator(
+    return EasyRefresh(
+      scrollController: ScrollController(),
       child: new Scrollbar(
         child: new SingleChildScrollView(
             child: Column(
@@ -59,15 +61,19 @@ class _NovelHomePage extends State<NovelHomePage> {
         )),
       ),
       onRefresh: () async {
-        if (!refreshState) {
           setState(() {
             refreshState = true;
             list.clear();
           });
           await getMainPage();
-        }
         return;
       },
+      header: ClassicalHeader(
+          refreshedText: '刷新完成',
+          refreshFailedText: '刷新失败',
+          refreshingText: '刷新中',
+          refreshText: '下拉刷新',
+          refreshReadyText: '释放刷新'),
     );
   }
 }

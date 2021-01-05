@@ -196,7 +196,7 @@ class _HorizontalPageView extends State<HorizontalPageView> {
             _controller.animateToPage(1, duration: Duration(microseconds: 500), curve: Curves.decelerate);
           }
         } else if (widget.count != null &&
-            index >= widget.count &&
+            index >= widget.count-1 &&
             widget.onEnd != null) {
           bool flag = await widget.onEnd();
           if (flag && _controller.hasClients) {
@@ -205,7 +205,7 @@ class _HorizontalPageView extends State<HorizontalPageView> {
           }
         }
       },
-      itemCount: widget.count + 1,
+      itemCount: widget.count,
       itemBuilder: (context, index) {
         return Common.builder(context, index, widget.count, widget.builder,
             widget.left, widget.right,

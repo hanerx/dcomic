@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutterdmzj/component/LoadingRow.dart';
 import 'package:flutterdmzj/component/SubscribeCard.dart';
 import 'package:flutterdmzj/database/database.dart';
@@ -18,8 +19,7 @@ class ComicFavoritePage extends StatefulWidget {
 }
 
 class _ComicFavoritePage extends State<ComicFavoritePage> {
-  ScrollController _controller = ScrollController();
-  List list = <Widget>[LoadingRow()];
+  List list = <Widget>[];
   int page = 0;
   int _row = 3;
   bool refreshState = false;
@@ -31,11 +31,6 @@ class _ComicFavoritePage extends State<ComicFavoritePage> {
     if (response.statusCode == 200 && mounted) {
       var unreadList = await dataBase.getAllUnread();
       setState(() {
-        if (page == 0) {
-          list.clear();
-        } else {
-          list.removeLast();
-        }
         if (response.data.length == 0) {
           refreshState = true;
           if (page == 0) {
@@ -78,40 +73,49 @@ class _ComicFavoritePage extends State<ComicFavoritePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getSubscribe();
-    _controller.addListener(() {
-      if (_controller.position.pixels == _controller.position.maxScrollExtent &&
-          !refreshState) {
-        setState(() {
-          refreshState = true;
-          page++;
-          list.add(LoadingRow());
-        });
-        getSubscribe();
-      }
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return new Scrollbar(
-        child: RefreshIndicator(
-          onRefresh: ()async{
-            setState(() {
-              page=0;
-              refreshState=true;
-              list.clear();
-              list.add(LoadingRow());
-            });
-            await getSubscribe();
-          },
-          child: SingleChildScrollView(
-            controller: _controller,
-            child: Column(
-              children: list,
-            ),
-          ),
-        ));
+    return EasyRefresh(
+      firstRefresh: true,
+      firstRefreshWidget: LoadingRow(),
+      scrollController: ScrollController(),
+      onRefresh: ()async{
+        setState(() {
+          page=0;
+          refreshState=true;
+          list.clear();
+        });
+        await getSubscribe();
+      },
+      onLoad: ()async{
+        setState(() {
+          page++;
+          refreshState=true;
+        });
+        await getSubscribe();
+      },
+      header: ClassicalHeader(
+          refreshedText: '刷新完成',
+          refreshFailedText: '刷新失败',
+          refreshingText: '刷新中',
+          refreshText: '下拉刷新',
+          refreshReadyText: '释放刷新'),
+      footer: ClassicalFooter(
+          loadReadyText: '下拉加载更多',
+          loadFailedText: '加载失败',
+          loadingText: '加载中',
+          loadedText: '加载完成',
+          noMoreText: '没有更多内容了'
+      ),
+      child: Container(
+        padding: EdgeInsets.fromLTRB(2, 7, 2, 0),
+        child: Column(
+          children: list,
+        ),
+      ),
+    );
   }
 }

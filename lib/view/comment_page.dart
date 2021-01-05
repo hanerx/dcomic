@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutterdmzj/component/LoadingTile.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
@@ -25,9 +26,8 @@ class _CommentPage extends State<CommentPage> {
   bool refreshState = true;
   bool canGo = true;
   List list = <Widget>[
-    LoadingTile()
   ];
-  ScrollController _controller = ScrollController();
+  EasyRefreshController _controller=EasyRefreshController();
 
   _CommentPage(this.comicId);
 
@@ -37,34 +37,31 @@ class _CommentPage extends State<CommentPage> {
       var response = await http.getComicComment(comicId, page, type);
       if (response.statusCode == 200 && mounted) {
         setState(() {
-          if (page == 0) {
-            list.clear();
-          } else {
-            list.removeLast();
-          }
           if (response.data.length == 0) {
             refreshState = false;
-            canGo = false;
-            list.add(ListTile(leading: Icon(Icons.clear),title: Text('没有更多了'),));
+            _controller.finishLoad(success: true,noMore: true);
             return;
           }
           for (var item in response.data) {
             list.add(ListTile(
-              leading: CachedNetworkImage(
-                imageUrl: item['avatar_url'],
-                httpHeaders: {'referer': 'http://images.dmzj.com'},
-                progressIndicatorBuilder: (context, url, downloadProgress) =>
-                    CircularProgressIndicator(value: downloadProgress.progress),
-                errorWidget: (context, url, error) => CachedNetworkImage(
-                  imageUrl: 'https://avatar.dmzj.com/default.png',
+              leading: ClipRRect(
+                child: CachedNetworkImage(
+                  imageUrl: item['avatar_url'],
                   httpHeaders: {'referer': 'http://images.dmzj.com'},
                   progressIndicatorBuilder: (context, url, downloadProgress) =>
-                      CircularProgressIndicator(
-                          value: downloadProgress.progress),
-                  errorWidget: (context, url, error) => Center(
-                    child: Icon(Icons.warning),
+                      CircularProgressIndicator(value: downloadProgress.progress),
+                  errorWidget: (context, url, error) => CachedNetworkImage(
+                    imageUrl: 'https://avatar.dmzj.com/default.png',
+                    httpHeaders: {'referer': 'http://images.dmzj.com'},
+                    progressIndicatorBuilder: (context, url, downloadProgress) =>
+                        CircularProgressIndicator(
+                            value: downloadProgress.progress),
+                    errorWidget: (context, url, error) => Center(
+                      child: Icon(Icons.warning),
+                    ),
                   ),
                 ),
+                borderRadius: BorderRadius.circular(5),
               ),
               title: Text('${item['content']}'),
               subtitle: Text(
@@ -88,18 +85,6 @@ class _CommentPage extends State<CommentPage> {
     // TODO: implement initState
     super.initState();
     getComment();
-    _controller.addListener(() {
-      if (_controller.position.pixels == _controller.position.maxScrollExtent &&
-          !refreshState &&
-          canGo) {
-        setState(() {
-          refreshState = true;
-          page++;
-          list.add(LoadingTile());
-        });
-        getComment();
-      }
-    });
   }
 
   @override
@@ -124,9 +109,7 @@ class _CommentPage extends State<CommentPage> {
                     type = 0;
                   }
                   refreshState = true;
-                  list = <Widget>[
-                    LoadingTile()
-                  ];
+                  list = <Widget>[];
                 });
                 getComment();
               }
@@ -134,19 +117,39 @@ class _CommentPage extends State<CommentPage> {
           )
         ],
       ),
-      body: RefreshIndicator(
+      body: EasyRefresh(
         onRefresh: () async {
           if (!refreshState) {
             setState(() {
               page = 0;
               refreshState = true;
+              list.clear();
             });
+            _controller.resetLoadState();
             await getComment();
           }
           return;
         },
+        onLoad: ()async{
+          setState(() {
+            refreshState = true;
+            page++;
+          });
+          getComment();
+        },
+        header: ClassicalHeader(
+            refreshedText: '刷新完成',
+            refreshFailedText: '刷新失败',
+            refreshingText: '刷新中',
+            refreshText: '下拉刷新',
+            refreshReadyText: '释放刷新'),
+        footer: ClassicalFooter(
+            loadReadyText: '下拉加载更多',
+            loadFailedText: '加载失败',
+            loadingText: '加载中',
+            loadedText: '加载完成',
+            noMoreText: '没有更多内容了'),
         child: ListView.builder(
-            controller: _controller,
             itemCount: list.length,
             itemBuilder: (context, index) {
               return list[index];

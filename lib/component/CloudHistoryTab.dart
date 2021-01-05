@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/view/login_page.dart';
@@ -96,7 +97,8 @@ class _CloudHistoryTab extends State<CloudHistoryTab> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return RefreshIndicator(
+    return EasyRefresh(
+      scrollController: ScrollController(),
       child: ListView.builder(
           itemCount: list.length,
           shrinkWrap: true,
@@ -112,6 +114,12 @@ class _CloudHistoryTab extends State<CloudHistoryTab> {
         }
         return;
       },
+      header: ClassicalHeader(
+          refreshedText: '刷新完成',
+          refreshFailedText: '刷新失败',
+          refreshingText: '刷新中',
+          refreshText: '下拉刷新',
+          refreshReadyText: '释放刷新'),
     );
   }
 

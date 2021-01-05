@@ -9,12 +9,14 @@ import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/event/CustomEventBus.dart';
 import 'package:flutterdmzj/event/ThemeChangeEvent.dart';
 import 'package:flutterdmzj/http/http.dart';
+import 'package:flutterdmzj/model/systemSettingModel.dart';
 import 'package:flutterdmzj/utils/static_language.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:flutterdmzj/view/lab_setting_page.dart';
 import 'package:logger_flutter/logger_flutter.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 import 'package:package_info/package_info.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:toast/toast.dart';
 
@@ -32,7 +34,6 @@ class _SettingPage extends State<SettingPage> {
   bool direction = false;
   bool cover = false;
   bool labState = false;
-  int darkState = 0;
   bool nomedia=false;
   String downloadPath = '';
   static const List darkMode = ['跟随系统', '亮色', '夜间'];
@@ -94,19 +95,6 @@ class _SettingPage extends State<SettingPage> {
     });
   }
 
-  getDarkMode() async {
-    DataBase dataBase = DataBase();
-    int state = await dataBase.getDarkMode();
-    setState(() {
-      darkState = state;
-    });
-  }
-
-  setDarkMode(context) async {
-    DataBase dataBase = DataBase();
-    dataBase.setDarkMode(darkState);
-    eventBus.fire(ThemeChangeEvent(darkState));
-  }
 
   getMedia() async{
     var file=File('$downloadPath/.nomedia');
@@ -124,7 +112,6 @@ class _SettingPage extends State<SettingPage> {
     getReadDirection();
     getCoverType();
     getLabState();
-    getDarkMode();
     getDownloadPath();
   }
 
@@ -159,19 +146,14 @@ class _SettingPage extends State<SettingPage> {
               },
             ),
             ListTile(
-              title: Text('夜间模式(需要重启应用)'),
-              subtitle: Text('当前设定:${darkMode[darkState]}'),
+              title: Text('夜间模式'),
+              subtitle: Text('当前设定:${darkMode[Provider.of<SystemSettingModel>(context).darkState]}'),
               onTap: () {
-                if (darkState < darkMode.length - 1) {
-                  setState(() {
-                    darkState++;
-                  });
+                if (Provider.of<SystemSettingModel>(context,listen: false).darkState < darkMode.length - 1) {
+                  Provider.of<SystemSettingModel>(context,listen: false).darkState++;
                 } else {
-                  setState(() {
-                    darkState = 0;
-                  });
+                  Provider.of<SystemSettingModel>(context,listen: false).darkState=0;
                 }
-                setDarkMode(context);
               },
             ),
             Divider(),

@@ -39,4 +39,13 @@ class Common {
     }
     return null;
   }
+
+  static Widget builderVertical(BuildContext context, int index, int count,
+      IndexedWidgetBuilder builder, bool left, bool right,
+      {bool dense = false}){
+    if (index >= 0 && index < count) {
+      return builder(context, index);
+    }
+    return null;
+  }
 }

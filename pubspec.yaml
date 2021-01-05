@@ -44,6 +44,9 @@ dependencies:
   flutter_downloader: ^1.5.2
   logger: ^0.9.4
   flutter_widget_from_html: ^0.5.1+5
+  flutter_easyrefresh: ^2.1.8
+  connectivity: ^2.0.2
+  battery: ^1.0.7
   logger_flutter:
     git: https://github.com/ewertonrp/logger_flutter.git
   flutter_localizations:

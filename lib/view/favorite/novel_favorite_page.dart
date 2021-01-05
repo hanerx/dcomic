@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutterdmzj/component/LoadingRow.dart';
 import 'package:flutterdmzj/component/SubscribeCard.dart';
 import 'package:flutterdmzj/database/database.dart';
@@ -21,8 +22,7 @@ class NovelFavoritePage extends StatefulWidget {
 }
 
 class _NovelFavoritePage extends State<NovelFavoritePage> {
-  ScrollController _controller = ScrollController();
-  List list = <Widget>[LoadingRow()];
+  List list = <Widget>[];
   int page = 0;
   int _row = 3;
   bool refreshState = false;
@@ -33,11 +33,6 @@ class _NovelFavoritePage extends State<NovelFavoritePage> {
         await http.getSubscribe(int.parse(widget.uid), page, type: 1);
     if (response.statusCode == 200 && mounted) {
       setState(() {
-        if (page == 0) {
-          list.clear();
-        } else {
-          list.removeLast();
-        }
         if (response.data.length == 0) {
           refreshState = true;
           if (page == 0) {
@@ -57,7 +52,12 @@ class _NovelFavoritePage extends State<NovelFavoritePage> {
             position = 0;
             cardList = <Widget>[];
           }
-          cardList.add(_NovelCard(id: item['id'],cover: item['sub_img'],title: item['name'],subtitle: item['sub_update'],));
+          cardList.add(_NovelCard(
+            id: item['id'],
+            cover: item['sub_img'],
+            title: item['name'],
+            subtitle: item['sub_update'],
+          ));
           position++;
         }
         if (cardList.length > 0 && position < _row) {
@@ -74,41 +74,48 @@ class _NovelFavoritePage extends State<NovelFavoritePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getSubscribe();
-    _controller.addListener(() {
-      if (_controller.position.pixels == _controller.position.maxScrollExtent &&
-          !refreshState) {
-        setState(() {
-          refreshState = true;
-          page++;
-          list.add(LoadingRow());
-        });
-        getSubscribe();
-      }
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return Scrollbar(
-      child: RefreshIndicator(
-        onRefresh: ()async{
-          setState(() {
-            page=0;
-            refreshState=true;
-            list.clear();
-            list.add(LoadingRow());
-          });
-          await getSubscribe();
-        },
-        child: SingleChildScrollView(
-          controller: _controller,
-          child: Column(
-            children: list,
-          ),
+    return EasyRefresh(
+      scrollController: ScrollController(),
+      onRefresh: () async {
+        setState(() {
+          page = 0;
+          refreshState = true;
+          list.clear();
+        });
+        await getSubscribe();
+      },
+      onLoad: () async {
+        setState(() {
+          page++;
+          refreshState = true;
+        });
+        await getSubscribe();
+      },
+      header: ClassicalHeader(
+          refreshedText: '刷新完成',
+          refreshFailedText: '刷新失败',
+          refreshingText: '刷新中',
+          refreshText: '下拉刷新',
+          refreshReadyText: '释放刷新'),
+      footer: ClassicalFooter(
+          loadReadyText: '下拉加载更多',
+          loadFailedText: '加载失败',
+          loadingText: '加载中',
+          loadedText: '加载完成',
+          noMoreText: '没有更多内容了'),
+      firstRefresh: true,
+      firstRefreshWidget: LoadingRow(),
+      child: Container(
+        padding: EdgeInsets.fromLTRB(2, 7, 2, 0),
+        child: Column(
+          children: list,
         ),
-      )
+      ),
     );
   }
 }
@@ -127,7 +134,7 @@ class _NovelCard extends StatelessWidget {
     // TODO: implement build
     return Expanded(
       child: FlatButton(
-        padding: EdgeInsets.all(0),
+        padding: EdgeInsets.all(1),
         child: Card(
           child: _Card(cover, title, subtitle),
         ),

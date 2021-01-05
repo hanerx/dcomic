@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:flutterdmzj/view/comic_detail_page.dart';
@@ -23,7 +24,6 @@ class _RankingPage extends State<RankingPage> {
   List dateTypeList = <String>['日排行', '周排行', '月排行', '总排行'];
   List typeTypeList = <String>['按人气', '按吐槽', '按订阅'];
   Map tagTypeList = <int, String>{};
-  ScrollController _controller = ScrollController();
 
   loadRankingList() async {
     CustomHttp http = CustomHttp();
@@ -66,174 +66,168 @@ class _RankingPage extends State<RankingPage> {
     super.initState();
     loadRankingList();
     loadRankingTag();
-    _controller.addListener(() {
-      if (_controller.position.pixels == _controller.position.maxScrollExtent &&
-          !refreshState) {
-        setState(() {
-          refreshState = true;
-          page++;
-        });
-        loadRankingList();
-      }
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return RefreshIndicator(
-      onRefresh: () async {
-        if (!refreshState) {
-          setState(() {
-            refreshState = true;
-            page = 0;
-            list.clear();
-          });
-          await loadRankingList();
-        }
-        return;
-      },
-      child: Scrollbar(
-        child: SingleChildScrollView(
-          controller: _controller,
-          child: Container(
-              margin: EdgeInsets.fromLTRB(3, 0, 0, 10),
-              child: Column(
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Text(
-                            '当前:${dateTypeList[filterDate]}-${tagTypeList[filterTag]}-${typeTypeList[filterType]}'),
-                      ),
-                      FlatButton(
-                        child: Icon(Icons.filter_list),
-                        onPressed: () {
-                          if (tagTypeList.length == 0) {
-                            loadRankingTag();
-                            return;
-                          }
-                          showModalBottomSheet(
-                              context: context,
-                              builder: (context) {
-                                return Container(
-                                    height: 220,
-                                    child: ListView(
-                                      children: <Widget>[
-                                        ListTile(
-                                          leading: Icon(Icons.date_range),
-                                          title: Text('按日期'),
-                                          subtitle:
-                                              Text(dateTypeList[filterDate]),
-                                          trailing: PopupMenuButton(
-                                              child:
-                                                  Icon(Icons.arrow_drop_down),
-                                              onSelected: (int value) {
-                                                setState(() {
-                                                  filterDate = value;
-                                                  setState(() {
-                                                    list.clear();
-                                                    page = 0;
-                                                  });
-                                                  loadRankingList();
-                                                  Navigator.pop(context);
-                                                });
-                                              },
-                                              itemBuilder:
-                                                  (BuildContext context) {
-                                                var data =
-                                                    <PopupMenuItem<int>>[];
-                                                dateTypeList.forEach((item) {
-                                                  data.add(PopupMenuItem(
-                                                    child: Text(item),
-                                                    value: dateTypeList
-                                                        .indexOf(item),
-                                                  ));
-                                                });
-                                                return data;
-                                              }),
-                                        ),
-                                        ListTile(
-                                          leading: Icon(Icons.category),
-                                          title: Text('按分类'),
-                                          subtitle:
-                                              Text(tagTypeList[filterTag]),
-                                          trailing: PopupMenuButton(
-                                            child: Icon(Icons.arrow_drop_down),
-                                            onSelected: (int value) {
-                                              setState(() {
-                                                filterTag = value;
-                                                setState(() {
-                                                  list.clear();
-                                                  page = 0;
-                                                });
-                                                loadRankingList();
-                                                Navigator.pop(context);
-                                              });
-                                            },
-                                            itemBuilder: (context) {
-                                              var data = <PopupMenuItem<int>>[];
-                                              tagTypeList.forEach((key, value) {
-                                                data.add(PopupMenuItem(
-                                                    child: Text(value),
-                                                    value: key));
-                                              });
-                                              return data;
-                                            },
-                                          ),
-                                        ),
-                                        ListTile(
-                                          leading: Icon(Icons.list),
-                                          title: Text('按种类'),
-                                          subtitle:
-                                              Text(typeTypeList[filterType]),
-                                          trailing: PopupMenuButton(
-                                              child:
-                                                  Icon(Icons.arrow_drop_down),
-                                              onSelected: (int value) {
-                                                setState(() {
-                                                  filterType = value;
-                                                  setState(() {
-                                                    list.clear();
-                                                    page = 0;
-                                                  });
-                                                  loadRankingList();
-                                                  Navigator.pop(context);
-                                                });
-                                              },
-                                              itemBuilder:
-                                                  (BuildContext context) {
-                                                var data =
-                                                    <PopupMenuItem<int>>[];
-                                                typeTypeList.forEach((item) {
-                                                  data.add(PopupMenuItem(
-                                                    child: Text(item),
-                                                    value: typeTypeList
-                                                        .indexOf(item),
-                                                  ));
-                                                });
-                                                return data;
-                                              }),
-                                        )
-                                      ],
-                                    ));
-                              });
-                        },
-                      )
-                    ],
-                  ),
-                  ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: list.length,
-                    itemBuilder: (context, index) {
-                      return list[index];
-                    },
-                  )
-                ],
-              )),
+    return Column(
+      children: [
+        Row(
+          children: <Widget>[
+            Expanded(
+              child: Text(
+                  '当前:${dateTypeList[filterDate]}-${tagTypeList[filterTag]}-${typeTypeList[filterType]}'),
+            ),
+            FlatButton(
+              child: Icon(Icons.filter_list),
+              onPressed: () {
+                if (tagTypeList.length == 0) {
+                  loadRankingTag();
+                  return;
+                }
+                showModalBottomSheet(
+                    context: context,
+                    builder: (context) {
+                      return Container(
+                          height: 220,
+                          child: ListView(
+                            children: <Widget>[
+                              ListTile(
+                                leading: Icon(Icons.date_range),
+                                title: Text('按日期'),
+                                subtitle: Text(dateTypeList[filterDate]),
+                                trailing: PopupMenuButton(
+                                    child: Icon(Icons.arrow_drop_down),
+                                    onSelected: (int value) {
+                                      setState(() {
+                                        filterDate = value;
+                                        setState(() {
+                                          list.clear();
+                                          page = 0;
+                                        });
+                                        loadRankingList();
+                                        Navigator.pop(context);
+                                      });
+                                    },
+                                    itemBuilder: (BuildContext context) {
+                                      var data = <PopupMenuItem<int>>[];
+                                      dateTypeList.forEach((item) {
+                                        data.add(PopupMenuItem(
+                                          child: Text(item),
+                                          value: dateTypeList.indexOf(item),
+                                        ));
+                                      });
+                                      return data;
+                                    }),
+                              ),
+                              ListTile(
+                                leading: Icon(Icons.category),
+                                title: Text('按分类'),
+                                subtitle: Text(tagTypeList[filterTag]),
+                                trailing: PopupMenuButton(
+                                  child: Icon(Icons.arrow_drop_down),
+                                  onSelected: (int value) {
+                                    setState(() {
+                                      filterTag = value;
+                                      setState(() {
+                                        list.clear();
+                                        page = 0;
+                                      });
+                                      loadRankingList();
+                                      Navigator.pop(context);
+                                    });
+                                  },
+                                  itemBuilder: (context) {
+                                    var data = <PopupMenuItem<int>>[];
+                                    tagTypeList.forEach((key, value) {
+                                      data.add(PopupMenuItem(
+                                          child: Text(value), value: key));
+                                    });
+                                    return data;
+                                  },
+                                ),
+                              ),
+                              ListTile(
+                                leading: Icon(Icons.list),
+                                title: Text('按种类'),
+                                subtitle: Text(typeTypeList[filterType]),
+                                trailing: PopupMenuButton(
+                                    child: Icon(Icons.arrow_drop_down),
+                                    onSelected: (int value) {
+                                      setState(() {
+                                        filterType = value;
+                                        setState(() {
+                                          list.clear();
+                                          page = 0;
+                                        });
+                                        loadRankingList();
+                                        Navigator.pop(context);
+                                      });
+                                    },
+                                    itemBuilder: (BuildContext context) {
+                                      var data = <PopupMenuItem<int>>[];
+                                      typeTypeList.forEach((item) {
+                                        data.add(PopupMenuItem(
+                                          child: Text(item),
+                                          value: typeTypeList.indexOf(item),
+                                        ));
+                                      });
+                                      return data;
+                                    }),
+                              )
+                            ],
+                          ));
+                    });
+              },
+            )
+          ],
         ),
-      ),
+        Expanded(
+          child: EasyRefresh(
+            onRefresh: () async {
+              if (!refreshState) {
+                setState(() {
+                  refreshState = true;
+                  page = 0;
+                  list.clear();
+                });
+                await loadRankingList();
+              }
+              return;
+            },
+            onLoad: () async {
+              if (!refreshState) {
+                setState(() {
+                  refreshState = true;
+                  page++;
+                });
+                await loadRankingList();
+              }
+              return;
+            },
+            header: ClassicalHeader(
+                refreshedText: '刷新完成',
+                refreshFailedText: '刷新失败',
+                refreshingText: '刷新中',
+                refreshText: '下拉刷新',
+                refreshReadyText: '释放刷新'),
+            footer: ClassicalFooter(
+              loadReadyText: '下拉加载更多',
+              loadFailedText: '加载失败',
+              loadingText: '加载中',
+              loadedText: '加载完成',
+              noMoreText: '没有更多内容了'
+            ),
+            child: ListView.builder(
+              itemCount: list.length,
+              itemBuilder: (context, index) {
+                return list[index];
+              },
+            ),
+          ),
+        )
+      ],
     );
   }
 }
@@ -270,7 +264,10 @@ class CustomListTile extends StatelessWidget {
               imageUrl: '$cover',
               httpHeaders: {'referer': 'http://images.dmzj.com'},
               progressIndicatorBuilder: (context, url, downloadProgress) =>
-                  Center(child: CircularProgressIndicator(value: downloadProgress.progress),),
+                  Center(
+                child:
+                    CircularProgressIndicator(value: downloadProgress.progress),
+              ),
               errorWidget: (context, url, error) => Icon(Icons.error),
               width: 100,
             ),
