@@ -380,6 +380,22 @@ class _SettingPage extends State<SettingPage> {
                                     },
                                   ),
                                   FlatButton(
+                                    child: Text('镜像更新'),
+                                    onPressed: ()async{
+                                      if (response.data['assets'].length > 0) {
+                                        String url =
+                                        response.data['assets'][0]['browser_download_url'];
+                                        DataBase dataBase = DataBase();
+                                        var downloadPath = await dataBase.getDownloadPath();
+                                        FlutterDownloader.enqueue(
+                                            url: 'https://divine-boat-417a.hanerx.workers.dev/$url', savedDir: '$downloadPath');
+                                        Navigator.pop(context);
+                                      } else {
+                                        _openWeb('${response.data['html_url']}');
+                                      }
+                                    },
+                                  ),
+                                  FlatButton(
                                     child: Text('取消'),
                                     onPressed: () {
                                       Navigator.pop(context);
