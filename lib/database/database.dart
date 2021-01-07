@@ -521,4 +521,30 @@ class DataBase {
         "configures", {'key': 'novel_state', 'value': novel ? '1' : '0'});
     await batch.commit();
   }
+
+  Future<bool> getBackupApi() async{
+    await initDataBase();
+    var batch = _database.batch();
+    batch.query("configures", where: "key='backup_api'");
+    var result = await batch.commit();
+    try {
+      if (result.first[0]['value'] == '1') {
+        return true;
+      }
+    } catch (e) {
+      _logger.w('action: BackupApiNotFound, exception: $e');
+    }
+    return false;
+  }
+
+  Future<void> setBackupApi(bool state) async {
+    await initDataBase();
+    var batch = _database.batch();
+    batch.delete("configures", where: "key='backup_api'");
+    batch.insert(
+        "configures", {'key': 'backup_api', 'value': state ? '1' : '0'});
+    await batch.commit();
+  }
+
+
 }

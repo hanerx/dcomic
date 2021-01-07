@@ -36,8 +36,12 @@ class _SubjectDetailPage extends State<SubjectDetailPage> {
         title = response.data['title'];
         description = response.data['description'];
         for (var item in response.data['comics']) {
-          list.add(CustomListTile(item['cover'], item['name'],
-              item['recommend_brief'], item['recommend_reason'], item['id'].toString()));
+          list.add(CustomListTile(
+              item['cover'],
+              item['name'],
+              item['recommend_brief'],
+              item['recommend_reason'],
+              item['id'].toString()));
         }
       });
     }
@@ -128,7 +132,10 @@ class CustomListTile extends StatelessWidget {
               imageUrl: '$cover',
               httpHeaders: {'referer': 'http://images.dmzj.com'},
               progressIndicatorBuilder: (context, url, downloadProgress) =>
-                  Center(child: CircularProgressIndicator(value: downloadProgress.progress),),
+                  Center(
+                child:
+                    CircularProgressIndicator(value: downloadProgress.progress),
+              ),
               errorWidget: (context, url, error) => Icon(Icons.error),
               width: 100,
             ),
@@ -137,23 +144,13 @@ class CustomListTile extends StatelessWidget {
               padding: EdgeInsets.fromLTRB(10, 2, 0, 0),
               child: Column(
                 children: <Widget>[
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.topLeft,
-                      child: Text(
-                        title,
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
+                  Text(
+                    title,
+                    style: TextStyle(fontSize: 16),
                   ),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        recommendBrief,
-                        style: TextStyle(color: Colors.grey[500]),
-                      ),
-                    ),
+                  Text(
+                    recommendBrief,
+                    style: TextStyle(color: Colors.grey[500]),
                   ),
                   Expanded(
                     child: Align(

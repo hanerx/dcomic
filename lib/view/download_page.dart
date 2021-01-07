@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutterdmzj/component/LoadingCube.dart';
 import 'package:flutterdmzj/model/download.dart';
 import 'package:provider/provider.dart';
 
@@ -24,6 +25,8 @@ class _DownloadPage extends State<DownloadPage> {
               title: Text('下载管理'),
             ),
             body: EasyRefresh(
+              firstRefresh: true,
+              firstRefreshWidget: LoadingCube(),
               onRefresh: () async {
                 await Provider.of<DownloadModel>(context, listen: false)
                     .getComic();

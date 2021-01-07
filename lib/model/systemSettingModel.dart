@@ -9,16 +9,28 @@ class SystemSettingModel extends BaseModel {
     ThemeMode.dark
   ];
   int _darkState = 0;
+  bool _backupApi = false;
 
   SystemSettingModel() {
     this
-        .getDarkState()
+        .init()
         .then((value) => logger.i('class: SystemSettingModel, action: init'));
+  }
+
+  Future<void> init() async {
+    await getDarkState();
+    await getBackupApi();
   }
 
   Future<void> getDarkState() async {
     DataBase dataBase = DataBase();
     _darkState = await dataBase.getDarkMode();
+    notifyListeners();
+  }
+
+  Future<void> getBackupApi() async {
+    DataBase dataBase = DataBase();
+    _backupApi = await dataBase.getBackupApi();
     notifyListeners();
   }
 
@@ -32,4 +44,13 @@ class SystemSettingModel extends BaseModel {
   }
 
   int get darkState => _darkState;
+
+  bool get backupApi => _backupApi;
+
+  set backupApi(bool state) {
+    DataBase dataBase = DataBase();
+    dataBase.setBackupApi(state);
+    _backupApi = state;
+    notifyListeners();
+  }
 }

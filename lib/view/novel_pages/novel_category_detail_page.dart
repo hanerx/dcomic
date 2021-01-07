@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutterdmzj/component/LoadingCube.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/view/novel_pages/novel_detail_page.dart';
 
@@ -49,7 +50,6 @@ class _NovelCategoryDetailPage extends State<NovelCategoryDetailPage> {
   @override
   void initState() {
     super.initState();
-    getCategoryDetail();
   }
 
   @override
@@ -148,6 +148,8 @@ class _NovelCategoryDetailPage extends State<NovelCategoryDetailPage> {
           ),
           Expanded(
             child: EasyRefresh(
+              firstRefresh: true,
+              firstRefreshWidget: LoadingCube(),
               onRefresh: () async {
                 setState(() {
                   refreshState = true;

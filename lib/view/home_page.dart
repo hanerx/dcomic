@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutterdmzj/component/CardView.dart';
+import 'package:flutterdmzj/component/LoadingCube.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/view/favorite_page.dart';
@@ -23,7 +24,6 @@ class _HomePage extends State<HomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getMainPage();
   }
 
   getSubscribe() async {
@@ -85,6 +85,8 @@ class _HomePage extends State<HomePage> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return EasyRefresh(
+      firstRefreshWidget: LoadingCube(),
+      firstRefresh: true,
       onRefresh: ()async{
         setState(() {
           refreshState=true;

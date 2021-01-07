@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutterdmzj/component/LoadingCube.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/view/ranking_page.dart';
 
@@ -63,7 +64,6 @@ class _CategoryDetailPage extends State<CategoryDetailPage> {
   void initState() {
     super.initState();
     getCategoryFilter();
-    getCategoryDetail();
   }
 
   @override
@@ -192,6 +192,9 @@ class _CategoryDetailPage extends State<CategoryDetailPage> {
           ),
           Expanded(
             child: EasyRefresh(
+              scrollController: ScrollController(),
+              firstRefreshWidget: LoadingCube(),
+              firstRefresh: true,
               onRefresh: () async {
                 setState(() {
                   refreshState = true;

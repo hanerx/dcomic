@@ -2,7 +2,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:flutterdmzj/component/CardView.dart';
+import 'package:flutterdmzj/component/LoadingCube.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/view/novel_pages/novel_detail_page.dart';
 
@@ -22,7 +24,6 @@ class _NovelHomePage extends State<NovelHomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getMainPage();
   }
 
   getMainPage() async {
@@ -33,9 +34,26 @@ class _NovelHomePage extends State<NovelHomePage> {
       if (this.mounted) {
         setState(() {
           data.forEach((item) {
-            if(item['category_id']==57){
-              list.add(Container(height: 230,child: PageView(children: item['data'].map<Widget>((e)=>_CustomPage(
-                  imageUrl:e['cover'], title:e['title'], author:e['sub_title'], id:e['obj_id'])).toList(),),));
+            if (item['category_id'] == 57) {
+              list.add(Container(
+                padding: EdgeInsets.fromLTRB(4, 2, 4, 2),
+                height: 230,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(5),
+                  child: Swiper.children(
+                    children: item['data']
+                        .map<Widget>((e) => _CustomPage(
+                        imageUrl: e['cover'],
+                        title: e['title'],
+                        author: e['sub_title'],
+                        id: e['obj_id']))
+                        .toList(),
+                    autoplay: true,
+                    pagination:
+                    SwiperPagination(alignment: Alignment.bottomRight),
+                  ),
+                )
+              ));
             } else if (item['data'].length % 3 == 0) {
               list.add(new _CardView(
                   item['title'], item['data'], 3, item['category_id']));
@@ -60,12 +78,14 @@ class _NovelHomePage extends State<NovelHomePage> {
           children: list,
         )),
       ),
+      firstRefreshWidget: LoadingCube(),
+      firstRefresh: true,
       onRefresh: () async {
-          setState(() {
-            refreshState = true;
-            list.clear();
-          });
-          await getMainPage();
+        setState(() {
+          refreshState = true;
+          list.clear();
+        });
+        await getMainPage();
         return;
       },
       header: ClassicalHeader(
@@ -191,41 +211,49 @@ class _CustomCard extends StatelessWidget {
   }
 }
 
-class _CustomPage extends StatelessWidget{
+class _CustomPage extends StatelessWidget {
   final String imageUrl;
   final String title;
   final String author;
   final int id;
 
-  const _CustomPage({Key key, this.imageUrl, this.title, this.author, this.id}) : super(key: key);
+  const _CustomPage({Key key, this.imageUrl, this.title, this.author, this.id})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return Stack(
-      children: [
-        CachedNetworkImage(
-          imageUrl: '$imageUrl',
-          httpHeaders: {'referer': 'http://images.dmzj.com'},
-          progressIndicatorBuilder: (context, url, downloadProgress) =>
-              Center(
-                child:
-                CircularProgressIndicator(value: downloadProgress.progress),
-              ),
-          errorWidget: (context, url, error) => Icon(Icons.error),
-        ),
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: 30,
-          child: Container(
-            color: Color.fromARGB(90, 0, 100, 255),
-            child: Text('$title',style: TextStyle(color: Colors.white,fontSize: 20),),
+    return FlatButton(
+      padding: EdgeInsets.zero,
+      child: Stack(
+        children: [
+          CachedNetworkImage(
+            imageUrl: '$imageUrl',
+            httpHeaders: {'referer': 'http://images.dmzj.com'},
+            progressIndicatorBuilder: (context, url, downloadProgress) => Center(
+              child: CircularProgressIndicator(value: downloadProgress.progress),
+            ),
+            errorWidget: (context, url, error) => Icon(Icons.error),
           ),
-        )
-      ],
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: 30,
+            child: Container(
+              color: Colors.black26,
+              child: Text(
+                '$title',
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+            ),
+          )
+        ],
+      ),
+      onPressed: (){
+        Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => NovelDetailPage(id: id)));
+      },
     );
   }
-
 }

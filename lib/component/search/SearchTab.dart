@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutterdmzj/component/LoadingCube.dart';
 import 'package:flutterdmzj/component/LoadingRow.dart';
 import 'package:flutterdmzj/component/LoadingTile.dart';
 import 'package:flutterdmzj/http/http.dart';
@@ -14,33 +16,28 @@ class SearchTab extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
-    return _SearchTab(keyword);
+    return _SearchTab();
   }
 
 }
 
 class _SearchTab extends State<SearchTab>{
   List list = <Widget>[];
-  ScrollController _scrollController = ScrollController();
   int page = 0;
-  String keyword;
   bool refreshState = false;
 
 
-  _SearchTab(this.keyword);
+  _SearchTab();
 
   search() async {
-    if(keyword!=null &&keyword!=''){
+    if(widget.keyword!=null &&widget.keyword!=''){
       CustomHttp http = CustomHttp();
-      var response = await http.search(keyword, page);
+      var response = await http.search(widget.keyword, page);
       if (response.statusCode == 200 && mounted) {
         setState(() {
           if (response.data.length == 0) {
             refreshState = true;
             return;
-          }
-          if(page>0){
-            list.removeLast();
           }
           for (var item in response.data) {
             list.add(SearchListTile(item['cover'], item['title'], item['types'],
@@ -56,30 +53,35 @@ class _SearchTab extends State<SearchTab>{
   void initState() {
     // TODO: implement initState
     super.initState();
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent &&
-          !refreshState) {
-        setState(() {
-          refreshState = true;
-          list.add(LoadingTile());
-          page++;
-        });
-        search();
-      }
-    });
-    search();
   }
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return ListView.builder(
-      controller: _scrollController,
-      itemCount: list.length,
-      itemBuilder: (context, index) {
-        return list[index];
+    return EasyRefresh(
+      scrollController: ScrollController(),
+      firstRefreshWidget: LoadingCube(),
+      firstRefresh: true,
+      onRefresh: ()async{
+        setState(() {
+          refreshState = true;
+          page=0;
+        });
+        search();
       },
+      onLoad: ()async{
+        setState(() {
+          refreshState = true;
+          page++;
+        });
+        search();
+      },
+      child: ListView.builder(
+        itemCount: list.length,
+        itemBuilder: (context, index) {
+          return list[index];
+        },
+      ),
     );
   }
 

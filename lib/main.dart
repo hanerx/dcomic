@@ -20,6 +20,8 @@ import 'package:flutterdmzj/view/latest_update_page.dart';
 import 'package:flutterdmzj/view/login_page.dart';
 import 'package:flutterdmzj/view/ranking_page.dart';
 import 'package:flutterdmzj/view/setting_page.dart';
+import 'package:logger/logger.dart';
+import 'package:logger_flutter/logger_flutter.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
@@ -66,6 +68,10 @@ class _MainFrame extends State<MainFrame> {
     FlutterDownloader.registerCallback(ToolMethods.downloadCallback);
   }
 
+  initLogger() {
+    LogConsole.add(OutputEvent(Level.debug, ['init']));
+  }
+
   initEasyRefresh() {
     EasyRefresh.defaultHeader = ClassicalHeader(
         refreshedText: '刷新完成',
@@ -86,6 +92,8 @@ class _MainFrame extends State<MainFrame> {
     // TODO: implement initState
     super.initState();
     initDownloader();
+    initLogger();
+    initEasyRefresh();
   }
 
   @override
@@ -230,14 +238,16 @@ class _MainPage extends State<MainPage> {
                   ),
                   FlatButton(
                     child: Text('镜像更新'),
-                    onPressed: ()async{
+                    onPressed: () async {
                       if (response.data['assets'].length > 0) {
                         String url =
-                        response.data['assets'][0]['browser_download_url'];
+                            response.data['assets'][0]['browser_download_url'];
                         DataBase dataBase = DataBase();
                         var downloadPath = await dataBase.getDownloadPath();
                         FlutterDownloader.enqueue(
-                            url: 'https://divine-boat-417a.hanerx.workers.dev/$url', savedDir: '$downloadPath');
+                            url:
+                                'https://divine-boat-417a.hanerx.workers.dev/$url',
+                            savedDir: '$downloadPath');
                         Navigator.pop(context);
                       } else {
                         _openWeb('${response.data['html_url']}');

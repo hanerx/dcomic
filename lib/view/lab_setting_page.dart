@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterdmzj/database/database.dart';
+import 'package:flutterdmzj/model/systemSettingModel.dart';
 import 'package:flutterdmzj/utils/static_language.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LabSettingPage extends StatefulWidget {
@@ -120,6 +122,19 @@ class _LabSettingPage extends State<LabSettingPage> {
               setDeepSearch();
             },
           ),
+          // ListTile(
+          //   title: Text('备用API'),
+          //   subtitle: Text('通过另一个奇葩接口实现之前API无法返回的东西'),
+          //   trailing: Switch(
+          //     value: Provider.of<SystemSettingModel>(context).backupApi,
+          //     onChanged: (val) {
+          //       Provider.of<SystemSettingModel>(context,listen: false).backupApi = val;
+          //     },
+          //   ),
+          //   onTap: (){
+          //     Provider.of<SystemSettingModel>(context,listen: false).backupApi = !Provider.of<SystemSettingModel>(context,listen: false).backupApi;
+          //   },
+          // ),
           ListTile(
             enabled: false,
             title: Text('漫画追踪(未实现)'),
@@ -176,7 +191,7 @@ class _LabSettingPage extends State<LabSettingPage> {
                 setNovel();
               },
             ),
-            onTap: (){
+            onTap: () {
               setState(() {
                 novel = !novel;
               });

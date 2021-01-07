@@ -22,6 +22,8 @@ class CustomHttp {
     dio.interceptors.add(
         DioCacheManager(CacheConfig(baseUrl: 'https://sacg.dmzj.com'))
             .interceptor);
+    dio.interceptors
+        .add(DioCacheManager(CacheConfig(baseUrl: 'api.dmzj.com')).interceptor);
     unCachedDio = Dio();
   }
 
@@ -84,6 +86,12 @@ class CustomHttp {
         options: buildCacheOptions(Duration(hours: 1), options: options));
   }
 
+  Future<Response<T>> getComicDetailDark<T>(String comicId) async {
+    Options options = await this.setHeader();
+    return dio.get('http://api.dmzj.com/dynamic/comicinfo/$comicId.json',
+        options: buildCacheOptions(Duration(hours: 1), options: options));
+  }
+
   Future<Response<T>> getComic<T>(String comicId, String chapterId) async {
     Options options = await this.setHeader();
     return dio.get(baseUrl + '/chapter/$comicId/$chapterId.json?$queryOptions',
@@ -100,8 +108,9 @@ class CustomHttp {
     return dio.get(baseUrl + '/subject/$subjectId.json?$queryOptions');
   }
 
-  Future<Response<T>> getCategoryFilter<T>({int novel:0}) async {
-    return dio.get(baseUrl + '/${novel==0?'classify':'novel'}/filter.json?$queryOptions');
+  Future<Response<T>> getCategoryFilter<T>({int novel: 0}) async {
+    return dio.get(baseUrl +
+        '/${novel == 0 ? 'classify' : 'novel'}/filter.json?$queryOptions');
   }
 
   Future<Response<T>> getCategoryDetail<T>(
@@ -111,10 +120,11 @@ class CustomHttp {
         options: buildCacheOptions(Duration(hours: 1)));
   }
 
-  Future<Response<T>> getNovelCategoryDetail<T>(int categoryId, int tag, int type, int page)async{
-      return dio.get(
-          '$baseUrl/novel/$categoryId/$tag/$type/$page.json?$queryOptions',
-          options: buildCacheOptions(Duration(hours: 1)));
+  Future<Response<T>> getNovelCategoryDetail<T>(
+      int categoryId, int tag, int type, int page) async {
+    return dio.get(
+        '$baseUrl/novel/$categoryId/$tag/$type/$page.json?$queryOptions',
+        options: buildCacheOptions(Duration(hours: 1)));
   }
 
   Future<Response<T>> getSubscribe<T>(int uid, int page, {int type: 0}) {
@@ -182,16 +192,18 @@ class CustomHttp {
         options: options, data: formData);
   }
 
-  Future<Response<T>> addHistoryNew<T>(int comicId, String uid,int chapterId,{int page:1}) async{
+  Future<Response<T>> addHistoryNew<T>(int comicId, String uid, int chapterId,
+      {int page: 1}) async {
     Map map = {
       comicId.toString(): chapterId.toString(),
       "comicId": comicId.toString(),
       "chapterId": chapterId.toString(),
       "page": page,
-      "time": DateTime.now().millisecondsSinceEpoch/1000
+      "time": DateTime.now().millisecondsSinceEpoch / 1000
     };
     var json = Uri.encodeComponent(jsonEncode(map));
-    return unCachedDio.get("https://interface.dmzj.com/api/record/getRe?st=comic&uid=$uid&callback=record_jsonpCallback&json=[$json]&type=3");
+    return unCachedDio.get(
+        "https://interface.dmzj.com/api/record/getRe?st=comic&uid=$uid&callback=record_jsonpCallback&json=[$json]&type=3");
   }
 
   Future<Response<T>> setUpRead<T>(String subId) async {
@@ -212,7 +224,7 @@ class CustomHttp {
         '$baseUrl/recommend/batchUpdate?uid=$uid&category_id=49&$queryOptions');
   }
 
-  Future<Response<T>> search<T>(String keyword, int page,{int type:0}) {
+  Future<Response<T>> search<T>(String keyword, int page, {int type: 0}) {
     return dio.get(
         '$baseUrl/search/show/$type/${Uri.encodeComponent(keyword)}/$page.json?$queryOptions');
   }
@@ -224,7 +236,6 @@ class CustomHttp {
   Future<Response<T>> getNovelLatestList<T>(int page) {
     return dio.get('$baseUrl/novel/recentUpdate/$page.json?$queryOptions');
   }
-
 
   Future<Response<T>> getDarkInfo<T>() {
     return dio.get('https://dark-dmzj.hloli.net/data.json');
@@ -281,4 +292,12 @@ class CustomHttp {
         '$baseUrl/novel/download/${novelID}_${volumeID}_$chapterID.txt?$queryOptions',
         options: buildCacheOptions(Duration(days: 30)));
   }
+
+  Future<Response<T>> getComicPage<T>(String firstLetter, String comicId, String chapterId, int page){
+    return dio.get('http://imgsmall.dmzj.com/$firstLetter/$comicId/$chapterId/$page.jpg',
+        options: Options(
+            headers: {'referer': 'http://images.dmzj.com'},
+            responseType: ResponseType.bytes));
+  }
+
 }

@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutterdmzj/component/LoadingCube.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:flutterdmzj/view/comic_detail_page.dart';
@@ -64,7 +65,6 @@ class _RankingPage extends State<RankingPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    loadRankingList();
     loadRankingTag();
   }
 
@@ -185,15 +185,15 @@ class _RankingPage extends State<RankingPage> {
         ),
         Expanded(
           child: EasyRefresh(
+            firstRefreshWidget: LoadingCube(),
+            firstRefresh: true,
             onRefresh: () async {
-              if (!refreshState) {
-                setState(() {
-                  refreshState = true;
-                  page = 0;
-                  list.clear();
-                });
-                await loadRankingList();
-              }
+              setState(() {
+                refreshState = true;
+                page = 0;
+                list.clear();
+              });
+              await loadRankingList();
               return;
             },
             onLoad: () async {
@@ -213,12 +213,11 @@ class _RankingPage extends State<RankingPage> {
                 refreshText: '下拉刷新',
                 refreshReadyText: '释放刷新'),
             footer: ClassicalFooter(
-              loadReadyText: '下拉加载更多',
-              loadFailedText: '加载失败',
-              loadingText: '加载中',
-              loadedText: '加载完成',
-              noMoreText: '没有更多内容了'
-            ),
+                loadReadyText: '下拉加载更多',
+                loadFailedText: '加载失败',
+                loadingText: '加载中',
+                loadedText: '加载完成',
+                noMoreText: '没有更多内容了'),
             child: ListView.builder(
               itemCount: list.length,
               itemBuilder: (context, index) {

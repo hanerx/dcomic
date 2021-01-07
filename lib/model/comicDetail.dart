@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -18,6 +19,7 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 class ComicDetailModel extends BaseModel {
   //漫画ID
   final String comicId;
+  final bool backupApi;
 
   //漫画加载状态
   bool error = false;
@@ -47,7 +49,7 @@ class ComicDetailModel extends BaseModel {
   bool _sub = false;
   String uid = '';
 
-  ComicDetailModel(this.comicId) {
+  ComicDetailModel(this.comicId, this.backupApi) {
     print('class: ComicDetailModel, action: init, comicId: ${this.comicId}');
     this.getComic(this.comicId).then((value) {
       this.getHistory(comicId).then((value) => this
@@ -149,20 +151,61 @@ class ComicDetailModel extends BaseModel {
             .toList()
             .join('/');
         chapters = response.data['chapters'];
+        if(chapters.length==0){
+          throw Exception('no chapters');
+        }
         print(
             'class: ComicDetailModel, action: detailLoading, comicId: ${this.comicId}, title: ${this.title}, author: ${this.author}');
       }
     } catch (e) {
       //出现加载问题
       this.error = true;
-      description='错误代码: $e';
-      title='加载出错';
-      status='加载失败';
+      description = '错误代码: $e';
+      title = '加载出错';
+      status = '加载失败';
       print(
           'class: ComicDetailModel, action: detailLoadingFailed, comicId: ${this.comicId}, exception: $e');
+      if (backupApi) {
+        await getComicDetailBackup(comicId);
+      }
     }
     //唤醒UI
     notifyListeners();
+  }
+
+  Future<void> getComicDetailBackup(String comicId) async {
+    try {
+      CustomHttp http = CustomHttp();
+      var response = await http.getComicDetailDark(comicId);
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.data)['data'];
+        title = data['info']['title'];
+        cover = data['info']['cover'];
+        author = [
+          {'tag_name': data['info']['authors'], 'tag_id': null}
+        ];
+        types = [
+          {'tag_name': data['info']['types'], 'tag_id': null}
+        ];
+        description = data['info']['description'];
+        updateDate = ToolMethods.formatTimestamp(
+            int.parse(data['info']['last_updatetime']));
+        //状态信息需要采取特殊处理
+        status = data['info']['status'];
+        chapters = [
+          {
+            'data': data['list']
+                .map((e) =>
+                    {'chapter_id': e['id'], 'chapter_title': e['chapter_name']})
+                .toList(),
+            'title': '备用API'
+          }
+        ];
+      }
+    } catch (e) {
+      logger.w(
+          'class: ComicDetailModel, action: detailBackupLoadingFailed, comicId: ${this.comicId}, exception: $e');
+    }
   }
 
   Widget _buildBasicButton(context, String title, style, VoidCallback onPress,
@@ -172,7 +215,7 @@ class ComicDetailModel extends BaseModel {
       margin: EdgeInsets.fromLTRB(3, 0, 3, 0),
       child: OutlineButton(
         child: Text(
-          title,
+          '$title',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: style,
@@ -203,9 +246,10 @@ class ComicDetailModel extends BaseModel {
           DateTime.now().millisecondsSinceEpoch ~/ 1000);
       Navigator.push(context, MaterialPageRoute(builder: (context) {
         return ComicViewPage(
-            comicId: comicId,
-            chapterId: chapter['chapter_id'].toString(),
-            chapterList: chapterIdList);
+          comicId: comicId,
+          chapterId: chapter['chapter_id'].toString(),
+          chapterList: chapterIdList
+        );
       }));
     });
   }
@@ -262,14 +306,16 @@ class ComicDetailModel extends BaseModel {
 
   Future<Widget> _buildDownloadButton(context, chapter) async {
     DownloadProvider downloadProvider = DownloadProvider();
-    if (await downloadProvider.getChapter(chapter['chapter_id'].toString()) != null) {
+    if (await downloadProvider.getChapter(chapter['chapter_id'].toString()) !=
+        null) {
       return _buildBasicButton(context, chapter['chapter_title'], null, null,
           width: 80);
     }
     return _buildBasicButton(context, chapter['chapter_title'], null, () async {
       List list =
           await downloadChapter(comicId, chapter['chapter_id'].toString());
-      logger.i('action: downloadChapter, chapterId: ${chapter['chapter_id']}, tasks: $list');
+      logger.i(
+          'action: downloadChapter, chapterId: ${chapter['chapter_id']}, tasks: $list');
     }, width: 80);
   }
 

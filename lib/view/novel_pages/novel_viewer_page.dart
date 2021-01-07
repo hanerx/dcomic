@@ -86,6 +86,7 @@ class _NovelViewerPage extends State<NovelViewerPage>
             child: Stack(
               children: [
                 EasyRefresh(
+                  scrollController: ScrollController(),
                   child: SingleChildScrollView(
                       controller: _controller,
                       child: Column(
@@ -125,40 +126,45 @@ class _NovelViewerPage extends State<NovelViewerPage>
                   height: _show?70:0,
                   child: Builder(
                     builder: (context){
-                      return BottomNavigationBar(
-                        onTap: (index)async{
-                          switch(index){
-                            case 0:
-                              await Provider.of<NovelModel>(context,listen: false).previous();
-                              _controller.animateTo(0, duration: Duration(microseconds: 100), curve: Curves.easeIn);
-                              break;
-                            case 1:
-                              Scaffold.of(context).openEndDrawer();
-                              break;
-                            case 2:
-                              await Provider.of<NovelModel>(context,listen: false).next();
-                              _controller.animateTo(0, duration: Duration(microseconds: 100), curve: Curves.easeIn);
-                              break;
-                          }
-                        },
-                        backgroundColor: Colors.black54,
-                        unselectedItemColor: Colors.white,
-                        unselectedLabelStyle: TextStyle(color: Colors.white),
-                        currentIndex: 1,
-                        items: [
-                          BottomNavigationBarItem(
-                            title: Text('上一话'),
-                            icon: Icon(Icons.arrow_drop_up),
-                          ),
-                          BottomNavigationBarItem(
-                            title: Text('目录'),
-                            icon: Icon(Icons.list),
-                          ),
-                          BottomNavigationBarItem(
-                            title: Text('下一话'),
-                            icon: Icon(Icons.arrow_drop_down),
-                          ),
-                        ],
+                      return BottomNavigationBarTheme(
+                        data: BottomNavigationBarThemeData(
+                          selectedItemColor: Colors.white
+                        ),
+                        child: BottomNavigationBar(
+                          onTap: (index)async{
+                            switch(index){
+                              case 0:
+                                await Provider.of<NovelModel>(context,listen: false).previous();
+                                _controller.animateTo(0, duration: Duration(microseconds: 100), curve: Curves.easeIn);
+                                break;
+                              case 1:
+                                Scaffold.of(context).openEndDrawer();
+                                break;
+                              case 2:
+                                await Provider.of<NovelModel>(context,listen: false).next();
+                                _controller.animateTo(0, duration: Duration(microseconds: 100), curve: Curves.easeIn);
+                                break;
+                            }
+                          },
+                          backgroundColor: Colors.black54,
+                          unselectedItemColor: Colors.white,
+                          unselectedLabelStyle: TextStyle(color: Colors.white),
+                          currentIndex: 1,
+                          items: [
+                            BottomNavigationBarItem(
+                              title: Text('上一话'),
+                              icon: Icon(Icons.arrow_drop_up),
+                            ),
+                            BottomNavigationBarItem(
+                              title: Text('目录'),
+                              icon: Icon(Icons.list),
+                            ),
+                            BottomNavigationBarItem(
+                              title: Text('下一话'),
+                              icon: Icon(Icons.arrow_drop_down),
+                            ),
+                          ],
+                        ),
                       );
                     },
                   ),

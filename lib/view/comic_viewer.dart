@@ -9,6 +9,7 @@ import 'package:flutterdmzj/component/comic_viewer/VerticalPageView.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/model/comic.dart';
+import 'package:flutterdmzj/model/systemSettingModel.dart';
 import 'package:provider/provider.dart';
 
 class ComicViewPage extends StatefulWidget {
@@ -33,7 +34,7 @@ class _ComicViewPage extends State<ComicViewPage>
   double hitBox = 100;
   double range = 500;
   bool _show = false;
-  GlobalKey _viewerKey;
+  bool reverse = false;
   int backgroundColor = 0;
   static List colors = [
     Colors.white,
@@ -54,7 +55,6 @@ class _ComicViewPage extends State<ComicViewPage>
     super.initState();
     _dataBase = DataBase();
     _tabController = TabController(length: 2, vsync: this);
-    _viewerKey = GlobalKey();
     init();
     SystemChrome.setEnabledSystemUIOverlays([]);
   }
@@ -76,11 +76,13 @@ class _ComicViewPage extends State<ComicViewPage>
     var range = await _dataBase.getRange();
     var direction = await _dataBase.getReadDirection();
     var backgroundColor = await _dataBase.getBackground();
+    var reverse = await _dataBase.getHorizontalDirection();
     setState(() {
       this.hitBox = hitBox;
       this.range = range;
       this.direction = direction;
       this.backgroundColor = backgroundColor;
+      this.reverse = reverse;
     });
   }
 
@@ -88,8 +90,11 @@ class _ComicViewPage extends State<ComicViewPage>
   Widget build(BuildContext context) {
     // TODO: implement build
     return ChangeNotifierProvider(
-        create: (_) =>
-            ComicModel(widget.comicId, widget.chapterId, widget.chapterList),
+        create: (_) => ComicModel(
+            widget.comicId,
+            widget.chapterId,
+            widget.chapterList,
+            Provider.of<SystemSettingModel>(context).backupApi),
         builder: (context, test) {
           return Scaffold(
               backgroundColor: colors[backgroundColor],
@@ -120,17 +125,17 @@ class _ComicViewPage extends State<ComicViewPage>
                             builder: (context) {
                               return BottomNavigationBarTheme(
                                 data: BottomNavigationBarThemeData(
-                                  selectedItemColor: Colors.white
-                                ),
+                                    selectedItemColor: Colors.white),
                                 child: BottomNavigationBar(
                                   onTap: (index) async {
                                     switch (index) {
                                       case 0:
                                         await Provider.of<ComicModel>(context,
-                                            listen: false)
+                                                listen: false)
                                             .previousChapter();
                                         if (direction) {
-                                          horizontalKey.currentState.moveToTop();
+                                          horizontalKey.currentState
+                                              .moveToTop();
                                         } else {
                                           verticalKey.currentState.moveToTop();
                                         }
@@ -140,10 +145,11 @@ class _ComicViewPage extends State<ComicViewPage>
                                         break;
                                       case 2:
                                         await Provider.of<ComicModel>(context,
-                                            listen: false)
+                                                listen: false)
                                             .nextChapter();
                                         if (direction) {
-                                          horizontalKey.currentState.moveToTop();
+                                          horizontalKey.currentState
+                                              .moveToTop();
                                         } else {
                                           verticalKey.currentState.moveToTop();
                                         }
@@ -153,7 +159,7 @@ class _ComicViewPage extends State<ComicViewPage>
                                   backgroundColor: Colors.black54,
                                   unselectedItemColor: Colors.white,
                                   unselectedLabelStyle:
-                                  TextStyle(color: Colors.white),
+                                      TextStyle(color: Colors.white),
                                   currentIndex: 1,
                                   items: [
                                     BottomNavigationBarItem(
@@ -177,12 +183,12 @@ class _ComicViewPage extends State<ComicViewPage>
                       )),
                   AnimatedPositioned(
                     duration: Duration(milliseconds: 300),
-                    bottom: _show?-27:-1,
+                    bottom: _show ? -27 : -1,
                     height: 27,
                     right: -1,
                     child: Tips(
                       title: Provider.of<ComicModel>(context).title,
-                      index: Provider.of<ComicModel>(context).index+1,
+                      index: Provider.of<ComicModel>(context).index + 1,
                       length: Provider.of<ComicModel>(context).length,
                     ),
                   )
@@ -212,8 +218,6 @@ class _ComicViewPage extends State<ComicViewPage>
         });
   }
 
-
-
   Widget _buildViewer(BuildContext context) {
     if (direction) {
       return HorizontalPageView(
@@ -227,6 +231,7 @@ class _ComicViewPage extends State<ComicViewPage>
         onTop: Provider.of<ComicModel>(context).previousChapter,
         debug: debug,
         hitBox: hitBox,
+        reverse: reverse,
         onPageChange: (index) {
           // SystemChrome.setEnabledSystemUIOverlays([]);
           // setState(() {
@@ -235,7 +240,7 @@ class _ComicViewPage extends State<ComicViewPage>
           Provider.of<ComicModel>(context, listen: false).index = index;
         },
         onTap: (index) {
-          this.show=!this.show;
+          this.show = !this.show;
         },
       );
     } else {
@@ -256,7 +261,7 @@ class _ComicViewPage extends State<ComicViewPage>
           Provider.of<ComicModel>(context, listen: false).index = index;
         },
         onTap: (index) {
-          this.show=!this.show;
+          this.show = !this.show;
         },
       );
     }
@@ -281,6 +286,17 @@ class _ComicViewPage extends State<ComicViewPage>
             _dataBase.setReadDirection(!direction);
             setState(() {
               direction = !direction;
+            });
+          },
+        ),
+        ListTile(
+          title: Text('横向阅读方向'),
+          subtitle: Text('${reverse ? '从右到左' : '从左到右'}'),
+          enabled: direction,
+          onTap: () {
+            _dataBase.setHorizontalDirection(!reverse);
+            setState(() {
+              reverse = !reverse;
             });
           },
         ),
@@ -376,11 +392,11 @@ class _ComicViewPage extends State<ComicViewPage>
       return Container(
         color: Colors.black54,
         child: Slider(
-          value: Provider.of<ComicModel>(context).index.toDouble() + 1,
-          min: 0,
-          max: Provider.of<ComicModel>(context).length.toDouble() >= 1
-              ? Provider.of<ComicModel>(context).length.toDouble() + 1
-              : 1,
+          value: Provider.of<ComicModel>(context).index.toDouble() + 1.0,
+          min: 0.0,
+          max: Provider.of<ComicModel>(context).length.toDouble() >= 1.0
+              ? Provider.of<ComicModel>(context).length.toDouble() + 1.0
+              : 1.0,
           divisions: Provider.of<ComicModel>(context).length >= 1
               ? Provider.of<ComicModel>(context).length + 1
               : 1,
@@ -411,20 +427,21 @@ class _ComicViewPage extends State<ComicViewPage>
     }
   }
 
-  bool get show=>_show;
+  bool get show => _show;
 
-  set show(bool show){
-    if(mounted){
+  set show(bool show) {
+    if (mounted) {
       setState(() {
-        _show=show;
+        _show = show;
       });
     }
     if (_show) {
-      Future.delayed(Duration(milliseconds: 500)).then((value) => SystemChrome.setEnabledSystemUIOverlays(
-          [SystemUiOverlay.top, SystemUiOverlay.bottom]));
+      Future.delayed(Duration(milliseconds: 500)).then((value) =>
+          SystemChrome.setEnabledSystemUIOverlays(
+              [SystemUiOverlay.top, SystemUiOverlay.bottom]));
     } else {
-      Future.delayed(Duration(milliseconds: 500)).then((value) => SystemChrome.setEnabledSystemUIOverlays(
-          []));
+      Future.delayed(Duration(milliseconds: 500))
+          .then((value) => SystemChrome.setEnabledSystemUIOverlays([]));
     }
   }
 }
