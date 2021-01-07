@@ -51,6 +51,7 @@ class ComicModel extends BaseModel {
     logger.i(
         "action: getComic, chapter: $chapterId comicId:$comicId refreshState:$refreshState");
     pageAt = chapterId;
+    _index=0;
     DownloadProvider downloadProvider = DownloadProvider();
     var localData = await downloadProvider.getChapter(chapterId);
     if (localData != null) {

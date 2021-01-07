@@ -23,6 +23,7 @@ class HorizontalPageView extends StatefulWidget {
   final bool debug;
   final bool enableClick;
   final PageController controller;
+  final bool reverse;
 
   const HorizontalPageView(
       {Key key,
@@ -38,7 +39,7 @@ class HorizontalPageView extends StatefulWidget {
       this.controller,
       this.onTap,
       this.debug = false,
-      this.enableClick})
+      this.enableClick, this.reverse})
       : super(key: key);
 
   @override
@@ -62,14 +63,24 @@ class _HorizontalPageView extends State<HorizontalPageView> {
       if (event == 0) {
         print("class: HorizontalPageView, action: VolumeUp, event: $event");
         if (_controller.hasClients) {
-          _controller.previousPage(
-              duration: Duration(milliseconds: 200), curve: Curves.easeIn);
+          if(widget.reverse){
+            _controller.nextPage(
+                duration: Duration(milliseconds: 200), curve: Curves.easeIn);
+          }else{
+            _controller.previousPage(
+                duration: Duration(milliseconds: 200), curve: Curves.easeIn);
+          }
         }
       } else if (event == 1) {
         print("class: HorizontalPageView, action: VolumeDown, event: $event");
         if (_controller.hasClients) {
-          _controller.nextPage(
-              duration: Duration(milliseconds: 200), curve: Curves.easeIn);
+          if(widget.reverse){
+            _controller.previousPage(
+                duration: Duration(milliseconds: 200), curve: Curves.easeIn);
+          }else{
+            _controller.nextPage(
+                duration: Duration(milliseconds: 200), curve: Curves.easeIn);
+          }
         }
       }
     });
@@ -125,9 +136,15 @@ class _HorizontalPageView extends State<HorizontalPageView> {
             ),
             onTap: () {
               if (_controller.hasClients) {
-                _controller.previousPage(
-                    duration: Duration(milliseconds: 200),
-                    curve: Curves.easeIn);
+                if(widget.reverse){
+                  _controller.nextPage(
+                      duration: Duration(milliseconds: 200),
+                      curve: Curves.easeIn);
+                }else{
+                  _controller.previousPage(
+                      duration: Duration(milliseconds: 200),
+                      curve: Curves.easeIn);
+                }
               }
             },
           ),
@@ -148,9 +165,15 @@ class _HorizontalPageView extends State<HorizontalPageView> {
             ),
             onTap: () {
               if (_controller.hasClients) {
-                _controller.nextPage(
-                    duration: Duration(milliseconds: 200),
-                    curve: Curves.easeIn);
+                if(widget.reverse){
+                  _controller.previousPage(
+                      duration: Duration(milliseconds: 200),
+                      curve: Curves.easeIn);
+                }else{
+                  _controller.nextPage(
+                      duration: Duration(milliseconds: 200),
+                      curve: Curves.easeIn);
+                }
               }
             },
           ),
@@ -205,6 +228,7 @@ class _HorizontalPageView extends State<HorizontalPageView> {
           }
         }
       },
+      reverse: widget.reverse,
       itemCount: widget.count,
       itemBuilder: (context, index) {
         return Common.builder(context, index, widget.count, widget.builder,
