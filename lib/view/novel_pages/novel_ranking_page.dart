@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutterdmzj/component/LoadingCube.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
 
@@ -63,7 +64,6 @@ class _NovelRankingPage extends State<NovelRankingPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    loadRankingList();
     loadRankingTag();
   }
 
@@ -163,6 +163,8 @@ class _NovelRankingPage extends State<NovelRankingPage> {
         ),
         Expanded(
           child: EasyRefresh(
+            firstRefreshWidget: LoadingCube(),
+            firstRefresh: true,
             scrollController: ScrollController(),
             onRefresh: ()async{
               setState(() {

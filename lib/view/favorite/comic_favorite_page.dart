@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutterdmzj/component/LoadingCube.dart';
 import 'package:flutterdmzj/component/LoadingRow.dart';
 import 'package:flutterdmzj/component/SubscribeCard.dart';
 import 'package:flutterdmzj/database/database.dart';
@@ -80,7 +81,7 @@ class _ComicFavoritePage extends State<ComicFavoritePage> {
     // TODO: implement build
     return EasyRefresh(
       firstRefresh: true,
-      firstRefreshWidget: LoadingRow(),
+      firstRefreshWidget: LoadingCube(),
       scrollController: ScrollController(),
       onRefresh: ()async{
         setState(() {

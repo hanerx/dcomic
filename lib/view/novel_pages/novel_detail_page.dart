@@ -1,7 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_parallax/flutter_parallax.dart';
+import 'package:flutterdmzj/component/LoadingCube.dart';
 import 'package:flutterdmzj/model/novelDetail.dart';
 import 'package:provider/provider.dart';
 
@@ -72,44 +74,53 @@ class _NovelDetailPage extends State<NovelDetailPage> {
               ),
             ],
           ),
-          body: SingleChildScrollView(
-            child: new Column(
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Parallax.inside(
-                        child: Image(
-                            image: CachedNetworkImageProvider(
-                                Provider.of<NovelDetailModel>(context).cover,
-                                headers: {'referer': 'http://images.dmzj.com'}),
-                            fit: BoxFit.cover),
-                        mainAxisExtent: 200.0,
-                      ),
-                    )
-                  ],
-                ),
-                _DetailCard(
-                    Provider.of<NovelDetailModel>(context).title,
-                    Provider.of<NovelDetailModel>(context).updateDate,
-                    Provider.of<NovelDetailModel>(context).status,
-                    Provider.of<NovelDetailModel>(context).author,
-                    Provider.of<NovelDetailModel>(context).types,
-                    Provider.of<NovelDetailModel>(context).hotNum,
-                    Provider.of<NovelDetailModel>(context).subscribeNum,
-                    Provider.of<NovelDetailModel>(context).description),
-                Card(
-                  margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                  child: ExpansionPanelList(
-                    expansionCallback:
-                        Provider.of<NovelDetailModel>(context).setExpand,
-                    children: Provider.of<NovelDetailModel>(context)
-                        .buildChapterWidget(context),
+          body: EasyRefresh(
+            onRefresh: ()async{
+              await Provider.of<NovelDetailModel>(context,listen: false).getNovel(widget.id);
+              await Provider.of<NovelDetailModel>(context,listen: false).getChapter(widget.id);
+              await Provider.of<NovelDetailModel>(context,listen: false).getIfSubscribe(widget.id);
+            },
+            firstRefreshWidget: LoadingCube(),
+            firstRefresh: true,
+            child: SingleChildScrollView(
+              child: new Column(
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Parallax.inside(
+                          child: Image(
+                              image: CachedNetworkImageProvider(
+                                  Provider.of<NovelDetailModel>(context).cover,
+                                  headers: {'referer': 'http://images.dmzj.com'}),
+                              fit: BoxFit.cover),
+                          mainAxisExtent: 200.0,
+                        ),
+                      )
+                    ],
                   ),
-                )
-              ],
+                  _DetailCard(
+                      Provider.of<NovelDetailModel>(context).title,
+                      Provider.of<NovelDetailModel>(context).updateDate,
+                      Provider.of<NovelDetailModel>(context).status,
+                      Provider.of<NovelDetailModel>(context).author,
+                      Provider.of<NovelDetailModel>(context).types,
+                      Provider.of<NovelDetailModel>(context).hotNum,
+                      Provider.of<NovelDetailModel>(context).subscribeNum,
+                      Provider.of<NovelDetailModel>(context).description),
+                  Card(
+                    margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                    child: ExpansionPanelList(
+                      expansionCallback:
+                      Provider.of<NovelDetailModel>(context).setExpand,
+                      children: Provider.of<NovelDetailModel>(context)
+                          .buildChapterWidget(context),
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
+          )
         );
       },
     );

@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutterdmzj/component/LoadingCube.dart';
 import 'package:flutterdmzj/component/LoadingTile.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
@@ -81,6 +82,8 @@ class _NovelLatestUpdatePage extends State<NovelLatestUpdatePage>{
           loadedText: '加载完成',
           noMoreText: '没有更多内容了'
       ),
+      firstRefresh: true,
+      firstRefreshWidget: LoadingCube(),
       child: ListView.builder(
         itemCount: list.length,
         itemBuilder: (context, index) {

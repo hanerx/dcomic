@@ -239,6 +239,7 @@ class _LoginPage extends State<LoginPage> {
                             if (!await webview.canGoBack()) {
                               webview.close();
                               Navigator.pop(context);
+                              EasyLoading.dismiss();
                             }
                           });
                           webview.launch(

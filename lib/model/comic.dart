@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutterdmzj/component/ViewPointChip.dart';
 import 'package:flutterdmzj/component/comic_viewer/ComicPage.dart';
@@ -8,12 +10,14 @@ import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/model/baseModel.dart';
 import 'package:flutterdmzj/utils/log_output.dart';
 import 'package:logger/logger.dart';
+import 'package:markdown_widget/markdown_helper.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 
 class ComicModel extends BaseModel {
   final String comicId;
   final String chapterId;
   final List chapterList;
+  final bool backupApi;
 
   String pageAt;
   String next;
@@ -32,7 +36,7 @@ class ComicModel extends BaseModel {
   bool login = false;
   String uid = '';
 
-  ComicModel(this.comicId, this.chapterId, this.chapterList) {
+  ComicModel(this.comicId, this.chapterId, this.chapterList, this.backupApi) {
     getComic(chapterId, comicId).then((value) {
       logger.i(
           "action: init, chapterId: $chapterId, comicId: $comicId, chapterList: ${this.chapterList}, previous: $previous, next: $next, left: $left, right: $right, index: ${chapterList.indexOf(chapterId)}");
@@ -113,11 +117,57 @@ class ComicModel extends BaseModel {
     } catch (e) {
       logger
           .e("action:error, chapterId:$chapterId, comicId:$comicId, error:$e");
+      if(backupApi){
+        await this.getComicBackup(comicId, chapterId);
+      }
     }
     await getViewPoint(chapterId, comicId);
     setReadHistory(chapterId, comicId);
     refreshState = false;
     notifyListeners();
+  }
+
+  Future<void> getComicBackup(String comicId, String chapterId) async{
+    try{
+      CustomHttp http=CustomHttp();
+      var response=await http.getComicDetailDark(comicId);
+      if(response.statusCode==200){
+        var data=jsonDecode(response.data)['data'];
+        var firstLetter=data['info']['first_letter'];
+        for(var item in data['list']){
+          if(item['id']==chapterId){
+            title=item['chapter_name'];
+          }
+        }
+        int page=0;
+        List<Widget> pages=[];
+        while(true){
+          try{
+            var item=await http.getComicPage(firstLetter, comicId, chapterId, page);
+            if(item.headers.value('Content-Type')=='image/jpeg'){
+              pages.add(ComicPage(
+                url: 'http://imgsmall.dmzj.com/$firstLetter/$comicId/$chapterId/$page.jpg',
+                title: title,
+                chapterId: chapterId,
+                cover: false,
+              ));
+              page++;
+            }else{
+              break;
+            }
+          }catch(e){
+            logger.w('class ComicModel, action: getComicBackupFailed, page $page');
+            break;
+          }
+          
+        }
+        this.pages=pages;
+        notifyListeners();
+      }
+    }catch(e){
+      logger.w('class: ComicModel, action: getComicBackupFailed, comicId: $comicId, chapterId: $chapterId, exception: $e');
+    }
+
   }
 
   Future<void> setReadHistory(String chapterId, String comicId) async {

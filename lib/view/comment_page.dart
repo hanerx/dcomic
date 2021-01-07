@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutterdmzj/component/LoadingRow.dart';
 import 'package:flutterdmzj/component/LoadingTile.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
@@ -84,7 +85,6 @@ class _CommentPage extends State<CommentPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getComment();
   }
 
   @override
@@ -92,7 +92,6 @@ class _CommentPage extends State<CommentPage> {
     // TODO: implement build
     return Scaffold(
       appBar: AppBar(
-        leading: Container(),
         title: Text('评论'),
         actions: <Widget>[
           FlatButton(
@@ -119,7 +118,6 @@ class _CommentPage extends State<CommentPage> {
       ),
       body: EasyRefresh(
         onRefresh: () async {
-          if (!refreshState) {
             setState(() {
               page = 0;
               refreshState = true;
@@ -127,9 +125,10 @@ class _CommentPage extends State<CommentPage> {
             });
             _controller.resetLoadState();
             await getComment();
-          }
           return;
         },
+        firstRefresh: true,
+        firstRefreshWidget: LoadingRow(),
         onLoad: ()async{
           setState(() {
             refreshState = true;

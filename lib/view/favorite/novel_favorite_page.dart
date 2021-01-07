@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutterdmzj/component/LoadingCube.dart';
 import 'package:flutterdmzj/component/LoadingRow.dart';
 import 'package:flutterdmzj/component/SubscribeCard.dart';
 import 'package:flutterdmzj/database/database.dart';
@@ -109,7 +110,7 @@ class _NovelFavoritePage extends State<NovelFavoritePage> {
           loadedText: '加载完成',
           noMoreText: '没有更多内容了'),
       firstRefresh: true,
-      firstRefreshWidget: LoadingRow(),
+      firstRefreshWidget: LoadingCube(),
       child: Container(
         padding: EdgeInsets.fromLTRB(2, 7, 2, 0),
         child: Column(

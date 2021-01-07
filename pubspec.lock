@@ -320,7 +320,7 @@ packages:
     source: hosted
     version: "1.0.11"
   flutter_spinkit:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_spinkit
       url: "https://pub.flutter-io.cn"

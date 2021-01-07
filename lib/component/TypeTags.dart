@@ -24,9 +24,11 @@ class TypeTags extends StatelessWidget{
                 child: Text('${value['tag_name']}'),
                 onPressed: (){
                   Navigator.pop(context);
-                  Navigator.push(context, MaterialPageRoute(builder: (context){
-                    return CategoryDetailPage(value['tag_id'],value['tag_name']);
-                  }));
+                  if(value['tag_name']!=null){
+                    Navigator.push(context, MaterialPageRoute(builder: (context){
+                      return CategoryDetailPage(value['tag_id'],value['tag_name']);
+                    }));
+                  }
                 },
               );
             }).toList(),

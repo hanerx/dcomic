@@ -9,6 +9,7 @@ import 'package:flutterdmzj/component/comic_viewer/VerticalPageView.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/model/comic.dart';
+import 'package:flutterdmzj/model/systemSettingModel.dart';
 import 'package:provider/provider.dart';
 
 class ComicViewPage extends StatefulWidget {
@@ -89,7 +90,7 @@ class _ComicViewPage extends State<ComicViewPage>
     // TODO: implement build
     return ChangeNotifierProvider(
         create: (_) =>
-            ComicModel(widget.comicId, widget.chapterId, widget.chapterList),
+            ComicModel(widget.comicId, widget.chapterId, widget.chapterList,Provider.of<SystemSettingModel>(context).backupApi),
         builder: (context, test) {
           return Scaffold(
               backgroundColor: colors[backgroundColor],

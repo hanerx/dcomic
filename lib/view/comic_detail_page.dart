@@ -1,14 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_parallax/flutter_parallax.dart';
 import 'package:flutterdmzj/component/Authors.dart';
 import 'package:flutterdmzj/component/CustomDrawer.dart';
 import 'package:flutterdmzj/component/FancyFab.dart';
+import 'package:flutterdmzj/component/LoadingCube.dart';
 import 'package:flutterdmzj/component/TypeTags.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/model/comicDetail.dart';
+import 'package:flutterdmzj/model/systemSettingModel.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:flutterdmzj/view/comment_page.dart';
 import 'package:flutterdmzj/view/login_page.dart';
@@ -67,7 +70,8 @@ class _ComicDetailPage extends State<ComicDetailPage> {
 //     }
 //     // TODO: implement build
     return ChangeNotifierProvider(
-      create: (_) => ComicDetailModel(widget.id),
+      create: (_) => ComicDetailModel(
+          widget.id, Provider.of<SystemSettingModel>(context).backupApi),
       builder: (context, child) {
         return Scaffold(
           appBar: AppBar(
@@ -176,8 +180,10 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                         );
                       });
                 },
-                onDownload: () async{
-                  List<Widget> list=await Provider.of<ComicDetailModel>(context,listen: false)
+                onDownload: () async {
+                  List<Widget> list = await Provider.of<ComicDetailModel>(
+                          context,
+                          listen: false)
                       .buildDownloadWidgetList(context);
                   showDialog(
                       context: context,
@@ -196,42 +202,50 @@ class _ComicDetailPage extends State<ComicDetailPage> {
               );
             },
           ),
-          body: SingleChildScrollView(
-            child: new Column(
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Parallax.inside(
-                        child: Image(
-                            image: CachedNetworkImageProvider(
-                                Provider.of<ComicDetailModel>(context).cover,
-                                headers: {'referer': 'http://images.dmzj.com'}),
-                            fit: BoxFit.cover),
-                        mainAxisExtent: 200.0,
-                      ),
-                    )
-                  ],
-                ),
-                DetailCard(
-                    Provider.of<ComicDetailModel>(context).title,
-                    Provider.of<ComicDetailModel>(context).updateDate,
-                    Provider.of<ComicDetailModel>(context).status,
-                    Provider.of<ComicDetailModel>(context).author,
-                    Provider.of<ComicDetailModel>(context).types,
-                    Provider.of<ComicDetailModel>(context).hotNum,
-                    Provider.of<ComicDetailModel>(context).subscribeNum,
-                    Provider.of<ComicDetailModel>(context).description),
-                Card(
-                  margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                  child: Column(
-                    children: Provider.of<ComicDetailModel>(context)
-                        .buildChapterWidgetList(context),
+          body: EasyRefresh(
+            scrollController: ScrollController(),
+            onRefresh: ()async{
+              await Provider.of<ComicDetailModel>(context,listen: false).getComic(widget.id);
+            },
+            firstRefresh: true,
+            firstRefreshWidget: LoadingCube(),
+            child: SingleChildScrollView(
+              child: new Column(
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Parallax.inside(
+                          child: Image(
+                              image: CachedNetworkImageProvider(
+                                  Provider.of<ComicDetailModel>(context).cover,
+                                  headers: {'referer': 'http://images.dmzj.com'}),
+                              fit: BoxFit.cover),
+                          mainAxisExtent: 200.0,
+                        ),
+                      )
+                    ],
                   ),
-                )
-              ],
+                  DetailCard(
+                      Provider.of<ComicDetailModel>(context).title,
+                      Provider.of<ComicDetailModel>(context).updateDate,
+                      Provider.of<ComicDetailModel>(context).status,
+                      Provider.of<ComicDetailModel>(context).author,
+                      Provider.of<ComicDetailModel>(context).types,
+                      Provider.of<ComicDetailModel>(context).hotNum,
+                      Provider.of<ComicDetailModel>(context).subscribeNum,
+                      Provider.of<ComicDetailModel>(context).description),
+                  Card(
+                    margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                    child: Column(
+                      children: Provider.of<ComicDetailModel>(context)
+                          .buildChapterWidgetList(context),
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
+          )
         );
       },
     );
