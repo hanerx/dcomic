@@ -13,6 +13,7 @@ import 'package:flutterdmzj/model/systemSettingModel.dart';
 import 'package:flutterdmzj/model/versionModel.dart';
 import 'package:flutterdmzj/utils/static_language.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
+import 'package:flutterdmzj/view/database_detail_page.dart';
 import 'package:flutterdmzj/view/lab_setting_page.dart';
 import 'package:logger_flutter/logger_flutter.dart';
 import 'package:markdown_widget/markdown_widget.dart';
@@ -196,6 +197,13 @@ class _SettingPage extends State<SettingPage> {
               ),
             ),
             Divider(),
+            ListTile(
+              title: Text('查看数据库'),
+              subtitle: Text('会直接暴露整个数据库内的数据长啥样，是个没啥用的debug功能，当然会出现包括你uid和token在内的各种信息，请不要随便乱贴'),
+              onTap: (){
+                Navigator.of(context).push(MaterialPageRoute(builder: (context)=>DatabaseDetailPage()));
+              },
+            ),
             ListTile(
               title: Text(
                   '${StaticLanguage.staticStrings['settingPage.deleteDatabaseTitle']}'),

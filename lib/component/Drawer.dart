@@ -25,7 +25,6 @@ class CustomDrawerState extends State<CustomDrawer> {
   String nickname = '请先登录';
   String uid = '';
   bool darkSide = false;
-  bool blackBox = false;
   bool novel = false;
 
   static const List darkMode=[
@@ -69,13 +68,6 @@ class CustomDrawerState extends State<CustomDrawer> {
     });
   }
 
-  getBlackBox() async {
-    DataBase dataBase = DataBase();
-    bool state = await dataBase.getBlackBox();
-    setState(() {
-      blackBox = state;
-    });
-  }
 
   getNovel() async {
     DataBase dataBase = DataBase();
@@ -102,7 +94,6 @@ class CustomDrawerState extends State<CustomDrawer> {
     super.initState();
     getLoginState();
     getDarkSide();
-    getBlackBox();
     getNovel();
   }
 
@@ -243,18 +234,7 @@ class CustomDrawerState extends State<CustomDrawer> {
         )
       ];
     }
-    if (blackBox) {
-      list += <Widget>[
-        Divider(),
-        ListTile(
-          title: Text('黑匣子'),
-          leading: Icon(Icons.inbox),
-          onTap: () {
-            Navigator.of(context).pop();
-          },
-        )
-      ];
-    }
+
     list += <Widget>[
       Divider(),
       ListTile(
