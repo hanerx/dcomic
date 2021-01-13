@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/model/databaseDetailModel.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:toast/toast.dart';
 
 class DatabaseDetailPage extends StatefulWidget {
   @override
@@ -40,7 +43,34 @@ class _DatabaseDetailPage extends State<DatabaseDetailPage> {
                     children: [
                       UserAccountsDrawerHeader(
                           accountName: Text('程序内置数据库 '),
-                          accountEmail: Text('基于sqlfilte')),
+                          accountEmail: Text('基于sqlfilte'),
+                        otherAccountsPictures: [FlatButton(
+                          child: Icon(Icons.file_download,color: Colors.white,),
+                          onPressed: ()async{
+                            var state = await Permission.storage
+                                .request()
+                                .isGranted;
+                            if (state) {
+                              DataBase dataBase = DataBase();
+                              String path = await dataBase.getDownloadPath();
+                              String save = await Provider.of<
+                                  DatabaseDetailModel>(context, listen: false)
+                                  .moveDatabase(path);
+                              if (save!=null) {
+                                Navigator.of(context).pop();
+                                Toast.show("已保存至:$save", context,
+                                    duration: Toast.LENGTH_LONG);
+                              } else {
+                                Navigator.of(context).pop();
+                                Toast.show("保存失败，请检查写入权限", context,
+                                    duration: Toast.LENGTH_LONG);
+                              }
+                            }
+                          },
+                          shape: CircleBorder(),
+                          padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                        )],
+                      ),
                       ListTile(
                         title: Text('数据库版本'),
                         subtitle: Text(

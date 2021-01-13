@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutterdmzj/component/DataBaseDefineTile.dart';
 import 'package:flutterdmzj/component/DataBaseTable.dart';
@@ -28,6 +30,20 @@ class DatabaseDetailModel extends BaseModel{
 
   List<Tab> getTabs(context){
     return tabs.map<Tab>((e) => Tab(text: '$e',)).toList();
+  }
+
+  Future<String> moveDatabase(String path)async{
+    try{
+      var file=File(this.path);
+      var directory = new Directory('$path');
+      directory.createSync(recursive: true);
+      String save='${directory.path}/dmzj.db';
+      await file.copy(save);
+      return save;
+    }catch(e){
+      logger.e('class: DatabaseDetailModel, action: moveFileFailed, exception: $e');
+    }
+    return null;
   }
 
   List<Widget> getTabViews(context){
