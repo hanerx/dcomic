@@ -10,6 +10,7 @@ import 'package:flutterdmzj/event/CustomEventBus.dart';
 import 'package:flutterdmzj/event/ThemeChangeEvent.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/model/systemSettingModel.dart';
+import 'package:flutterdmzj/model/versionModel.dart';
 import 'package:flutterdmzj/utils/static_language.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:flutterdmzj/view/lab_setting_page.dart';
@@ -338,82 +339,28 @@ class _SettingPage extends State<SettingPage> {
                   title: Text(
                       '${StaticLanguage.staticStrings['settingPage.checkUpdateTitle']}'),
                   subtitle: Text(
-                      '${StaticLanguage.staticStrings['settingPage.checkUpdateSubTitle']} $version'),
+                      '${StaticLanguage.staticStrings['settingPage.checkUpdateSubTitle']} ${Provider.of<VersionModel>(context).currentVersion}'),
                   onTap: () async {
-                    CustomHttp http = CustomHttp();
-                    var response = await http.checkUpdate();
-                    if (response.statusCode == 200 && version != '') {
-                      String lastVersion =
-                          response.data['tag_name'].substring(1);
-                      bool update =
-                          ToolMethods.checkVersion(lastVersion,version);
-                      if (update) {
-                        showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                title:
-                                    Text('版本点亮：${response.data['tag_name']}'),
-                                content: Container(
-                                  width: 300,
-                                  height: 300,
-                                  child: buildMarkdown(response.data['body']),
-                                ),
-                                actions: <Widget>[
-                                  FlatButton(
-                                    child: Text('打开网页'),
-                                    onPressed: (){
-                                      _openWeb('${response.data['html_url']}');
-                                    },
-                                  ),
-                                  FlatButton(
-                                    child: Text('更新'),
-                                    onPressed: () {
-                                      if(response.data['assets'].length>0){
-                                        String url=response.data['assets'][0]['browser_download_url'];
-                                        print(downloadPath);
-                                        FlutterDownloader.enqueue(url: url, savedDir: '$downloadPath');
-                                        Navigator.pop(context);
-                                      }else{
-                                        _openWeb('${response.data['html_url']}');
-                                      }
-                                    },
-                                  ),
-                                  FlatButton(
-                                    child: Text('镜像更新'),
-                                    onPressed: ()async{
-                                      if (response.data['assets'].length > 0) {
-                                        String url =
-                                        response.data['assets'][0]['browser_download_url'];
-                                        DataBase dataBase = DataBase();
-                                        var downloadPath = await dataBase.getDownloadPath();
-                                        FlutterDownloader.enqueue(
-                                            url: 'https://divine-boat-417a.hanerx.workers.dev/$url', savedDir: '$downloadPath');
-                                        Navigator.pop(context);
-                                      } else {
-                                        _openWeb('${response.data['html_url']}');
-                                      }
-                                    },
-                                  ),
-                                  FlatButton(
-                                    child: Text('取消'),
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                  )
-                                ],
-                              );
-                            });
-                      } else {
-                        Scaffold.of(context).showSnackBar(SnackBar(
-                          content: Text('已经是最新版本'),
-                        ));
-                      }
+                    await Provider.of<VersionModel>(context,listen: false).checkUpdate();
+                    if(ToolMethods.checkVersionSemver(Provider.of<VersionModel>(context,listen: false).currentVersion, Provider.of<VersionModel>(context,listen: false).latestVersion)){
+                      Provider.of<VersionModel>(context,listen: false).showUpdateDialog(context);
+                    }else{
+                      Scaffold.of(context).showSnackBar(SnackBar(
+                        content: Text('已经是最新版本了'),
+                      ));
                     }
                   },
                 );
               },
             ),
+            ListTile(
+              title: Text('更新通道'),
+              subtitle: Text('${Provider.of<VersionModel>(context).updateChannelName}'),
+              onTap: (){
+                Provider.of<VersionModel>(context,listen: false).updateChannel++;
+              },
+            ),
+            Divider(),
             ListTile(
               title: Text('免责声明'),
               subtitle: Text('不管有没有，先写了再说'),

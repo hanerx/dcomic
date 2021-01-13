@@ -9,6 +9,7 @@ import 'package:flutterdmzj/component/comic_viewer/VerticalPageView.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/model/comic.dart';
+import 'package:flutterdmzj/model/comicViewerSettingModel.dart';
 import 'package:flutterdmzj/model/systemSettingModel.dart';
 import 'package:provider/provider.dart';
 
@@ -29,33 +30,14 @@ class ComicViewPage extends StatefulWidget {
 
 class _ComicViewPage extends State<ComicViewPage>
     with TickerProviderStateMixin {
-  bool direction = false;
-  bool debug = false;
-  double hitBox = 100;
-  double range = 500;
   bool _show = false;
-  bool reverse = false;
-  int backgroundColor = 0;
-  static List colors = [
-    Colors.white,
-    Colors.black,
-    Colors.brown,
-    Colors.blueGrey,
-    Color.fromARGB(100, 242, 235, 217),
-    Color.fromRGBO(239, 217, 176, 1),
-    Color.fromRGBO(255, 240, 205, 1)
-  ];
-
-  DataBase _dataBase;
   TabController _tabController;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _dataBase = DataBase();
     _tabController = TabController(length: 2, vsync: this);
-    init();
     SystemChrome.setEnabledSystemUIOverlays([]);
   }
 
@@ -71,21 +53,6 @@ class _ComicViewPage extends State<ComicViewPage>
     super.dispose();
   }
 
-  init() async {
-    var hitBox = await _dataBase.getControlSize();
-    var range = await _dataBase.getRange();
-    var direction = await _dataBase.getReadDirection();
-    var backgroundColor = await _dataBase.getBackground();
-    var reverse = await _dataBase.getHorizontalDirection();
-    setState(() {
-      this.hitBox = hitBox;
-      this.range = range;
-      this.direction = direction;
-      this.backgroundColor = backgroundColor;
-      this.reverse = reverse;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -94,10 +61,11 @@ class _ComicViewPage extends State<ComicViewPage>
             widget.comicId,
             widget.chapterId,
             widget.chapterList,
-            Provider.of<SystemSettingModel>(context).backupApi),
+            Provider.of<SystemSettingModel>(context).backupApi,
+            Provider.of<ComicViewerSettingModel>(context).webApi),
         builder: (context, test) {
           return Scaffold(
-              backgroundColor: colors[backgroundColor],
+              backgroundColor: ComicViewerSettingModel.backgroundColors[Provider.of<ComicViewerSettingModel>(context).backgroundColor],
               body: Stack(
                 children: [
                   _buildViewer(context),
@@ -133,11 +101,12 @@ class _ComicViewPage extends State<ComicViewPage>
                                         await Provider.of<ComicModel>(context,
                                                 listen: false)
                                             .previousChapter();
-                                        if (direction) {
+                                        if (Provider.of<ComicViewerSettingModel>(context,listen: false).direction) {
                                           horizontalKey.currentState
                                               .moveToTop();
                                         } else {
                                           verticalKey.currentState.moveToTop();
+                                          verticalKey.currentState.onPreviousChapter();
                                         }
                                         break;
                                       case 1:
@@ -147,11 +116,12 @@ class _ComicViewPage extends State<ComicViewPage>
                                         await Provider.of<ComicModel>(context,
                                                 listen: false)
                                             .nextChapter();
-                                        if (direction) {
+                                        if (Provider.of<ComicViewerSettingModel>(context,listen: false).direction) {
                                           horizontalKey.currentState
                                               .moveToTop();
                                         } else {
                                           verticalKey.currentState.moveToTop();
+                                          verticalKey.currentState.onNextChapter();
                                         }
                                         break;
                                     }
@@ -219,7 +189,7 @@ class _ComicViewPage extends State<ComicViewPage>
   }
 
   Widget _buildViewer(BuildContext context) {
-    if (direction) {
+    if (Provider.of<ComicViewerSettingModel>(context,listen: false).direction) {
       return HorizontalPageView(
         key: horizontalKey,
         builder: (context, index) =>
@@ -229,14 +199,10 @@ class _ComicViewPage extends State<ComicViewPage>
         count: Provider.of<ComicModel>(context).length + 2,
         onEnd: Provider.of<ComicModel>(context).nextChapter,
         onTop: Provider.of<ComicModel>(context).previousChapter,
-        debug: debug,
-        hitBox: hitBox,
-        reverse: reverse,
+        debug: Provider.of<ComicViewerSettingModel>(context).debug,
+        hitBox: Provider.of<ComicViewerSettingModel>(context).hitBox,
+        reverse: Provider.of<ComicViewerSettingModel>(context).reverse,
         onPageChange: (index) {
-          // SystemChrome.setEnabledSystemUIOverlays([]);
-          // setState(() {
-          //   _show = false;
-          // });
           Provider.of<ComicModel>(context, listen: false).index = index;
         },
         onTap: (index) {
@@ -254,9 +220,9 @@ class _ComicViewPage extends State<ComicViewPage>
         count: Provider.of<ComicModel>(context).length,
         onEnd: Provider.of<ComicModel>(context).nextChapter,
         onTop: Provider.of<ComicModel>(context).previousChapter,
-        debug: debug,
-        hitBox: hitBox,
-        range: range,
+        debug: Provider.of<ComicViewerSettingModel>(context).debug,
+        hitBox: Provider.of<ComicViewerSettingModel>(context).hitBox,
+        range: Provider.of<ComicViewerSettingModel>(context).range,
         onPageChange: (index) {
           Provider.of<ComicModel>(context, listen: false).index = index;
         },
@@ -281,23 +247,37 @@ class _ComicViewPage extends State<ComicViewPage>
       children: [
         ListTile(
           title: Text("阅读方向"),
-          subtitle: Text("${direction ? '横向阅读' : '纵向阅读'}"),
+          subtitle: Text("${Provider.of<ComicViewerSettingModel>(context).direction ? '横向阅读' : '纵向阅读'}"),
           onTap: () {
-            _dataBase.setReadDirection(!direction);
-            setState(() {
-              direction = !direction;
-            });
+            Provider.of<ComicViewerSettingModel>(context,listen: false).direction=!Provider.of<ComicViewerSettingModel>(context,listen:false).direction;
           },
         ),
         ListTile(
           title: Text('横向阅读方向'),
-          subtitle: Text('${reverse ? '从右到左' : '从左到右'}'),
-          enabled: direction,
+          subtitle: Text('${Provider.of<ComicViewerSettingModel>(context).reverse ? '从右到左' : '从左到右'}'),
+          enabled: Provider.of<ComicViewerSettingModel>(context).direction,
           onTap: () {
-            _dataBase.setHorizontalDirection(!reverse);
-            setState(() {
-              reverse = !reverse;
-            });
+            Provider.of<ComicViewerSettingModel>(context,listen: false).reverse=!Provider.of<ComicViewerSettingModel>(context,listen:false).reverse;
+          },
+        ),
+        Divider(),
+        ListTile(
+          title: Text('使用WebApi'),
+          subtitle: Text('使用网页版的API，据说能提画质(说实话我没感觉啊，手机的api就挺高清了啊)'),
+          trailing: Switch(
+            value: Provider.of<ComicViewerSettingModel>(context).webApi,
+            onChanged: (val){
+              Provider.of<ComicViewerSettingModel>(context,listen: false).webApi=val;
+              Provider.of<ComicModel>(context,listen: false).webApi=val;
+              Provider.of<ComicModel>(context,listen: false).getComic(widget.comicId,
+                widget.chapterId);
+            },
+          ),
+          onTap: (){
+            Provider.of<ComicViewerSettingModel>(context,listen: false).webApi=!Provider.of<ComicViewerSettingModel>(context,listen: false).webApi;
+            Provider.of<ComicModel>(context,listen: false).webApi=!Provider.of<ComicViewerSettingModel>(context,listen: false).webApi;
+            Provider.of<ComicModel>(context,listen: false).getComic(widget.comicId,
+                widget.chapterId);
           },
         ),
         Divider(),
@@ -305,11 +285,9 @@ class _ComicViewPage extends State<ComicViewPage>
           title: Text("显示碰撞箱"),
           subtitle: Text("可以调整上下点击翻页的触发面积，由于底层架构的升级不会出现手势打架的情况了"),
           trailing: Switch(
-            value: debug,
+            value: Provider.of<ComicViewerSettingModel>(context).debug,
             onChanged: (state) {
-              setState(() {
-                debug = !debug;
-              });
+              Provider.of<ComicViewerSettingModel>(context,listen: false).debug=state;
             },
           ),
         ),
@@ -318,12 +296,9 @@ class _ComicViewPage extends State<ComicViewPage>
           subtitle: Slider(
             min: 0,
             max: 200,
-            value: hitBox,
+            value: Provider.of<ComicViewerSettingModel>(context).hitBox,
             onChanged: (value) {
-              _dataBase.setControlSize(value);
-              setState(() {
-                hitBox = value;
-              });
+              Provider.of<ComicViewerSettingModel>(context,listen: false).hitBox=value;
             },
           ),
         ),
@@ -334,12 +309,9 @@ class _ComicViewPage extends State<ComicViewPage>
             label: "垂直翻页使用固定距离翻页法，在这调整翻页距离",
             min: 100,
             max: 1000,
-            value: range,
+            value: Provider.of<ComicViewerSettingModel>(context).range,
             onChanged: (value) {
-              _dataBase.setRange(value);
-              setState(() {
-                range = value;
-              });
+              Provider.of<ComicViewerSettingModel>(context,listen: false).range=value;
             },
           ),
         ),
@@ -351,17 +323,14 @@ class _ComicViewPage extends State<ComicViewPage>
               style: TextStyle(color: Colors.white),
             ),
             subtitle: Row(
-              children: colors
+              children: ComicViewerSettingModel.backgroundColors
                   .map<Widget>((e) => IconButton(
                         icon: Icon(
                           Icons.color_lens,
                           color: e,
                         ),
                         onPressed: () {
-                          _dataBase.setBackground(colors.indexOf(e));
-                          setState(() {
-                            backgroundColor = colors.indexOf(e);
-                          });
+                          Provider.of<ComicViewerSettingModel>(context,listen: false).backgroundColor=ComicViewerSettingModel.backgroundColors.indexOf(e);
                         },
                       ))
                   .toList(),
@@ -388,7 +357,7 @@ class _ComicViewPage extends State<ComicViewPage>
   }
 
   Widget _buildSlider(context) {
-    if (direction) {
+    if (Provider.of<ComicViewerSettingModel>(context,listen: false).direction) {
       return Container(
         color: Colors.black54,
         child: Slider(
@@ -406,7 +375,7 @@ class _ComicViewPage extends State<ComicViewPage>
                     Provider.of<ComicModel>(context, listen: false).length) {
               Provider.of<ComicModel>(context, listen: false).index =
                   index.toInt();
-              if (direction) {
+              if (Provider.of<ComicViewerSettingModel>(context,listen: false).direction) {
                 horizontalKey.currentState.animateToPage(index.toInt() + 1);
               }
             }

@@ -11,7 +11,9 @@ import 'package:flutterdmzj/component/TypeTags.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/model/comicDetail.dart';
+import 'package:flutterdmzj/model/comicViewerSettingModel.dart';
 import 'package:flutterdmzj/model/systemSettingModel.dart';
+import 'package:flutterdmzj/model/trackerModel.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:flutterdmzj/view/comment_page.dart';
 import 'package:flutterdmzj/view/login_page.dart';
@@ -168,17 +170,21 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                   }
                 },
                 onBlackBox: () {
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return SimpleDialog(
-                          children: [
-                            SimpleDialogOption(
-                              child: Text("Ops! 你遇到了一个没有用的按钮"),
-                            )
-                          ],
-                        );
-                      });
+                  if(!Provider.of<SystemSettingModel>(context,listen: false).blackBox){
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return SimpleDialog(
+                            children: [
+                              SimpleDialogOption(
+                                child: Text("Ops! 你遇到了一个没有用的按钮"),
+                              )
+                            ],
+                          );
+                        });
+                  }else{
+                    Provider.of<TrackerModel>(context,listen: false).subscribe(Provider.of<ComicDetailModel>(context,listen: false));
+                  }
                 },
                 onDownload: () async {
                   List<Widget> list = await Provider.of<ComicDetailModel>(

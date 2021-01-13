@@ -1,3 +1,4 @@
+import 'package:flutterdmzj/database/databaseCommon.dart';
 import 'package:flutterdmzj/utils/log_output.dart';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
@@ -12,29 +13,7 @@ class DataBase {
   }
 
   initDataBase() async {
-    _database = await openDatabase("dmzj_2.db", version: 11,
-        onCreate: (Database db, int version) async {
-      await db.execute(
-          "CREATE TABLE cookies (id INTEGER PRIMARY KEY, key TEXT, value TEXT)");
-      await db.execute(
-          "CREATE TABLE configures (id INTEGER PRIMARY KEY, key TEXT, value TEXT)");
-      await db.execute(
-          "CREATE TABLE history (id INTEGER PRIMARY KEY, name TEXT, value TEXT)");
-      await db.execute(
-          "CREATE TABLE unread (id INTEGER PRIMARY KEY, comicId TEXT, timestamp INTEGER)");
-      await db.execute(
-          "CREATE TABLE local_history (id INTEGER PRIMARY KEY, comicId TEXT, timestamp INTEGER,cover TEXT,title TEXT,last_chapter TEXT,last_chapter_id TEXT)");
-      await db.execute(
-          "CREATE TABLE download_comic_info (id INTEGER PRIMARY KEY, comicId TEXT, cover TEXT, title TEXT)");
-      await db.execute(
-          "CREATE TABLE download_chapter_info (id INTEGER PRIMARY KEY, comicId TEXT, chapterId TEXT, tasks TEXT, title TEXT)");
-    }, onUpgrade: (Database db, int version, int x) async {
-      print('class: DataBase, action: upgrade, version: $version');
-      await db.execute(
-          "CREATE TABLE download_comic_info (id INTEGER PRIMARY KEY, comicId TEXT, cover TEXT, title TEXT)");
-      await db.execute(
-          "CREATE TABLE download_chapter_info (id INTEGER PRIMARY KEY, comicId TEXT, chapterId TEXT, tasks TEXT, title TEXT)");
-    });
+    _database = await DatabaseCommon.initDatabase();
   }
 
   resetDataBase() async {
@@ -546,5 +525,49 @@ class DataBase {
     await batch.commit();
   }
 
+  Future<bool> getWebApi()async{
+    await initDataBase();
+    var batch = _database.batch();
+    batch.query("configures", where: "key='web_api'");
+    var result = await batch.commit();
+    try {
+      if (result.first[0]['value'] == '1') {
+        return true;
+      }
+    } catch (e) {
+      _logger.w('action: WebApiNotFound, exception: $e');
+    }
+    return false;
+  }
+
+  Future<void> setWebApi(bool state) async {
+    await initDataBase();
+    var batch = _database.batch();
+    batch.delete("configures", where: "key='web_api'");
+    batch.insert(
+        "configures", {'key': 'web_api', 'value': state ? '1' : '0'});
+    await batch.commit();
+  }
+
+  Future<int> getUpdateChannel()async{
+    await initDataBase();
+    var batch = _database.batch();
+    batch.query("configures", where: "key='update_channel'");
+    var result = await batch.commit();
+    try {
+      return int.parse(result.first[0]['value']);
+    } catch (e) {
+      _logger.w('action: updateChannelNotFound, exception: $e');
+    }
+    return 0;
+  }
+
+  setUpdateChannel(int channel) async {
+    await initDataBase();
+    var batch = _database.batch();
+    batch.delete("configures", where: "key='update_channel'");
+    batch.insert("configures", {'key': 'update_channel', 'value': channel.toString()});
+    await batch.commit();
+  }
 
 }

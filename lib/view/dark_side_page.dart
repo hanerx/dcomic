@@ -7,8 +7,10 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutterdmzj/component/LoadingCube.dart';
 import 'package:flutterdmzj/component/LoadingRow.dart';
 import 'package:flutterdmzj/http/http.dart';
+import 'package:flutterdmzj/model/systemSettingModel.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:flutterdmzj/view/comic_viewer.dart';
+import 'package:provider/provider.dart';
 
 import 'comic_detail_page.dart';
 
@@ -193,26 +195,32 @@ class DarkCustomListTile extends StatelessWidget {
         child: FlatButton(
       padding: EdgeInsets.fromLTRB(1, 0, 1, 0),
       onPressed: () async {
-        CustomHttp http = CustomHttp();
-        var response = await http.getComicDetail(comicId);
-        if (response.statusCode == 200 &&
-            response.data['chapters'].length > 0) {
+        if(Provider.of<SystemSettingModel>(context,listen: false).backupApi){
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             return ComicDetailPage(comicId);
           }));
-        } else if (live) {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return ComicViewPage(
-                comicId: comicId,
-                chapterId: lastChapterId,
-                chapterList: [lastChapterId]);
-          }));
-        } else {
-          Scaffold.of(context).showSnackBar(SnackBar(
-              content: Text(
-            '这本漫画是真的没有了，RIP',
-            style: TextStyle(color: Colors.red),
-          )));
+        }else{
+          CustomHttp http = CustomHttp();
+          var response = await http.getComicDetail(comicId);
+          if (response.statusCode == 200 &&
+              response.data['chapters'].length > 0) {
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return ComicDetailPage(comicId);
+            }));
+          } else if (live) {
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return ComicViewPage(
+                  comicId: comicId,
+                  chapterId: lastChapterId,
+                  chapterList: [lastChapterId]);
+            }));
+          } else {
+            Scaffold.of(context).showSnackBar(SnackBar(
+                content: Text(
+                  '这本漫画是真的没有了，RIP',
+                  style: TextStyle(color: Colors.red),
+                )));
+          }
         }
       },
       child: Card(

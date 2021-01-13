@@ -87,6 +87,8 @@ class _NovelViewerPage extends State<NovelViewerPage>
               children: [
                 EasyRefresh(
                   scrollController: ScrollController(),
+                  header: BezierCircleHeader(),
+                  footer: BezierBounceFooter(),
                   child: SingleChildScrollView(
                       controller: _controller,
                       child: Column(
@@ -102,28 +104,31 @@ class _NovelViewerPage extends State<NovelViewerPage>
                     await Provider.of<NovelModel>(context,listen: false).previous();
                   },
                   onLoad: ()async{
+                    await Future.delayed(Duration(seconds: 1));
                     await Provider.of<NovelModel>(context,listen: false).next();
                     if(_controller.hasClients){
                       _controller.animateTo(0, duration: Duration(microseconds: 100), curve: Curves.easeIn);
                     }
                   },
                 ),
-                Positioned(
-                  top: 0,
+                AnimatedPositioned(
+                  duration: Duration(milliseconds: 200),
+                  top: _show?0:-80,
                   left: 0,
                   right: 0,
-                  height: _show?80:0,
+                  height: 80,
                   child: AppBar(
                     title: Text('${Provider.of<NovelModel>(context).title}'),
                     backgroundColor: Colors.black54,
                   ),
                 ),
 
-                Positioned(
-                  bottom: 0,
+                AnimatedPositioned(
+                  duration: Duration(milliseconds: 200),
+                  bottom: _show?0:-70,
                   left: 0,
                   right: 0,
-                  height: _show?70:0,
+                  height: 70,
                   child: Builder(
                     builder: (context){
                       return BottomNavigationBarTheme(

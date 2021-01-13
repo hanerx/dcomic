@@ -1,8 +1,14 @@
+
+
 import 'dart:isolate';
 import 'dart:ui';
 
+import 'package:flutter/material.dart';
 import 'package:flutterdmzj/utils/log_output.dart';
+import 'package:flutterdmzj/utils/static_language.dart';
 import 'package:logger/logger.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:version/version.dart';
 
 
 class ToolMethods {
@@ -26,6 +32,23 @@ class ToolMethods {
       }
     }
     return false;
+  }
+
+  static bool checkVersionSemver(String currentVersionString,String latestVersionString){
+    Version currentVersion=Version.parse(currentVersionString);
+    Version latestVersion=Version.parse(latestVersionString);
+    return latestVersion>currentVersion;
+  }
+
+  static Future<void> callWeb(String url,context)async{
+    if (await canLaunch(url)) {
+    await launch(url);
+    } else {
+    Scaffold.of(context).showSnackBar(SnackBar(
+    content: Text(
+    '${StaticLanguage.staticStrings['settingPage.canNotOpenWeb']}'),
+    ));
+    }
   }
 
   static void downloadCallback(id, status, progress) {

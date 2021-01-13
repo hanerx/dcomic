@@ -98,6 +98,12 @@ class CustomHttp {
         options: buildCacheOptions(Duration(hours: 8), options: options));
   }
 
+  Future<Response<T>> getComicWeb<T>(String comicId, String chapterId) async {
+    Options options = await this.setHeader();
+    return dio.get('https://m.dmzj.com/chapinfo/$comicId/$chapterId.html',
+        options: buildCacheOptions(Duration(hours: 8), options: options));
+  }
+
   Future<Response<T>> getViewPoint<T>(String comicId, String chapterId) async {
     return dio.get(
         baseUrl + '/viewPoint/0/$comicId/$chapterId.json?$queryOptions',

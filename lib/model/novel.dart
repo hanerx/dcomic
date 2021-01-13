@@ -16,7 +16,7 @@ class NovelModel extends BaseModel {
 
   List<bool> expand = [];
 
-  List chapterList=[];
+  List chapterList = [];
 
   NovelModel(
       this.title, this.chapters, this.novelID, this.volumeID, this.chapterID) {
@@ -27,13 +27,13 @@ class NovelModel extends BaseModel {
         'class: NovelModel, action: init, novelID: $novelID, volumeID: $volumeID, chapterID: $chapterID');
   }
 
-  void initChapterList(){
-    for(var item in chapters){
-      for(var chapter in item['chapters']){
+  void initChapterList() {
+    for (var item in chapters) {
+      for (var chapter in item['chapters']) {
         chapterList.add({
-          'chapterID':chapter['chapter_id'],
-          'volumeID':item['volume_id'],
-          'title':chapter['chapter_name']
+          'chapterID': chapter['chapter_id'],
+          'volumeID': item['volume_id'],
+          'title': chapter['chapter_name']
         });
       }
     }
@@ -61,13 +61,14 @@ class NovelModel extends BaseModel {
     }
   }
 
-  Future<void> next() async{
-    for(var i=0;i<chapterList.length;i++){
-      if(chapterList[i]['chapterID']==chapterID&&chapterList[i]['volumeID']==volumeID){
-        if(i<chapterList.length-1){
-          volumeID=chapterList[i+1]['volumeID'];
-          chapterID=chapterList[i+1]['chapterID'];
-          title=chapterList[i+1]['title'];
+  Future<void> next() async {
+    for (var i = 0; i < chapterList.length; i++) {
+      if (chapterList[i]['chapterID'] == chapterID &&
+          chapterList[i]['volumeID'] == volumeID) {
+        if (i < chapterList.length - 1) {
+          volumeID = chapterList[i + 1]['volumeID'];
+          chapterID = chapterList[i + 1]['chapterID'];
+          title = chapterList[i + 1]['title'];
           await getNovel(novelID, volumeID, chapterID);
           break;
         }
@@ -75,13 +76,14 @@ class NovelModel extends BaseModel {
     }
   }
 
-  Future<void> previous() async{
-    for(var i=0;i<chapterList.length;i++){
-      if(chapterList[i]['chapterID']==chapterID&&chapterList[i]['volumeID']==volumeID){
-        if(i>0){
-          volumeID=chapterList[i-1]['volumeID'];
-          chapterID=chapterList[i-1]['chapterID'];
-          title=chapterList[i-1]['title'];
+  Future<void> previous() async {
+    for (var i = 0; i < chapterList.length; i++) {
+      if (chapterList[i]['chapterID'] == chapterID &&
+          chapterList[i]['volumeID'] == volumeID) {
+        if (i > 0) {
+          volumeID = chapterList[i - 1]['volumeID'];
+          chapterID = chapterList[i - 1]['chapterID'];
+          title = chapterList[i - 1]['title'];
           await getNovel(novelID, volumeID, chapterID);
           break;
         }
@@ -95,7 +97,13 @@ class NovelModel extends BaseModel {
           canTapOnHeader: true,
           isExpanded: expand[chapters.indexOf(e)],
           headerBuilder: (context, state) => ListTile(
-                title: Text('${e['volume_name']}'),
+                title: Text(
+                  '${e['volume_name']}',
+                  style: TextStyle(
+                      color: e['volume_id'] == volumeID
+                          ? Theme.of(context).textSelectionColor
+                          : null),
+                ),
               ),
           body: ListView.builder(
               shrinkWrap: true,
@@ -103,7 +111,13 @@ class NovelModel extends BaseModel {
               itemCount: e['chapters'].length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text('${e['chapters'][index]['chapter_name']}'),
+                  title: Text(
+                    '${e['chapters'][index]['chapter_name']}',
+                    style: TextStyle(
+                        color: e['chapters'][index]['chapter_id'] == chapterID
+                            ? Theme.of(context).textSelectionColor
+                            : null),
+                  ),
                   onTap: () {
                     title = e['chapters'][index]['chapter_name'];
                     chapters = chapters;
