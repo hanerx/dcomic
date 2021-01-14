@@ -7,7 +7,10 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutterdmzj/component/Drawer.dart';
 import 'package:flutterdmzj/database/database.dart';
+import 'package:flutterdmzj/model/comicViewerSettingModel.dart';
 import 'package:flutterdmzj/model/systemSettingModel.dart';
+import 'package:flutterdmzj/model/trackerModel.dart';
+import 'package:flutterdmzj/model/versionModel.dart';
 import 'package:flutterdmzj/utils/ChineseCupertinoLocalizations.dart';
 import 'package:flutterdmzj/utils/static_language.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
@@ -45,6 +48,15 @@ class App extends StatelessWidget {
       ChangeNotifierProvider<SystemSettingModel>(
         create: (_) => SystemSettingModel(),
         lazy: false,
+      ),
+      ChangeNotifierProvider<ComicViewerSettingModel>(
+        create: (_)=>ComicViewerSettingModel(),
+      ),
+      ChangeNotifierProvider<VersionModel>(
+        create: (_)=>VersionModel(),
+      ),
+      ChangeNotifierProvider<TrackerModel>(
+        create: (_)=>TrackerModel(),
       )
     ], child: MainFrame());
   }
@@ -151,7 +163,6 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPage extends State<MainPage> {
-  String version;
 
   Future<Null> initUniLinks() async {
     getUriLinksStream().listen((Uri event) {
@@ -168,103 +179,11 @@ class _MainPage extends State<MainPage> {
     });
   }
 
-  getVersionInfo() async {
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    setState(() {
-      if (ToolMethods.checkVersion(packageInfo.version, version)) {
-        version = packageInfo.version;
-      }
-    });
-  }
-
-  _openWeb(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text(
-            '${StaticLanguage.staticStrings['settingPage.canNotOpenWeb']}'),
-      ));
-    }
-  }
-
-  checkUpdate() async {
-    DataBase dataBase = DataBase();
-    version = await dataBase.getVersion();
-    await getVersionInfo();
-    CustomHttp http = CustomHttp();
-    var response = await http.checkUpdate();
-    if (response.statusCode == 200) {
-      String lastVersion = response.data['tag_name'].substring(1);
-      if (version == '') {
-        dataBase.setVersion(lastVersion);
-        return;
-      }
-      bool update = ToolMethods.checkVersion(lastVersion, version);
-      if (update) {
-        dataBase.setVersion(lastVersion);
-        showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: Text('版本点亮：${response.data['tag_name']}'),
-                content: Container(
-                  width: 300,
-                  height: 300,
-                  child: MarkdownWidget(data: response.data['body']),
-                ),
-                actions: <Widget>[
-                  FlatButton(
-                    child: Text('打开网页'),
-                    onPressed: () {
-                      _openWeb('${response.data['html_url']}');
-                    },
-                  ),
-                  FlatButton(
-                    child: Text('更新'),
-                    onPressed: () async {
-                      if (response.data['assets'].length > 0) {
-                        String url =
-                            response.data['assets'][0]['browser_download_url'];
-                        DataBase dataBase = DataBase();
-                        var downloadPath = await dataBase.getDownloadPath();
-                        FlutterDownloader.enqueue(
-                            url: url, savedDir: '$downloadPath');
-                        Navigator.pop(context);
-                      } else {
-                        _openWeb('${response.data['html_url']}');
-                      }
-                    },
-                  ),
-                  FlatButton(
-                    child: Text('镜像更新'),
-                    onPressed: () async {
-                      if (response.data['assets'].length > 0) {
-                        String url =
-                            response.data['assets'][0]['browser_download_url'];
-                        DataBase dataBase = DataBase();
-                        var downloadPath = await dataBase.getDownloadPath();
-                        FlutterDownloader.enqueue(
-                            url:
-                                'https://divine-boat-417a.hanerx.workers.dev/$url',
-                            savedDir: '$downloadPath');
-                        Navigator.pop(context);
-                      } else {
-                        _openWeb('${response.data['html_url']}');
-                      }
-                    },
-                  ),
-                  FlatButton(
-                    child: Text('取消'),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  )
-                ],
-              );
-            });
-      }
-      print('check update success');
+  Future<void> checkUpdate()async{
+    await Provider.of<VersionModel>(context,listen: false).init();
+    if(ToolMethods.checkVersionSemver(Provider.of<VersionModel>(context,listen: false).localLatestVersion, Provider.of<VersionModel>(context,listen: false).latestVersion)){
+      Provider.of<VersionModel>(context,listen: false).localLatestVersion=Provider.of<VersionModel>(context,listen: false).latestVersion;
+      Provider.of<VersionModel>(context,listen: false).showUpdateDialog(context);
     }
   }
 

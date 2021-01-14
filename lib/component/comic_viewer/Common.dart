@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutterdmzj/component/LoadingCube.dart';
 import 'package:flutterdmzj/component/comic_viewer/ClickPage.dart';
 import 'package:flutterdmzj/component/comic_viewer/EndPage.dart';
 import 'package:flutterdmzj/component/comic_viewer/EndPageDense.dart';
@@ -14,25 +15,20 @@ class Common {
       {bool dense = false}) {
     print(
         "class: ComicCommon, action: buildPage, index: $index, count: $count");
+    if(count==2){
+      return LoadingCube();
+    }
     if (index == 0) {
       if (!left) {
-        if(dense&&count<4){
-          return ClickPage(left: true,);
-        }else{
-          return LoadingPanel();
-        }
+          return LoadingCube();
       } else {
-        return dense ? EndPageDense() : EndPage();
+        return EndPage();
       }
     } else if (count != null && index == count-1) {
       if (!right) {
-        if(dense&&count<4){
-          return ClickPage(left: false);
-        }else{
-          return LoadingPanel();
-        }
+          return LoadingCube();
       } else {
-        return dense ? EndPageDense() : EndPage();
+        return EndPage();
       }
     } else if (index > 0 && index < count) {
       return builder(context, index - 1);
@@ -43,6 +39,8 @@ class Common {
   static Widget builderVertical(BuildContext context, int index, int count,
       IndexedWidgetBuilder builder, bool left, bool right,
       {bool dense = false}){
+    print(
+        "class: ComicCommon, action: buildPage, index: $index, count: $count");
     if (index >= 0 && index < count) {
       return builder(context, index);
     }

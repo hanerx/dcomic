@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/database/downloader.dart';
+import 'package:flutterdmzj/database/tracker.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/model/baseModel.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
@@ -41,13 +42,15 @@ class ComicDetailModel extends BaseModel {
   bool _reverse = false;
 
   //最后浏览记录
-  String lastChapterId = '';
+  String lastChapterId;
   List lastChapterList = [];
 
   //用户信息
   bool login = false;
   bool _sub = false;
   String uid = '';
+
+  Map data;
 
   ComicDetailModel(this.comicId, this.backupApi) {
     print('class: ComicDetailModel, action: init, comicId: ${this.comicId}');
@@ -79,14 +82,14 @@ class ComicDetailModel extends BaseModel {
     lastChapterId = await dataBase.getHistory(comicId);
 
     //对没有记录的本地信息提供默认值
-    if (lastChapterId == '' && chapters.length > 0) {
-      lastChapterList = chapters[0]['data']
-          .map((value) => value['chapter_id'].toString())
-          .toList();
-      if (lastChapterList.length > 0) {
-        lastChapterId = lastChapterList[lastChapterList.length - 1];
-      }
-    }
+    // if (lastChapterId == '' && chapters.length > 0) {
+    //   lastChapterList = chapters[0]['data']
+    //       .map((value) => value['chapter_id'].toString())
+    //       .toList();
+    //   if (lastChapterList.length > 0) {
+    //     lastChapterId = lastChapterList[lastChapterList.length - 1];
+    //   }
+    // }
 
     //查找本地记录对应的板块
     chapters.forEach((element) {
@@ -151,7 +154,7 @@ class ComicDetailModel extends BaseModel {
             .toList()
             .join('/');
         chapters = response.data['chapters'];
-        if(chapters.length==0){
+        if(chapters.length==0&&backupApi){
           throw Exception('no chapters');
         }
         print(
@@ -384,6 +387,8 @@ class ComicDetailModel extends BaseModel {
     }
     return lists;
   }
+
+  TracingComic get model=>TracingComic.fromMap({'comicId':comicId,'cover':cover,'title':title,'data':'{}'});
 
   set reverse(bool reverse) {
     this._reverse = reverse;

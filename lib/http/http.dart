@@ -23,7 +23,9 @@ class CustomHttp {
         DioCacheManager(CacheConfig(baseUrl: 'https://sacg.dmzj.com'))
             .interceptor);
     dio.interceptors
-        .add(DioCacheManager(CacheConfig(baseUrl: 'api.dmzj.com')).interceptor);
+        .add(DioCacheManager(CacheConfig(baseUrl: 'https://api.dmzj.com')).interceptor);
+    dio.interceptors
+        .add(DioCacheManager(CacheConfig(baseUrl: 'https://imgsmall.dmzj.com')).interceptor);
     unCachedDio = Dio();
   }
 
@@ -95,6 +97,12 @@ class CustomHttp {
   Future<Response<T>> getComic<T>(String comicId, String chapterId) async {
     Options options = await this.setHeader();
     return dio.get(baseUrl + '/chapter/$comicId/$chapterId.json?$queryOptions',
+        options: buildCacheOptions(Duration(hours: 8), options: options));
+  }
+
+  Future<Response<T>> getComicWeb<T>(String comicId, String chapterId) async {
+    Options options = await this.setHeader();
+    return dio.get('https://m.dmzj.com/chapinfo/$comicId/$chapterId.html',
         options: buildCacheOptions(Duration(hours: 8), options: options));
   }
 

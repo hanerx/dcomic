@@ -11,7 +11,9 @@ import 'package:flutterdmzj/component/TypeTags.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/model/comicDetail.dart';
+import 'package:flutterdmzj/model/comicViewerSettingModel.dart';
 import 'package:flutterdmzj/model/systemSettingModel.dart';
+import 'package:flutterdmzj/model/trackerModel.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:flutterdmzj/view/comment_page.dart';
 import 'package:flutterdmzj/view/login_page.dart';
@@ -161,24 +163,50 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                           chapterId: lastChapterId,
                           chapterList: lastChapterList);
                     }));
-                  } else {
+                  }else if(Provider.of<ComicDetailModel>(context, listen: false).lastChapterId==''){
+                    var comicId =
+                        Provider.of<ComicDetailModel>(context, listen: false)
+                            .comicId;
+                    var lastChapterId ='';
+                    var lastChapterList =
+                        Provider.of<ComicDetailModel>(context, listen: false)
+                            .chapters[0]['data']
+                          .map((value) => value['chapter_id'].toString())
+                          .toList();
+                      if (lastChapterList.length > 0) {
+                        lastChapterId =
+                            lastChapterList[lastChapterList.length - 1];
+                      }
+                      Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                          return ComicViewPage(
+                              comicId: comicId,
+                              chapterId: lastChapterId,
+                              chapterList: lastChapterList);
+                        }));
+                  }
+                  else {
                     Scaffold.of(context).showSnackBar(SnackBar(
                       content: Text('好像没得记录，没法继续阅读'),
                     ));
                   }
                 },
                 onBlackBox: () {
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return SimpleDialog(
-                          children: [
-                            SimpleDialogOption(
-                              child: Text("Ops! 你遇到了一个没有用的按钮"),
-                            )
-                          ],
-                        );
-                      });
+                  if(!Provider.of<SystemSettingModel>(context,listen: false).blackBox){
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return SimpleDialog(
+                            children: [
+                              SimpleDialogOption(
+                                child: Text("Ops! 你遇到了一个没有用的按钮"),
+                              )
+                            ],
+                          );
+                        });
+                  }else{
+                    Provider.of<TrackerModel>(context,listen: false).subscribe(Provider.of<ComicDetailModel>(context,listen: false));
+                  }
                 },
                 onDownload: () async {
                   List<Widget> list = await Provider.of<ComicDetailModel>(

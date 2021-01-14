@@ -18,7 +18,6 @@ class LabSettingPage extends StatefulWidget {
 class _LabSettingPage extends State<LabSettingPage> {
   bool search = false;
   bool darkSide = false;
-  bool blackBox = false;
   bool novel = false;
 
   _openWeb(String url) async {
@@ -58,14 +57,6 @@ class _LabSettingPage extends State<LabSettingPage> {
     dataBase.setDarkSide(darkSide);
   }
 
-  getBlackBox() async {
-    DataBase dataBase = DataBase();
-    bool state = await dataBase.getBlackBox();
-    setState(() {
-      blackBox = state;
-    });
-  }
-
   setNovel() {
     DataBase dataBase = DataBase();
     dataBase.setNovelState(novel);
@@ -79,10 +70,6 @@ class _LabSettingPage extends State<LabSettingPage> {
     });
   }
 
-  setBlackBox() {
-    DataBase dataBase = DataBase();
-    dataBase.setBlackBox(blackBox);
-  }
 
   @override
   void initState() {
@@ -136,9 +123,20 @@ class _LabSettingPage extends State<LabSettingPage> {
           //   },
           // ),
           ListTile(
-            enabled: false,
-            title: Text('漫画追踪(未实现)'),
-            subtitle: Text('在程序开启时检查追踪的漫画是否更新，适用于关注中被影藏的漫画，但是需要手动选择追踪的漫画'),
+            title: Text('黑匣子'),
+            subtitle: Text('在本地记录漫画id，方便想看的时候直接找，适用于在订阅里消失的漫画'),
+            onTap: () {
+              Provider.of<SystemSettingModel>(context, listen: false).blackBox =
+                  !Provider.of<SystemSettingModel>(context, listen: false)
+                      .blackBox;
+            },
+            trailing: Switch(
+              value: Provider.of<SystemSettingModel>(context).blackBox,
+              onChanged: (bool value) {
+                Provider.of<SystemSettingModel>(context, listen: false)
+                    .blackBox = value;
+              },
+            ),
           ),
           ListTile(
             enabled: false,

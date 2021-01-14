@@ -32,52 +32,60 @@ class _HomePage extends State<HomePage> {
     if (login) {
       CustomHttp http = CustomHttp();
       var uid = await dataBase.getUid();
-      var response = await http.getRecommendBatchUpdate(uid);
-      if (response.statusCode == 200 && mounted) {
-        setState(() {
-          list.insert(
-              0,
-              CardView.action(
-                  response.data['data']['title'],
-                  response.data['data']['data'],
-                  3,
-                  49,
-                  IconButton(
-                    onPressed: () {
-                      Navigator.of(context)
-                          .push(MaterialPageRoute(builder: (context) {
-                        return FavoritePage(uid);
-                      }));
-                    },
-                    icon: Icon(Icons.arrow_forward_ios),
-                  )));
-          refreshState = false;
-        });
+      try{
+        var response = await http.getRecommendBatchUpdate(uid);
+        if (response.statusCode == 200 && mounted) {
+          setState(() {
+            list.insert(
+                0,
+                CardView.action(
+                    response.data['data']['title'],
+                    response.data['data']['data'],
+                    3,
+                    49,
+                    IconButton(
+                      onPressed: () {
+                        Navigator.of(context)
+                            .push(MaterialPageRoute(builder: (context) {
+                          return FavoritePage(uid);
+                        }));
+                      },
+                      icon: Icon(Icons.arrow_forward_ios),
+                    )));
+            refreshState = false;
+          });
+        }
+      }catch(e){
+
       }
     }
   }
 
   getMainPage() async {
     CustomHttp http = CustomHttp();
-    var response = await http.getMainPageRecommend();
-    if (response.statusCode == 200) {
-      List data = response.data;
-      if (this.mounted) {
-        setState(() {
-          data.forEach((item) {
-            if (allowedCategory.indexOf(item['category_id']) >= 0) {
-              if (item['data'].length % 3 == 0) {
-                list.add(new CardView(
-                    item['title'], item['data'], 3, item['category_id']));
-              } else {
-                list.add(new CardView(
-                    item['title'], item['data'], 2, item['category_id']));
+    try{
+      var response = await http.getMainPageRecommend();
+      if (response.statusCode == 200) {
+        List data = response.data;
+        if (this.mounted) {
+          setState(() {
+            data.forEach((item) {
+              if (allowedCategory.indexOf(item['category_id']) >= 0) {
+                if (item['data'].length % 3 == 0) {
+                  list.add(new CardView(
+                      item['title'], item['data'], 3, item['category_id']));
+                } else {
+                  list.add(new CardView(
+                      item['title'], item['data'], 2, item['category_id']));
+                }
               }
-            }
+            });
           });
-        });
-        await getSubscribe();
+          await getSubscribe();
+        }
       }
+    }catch(e){
+
     }
   }
 

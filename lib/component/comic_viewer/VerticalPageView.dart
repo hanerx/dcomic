@@ -70,27 +70,21 @@ class _VerticalPageView extends State<VerticalPageView> {
         .listen((event) {
       if (event == 0) {
         print("class: VerticalPageView, action: VolumeUp, event: $event");
-        if (_controller.hasClients) {
-          _controller.animateTo(_controller.position.pixels - widget.range,
-              duration: Duration(milliseconds: 200), curve: Curves.decelerate);
-        }
+        this.previousPage();
       } else if (event == 1) {
         print("class: VerticalPageView, action: VolumeDown, event: $event");
-        if (_controller.hasClients) {
-          _controller.animateTo(_controller.position.pixels + widget.range,
-              duration: Duration(milliseconds: 200), curve: Curves.decelerate);
-        }
+        this.nextPage();
       }
     });
     _controller.addListener(() async {
       if (_controller.hasClients) {
         if ((_controller.position.pixels - position).abs() > 500) {
           if (widget.onPageChange != null) {
-            widget.onPageChange((_delegate.first+_delegate.last)~/2);
+            widget.onPageChange((_delegate.first + _delegate.last) ~/ 2);
           }
           setState(() {
             position = _controller.position.pixels;
-            index = (_delegate.first+_delegate.last)~/2;
+            index = (_delegate.first + _delegate.last) ~/ 2;
           });
         }
         // if (widget.count>=4&&
@@ -136,7 +130,7 @@ class _VerticalPageView extends State<VerticalPageView> {
         // }
       }
     });
-    _easyRefreshController=EasyRefreshController();
+    _easyRefreshController = EasyRefreshController();
   }
 
   @override
@@ -148,8 +142,40 @@ class _VerticalPageView extends State<VerticalPageView> {
   Future<void> moveToTop() async {
     if (_controller.hasClients) {
       _controller.animateTo(0,
-          duration: Duration(microseconds: 500), curve: Curves.decelerate);
+          duration: Duration(milliseconds: 300), curve: Curves.decelerate);
     }
+  }
+
+  Future<void> previousPage()async{
+    if (_controller.hasClients) {
+      _controller.animateTo(_controller.position.pixels - widget.range,
+          duration: Duration(milliseconds: 200), curve: Curves.decelerate);
+      if(_controller.position.pixels - widget.range<=0){
+        _easyRefreshController.callRefresh();
+      }
+    }
+  }
+
+  Future<void> nextPage()async{
+    if (_controller.hasClients) {
+      _controller.animateTo(_controller.position.pixels + widget.range,
+          duration: Duration(milliseconds: 200), curve: Curves.decelerate);
+      if(_controller.position.pixels+ widget.range>=_controller.position.maxScrollExtent){
+        _easyRefreshController.callLoad();
+      }
+    }
+  }
+
+  void onPreviousChapter(){
+    _easyRefreshController.resetLoadState();
+    _easyRefreshController.finishRefresh(
+        success: true, noMore: widget.left);
+  }
+
+  void onNextChapter(){
+    _easyRefreshController.resetRefreshState();
+    _easyRefreshController.finishLoad(
+        success: true, noMore: widget.right);
   }
 
   @override
@@ -165,42 +191,57 @@ class _VerticalPageView extends State<VerticalPageView> {
         Container(
           width: double.infinity,
           height: double.infinity,
-          child: Center(
-            child: EasyRefresh(
+          child: DragScaleContainer(
+            doubleTapStillScale: false,
+            child: EasyRefresh.custom(
               controller: _easyRefreshController,
+              scrollController: _controller,
               taskIndependence: true,
               onRefresh: () async {
-                bool flag=await widget.onTop();
+                bool flag = await widget.onTop();
                 _easyRefreshController.resetLoadState();
-                _easyRefreshController.finishRefresh(success: true,noMore: widget.left);
+                _easyRefreshController.finishRefresh(
+                    success: true, noMore: widget.left);
               },
               onLoad: () async {
-                bool flag=await widget.onEnd();
-                if(flag){
+                await Future.delayed(Duration(seconds: 1));
+                bool flag = await widget.onEnd();
+                if (flag) {
                   this.moveToTop();
                 }
                 _easyRefreshController.resetRefreshState();
-                _easyRefreshController.finishLoad(success: true,noMore: widget.right);
+                _easyRefreshController.finishLoad(
+                    success: true, noMore: widget.right);
               },
-              header: ClassicalHeader(
-                  refreshedText: '加载完成',
-                  refreshFailedText: '加载失败',
-                  refreshingText: '加载中',
-                  refreshText: '下拉加载上一话',
-                  refreshReadyText: '释放加载上一话',
-                  noMoreText: '没有更多内容了'
-              ),
-              footer: ClassicalFooter(
-                  loadReadyText: '上拉加载下一话',
-                  loadFailedText: '加载失败',
-                  loadingText: '加载中',
-                  loadedText: '加载完成',
-                  noMoreText: '没有更多内容了'),
-              child: ListView.custom(
-                padding: EdgeInsets.zero,
-                controller: _controller,
-                childrenDelegate: _delegate,
-              ),
+              // header: ClassicalHeader(
+              //   refreshedText: '加载完成',
+              //   refreshFailedText: '加载失败',
+              //   refreshingText: '加载中',
+              //   refreshText: '下拉加载上一话',
+              //   refreshReadyText: '释放加载上一话',
+              //   noMoreText: '没有更多内容了',
+              // ),
+              // footer: ClassicalFooter(
+              //     triggerDistance: 100,
+              //     loadReadyText: '上拉加载下一话',
+              //     loadFailedText: '加载失败',
+              //     loadingText: '加载中',
+              //     loadedText: '加载完成',
+              //     noMoreText: '没有更多内容了',
+              //     overScroll: true),
+              header: BezierCircleHeader(),
+              footer: BezierBounceFooter(),
+              // footer: MaterialFooter(),
+              // child: ListView.custom(
+              //   padding: EdgeInsets.zero,
+              //   controller: _controller,
+              //   childrenDelegate: _delegate,
+              // ),
+              slivers: [
+                SliverList(
+                  delegate: _delegate,
+                )
+              ],
             ),
           ),
         ),
@@ -219,12 +260,7 @@ class _VerticalPageView extends State<VerticalPageView> {
                     : null,
               ),
               onTap: () {
-                if (_controller.hasClients) {
-                  _controller.animateTo(
-                      _controller.position.pixels - widget.range,
-                      duration: Duration(milliseconds: 200),
-                      curve: Curves.decelerate);
-                }
+                this.previousPage();
               },
             )),
         Positioned(
@@ -242,12 +278,7 @@ class _VerticalPageView extends State<VerticalPageView> {
                     : null,
               ),
               onTap: () {
-                if (_controller.hasClients) {
-                  _controller.animateTo(
-                      _controller.position.pixels + widget.range,
-                      duration: Duration(milliseconds: 200),
-                      curve: Curves.decelerate);
-                }
+                this.nextPage();
               },
             )),
         Positioned(
@@ -293,7 +324,6 @@ class _VerticalPageView extends State<VerticalPageView> {
           duration: Duration(microseconds: 500), curve: Curves.decelerate);
     }
   }
-
 }
 
 class CustomDelegate extends SliverChildBuilderDelegate {

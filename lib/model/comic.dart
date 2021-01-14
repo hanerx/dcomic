@@ -18,6 +18,7 @@ class ComicModel extends BaseModel {
   final String chapterId;
   final List chapterList;
   final bool backupApi;
+  bool webApi;
 
   String pageAt;
   String next;
@@ -36,7 +37,7 @@ class ComicModel extends BaseModel {
   bool login = false;
   String uid = '';
 
-  ComicModel(this.comicId, this.chapterId, this.chapterList, this.backupApi) {
+  ComicModel(this.comicId, this.chapterId, this.chapterList, this.backupApi, this.webApi) {
     getComic(chapterId, comicId).then((value) {
       logger.i(
           "action: init, chapterId: $chapterId, comicId: $comicId, chapterList: ${this.chapterList}, previous: $previous, next: $next, left: $left, right: $right, index: ${chapterList.indexOf(chapterId)}");
@@ -87,6 +88,10 @@ class ComicModel extends BaseModel {
       notifyListeners();
       return;
     }
+    if(webApi){
+      await getComicWeb(comicId, chapterId);
+      return;
+    }
     CustomHttp http = CustomHttp();
     try {
       var response = await http.getComic(comicId, chapterId);
@@ -116,6 +121,47 @@ class ComicModel extends BaseModel {
         }
       }
     } catch (e) {
+      logger
+          .e("action:error, chapterId:$chapterId, comicId:$comicId, error:$e");
+      if(backupApi){
+        await this.getComicBackup(comicId, chapterId);
+      }
+    }
+    await getViewPoint(chapterId, comicId);
+    setReadHistory(chapterId, comicId);
+    refreshState = false;
+    notifyListeners();
+  }
+
+  Future<void> getComicWeb(String comicId,String chapterId)async{
+    CustomHttp http=CustomHttp();
+    try{
+      var response=await http.getComicWeb(comicId, chapterId);
+      if (response.statusCode == 200) {
+        var data=jsonDecode(response.data);
+        title = data['chapter_name'];
+        List<Widget> pages = [];
+        for (var item in data['page_url']) {
+          pages.add(ComicPage(
+            url: item,
+            title: data['chapter_name'],
+            chapterId: data['id'].toString(),
+            cover: false,
+          ));
+        }
+        this.pages = pages;
+        if (chapterList.indexOf(chapterId) > 0) {
+          previous = chapterList[chapterList.indexOf(chapterId) - 1];
+        } else {
+          previous = null;
+        }
+        if (chapterList.indexOf(chapterId) < chapterList.length - 1) {
+          next = chapterList[chapterList.indexOf(chapterId) + 1];
+        } else {
+          next = null;
+        }
+      }
+    }catch(e){
       logger
           .e("action:error, chapterId:$chapterId, comicId:$comicId, error:$e");
       if(backupApi){
@@ -163,6 +209,16 @@ class ComicModel extends BaseModel {
           
         }
         this.pages=pages;
+        if (chapterList.indexOf(chapterId) > 0) {
+          previous = chapterList[chapterList.indexOf(chapterId) - 1];
+        } else {
+          previous = null;
+        }
+        if (chapterList.indexOf(chapterId) < chapterList.length - 1) {
+          next = chapterList[chapterList.indexOf(chapterId) + 1];
+        } else {
+          next = null;
+        }
         notifyListeners();
       }
     }catch(e){

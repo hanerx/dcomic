@@ -8,8 +8,16 @@ class SystemSettingModel extends BaseModel {
     ThemeMode.light,
     ThemeMode.dark
   ];
+
+  // 夜间模式
   int _darkState = 0;
+
+  // 备用API
   bool _backupApi = false;
+
+  bool _blackBox = false;
+
+  DataBase _dataBase = DataBase();
 
   SystemSettingModel() {
     this
@@ -18,27 +26,16 @@ class SystemSettingModel extends BaseModel {
   }
 
   Future<void> init() async {
-    await getDarkState();
-    await getBackupApi();
-  }
-
-  Future<void> getDarkState() async {
-    DataBase dataBase = DataBase();
-    _darkState = await dataBase.getDarkMode();
-    notifyListeners();
-  }
-
-  Future<void> getBackupApi() async {
-    DataBase dataBase = DataBase();
-    _backupApi = await dataBase.getBackupApi();
+    _darkState = await _dataBase.getDarkMode();
+    _backupApi = await _dataBase.getBackupApi();
+    _blackBox = await _dataBase.getBlackBox();
     notifyListeners();
   }
 
   ThemeMode get themeMode => darkMode[_darkState];
 
   set darkState(int state) {
-    DataBase dataBase = DataBase();
-    dataBase.setDarkMode(state);
+    _dataBase.setDarkMode(state);
     _darkState = state;
     notifyListeners();
   }
@@ -48,9 +45,16 @@ class SystemSettingModel extends BaseModel {
   bool get backupApi => _backupApi;
 
   set backupApi(bool state) {
-    DataBase dataBase = DataBase();
-    dataBase.setBackupApi(state);
+    _dataBase.setBackupApi(state);
     _backupApi = state;
+    notifyListeners();
+  }
+
+  bool get blackBox => _blackBox;
+
+  set blackBox(bool value) {
+    _dataBase.setBlackBox(value);
+    _blackBox = value;
     notifyListeners();
   }
 }
