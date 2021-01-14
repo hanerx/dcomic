@@ -163,7 +163,29 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                           chapterId: lastChapterId,
                           chapterList: lastChapterList);
                     }));
-                  } else {
+                  }else if(Provider.of<ComicDetailModel>(context, listen: false).lastChapterId==''){
+                    var comicId =
+                        Provider.of<ComicDetailModel>(context, listen: false)
+                            .comicId;
+                    var lastChapterId ='';
+                    var lastChapterList =
+                        Provider.of<ComicDetailModel>(context, listen: false)
+                            .chapters[0]['data']
+                          .map((value) => value['chapter_id'].toString())
+                          .toList();
+                      if (lastChapterList.length > 0) {
+                        lastChapterId =
+                            lastChapterList[lastChapterList.length - 1];
+                      }
+                      Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                          return ComicViewPage(
+                              comicId: comicId,
+                              chapterId: lastChapterId,
+                              chapterList: lastChapterList);
+                        }));
+                  }
+                  else {
                     Scaffold.of(context).showSnackBar(SnackBar(
                       content: Text('好像没得记录，没法继续阅读'),
                     ));

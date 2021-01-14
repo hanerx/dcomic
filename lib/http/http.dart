@@ -23,7 +23,9 @@ class CustomHttp {
         DioCacheManager(CacheConfig(baseUrl: 'https://sacg.dmzj.com'))
             .interceptor);
     dio.interceptors
-        .add(DioCacheManager(CacheConfig(baseUrl: 'api.dmzj.com')).interceptor);
+        .add(DioCacheManager(CacheConfig(baseUrl: 'https://api.dmzj.com')).interceptor);
+    dio.interceptors
+        .add(DioCacheManager(CacheConfig(baseUrl: 'https://imgsmall.dmzj.com')).interceptor);
     unCachedDio = Dio();
   }
 

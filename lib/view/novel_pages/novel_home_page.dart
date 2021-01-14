@@ -36,24 +36,22 @@ class _NovelHomePage extends State<NovelHomePage> {
           data.forEach((item) {
             if (item['category_id'] == 57) {
               list.add(Container(
-                padding: EdgeInsets.fromLTRB(4, 2, 4, 2),
-                height: 230,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(5),
-                  child: Swiper.children(
-                    children: item['data']
-                        .map<Widget>((e) => _CustomPage(
-                        imageUrl: e['cover'],
-                        title: e['title'],
-                        author: e['sub_title'],
-                        id: e['obj_id']))
-                        .toList(),
-                    autoplay: true,
-                    pagination:
-                    SwiperPagination(alignment: Alignment.bottomRight),
-                  ),
-                )
-              ));
+                  height: 230,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(5),
+                    child: Swiper.children(
+                      children: item['data']
+                          .map<Widget>((e) => _CustomPage(
+                              imageUrl: e['cover'],
+                              title: e['title'],
+                              author: e['sub_title'],
+                              id: e['obj_id']))
+                          .toList(),
+                      autoplay: true,
+                      pagination:
+                          SwiperPagination(alignment: Alignment.bottomRight),
+                    ),
+                  )));
             } else if (item['data'].length % 3 == 0) {
               list.add(new _CardView(
                   item['title'], item['data'], 3, item['category_id']));
@@ -74,8 +72,11 @@ class _NovelHomePage extends State<NovelHomePage> {
       scrollController: ScrollController(),
       child: new Scrollbar(
         child: new SingleChildScrollView(
-            child: Column(
-          children: list,
+            child: Container(
+          padding: EdgeInsets.fromLTRB(5, 10, 5, 5),
+          child: Column(
+            children: list,
+          ),
         )),
       ),
       firstRefreshWidget: LoadingCube(),
@@ -223,37 +224,49 @@ class _CustomPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return FlatButton(
-      padding: EdgeInsets.zero,
-      child: Stack(
-        children: [
-          CachedNetworkImage(
-            imageUrl: '$imageUrl',
-            httpHeaders: {'referer': 'http://images.dmzj.com'},
-            progressIndicatorBuilder: (context, url, downloadProgress) => Center(
-              child: CircularProgressIndicator(value: downloadProgress.progress),
-            ),
-            errorWidget: (context, url, error) => Icon(Icons.error),
-          ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: 30,
-            child: Container(
-              color: Colors.black26,
-              child: Text(
-                '$title',
-                style: TextStyle(color: Colors.white, fontSize: 20),
+    return ClipRRect(
+      child: FlatButton(
+        padding: EdgeInsets.zero,
+        child: Stack(
+          children: [
+            ClipRRect(
+              child: CachedNetworkImage(
+                imageUrl: '$imageUrl',
+                httpHeaders: {'referer': 'http://images.dmzj.com'},
+                progressIndicatorBuilder: (context, url, downloadProgress) =>
+                    Center(
+                  child: CircularProgressIndicator(
+                      value: downloadProgress.progress),
+                ),
+                errorWidget: (context, url, error) => Icon(Icons.error),
               ),
+              borderRadius: BorderRadius.circular(5),
             ),
-          )
-        ],
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: 30,
+              child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.black54,
+                    borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(5),
+                        bottomRight: Radius.circular(5))),
+                child: Text(
+                  '$title',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+              ),
+            )
+          ],
+        ),
+        onPressed: () {
+          Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => NovelDetailPage(id: id)));
+        },
       ),
-      onPressed: (){
-        Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => NovelDetailPage(id: id)));
-      },
+      borderRadius: BorderRadius.circular(5),
     );
   }
 }

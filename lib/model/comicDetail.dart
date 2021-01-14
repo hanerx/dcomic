@@ -42,7 +42,7 @@ class ComicDetailModel extends BaseModel {
   bool _reverse = false;
 
   //最后浏览记录
-  String lastChapterId = '';
+  String lastChapterId;
   List lastChapterList = [];
 
   //用户信息
@@ -82,14 +82,14 @@ class ComicDetailModel extends BaseModel {
     lastChapterId = await dataBase.getHistory(comicId);
 
     //对没有记录的本地信息提供默认值
-    if (lastChapterId == '' && chapters.length > 0) {
-      lastChapterList = chapters[0]['data']
-          .map((value) => value['chapter_id'].toString())
-          .toList();
-      if (lastChapterList.length > 0) {
-        lastChapterId = lastChapterList[lastChapterList.length - 1];
-      }
-    }
+    // if (lastChapterId == '' && chapters.length > 0) {
+    //   lastChapterList = chapters[0]['data']
+    //       .map((value) => value['chapter_id'].toString())
+    //       .toList();
+    //   if (lastChapterList.length > 0) {
+    //     lastChapterId = lastChapterList[lastChapterList.length - 1];
+    //   }
+    // }
 
     //查找本地记录对应的板块
     chapters.forEach((element) {

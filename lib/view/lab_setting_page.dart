@@ -123,7 +123,7 @@ class _LabSettingPage extends State<LabSettingPage> {
           //   },
           // ),
           ListTile(
-            title: Text('黑盒子'),
+            title: Text('黑匣子'),
             subtitle: Text('在本地记录漫画id，方便想看的时候直接找，适用于在订阅里消失的漫画'),
             onTap: () {
               Provider.of<SystemSettingModel>(context, listen: false).blackBox =

@@ -70,7 +70,7 @@ class _FavoritePage extends State<FavoritePage> {
     ];
 
     if(Provider.of<SystemSettingModel>(context,listen: false).blackBox){
-      tabs.add(Tab(text: '小黑盒',));
+      tabs.add(Tab(text: '黑匣子',));
       list.add(TrackerFavoritePage());
     }
     if (novel) {

@@ -237,6 +237,7 @@ class _SettingPage extends State<SettingPage> {
                     });
               },
             ),
+            Divider(),
             ListTile(
               title: Text('清除所有请求缓存'),
               subtitle: Text('该操作将会把dio http cache的托管的缓存全部清除，危险操作'),
