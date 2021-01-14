@@ -191,7 +191,8 @@ class _VerticalPageView extends State<VerticalPageView> {
         Container(
           width: double.infinity,
           height: double.infinity,
-          child: Center(
+          child: DragScaleContainer(
+            doubleTapStillScale: false,
             child: EasyRefresh.custom(
               controller: _easyRefreshController,
               scrollController: _controller,
