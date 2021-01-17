@@ -14,24 +14,35 @@ class CategoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return Expanded(
-        child: FlatButton(
+    return FlatButton(
       padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
       child: Card(
+        elevation: 0,
           child: new Container(
-        child: Column(
+        child: Wrap(
           children: <Widget>[
-            CachedNetworkImage(
-              imageUrl: '$cover',
-              httpHeaders: {'referer': 'http://images.dmzj.com'},
-              progressIndicatorBuilder: (context, url, downloadProgress) =>
-                  CircularProgressIndicator(value: downloadProgress.progress),
-              errorWidget: (context, url, error) => Icon(Icons.error),
-            ),
-            Text(
-              '$title',
-              overflow: TextOverflow.ellipsis,
-            ),
+           ClipRRect(
+             child:  AspectRatio(
+               child: CachedNetworkImage(
+                 imageUrl: '$cover',
+                 httpHeaders: {'referer': 'http://images.dmzj.com'},
+                 progressIndicatorBuilder: (context, url, downloadProgress) =>
+                     Center(child: CircularProgressIndicator(value: downloadProgress.progress),),
+                 errorWidget: (context, url, error) => Icon(Icons.error),
+               ),
+               aspectRatio: 1,
+             ),
+             borderRadius: BorderRadius.circular(5),
+           ),
+            Row(
+              children: [Expanded(
+                child: Text(
+                  '$title',
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              )],
+            )
           ],
         ),
       )),
@@ -49,6 +60,6 @@ class CategoryCard extends StatelessWidget {
           }));
         }
       },
-    ));
+    );
   }
 }

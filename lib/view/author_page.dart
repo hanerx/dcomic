@@ -56,8 +56,12 @@ class _AuthorPage extends State<AuthorPage> {
       ),
       body:Scrollbar(
         child: SingleChildScrollView(
-          child:  Wrap(
-            children: list,
+          child:  GridView.count(
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            crossAxisCount: 3,
+            childAspectRatio: 0.6,
+            children: list
           ),
         ),
       ),

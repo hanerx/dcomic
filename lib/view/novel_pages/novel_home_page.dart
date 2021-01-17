@@ -112,7 +112,7 @@ class _CardView extends StatelessWidget {
     this.row = row;
     mainList = <Widget>[
       Padding(
-        padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+        padding: EdgeInsets.fromLTRB(5, 4, 0, 4),
         child: Row(
           children: <Widget>[
             Expanded(
@@ -181,22 +181,34 @@ class _CustomCard extends StatelessWidget {
             MaterialPageRoute(builder: (context) => NovelDetailPage(id: id)));
       },
       child: Card(
+        elevation: 0,
           child: new Container(
-        child: Column(
+        child: Wrap(
+          alignment: WrapAlignment.center,
           children: <Widget>[
-            CachedNetworkImage(
-              imageUrl: '$imageUrl',
-              httpHeaders: {'referer': 'http://images.dmzj.com'},
-              progressIndicatorBuilder: (context, url, downloadProgress) =>
-                  Center(
-                child:
-                    CircularProgressIndicator(value: downloadProgress.progress),
+            ClipRRect(
+              child: CachedNetworkImage(
+                imageUrl: '$imageUrl',
+                httpHeaders: {'referer': 'http://images.dmzj.com'},
+                progressIndicatorBuilder:
+                    (context, url, downloadProgress) =>
+                    CircularProgressIndicator(
+                        value: downloadProgress.progress),
+                errorWidget: (context, url, error) => Icon(Icons.error),
               ),
-              errorWidget: (context, url, error) => Icon(Icons.error),
+              borderRadius: BorderRadius.circular(5),
             ),
-            Text(
-              '$title',
-              overflow: TextOverflow.ellipsis,
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    '$title',
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    textAlign: TextAlign.center,
+                  ),
+                )
+              ],
             ),
             Text(
               '${author != null ? author : ''}',

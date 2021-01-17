@@ -69,7 +69,7 @@ class CardView extends StatelessWidget {
     this.row = row;
     mainList = <Widget>[
       Padding(
-        padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+        padding: EdgeInsets.fromLTRB(5, 4, 0, 4),
         child: Row(
           children: <Widget>[
             Expanded(
