@@ -1,16 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutterdmzj/component/LoadingCube.dart';
-import 'package:flutterdmzj/component/LoadingRow.dart';
-import 'package:flutterdmzj/component/SubscribeCard.dart';
-import 'package:flutterdmzj/database/database.dart';
-import 'package:flutterdmzj/http/http.dart';
-import 'package:flutterdmzj/model/comicFavoriteModel.dart';
 import 'package:flutterdmzj/model/novelFavoriteModel.dart';
-import 'package:flutterdmzj/utils/static_language.dart';
-import 'package:flutterdmzj/view/novel_pages/novel_detail_page.dart';
 import 'package:provider/provider.dart';
 
 class NovelFavoritePage extends StatefulWidget {

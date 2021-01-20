@@ -37,10 +37,6 @@ class _SearchButton extends State<SearchButton> {
                     child: Text('我们耕耘黑暗，却守护光明'),
                     onPressed: () {
                       if (_count > 10) {
-//                        Navigator.push(context,
-//                            MaterialPageRoute(builder: (context) {
-//                          return DarkSidePage();
-//                        }));
                         Navigator.of(context).pop();
                         DataBase dataBase = DataBase();
                         dataBase.setLabState(true);

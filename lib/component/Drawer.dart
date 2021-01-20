@@ -2,9 +2,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterdmzj/database/database.dart';
+import 'package:flutterdmzj/generated/l10n.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/model/systemSettingModel.dart';
-import 'package:flutterdmzj/utils/static_language.dart';
 import 'package:flutterdmzj/view/dark_side_page.dart';
 import 'package:flutterdmzj/view/favorite_page.dart';
 import 'package:flutterdmzj/view/login_page.dart';
@@ -117,7 +117,7 @@ class CustomDrawerState extends State<CustomDrawer> {
       UserAccountsDrawerHeader(
         accountName: Text('$nickname'),
         accountEmail: Text(
-          StaticLanguage.staticStrings['drawer.email'],
+          S.of(context).DrawerEmail,
           style: TextStyle(color: Colors.white60),
         ),
         currentAccountPicture: CachedNetworkImage(
@@ -157,8 +157,8 @@ class CustomDrawerState extends State<CustomDrawer> {
               if (login) {
                 setState(() {
                   login = false;
-                  nickname = StaticLanguage.staticStrings['drawer.pleaseLogin'];
-                  avatar = 'https://avatar.dmzj.com/default.png';
+                  nickname = S.of(context).DrawerPlsLogin;
+                  avatar = S.of(context).DefaultAvatar;
                 });
                 DataBase dataBase = DataBase();
                 dataBase.setLoginState(false);
@@ -172,7 +172,7 @@ class CustomDrawerState extends State<CustomDrawer> {
         ],
       ),
       ListTile(
-        title: Text(StaticLanguage.staticStrings['favorite']),
+        title: Text(S.of(context).Favorite),
         leading: Icon(Icons.favorite),
         onTap: () {
           Navigator.of(context).pop();
@@ -188,7 +188,7 @@ class CustomDrawerState extends State<CustomDrawer> {
         },
       ),
       ListTile(
-        title: Text(StaticLanguage.staticStrings['history']),
+        title: Text(S.of(context).History),
         leading: Icon(Icons.history),
         onTap: () {
           Navigator.of(context).pop();
@@ -196,7 +196,7 @@ class CustomDrawerState extends State<CustomDrawer> {
         },
       ),
       ListTile(
-        title: Text("下载管理"),
+        title: Text(S.of(context).Download),
         leading: Icon(Icons.file_download),
         onTap: () {
           Navigator.of(context).pop();
@@ -208,7 +208,7 @@ class CustomDrawerState extends State<CustomDrawer> {
       list += <Widget>[
         Divider(),
         ListTile(
-          title: Text('黑暗面'),
+          title: Text(S.of(context).DarkSide),
           leading: Icon(Icons.block),
           onTap: () {
             Navigator.of(context).pop();
@@ -223,7 +223,7 @@ class CustomDrawerState extends State<CustomDrawer> {
       list += <Widget>[
         Divider(),
         ListTile(
-          title: Text('轻小说'),
+          title: Text(S.of(context).Novel),
           leading: Icon(Icons.book),
           onTap: () {
             Navigator.of(context).pop();
@@ -238,7 +238,7 @@ class CustomDrawerState extends State<CustomDrawer> {
     list += <Widget>[
       Divider(),
       ListTile(
-        title: Text(StaticLanguage.staticStrings['settings']),
+        title: Text(S.of(context).Setting),
         leading: Icon(Icons.settings),
         onTap: () {
           Navigator.of(context).pop();

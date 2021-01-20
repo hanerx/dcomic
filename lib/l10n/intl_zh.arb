@@ -1,0 +1,112 @@
+{
+  "@@locale" : "zh",
+  "AppName":"大妈之家",
+  "AppNameUltimate": "真·不撸埃斯Ultimate外拓大妈之家",
+  "Setting": "设置",
+  "MainPageTabHome": "首页",
+  "MainPageTabCategory": "分类",
+  "MainPageTabRanking": "排行",
+  "MainPageTabLatest": "最新",
+  "SettingPageDarkModeModes": "{modes, select, followSystem {跟随系统} brightness {亮色} darkness {夜间} other {未知模式}}",
+  "CannotOpenWeb": "无法打开网页，请检测权限",
+  "SettingPageReadDirectionTitle": "阅读方向",
+  "SettingPageReadDirectionHorizontal": "横向方向",
+  "SettingPageReadDirectionVertical": "垂直方向",
+  "SettingPageDarkModeTitle": "夜间模式",
+  "SettingPageDarkModeSubtitle": "当前设定：{mode}",
+  "@SettingPageDarkModeSubtitle": {
+    "placeholders": {
+      "mode": {}
+    }
+  },
+  "SettingPageSavePath": "选择保存路径",
+  "SettingPageNoMediaTitle": "影藏下载内容",
+  "SettingPageNoMediaSubtitle": "将会在下载目录新建一个.nomedia的文件来影藏下载内容防止被媒体扫描",
+  "SettingPageDatabaseDetailTitle": "查看数据库",
+  "SettingPageDatabaseDetailSubtitle": "会直接暴露整个数据库内的数据长啥样，是个没啥用的debug功能，当然会出现包括你uid和token在内的各种信息，请不要随便乱贴",
+  "SettingPageResetDatabaseTitle": "清除数据库内容",
+  "SettingPageResetDatabaseSubtitle": "危险操作，包括登录信息，漫画记录均会被删除，仅用于出现bug后的补救功能(也许会造成更大的bug？)",
+  "SettingPageResetDatabaseConfirmTitle": "确认重置？",
+  "SettingPageResetDatabaseConfirmDescription": "该操作将会重置数据库中的所有内容且不可恢复，是否重置？",
+  "Confirm": "确认",
+  "Cancel": "取消",
+  "SettingPageResetDioCacheTitle": "清除所有请求缓存",
+  "SettingPageResetDioCacheSubtitle": "该操作将会把dio_http_cache的托管的缓存全部清除，危险操作",
+  "SettingPageResetDioCacheConfirmTitle": "确认重置？",
+  "SettingPageResetDioCacheConfirmDescription": "该操作将会重置Dio的所有网络请求缓存，网络响应速度将会不同程度的下降，是否重置？",
+  "SettingPageCancelDownloadTasksTitle": "取消所有下载进程",
+  "SettingPageCancelDownloadTasksSubtitle": "该操作会取消所有下载进程，用于debug，危险操作",
+  "SettingPageCancelDownloadTasksConfirmTitle": "确认取消？",
+  "SettingPageCancelDownloadTasksConfirmDescription": "该操作将取消所有正在下载的进程，用于debug，是否确认？",
+  "SettingPageDownloadTaskListTitle": "查看所有下载数据",
+  "SettingPageDownloadTaskListSubtitle": "查看所有下载进程，用于debug",
+  "SettingPageDownloadTaskListDetailTitle": "下载进程列表",
+  "SettingPageDownloadTaskListOpenFailed": "打开失败，请检查下载任务是否完成",
+  "SettingPageLogConsoleTitle": "打开日志控制台",
+  "SettingPageLogConsoleSubtitle": "打开工作日志，会显示各种后台日志，但是当前有一定的兼容性问题",
+  "SettingPageCheckUpdateTitle": "检查更新",
+  "SettingPageCheckUpdateSubtitle": "当前版本：{version}",
+  "@SettingPageCheckUpdateSubtitle": {
+    "placeholders": {
+      "version": {}
+    }
+  },
+  "CheckUpdateUpToDate": "已经是最新版本了",
+  "SettingPageUpdateChannelTitle": "更新通道",
+  "SettingPageUpdateChannelSubtitle": "当前通道：{channel}",
+  "@SettingPageUpdateChannelSubtitle":{
+    "placeholders": {
+      "channel": {}
+    }
+  },
+  "SettingPageUpdateChannels": "{mode, select, release {发行通道} beta {开发通道} other {未知通道}}",
+  "SettingPageDisclaimerTitle": "免责声明",
+  "SettingPageDisclaimerSubtitle": "不管有没有，先写了再说",
+  "SettingPageDisclaimerDetail1": "1. 本程序为第三方APP，所有程序内容由动漫之家提供，本程序不保证内容安全性和可靠性。",
+  "SettingPageDisclaimerDetail2": "2. 本程序的所有接口均为官方APP抓包获取，本程序承诺不受集任何内容交予任何第三方机构。",
+  "SettingPageDisclaimerDetail3": "3. 本程序的登录功能并非官方登录功能，是抓取的官方接口实现，您使用本程序登录功能即代表您了解并愿意承担由于使用本程序登录造成的风险。",
+  "SettingPageFAQTitle": "常见问题",
+  "SettingPageFAQSubtitle": "?",
+  "SettingPageProjectURLTitle": "开源地址",
+  "SettingPageProjectURL": "https://github.com/hanerx/flutter_dmzj",
+  "SettingPageAboutTitle": "关于",
+  "SettingPageAboutSubtitle": "想不到设置里面能塞啥",
+  "SettingPageAboutDescription": "基于flutter的第三方动漫之家简单app",
+  "SettingPageChangeLogTitle": "更新日志",
+  "SettingPageChangeLogSubtitle": "记录了所有版本的更新日志，方便查看每个版本的内容不同",
+  "SettingPageChangeLogContent": "## {name}\n#### 发布时间：{update_time}\n {body}\n",
+  "@SettingPageChangeLogContent": {
+    "placeholders": {
+      "name": {},
+      "update_time": {},
+      "body": {}
+    }
+  },
+  "SettingPagePlaceholderTitle": "占位符",
+  "SettingPagePlaceholderSubtitle": "想不到要拿来干啥，先占位",
+  "SettingPageLabSettingTitle": "实验功能",
+  "SettingPageLabSettingSubtitle": "恭喜你发现了彩蛋，这里是平时不会放在外面的彩蛋功能开关的地方",
+  "SettingPageLogoutTitle": "退出登录",
+  "SettingPageLogoutSubtitle": "其实你点外面的退出一样的",
+  "AuthorPageTitle": "作者-{author}",
+  "@AuthorPageTitle": {
+    "placeholders": {
+      "author": {}
+    }
+  },
+  "DrawerEmail": "大妈之家第三方APP",
+  "DrawerPlsLogin": "请先登录",
+  "Favorite": "我的订阅",
+  "History": "历史记录",
+  "Download": "下载管理",
+  "DarkSide": "黑暗面",
+  "Novel": "轻小说",
+  "DefaultAvatar": "https://avatar.dmzj.com/default.png",
+  "TipsNew": "new",
+  "SubscribeLatestUpdate": "最近更新：{title}",
+  "@SubscribeLatestUpdate": {
+    "placeholders": {
+      "title": {}
+    }
+  }
+}

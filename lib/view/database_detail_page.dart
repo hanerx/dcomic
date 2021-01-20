@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterdmzj/database/database.dart';
@@ -51,17 +52,20 @@ class _DatabaseDetailPage extends State<DatabaseDetailPage> {
                                 .request()
                                 .isGranted;
                             if (state) {
-                              DataBase dataBase = DataBase();
-                              String path = await dataBase.getDownloadPath();
-                              String save = await Provider.of<
-                                  DatabaseDetailModel>(context, listen: false)
-                                  .moveDatabase(path);
-                              if (save!=null) {
-                                Navigator.of(context).pop();
-                                Toast.show("已保存至:$save", context,
-                                    duration: Toast.LENGTH_LONG);
-                              } else {
-                                Navigator.of(context).pop();
+                              try{
+                                String path = await FilePicker.platform.getDirectoryPath();
+                                String save = await Provider.of<
+                                    DatabaseDetailModel>(context, listen: false)
+                                    .backupDatabase(path);
+                                if (save!=null) {
+                                  Navigator.of(context).pop();
+                                  Toast.show("已保存至:$save", context,
+                                      duration: Toast.LENGTH_LONG);
+                                } else {
+                                  Toast.show("保存失败，请检查写入权限", context,
+                                      duration: Toast.LENGTH_LONG);
+                                }
+                              }catch(e){
                                 Toast.show("保存失败，请检查写入权限", context,
                                     duration: Toast.LENGTH_LONG);
                               }
@@ -69,7 +73,31 @@ class _DatabaseDetailPage extends State<DatabaseDetailPage> {
                           },
                           shape: CircleBorder(),
                           padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                        )],
+                        ),
+                          FlatButton(
+                            child: Icon(Icons.file_upload,color: Colors.white,),
+                            shape: CircleBorder(),
+                            padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                            onPressed: ()async{
+                              try{
+                                var result = await FilePicker.platform.pickFiles(type: FileType.any);
+                                bool flag=await Provider.of<
+                                    DatabaseDetailModel>(context, listen: false).recoverDatabase(result.paths.first);
+                                if(flag){
+                                  Navigator.of(context).pop();
+                                  Toast.show("以从文件恢复数据库", context,
+                                      duration: Toast.LENGTH_LONG);
+                                }else{
+                                  Toast.show("文件恢复失败，请检查写入权限", context,
+                                      duration: Toast.LENGTH_LONG);
+                                }
+                              }catch(e){
+                                Toast.show("文件恢复失败，请检查写入权限", context,
+                                    duration: Toast.LENGTH_LONG);
+                              }
+                            },
+                          )
+                        ],
                       ),
                       ListTile(
                         title: Text('数据库版本'),

@@ -40,7 +40,7 @@ dependencies:
   toast: ^0.1.5
   uni_links: ^0.4.0
   share: ^0.6.5+2
-  file_picker: ^2.0.6
+  file_picker: ^2.1.5
   flutter_downloader: ^1.5.2
   logger: ^0.9.4
   flutter_widget_from_html: ^0.5.1+5
@@ -105,3 +105,5 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+flutter_intl:
+  enabled: true

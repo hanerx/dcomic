@@ -40,7 +40,6 @@ class DataBase {
     var batch = _database.batch();
     batch.delete("history", where: "name='$comicId'");
     batch.insert("history", {"name": comicId, "value": chapterId});
-
     await batch.commit();
   }
 

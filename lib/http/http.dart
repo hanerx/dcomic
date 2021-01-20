@@ -8,7 +8,7 @@ import 'package:flutterdmzj/database/database.dart';
 class CustomHttp {
   Dio dio;
   Dio unCachedDio;
-  String baseUrl = 'https://v3api.dmzj.com';
+  String baseUrl = 'https://nnv3api.dmzj1.com';
   final String queryOptions = 'channel=Android&version=2.7.017';
   DioCacheManager _cacheManager;
 

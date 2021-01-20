@@ -199,7 +199,7 @@ class ComicDetailModel extends BaseModel {
           {
             'data': data['list']
                 .map((e) =>
-                    {'chapter_id': e['id'], 'chapter_title': e['chapter_name']})
+                    {'chapter_id': e['id'], 'chapter_title': e['chapter_name'],'updatetime':int.parse(e['updatetime'])})
                 .toList(),
             'title': '备用API'
           }
@@ -326,15 +326,15 @@ class ComicDetailModel extends BaseModel {
     List<Widget> lists = [];
     for (var item in this.chapters) {
       // 生成每版的章节ID列表
-      List<String> chapterIdList = item['data']
-          .map<String>((value) => value['chapter_id'].toString())
-          .toList();
-      chapterIdList = List.generate(chapterIdList.length,
-          (index) => chapterIdList[chapterIdList.length - 1 - index]);
+      // List<String> chapterIdList = item['data']
+      //     .map<String>((value) => value['chapter_id'].toString())
+      //     .toList();
+      // chapterIdList = List.generate(chapterIdList.length,
+      //     (index) => chapterIdList[chapterIdList.length - 1 - index]);
 
       // 生成每版的章节列表
       List<Widget> chapterList = item['data']
-          .map<Widget>((value) => _buildButton(context, value, chapterIdList))
+          .map<Widget>((value) => _buildButton(context, value, item['data']))
           .toList();
       // 反向排序
       if (_reverse) {

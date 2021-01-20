@@ -5,11 +5,11 @@ import 'package:flutterdmzj/view/comic_detail_page.dart';
 import 'package:flutterdmzj/view/subject_detail_page.dart';
 
 class CustomCard extends StatelessWidget {
-  String imageUrl = "";
-  String title = "";
-  String author = "";
-  int type;
-  String id;
+  final String imageUrl;
+  final String title;
+  final String author;
+  final int type;
+  final String id;
 
   CustomCard(this.imageUrl, this.title, this.author, this.type, this.id);
 

@@ -1,0 +1,112 @@
+{
+  "@@locale" : "en",
+  "AppName": "DMZJ",
+  "AppNameUltimate":"Super DMZJ-Ultimate",
+  "Setting": "Settings",
+  "MainPageTabHome": "Home",
+  "MainPageTabCategory": "Category",
+  "MainPageTabRanking": "Ranking",
+  "MainPageTabLatest": "Latest",
+  "SettingPageDarkModeModes": "{modes, select, followSystem {System} brightness {Brightness} darkness {Darkness} other {System}}",
+  "CannotOpenWeb": "Cannot launch web page, pls check your phone.",
+  "SettingPageReadDirectionTitle": "Read direction",
+  "SettingPageReadDirectionHorizontal": "Horizontal",
+  "SettingPageReadDirectionVertical": "Vertical",
+  "SettingPageDarkModeTitle": "Dark mode",
+  "SettingPageDarkModeSubtitle": "Current Setting: {mode}",
+  "@SettingPageDarkModeSubtitle": {
+    "placeholders": {
+      "mode": {}
+    }
+  },
+  "SettingPageSavePath": "Save path",
+  "SettingPageNoMediaTitle": "Hide Save dictionary",
+  "SettingPageNoMediaSubtitle": "Will add a .nomidea file into your save path to refuse media scan",
+  "SettingPageDatabaseDetailTitle": "Check database",
+  "SettingPageDatabaseDetailSubtitle": "Show all the data in your local database. CAUTION: Will direct expose your secret information like token, uid, etc.",
+  "SettingPageResetDatabaseTitle": "Reset Database",
+  "SettingPageResetDatabaseSubtitle": "WARNING: DANGER ZONE. Will delete all data in your local database, only for debug.",
+  "SettingPageResetDatabaseConfirmTitle": "Confirm?",
+  "SettingPageResetDatabaseConfirmDescription": "Confirm to reset database?",
+  "Confirm": "confirm",
+  "Cancel": "cancel",
+  "SettingPageResetDioCacheTitle": "Reset cache",
+  "SettingPageResetDioCacheSubtitle": "WARNING: DANGER ZONE. Will delete all cache in dio_http_cache, may slow down the network speed.",
+  "SettingPageResetDioCacheConfirmTitle": "Confirm?",
+  "SettingPageResetDioCacheConfirmDescription": "Confirm to reset http cache?",
+  "SettingPageCancelDownloadTasksTitle": "Cancel all download tasks",
+  "SettingPageCancelDownloadTasksSubtitle": "WARNING: DANGER ZONE. Will cancel all downloading tasks, may cause bugs.",
+  "SettingPageCancelDownloadTasksConfirmTitle": "Confirm?",
+  "SettingPageCancelDownloadTasksConfirmDescription": "Confirm to cancel?",
+  "SettingPageDownloadTaskListTitle": "Check download tasks",
+  "SettingPageDownloadTaskListSubtitle": "Show all the tasks in download plugin database",
+  "SettingPageDownloadTaskListDetailTitle": "Download tasks",
+  "SettingPageDownloadTaskListOpenFailed": "Fail to open, pls check if task available.",
+  "SettingPageLogConsoleTitle": "Log console",
+  "SettingPageLogConsoleSubtitle": "Show logs provide by logger",
+  "SettingPageCheckUpdateTitle": "Check for update",
+  "SettingPageCheckUpdateSubtitle": "Current version: {version}",
+  "@SettingPageCheckUpdateSubtitle": {
+    "placeholders": {
+      "version": {}
+    }
+  },
+  "CheckUpdateUpToDate": "Already up to date",
+  "SettingPageUpdateChannelTitle": "Update channel",
+  "SettingPageUpdateChannelSubtitle": "Current channel：{channel}",
+  "@SettingPageUpdateChannelSubtitle":{
+    "placeholders": {
+      "channel": {}
+    }
+  },
+  "SettingPageUpdateChannels": "{mode, select, release {Release} beta {Beta} other {Unknown}}",
+  "SettingPageDisclaimerTitle": "Disclaimer",
+  "SettingPageDisclaimerSubtitle": "Disclaimer for apps",
+  "SettingPageDisclaimerDetail1": "1. This program is a third-party app, all program content is provided by anime home, this program does not guarantee the content security and reliability.",
+  "SettingPageDisclaimerDetail2": "2. All interfaces of this program are obtained by official app, and this program promises not to collect any content to any third party.",
+  "SettingPageDisclaimerDetail3": "3. The login function of this program is not the official login function, but the realization of the official interface. By using the login function of this program, you understand and are willing to bear the risks caused by using the login function of this program.",
+  "SettingPageFAQTitle": "FAQ",
+  "SettingPageFAQSubtitle": "?",
+  "SettingPageProjectURLTitle": "Project page",
+  "SettingPageProjectURL": "https://github.com/hanerx/flutter_dmzj",
+  "SettingPageAboutTitle": "About",
+  "SettingPageAboutSubtitle": "Public licenses",
+  "SettingPageAboutDescription": "A 3rd-party flutter dmzj application",
+  "SettingPageChangeLogTitle": "ChangeLog",
+  "SettingPageChangeLogSubtitle": "All change logs record in github",
+  "SettingPageChangeLogContent": "## {name}\n#### release date：{update_time}\n {body}\n",
+  "@SettingPageChangeLogContent": {
+    "placeholders": {
+      "name": {},
+      "update_time": {},
+      "body": {}
+    }
+  },
+  "SettingPagePlaceholderTitle": "Placeholder",
+  "SettingPagePlaceholderSubtitle": "An useless placeholder",
+  "SettingPageLabSettingTitle": "Experimental function",
+  "SettingPageLabSettingSubtitle": "Congratulations, the easter eggs!",
+  "SettingPageLogoutTitle": "Logout",
+  "SettingPageLogoutSubtitle": "Tips: there is an logout button in the drawer",
+  "AuthorPageTitle": "Author-{author}",
+  "@AuthorPageTitle": {
+    "placeholders": {
+      "author": {}
+    }
+  },
+  "DrawerEmail": "Flutter DMZJ",
+  "DrawerPlsLogin": "Please login",
+  "Favorite": "Favorite",
+  "History": "History",
+  "Download": "Download",
+  "DarkSide": "DarkSide",
+  "Novel": "Novel",
+  "DefaultAvatar": "https://avatar.dmzj.com/default.png",
+  "TipsNew": "new",
+  "SubscribeLatestUpdate": "Latest：{title}",
+  "@SubscribeLatestUpdate": {
+    "placeholders": {
+      "title": {}
+    }
+  }
+}

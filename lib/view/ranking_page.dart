@@ -1,4 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:direct_select_flutter/direct_select_container.dart';
+import 'package:direct_select_flutter/direct_select_item.dart';
+import 'package:direct_select_flutter/direct_select_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -24,7 +27,7 @@ class _RankingPage extends State<RankingPage> {
   List list = <Widget>[];
   List dateTypeList = <String>['日排行', '周排行', '月排行', '总排行'];
   List typeTypeList = <String>['按人气', '按吐槽', '按订阅'];
-  Map tagTypeList = <int, String>{};
+  Map tagTypeList = <int, String>{0:'全部'};
 
   loadRankingList() async {
     CustomHttp http = CustomHttp();
@@ -71,118 +74,10 @@ class _RankingPage extends State<RankingPage> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return Column(
+    return DirectSelectContainer(
+      child:Column(
       children: [
-        Row(
-          children: <Widget>[
-            Expanded(
-              child: Text(
-                  '当前:${dateTypeList[filterDate]}-${tagTypeList[filterTag]}-${typeTypeList[filterType]}'),
-            ),
-            FlatButton(
-              child: Icon(Icons.filter_list),
-              onPressed: () {
-                if (tagTypeList.length == 0) {
-                  loadRankingTag();
-                  return;
-                }
-                showModalBottomSheet(
-                    context: context,
-                    builder: (context) {
-                      return Container(
-                          height: 220,
-                          child: ListView(
-                            children: <Widget>[
-                              ListTile(
-                                leading: Icon(Icons.date_range),
-                                title: Text('按日期'),
-                                subtitle: Text(dateTypeList[filterDate]),
-                                trailing: PopupMenuButton(
-                                    child: Icon(Icons.arrow_drop_down),
-                                    onSelected: (int value) {
-                                      setState(() {
-                                        filterDate = value;
-                                        setState(() {
-                                          list.clear();
-                                          page = 0;
-                                        });
-                                        loadRankingList();
-                                        Navigator.pop(context);
-                                      });
-                                    },
-                                    itemBuilder: (BuildContext context) {
-                                      var data = <PopupMenuItem<int>>[];
-                                      dateTypeList.forEach((item) {
-                                        data.add(PopupMenuItem(
-                                          child: Text(item),
-                                          value: dateTypeList.indexOf(item),
-                                        ));
-                                      });
-                                      return data;
-                                    }),
-                              ),
-                              ListTile(
-                                leading: Icon(Icons.category),
-                                title: Text('按分类'),
-                                subtitle: Text(tagTypeList[filterTag]),
-                                trailing: PopupMenuButton(
-                                  child: Icon(Icons.arrow_drop_down),
-                                  onSelected: (int value) {
-                                    setState(() {
-                                      filterTag = value;
-                                      setState(() {
-                                        list.clear();
-                                        page = 0;
-                                      });
-                                      loadRankingList();
-                                      Navigator.pop(context);
-                                    });
-                                  },
-                                  itemBuilder: (context) {
-                                    var data = <PopupMenuItem<int>>[];
-                                    tagTypeList.forEach((key, value) {
-                                      data.add(PopupMenuItem(
-                                          child: Text(value), value: key));
-                                    });
-                                    return data;
-                                  },
-                                ),
-                              ),
-                              ListTile(
-                                leading: Icon(Icons.list),
-                                title: Text('按种类'),
-                                subtitle: Text(typeTypeList[filterType]),
-                                trailing: PopupMenuButton(
-                                    child: Icon(Icons.arrow_drop_down),
-                                    onSelected: (int value) {
-                                      setState(() {
-                                        filterType = value;
-                                        setState(() {
-                                          list.clear();
-                                          page = 0;
-                                        });
-                                        loadRankingList();
-                                        Navigator.pop(context);
-                                      });
-                                    },
-                                    itemBuilder: (BuildContext context) {
-                                      var data = <PopupMenuItem<int>>[];
-                                      typeTypeList.forEach((item) {
-                                        data.add(PopupMenuItem(
-                                          child: Text(item),
-                                          value: typeTypeList.indexOf(item),
-                                        ));
-                                      });
-                                      return data;
-                                    }),
-                              )
-                            ],
-                          ));
-                    });
-              },
-            )
-          ],
-        ),
+        _buildFilter(context),
         Expanded(
           child: EasyRefresh(
             firstRefreshWidget: LoadingCube(),
@@ -227,7 +122,243 @@ class _RankingPage extends State<RankingPage> {
           ),
         )
       ],
-    );
+    ));
+  }
+
+  Widget  _buildFilter(context){
+    return Row(
+        children: <Widget>[
+          Expanded(
+            flex: 2,
+            child: Padding(
+              child: DirectSelectList<String>(
+                values: dateTypeList,
+                defaultItemIndex: filterDate,
+                itemBuilder: (String value) =>
+                    DirectSelectItem<String>(
+                        itemHeight: 56,
+                        value: value,
+                        itemBuilder: (context, value) {
+                          return Container(
+                            child: Text(
+                              value,
+                              textAlign: TextAlign.center,
+                            ),
+                          );
+                        }),
+                onItemSelectedListener: (item, index, context) {
+                  setState(() {
+                    filterDate=index;
+                    list.clear();
+                    page=0;
+                  });
+                  loadRankingList();
+                },
+                focusedItemDecoration: BoxDecoration(
+                  border: BorderDirectional(
+                    bottom: BorderSide(
+                        width: 1, color: Colors.black12),
+                    top: BorderSide(
+                        width: 1, color: Colors.black12),
+                  ),
+                ),
+              ),
+              padding: EdgeInsets.only(left: 15),
+            ),
+          ),
+          Expanded(
+            child: Icon(Icons.unfold_more,color: Theme.of(context).disabledColor,),
+          ),
+          Expanded(
+            flex: 2,
+            child: Padding(
+              child: DirectSelectList<int>(
+                values: tagTypeList.keys.toList(),
+                defaultItemIndex: tagTypeList.keys.toList().indexOf(filterTag),
+                itemBuilder: (int value) =>
+                    DirectSelectItem<int>(
+                        itemHeight: 56,
+                        value: value,
+                        itemBuilder: (context, value) {
+                          return Container(
+                            child: Text(
+                              tagTypeList[value],
+                              textAlign: TextAlign.center,
+                            ),
+                          );
+                        }),
+                onItemSelectedListener: (item, index, context) {
+                  setState(() {
+                    filterTag=item;
+                    list.clear();
+                    page=0;
+                  });
+                  loadRankingList();
+                },
+                focusedItemDecoration: BoxDecoration(
+                  border: BorderDirectional(
+                    bottom: BorderSide(
+                        width: 1, color: Colors.black12),
+                    top: BorderSide(
+                        width: 1, color: Colors.black12),
+                  ),
+                ),
+              ),
+              padding: EdgeInsets.only(left: 15),
+            )
+          ),
+          Expanded(
+            child: Icon(Icons.unfold_more,color: Theme.of(context).disabledColor,),
+          ),
+          Expanded(
+            flex: 2,
+            child: Padding(
+              child: DirectSelectList<String>(
+                values: typeTypeList,
+                defaultItemIndex: filterType,
+                itemBuilder: (String value) =>
+                    DirectSelectItem<String>(
+                        itemHeight: 56,
+                        value: value,
+                        itemBuilder: (context, value) {
+                          return Container(
+                            child: Text(
+                              value,
+                              textAlign: TextAlign.center,
+                            ),
+                          );
+                        }),
+                onItemSelectedListener: (item, index, context) {
+                  setState(() {
+                    filterType=index;
+                    list.clear();
+                    page=0;
+                  });
+                  loadRankingList();
+                },
+                focusedItemDecoration: BoxDecoration(
+                  border: BorderDirectional(
+                    bottom: BorderSide(
+                        width: 1, color: Colors.black12),
+                    top: BorderSide(
+                        width: 1, color: Colors.black12),
+                  ),
+                ),
+              ),
+              padding: EdgeInsets.only(left: 15),
+            )
+          ),
+          Expanded(
+            child: Icon(Icons.unfold_more,color: Theme.of(context).disabledColor,),
+          ),
+          // Expanded(
+          //   child: Text(
+          //       '当前:${dateTypeList[filterDate]}-${tagTypeList[filterTag]}-${typeTypeList[filterType]}'),
+          // ),
+          // FlatButton(
+          //   child: Icon(Icons.filter_list),
+          //   onPressed: () {
+          //     if (tagTypeList.length == 0) {
+          //       loadRankingTag();
+          //       return;
+          //     }
+          //     showModalBottomSheet(
+          //         context: context,
+          //         builder: (context) {
+          //           return Container(
+          //               height: 220,
+          //               child: ListView(
+          //                 children: <Widget>[
+          //                   ListTile(
+          //                     leading: Icon(Icons.date_range),
+          //                     title: Text('按日期'),
+          //                     subtitle: Text(dateTypeList[filterDate]),
+          //                     trailing: PopupMenuButton(
+          //                         child: Icon(Icons.arrow_drop_down),
+          //                         onSelected: (int value) {
+          //                           setState(() {
+          //                             filterDate = value;
+          //                             setState(() {
+          //                               list.clear();
+          //                               page = 0;
+          //                             });
+          //                             loadRankingList();
+          //                             Navigator.pop(context);
+          //                           });
+          //                         },
+          //                         itemBuilder: (BuildContext context) {
+          //                           var data = <PopupMenuItem<int>>[];
+          //                           dateTypeList.forEach((item) {
+          //                             data.add(PopupMenuItem(
+          //                               child: Text(item),
+          //                               value: dateTypeList.indexOf(item),
+          //                             ));
+          //                           });
+          //                           return data;
+          //                         }),
+          //                   ),
+          //                   ListTile(
+          //                     leading: Icon(Icons.category),
+          //                     title: Text('按分类'),
+          //                     subtitle: Text(tagTypeList[filterTag]),
+          //                     trailing: PopupMenuButton(
+          //                       child: Icon(Icons.arrow_drop_down),
+          //                       onSelected: (int value) {
+          //                         setState(() {
+          //                           filterTag = value;
+          //                           setState(() {
+          //                             list.clear();
+          //                             page = 0;
+          //                           });
+          //                           loadRankingList();
+          //                           Navigator.pop(context);
+          //                         });
+          //                       },
+          //                       itemBuilder: (context) {
+          //                         var data = <PopupMenuItem<int>>[];
+          //                         tagTypeList.forEach((key, value) {
+          //                           data.add(PopupMenuItem(
+          //                               child: Text(value), value: key));
+          //                         });
+          //                         return data;
+          //                       },
+          //                     ),
+          //                   ),
+          //                   ListTile(
+          //                     leading: Icon(Icons.list),
+          //                     title: Text('按种类'),
+          //                     subtitle: Text(typeTypeList[filterType]),
+          //                     trailing: PopupMenuButton(
+          //                         child: Icon(Icons.arrow_drop_down),
+          //                         onSelected: (int value) {
+          //                           setState(() {
+          //                             filterType = value;
+          //                             setState(() {
+          //                               list.clear();
+          //                               page = 0;
+          //                             });
+          //                             loadRankingList();
+          //                             Navigator.pop(context);
+          //                           });
+          //                         },
+          //                         itemBuilder: (BuildContext context) {
+          //                           var data = <PopupMenuItem<int>>[];
+          //                           typeTypeList.forEach((item) {
+          //                             data.add(PopupMenuItem(
+          //                               child: Text(item),
+          //                               value: typeTypeList.indexOf(item),
+          //                             ));
+          //                           });
+          //                           return data;
+          //                         }),
+          //                   )
+          //                 ],
+          //               ));
+          //         });
+          //   },
+          // )
+        ],
+      );
   }
 }
 

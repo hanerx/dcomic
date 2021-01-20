@@ -239,39 +239,44 @@ class _CustomPage extends StatelessWidget {
     return ClipRRect(
       child: FlatButton(
         padding: EdgeInsets.zero,
-        child: Stack(
-          children: [
-            ClipRRect(
-              child: CachedNetworkImage(
-                imageUrl: '$imageUrl',
-                httpHeaders: {'referer': 'http://images.dmzj.com'},
-                progressIndicatorBuilder: (context, url, downloadProgress) =>
-                    Center(
-                  child: CircularProgressIndicator(
-                      value: downloadProgress.progress),
+        child: Container(
+          child: Stack(
+            children: [
+              ClipRRect(
+                child: CachedNetworkImage(
+                  imageUrl: '$imageUrl',
+                  httpHeaders: {'referer': 'http://images.dmzj.com'},
+                  progressIndicatorBuilder: (context, url, downloadProgress) =>
+                      Center(
+                        child: CircularProgressIndicator(
+                            value: downloadProgress.progress),
+                      ),
+                  errorWidget: (context, url, error) => Icon(Icons.error),
                 ),
-                errorWidget: (context, url, error) => Icon(Icons.error),
+                borderRadius: BorderRadius.circular(5),
               ),
-              borderRadius: BorderRadius.circular(5),
-            ),
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: 30,
-              child: Container(
-                decoration: BoxDecoration(
-                    color: Colors.black54,
-                    borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(5),
-                        bottomRight: Radius.circular(5))),
-                child: Text(
-                  '$title',
-                  style: TextStyle(color: Colors.white, fontSize: 20),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                height: 30,
+                child: Container(
+                  padding: EdgeInsets.only(left: 5),
+                  decoration: BoxDecoration(
+                      color: Colors.black54,
+                      borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(5),
+                          bottomRight: Radius.circular(5))),
+                  child: Text(
+                    '$title',
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
         onPressed: () {
           Navigator.of(context).push(
