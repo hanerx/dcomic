@@ -1,23 +1,22 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutterdmzj/component/ViewPointChip.dart';
 import 'package:flutterdmzj/component/comic_viewer/ComicPage.dart';
-import 'package:flutterdmzj/component/comic_viewer/VerticalPageView.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/database/downloader.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/model/baseModel.dart';
-import 'package:flutterdmzj/utils/log_output.dart';
-import 'package:logger/logger.dart';
-import 'package:markdown_widget/markdown_helper.dart';
-import 'package:markdown_widget/markdown_widget.dart';
+import 'package:flutterdmzj/utils/tool_methods.dart';
 
 class ComicModel extends BaseModel {
   final String comicId;
   final String chapterId;
   final List chapterList;
   final bool backupApi;
+
+  List<String> chapterIdList;
   bool webApi;
 
   String pageAt;
@@ -29,18 +28,24 @@ class ComicModel extends BaseModel {
   bool refreshState = true;
 
   List<Widget> pages = [];
-  List<Widget> viewPoints = [];
+  List viewPoints = [];
 
-  int _index=0;
+  int _index = 0;
 
   //用户信息
   bool login = false;
   String uid = '';
 
-  ComicModel(this.comicId, this.chapterId, this.chapterList, this.backupApi, this.webApi) {
+  ComicModel(this.comicId, this.chapterId, this.chapterList, this.backupApi,
+      this.webApi) {
+    chapterIdList = chapterList
+        .map<String>((value) => value['chapter_id'].toString())
+        .toList();
+    chapterIdList = List.generate(chapterIdList.length,
+        (index) => chapterIdList[chapterIdList.length - 1 - index]);
     getComic(chapterId, comicId).then((value) {
       logger.i(
-          "action: init, chapterId: $chapterId, comicId: $comicId, chapterList: ${this.chapterList}, previous: $previous, next: $next, left: $left, right: $right, index: ${chapterList.indexOf(chapterId)}");
+          "action: init, chapterId: $chapterId, comicId: $comicId, chapterList: ${this.chapterIdList}, previous: $previous, next: $next, left: $left, right: $right, index: ${chapterIdList.indexOf(chapterId)}");
     });
   }
 
@@ -52,7 +57,7 @@ class ComicModel extends BaseModel {
     logger.i(
         "action: getComic, chapter: $chapterId comicId:$comicId refreshState:$refreshState");
     pageAt = chapterId;
-    _index=0;
+    _index = 0;
     DownloadProvider downloadProvider = DownloadProvider();
     var localData = await downloadProvider.getChapter(chapterId);
     if (localData != null) {
@@ -72,13 +77,13 @@ class ComicModel extends BaseModel {
         ));
       }
       this.pages = pages;
-      if (chapterList.indexOf(chapterId) > 0) {
-        previous = chapterList[chapterList.indexOf(chapterId) - 1];
+      if (chapterIdList.indexOf(chapterId) > 0) {
+        previous = chapterIdList[chapterIdList.indexOf(chapterId) - 1];
       } else {
         previous = null;
       }
-      if (chapterList.indexOf(chapterId) < chapterList.length - 1) {
-        next = chapterList[chapterList.indexOf(chapterId) + 1];
+      if (chapterIdList.indexOf(chapterId) < chapterIdList.length - 1) {
+        next = chapterIdList[chapterIdList.indexOf(chapterId) + 1];
       } else {
         next = null;
       }
@@ -88,7 +93,7 @@ class ComicModel extends BaseModel {
       notifyListeners();
       return;
     }
-    if(webApi){
+    if (webApi) {
       await getComicWeb(comicId, chapterId);
       return;
     }
@@ -109,13 +114,13 @@ class ComicModel extends BaseModel {
           ));
         }
         this.pages = pages;
-        if (chapterList.indexOf(chapterId) > 0) {
-          previous = chapterList[chapterList.indexOf(chapterId) - 1];
+        if (chapterIdList.indexOf(chapterId) > 0) {
+          previous = chapterIdList[chapterIdList.indexOf(chapterId) - 1];
         } else {
           previous = null;
         }
-        if (chapterList.indexOf(chapterId) < chapterList.length - 1) {
-          next = chapterList[chapterList.indexOf(chapterId) + 1];
+        if (chapterIdList.indexOf(chapterId) < chapterIdList.length - 1) {
+          next = chapterIdList[chapterIdList.indexOf(chapterId) + 1];
         } else {
           next = null;
         }
@@ -123,7 +128,7 @@ class ComicModel extends BaseModel {
     } catch (e) {
       logger
           .e("action:error, chapterId:$chapterId, comicId:$comicId, error:$e");
-      if(backupApi){
+      if (backupApi) {
         await this.getComicBackup(comicId, chapterId);
       }
     }
@@ -133,12 +138,12 @@ class ComicModel extends BaseModel {
     notifyListeners();
   }
 
-  Future<void> getComicWeb(String comicId,String chapterId)async{
-    CustomHttp http=CustomHttp();
-    try{
-      var response=await http.getComicWeb(comicId, chapterId);
+  Future<void> getComicWeb(String comicId, String chapterId) async {
+    CustomHttp http = CustomHttp();
+    try {
+      var response = await http.getComicWeb(comicId, chapterId);
       if (response.statusCode == 200) {
-        var data=jsonDecode(response.data);
+        var data = jsonDecode(response.data);
         title = data['chapter_name'];
         List<Widget> pages = [];
         for (var item in data['page_url']) {
@@ -150,21 +155,21 @@ class ComicModel extends BaseModel {
           ));
         }
         this.pages = pages;
-        if (chapterList.indexOf(chapterId) > 0) {
-          previous = chapterList[chapterList.indexOf(chapterId) - 1];
+        if (chapterIdList.indexOf(chapterId) > 0) {
+          previous = chapterIdList[chapterIdList.indexOf(chapterId) - 1];
         } else {
           previous = null;
         }
-        if (chapterList.indexOf(chapterId) < chapterList.length - 1) {
-          next = chapterList[chapterList.indexOf(chapterId) + 1];
+        if (chapterIdList.indexOf(chapterId) < chapterIdList.length - 1) {
+          next = chapterIdList[chapterIdList.indexOf(chapterId) + 1];
         } else {
           next = null;
         }
       }
-    }catch(e){
+    } catch (e) {
       logger
           .e("action:error, chapterId:$chapterId, comicId:$comicId, error:$e");
-      if(backupApi){
+      if (backupApi) {
         await this.getComicBackup(comicId, chapterId);
       }
     }
@@ -174,57 +179,59 @@ class ComicModel extends BaseModel {
     notifyListeners();
   }
 
-  Future<void> getComicBackup(String comicId, String chapterId) async{
-    try{
-      CustomHttp http=CustomHttp();
-      var response=await http.getComicDetailDark(comicId);
-      if(response.statusCode==200){
-        var data=jsonDecode(response.data)['data'];
-        var firstLetter=data['info']['first_letter'];
-        for(var item in data['list']){
-          if(item['id']==chapterId){
-            title=item['chapter_name'];
+  Future<void> getComicBackup(String comicId, String chapterId) async {
+    try {
+      CustomHttp http = CustomHttp();
+      var response = await http.getComicDetailDark(comicId);
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.data)['data'];
+        var firstLetter = data['info']['first_letter'];
+        for (var item in data['list']) {
+          if (item['id'] == chapterId) {
+            title = item['chapter_name'];
           }
         }
-        int page=0;
-        List<Widget> pages=[];
-        while(true){
-          try{
-            var item=await http.getComicPage(firstLetter, comicId, chapterId, page);
-            if(item.headers.value('Content-Type')=='image/jpeg'){
+        int page = 0;
+        List<Widget> pages = [];
+        while (true) {
+          try {
+            var item =
+                await http.getComicPage(firstLetter, comicId, chapterId, page);
+            if (item.headers.value('Content-Type') == 'image/jpeg') {
               pages.add(ComicPage(
-                url: 'http://imgsmall.dmzj.com/$firstLetter/$comicId/$chapterId/$page.jpg',
+                url:
+                    'http://imgsmall.dmzj.com/$firstLetter/$comicId/$chapterId/$page.jpg',
                 title: title,
                 chapterId: chapterId,
                 cover: false,
               ));
               page++;
-            }else{
+            } else {
               break;
             }
-          }catch(e){
-            logger.w('class ComicModel, action: getComicBackupFailed, page $page');
+          } catch (e) {
+            logger.w(
+                'class ComicModel, action: getComicBackupFailed, page $page');
             break;
           }
-          
         }
-        this.pages=pages;
-        if (chapterList.indexOf(chapterId) > 0) {
-          previous = chapterList[chapterList.indexOf(chapterId) - 1];
+        this.pages = pages;
+        if (chapterIdList.indexOf(chapterId) > 0) {
+          previous = chapterIdList[chapterIdList.indexOf(chapterId) - 1];
         } else {
           previous = null;
         }
-        if (chapterList.indexOf(chapterId) < chapterList.length - 1) {
-          next = chapterList[chapterList.indexOf(chapterId) + 1];
+        if (chapterIdList.indexOf(chapterId) < chapterIdList.length - 1) {
+          next = chapterIdList[chapterIdList.indexOf(chapterId) + 1];
         } else {
           next = null;
         }
         notifyListeners();
       }
-    }catch(e){
-      logger.w('class: ComicModel, action: getComicBackupFailed, comicId: $comicId, chapterId: $chapterId, exception: $e');
+    } catch (e) {
+      logger.w(
+          'class: ComicModel, action: getComicBackupFailed, comicId: $comicId, chapterId: $chapterId, exception: $e');
     }
-
   }
 
   Future<void> setReadHistory(String chapterId, String comicId) async {
@@ -235,8 +242,9 @@ class ComicModel extends BaseModel {
     if (login) {
       //获取UID
       uid = await dataBase.getUid();
-      CustomHttp http=CustomHttp();
-      http.addHistoryNew(int.parse(comicId), uid, int.parse(chapterId),page: index);
+      CustomHttp http = CustomHttp();
+      http.addHistoryNew(int.parse(comicId), uid, int.parse(chapterId),
+          page: index);
     }
     //解锁
     logger.i(
@@ -252,16 +260,8 @@ class ComicModel extends BaseModel {
       if (response.statusCode == 200) {
         print(
             "class: ComicModel, action: getViewPoint, responseCode: ${response.statusCode} chapterId:$chapterId comicId:$comicId responseData: ${response.data}");
-        List<ViewPointChip> viewPoints = [];
-        for (var item in response.data) {
-          viewPoints.add(ViewPointChip(
-            content: item['content'],
-            num: item['num'],
-            id: item['id'].toString(),
-          ));
-        }
-        viewPoints.sort((a, b) => b.num.compareTo(a.num));
-        this.viewPoints = viewPoints;
+        response.data.sort((a, b) => int.parse(b['num'].toString()).compareTo(a['num']));
+        this.viewPoints = response.data;
         print(
             "class: ComicModel, action: getViewPoint, viewpoints: $viewPoints");
       }
@@ -275,7 +275,7 @@ class ComicModel extends BaseModel {
       refreshState = true;
       await getComic(next, comicId);
       print(
-          "action:nextChapter, next: $next, previous: $previous, refreshState: $refreshState, pageAt: $pageAt, left: $left, right: $right, chapterList: $chapterList");
+          "action:nextChapter, next: $next, previous: $previous, refreshState: $refreshState, pageAt: $pageAt, left: $left, right: $right, chapterList: $chapterIdList");
       refreshState = false;
       notifyListeners();
       return true;
@@ -289,11 +289,23 @@ class ComicModel extends BaseModel {
       await getComic(previous, comicId);
       refreshState = false;
       print(
-          "action:previousChapter, next: $next, previous: $previous, refreshState: $refreshState, pageAt: $pageAt, left: $left, right: $right, chapterList: $chapterList");
+          "action:previousChapter, next: $next, previous: $previous, refreshState: $refreshState, pageAt: $pageAt, left: $left, right: $right, chapterList: $chapterIdList");
       notifyListeners();
       return true;
     }
     return false;
+  }
+
+  Widget buildChapterWidget(context, index) {
+    return ListTile(
+      selected: chapterList[index]['chapter_id'].toString()==pageAt,
+      title: Text('${chapterList[index]['chapter_title']}'),
+      subtitle: Text('更新时间：${ToolMethods.formatTimestamp(chapterList[index]['updatetime'])} 章节ID：${chapterList[index]['chapter_id']}'),
+      onTap: ()async{
+        await getComic(chapterList[index]['chapter_id'].toString(), comicId);
+        Navigator.of(context).pop();
+      },
+    );
   }
 
   Widget builder(int index) {
@@ -302,6 +314,16 @@ class ComicModel extends BaseModel {
     }
     return null;
   }
+
+  List<Widget> buildViewPoint(context){
+    return viewPoints.map<Widget>((e) => ViewPointChip(
+      content: e['content'],
+      num: e['num'],
+      id: e['id'].toString(),
+    )).toList();
+  }
+
+  int get catalogueLength => chapterList.length;
 
   int get length => pages.length;
 

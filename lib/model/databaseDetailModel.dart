@@ -32,7 +32,7 @@ class DatabaseDetailModel extends BaseModel{
     return tabs.map<Tab>((e) => Tab(text: '$e',)).toList();
   }
 
-  Future<String> moveDatabase(String path)async{
+  Future<String> backupDatabase(String path)async{
     try{
       var file=File(this.path);
       var directory = new Directory('$path');
@@ -44,6 +44,19 @@ class DatabaseDetailModel extends BaseModel{
       logger.e('class: DatabaseDetailModel, action: moveFileFailed, exception: $e');
     }
     return null;
+  }
+
+  Future<bool> recoverDatabase(String path)async{
+    try{
+      var file=File(path);
+      if(await file.exists()){
+        await file.copy(this.path);
+        return true;
+      }
+    }catch(e){
+      logger.e('class: DatabaseDetailModel, action: moveFileFailed, exception: $e');
+    }
+    return false;
   }
 
   List<Widget> getTabViews(context){

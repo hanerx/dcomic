@@ -1,17 +1,14 @@
 import 'dart:io';
 
-import 'package:event_bus/event_bus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutterdmzj/database/database.dart';
-import 'package:flutterdmzj/event/CustomEventBus.dart';
-import 'package:flutterdmzj/event/ThemeChangeEvent.dart';
+import 'package:flutterdmzj/generated/l10n.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/model/systemSettingModel.dart';
 import 'package:flutterdmzj/model/versionModel.dart';
-import 'package:flutterdmzj/utils/static_language.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:flutterdmzj/view/database_detail_page.dart';
 import 'package:flutterdmzj/view/lab_setting_page.dart';
@@ -36,9 +33,9 @@ class _SettingPage extends State<SettingPage> {
   bool direction = false;
   bool cover = false;
   bool labState = false;
-  bool nomedia=false;
+  bool nomedia = false;
   String downloadPath = '';
-  static const List darkMode = ['跟随系统', '亮色', '夜间'];
+  static const List darkMode = ['followSystem', 'brightness', 'darkness'];
 
   Future<bool> getCoverType() async {
     DataBase dataBase = DataBase();
@@ -97,12 +94,11 @@ class _SettingPage extends State<SettingPage> {
     });
   }
 
-
-  getMedia() async{
-    var file=File('$downloadPath/.nomedia');
-    var media= await file.exists();
+  getMedia() async {
+    var file = File('$downloadPath/.nomedia');
+    var media = await file.exists();
     setState(() {
-      nomedia=media;
+      nomedia = media;
     });
   }
 
@@ -122,8 +118,7 @@ class _SettingPage extends State<SettingPage> {
       await launch(url);
     } else {
       Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text(
-            '${StaticLanguage.staticStrings['settingPage.canNotOpenWeb']}'),
+        content: Text(S.of(context).CannotOpenWeb),
       ));
     }
   }
@@ -133,13 +128,14 @@ class _SettingPage extends State<SettingPage> {
     // TODO: implement build
     return Scaffold(
         appBar: AppBar(
-          title: Text('${StaticLanguage.staticStrings['settings']}'),
+          title: Text(S.of(context).Setting),
         ),
         body: ListView(
           children: <Widget>[
             ListTile(
-              title: Text('阅读方向'),
-              subtitle: Text('${direction ? '横向方向' : '垂直方向'}'),
+              title: Text(S.of(context).SettingPageReadDirectionTitle),
+              subtitle: Text(
+                  '${direction ? S.of(context).SettingPageReadDirectionHorizontal : S.of(context).SettingPageReadDirectionVertical}'),
               onTap: () {
                 setState(() {
                   direction = !direction;
@@ -148,19 +144,26 @@ class _SettingPage extends State<SettingPage> {
               },
             ),
             ListTile(
-              title: Text('夜间模式'),
-              subtitle: Text('当前设定:${darkMode[Provider.of<SystemSettingModel>(context).darkState]}'),
+              title: Text(S.of(context).SettingPageDarkModeTitle),
+              subtitle: Text(S.of(context).SettingPageDarkModeSubtitle(S
+                  .of(context)
+                  .SettingPageDarkModeModes(darkMode[
+                      Provider.of<SystemSettingModel>(context).darkState]))),
               onTap: () {
-                if (Provider.of<SystemSettingModel>(context,listen: false).darkState < darkMode.length - 1) {
-                  Provider.of<SystemSettingModel>(context,listen: false).darkState++;
+                if (Provider.of<SystemSettingModel>(context, listen: false)
+                        .darkState <
+                    darkMode.length - 1) {
+                  Provider.of<SystemSettingModel>(context, listen: false)
+                      .darkState++;
                 } else {
-                  Provider.of<SystemSettingModel>(context,listen: false).darkState=0;
+                  Provider.of<SystemSettingModel>(context, listen: false)
+                      .darkState = 0;
                 }
               },
             ),
             Divider(),
             ListTile(
-              title: Text('选择保存路径'),
+              title: Text(S.of(context).SettingPageSavePath),
               subtitle: Text('$downloadPath'),
               onTap: () async {
                 String result = await FilePicker.platform.getDirectoryPath();
@@ -173,58 +176,60 @@ class _SettingPage extends State<SettingPage> {
               },
             ),
             ListTile(
-              title: Text('影藏下载内容'),
-              subtitle: Text('将会在下载目录新建一个.nomedia的文件来影藏下载内容防止被媒体扫描'),
+              title: Text(S.of(context).SettingPageNoMediaTitle),
+              subtitle: Text(S.of(context).SettingPageNoMediaSubtitle),
               trailing: Switch(
                 value: nomedia,
-                onChanged: (value) async{
-                  var file=File('$downloadPath/.nomedia');
-                  if(value){
-                    if(await file.exists()){
+                onChanged: (value) async {
+                  var file = File('$downloadPath/.nomedia');
+                  if (value) {
+                    if (await file.exists()) {
                       return;
-                    }else{
+                    } else {
                       file.create(recursive: true);
                     }
-                  }else{
-                    if(await file.exists()){
+                  } else {
+                    if (await file.exists()) {
                       file.delete();
                     }
                   }
                   setState(() {
-                    nomedia=!nomedia;
+                    nomedia = !nomedia;
                   });
                 },
               ),
             ),
             Divider(),
             ListTile(
-              title: Text('查看数据库'),
-              subtitle: Text('会直接暴露整个数据库内的数据长啥样，是个没啥用的debug功能，当然会出现包括你uid和token在内的各种信息，请不要随便乱贴'),
-              onTap: (){
-                Navigator.of(context).push(MaterialPageRoute(builder: (context)=>DatabaseDetailPage()));
+              title: Text(S.of(context).SettingPageDatabaseDetailTitle),
+              subtitle: Text(S.of(context).SettingPageDatabaseDetailSubtitle),
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => DatabaseDetailPage()));
               },
             ),
             ListTile(
-              title: Text(
-                  '${StaticLanguage.staticStrings['settingPage.deleteDatabaseTitle']}'),
-              subtitle: Text(
-                  '${StaticLanguage.staticStrings['settingPage.deleteDatabaseSubTitle']}'),
+              title: Text(S.of(context).SettingPageResetDatabaseTitle),
+              subtitle: Text(S.of(context).SettingPageResetDatabaseSubtitle),
               onTap: () {
                 showDialog(
                     context: context,
                     builder: (context) {
                       return AlertDialog(
-                        title: Text('确认重置？'),
-                        content: Text('该操作将会重置数据库中的所有内容且不可恢复，是否重置？'),
+                        title: Text(
+                            S.of(context).SettingPageResetDatabaseConfirmTitle),
+                        content: Text(S
+                            .of(context)
+                            .SettingPageResetDatabaseConfirmDescription),
                         actions: [
                           FlatButton(
-                            child: Text('取消'),
+                            child: Text(S.of(context).Cancel),
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
                           ),
                           FlatButton(
-                            child: Text('确认'),
+                            child: Text(S.of(context).Confirm),
                             onPressed: () {
                               DataBase dataBase = DataBase();
                               dataBase.resetDataBase();
@@ -239,25 +244,27 @@ class _SettingPage extends State<SettingPage> {
             ),
             Divider(),
             ListTile(
-              title: Text('清除所有请求缓存'),
-              subtitle: Text('该操作将会把dio http cache的托管的缓存全部清除，危险操作'),
+              title: Text(S.of(context).SettingPageResetDioCacheTitle),
+              subtitle: Text(S.of(context).SettingPageResetDioCacheSubtitle),
               onTap: () {
                 showDialog(
                     context: context,
                     builder: (context) {
                       return AlertDialog(
-                        title: Text('确认重置？'),
-                        content:
-                            Text('该操作将会重置Dio的所有网络请求缓存，网络响应速度将会不同程度的下降，是否重置？'),
+                        title: Text(
+                            S.of(context).SettingPageResetDioCacheConfirmTitle),
+                        content: Text(S
+                            .of(context)
+                            .SettingPageResetDioCacheConfirmDescription),
                         actions: [
                           FlatButton(
-                            child: Text('取消'),
+                            child: Text(S.of(context).Cancel),
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
                           ),
                           FlatButton(
-                            child: Text('确认'),
+                            child: Text(S.of(context).Confirm),
                             onPressed: () {
                               CustomHttp().clearCache();
                               Navigator.of(context).pop();
@@ -270,24 +277,29 @@ class _SettingPage extends State<SettingPage> {
             ),
             Divider(),
             ListTile(
-              title: Text('取消所有下载进程'),
-              subtitle: Text('该操作会取消所有下载进程，用于debug，危险操作'),
+              title: Text(S.of(context).SettingPageCancelDownloadTasksTitle),
+              subtitle:
+                  Text(S.of(context).SettingPageCancelDownloadTasksSubtitle),
               onTap: () {
                 showDialog(
                     context: context,
                     builder: (context) {
                       return AlertDialog(
-                        title: Text('确认取消？'),
-                        content: Text('该操作将取消所有正在下载的进程，用于debug，是否确认？'),
+                        title: Text(S
+                            .of(context)
+                            .SettingPageCancelDownloadTasksConfirmTitle),
+                        content: Text(S
+                            .of(context)
+                            .SettingPageCancelDownloadTasksConfirmDescription),
                         actions: [
                           FlatButton(
-                            child: Text('取消'),
+                            child: Text(S.of(context).Cancel),
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
                           ),
                           FlatButton(
-                            child: Text('确认'),
+                            child: Text(S.of(context).Confirm),
                             onPressed: () {
                               print('class: SettingPage, action: cancelTasks');
                               FlutterDownloader.cancelAll();
@@ -300,15 +312,17 @@ class _SettingPage extends State<SettingPage> {
               },
             ),
             ListTile(
-              title: Text('查看所有数据'),
-              subtitle: Text('查看所有下载进程，用于debug'),
+              title: Text(S.of(context).SettingPageDownloadTaskListTitle),
+              subtitle: Text(S.of(context).SettingPageDownloadTaskListSubtitle),
               onTap: () async {
                 final tasks = await FlutterDownloader.loadTasks();
                 showDialog(
                     context: context,
                     builder: (context) {
                       return SimpleDialog(
-                        title: Text('下载进程列表'),
+                        title: Text(S
+                            .of(context)
+                            .SettingPageDownloadTaskListDetailTitle),
                         titlePadding: EdgeInsets.all(10),
                         children: tasks
                             .map<Widget>((e) => ListTile(
@@ -322,7 +336,11 @@ class _SettingPage extends State<SettingPage> {
                                   onTap: () async {
                                     if (!await FlutterDownloader.open(
                                         taskId: e.taskId)) {
-                                      Toast.show("打开失败，请检查下载任务是否完成", context,
+                                      Toast.show(
+                                          S
+                                              .of(context)
+                                              .SettingPageDownloadTaskListOpenFailed,
+                                          context,
                                           duration: Toast.LENGTH_LONG);
                                     }
                                   },
@@ -335,9 +353,9 @@ class _SettingPage extends State<SettingPage> {
             ),
             Divider(),
             ListTile(
-              title: Text('打开日志控制台'),
-              subtitle: Text("你也可以摇一摇打开"),
-              onTap: (){
+              title: Text(S.of(context).SettingPageLogConsoleTitle),
+              subtitle: Text(S.of(context).SettingPageLogConsoleSubtitle),
+              onTap: () {
                 LogConsole.open(context);
               },
             ),
@@ -345,17 +363,22 @@ class _SettingPage extends State<SettingPage> {
             Builder(
               builder: (context) {
                 return ListTile(
-                  title: Text(
-                      '${StaticLanguage.staticStrings['settingPage.checkUpdateTitle']}'),
-                  subtitle: Text(
-                      '${StaticLanguage.staticStrings['settingPage.checkUpdateSubTitle']} ${Provider.of<VersionModel>(context).currentVersion}'),
+                  title: Text(S.of(context).SettingPageCheckUpdateTitle),
+                  subtitle: Text(S.of(context).SettingPageCheckUpdateSubtitle(
+                      Provider.of<VersionModel>(context).currentVersion)),
                   onTap: () async {
-                    await Provider.of<VersionModel>(context,listen: false).checkUpdate();
-                    if(ToolMethods.checkVersionSemver(Provider.of<VersionModel>(context,listen: false).currentVersion, Provider.of<VersionModel>(context,listen: false).latestVersion)){
-                      Provider.of<VersionModel>(context,listen: false).showUpdateDialog(context);
-                    }else{
+                    await Provider.of<VersionModel>(context, listen: false)
+                        .checkUpdate();
+                    if (ToolMethods.checkVersionSemver(
+                        Provider.of<VersionModel>(context, listen: false)
+                            .currentVersion,
+                        Provider.of<VersionModel>(context, listen: false)
+                            .latestVersion)) {
+                      Provider.of<VersionModel>(context, listen: false)
+                          .showUpdateDialog(context);
+                    } else {
                       Scaffold.of(context).showSnackBar(SnackBar(
-                        content: Text('已经是最新版本了'),
+                        content: Text(S.of(context).CheckUpdateUpToDate),
                       ));
                     }
                   },
@@ -363,35 +386,39 @@ class _SettingPage extends State<SettingPage> {
               },
             ),
             ListTile(
-              title: Text('更新通道'),
-              subtitle: Text('${Provider.of<VersionModel>(context).updateChannelName}'),
-              onTap: (){
-                Provider.of<VersionModel>(context,listen: false).updateChannel++;
+              title: Text(S.of(context).SettingPageUpdateChannelTitle),
+              subtitle: Text(S.of(context).SettingPageUpdateChannelSubtitle(S
+                  .of(context)
+                  .SettingPageUpdateChannels(
+                      Provider.of<VersionModel>(context).updateChannelName))),
+              onTap: () {
+                Provider.of<VersionModel>(context, listen: false)
+                    .updateChannel++;
               },
             ),
             Divider(),
             ListTile(
-              title: Text('免责声明'),
-              subtitle: Text('不管有没有，先写了再说'),
+              title: Text(S.of(context).SettingPageDisclaimerTitle),
+              subtitle: Text(S.of(context).SettingPageDisclaimerSubtitle),
               onTap: () {
                 showDialog(
                     context: context,
                     builder: (context) {
                       return SimpleDialog(
-                        title: Text('免责声明'),
+                        title: Text(S.of(context).SettingPageDisclaimerTitle),
                         titlePadding: EdgeInsets.all(10),
                         children: <Widget>[
                           SimpleDialogOption(
                             child: Text(
-                                '1. 本程序为第三方APP，所有程序内容由动漫之家提供，本程序不保证内容安全性和可靠性。'),
+                                S.of(context).SettingPageDisclaimerDetail1),
                           ),
                           SimpleDialogOption(
                             child: Text(
-                                '2. 本程序的所有接口均为官方APP抓包获取，本程序承诺不受集任何内容交予任何第三方机构。'),
+                                S.of(context).SettingPageDisclaimerDetail2),
                           ),
                           SimpleDialogOption(
                             child: Text(
-                                '3. 本程序的登录功能并非官方登录功能，是抓取的官方接口实现，您使用本程序登录功能即代表您了解并愿意承担由于使用本程序登录造成的风险。'),
+                                S.of(context).SettingPageDisclaimerDetail3),
                           )
                         ],
                       );
@@ -399,8 +426,8 @@ class _SettingPage extends State<SettingPage> {
               },
             ),
             ListTile(
-              title: Text('常见问题'),
-              subtitle: Text('?'),
+              title: Text(S.of(context).SettingPageFAQTitle),
+              subtitle: Text(S.of(context).SettingPageFAQSubtitle),
               onTap: () {
                 showDialog(
                     context: context,
@@ -470,47 +497,48 @@ class _SettingPage extends State<SettingPage> {
               },
             ),
             ListTile(
-              title: Text('开源地址'),
-              subtitle: Text('https://github.com/hanerx/flutter_dmzj'),
+              title: Text(S.of(context).SettingPageProjectURLTitle),
+              subtitle: Text(S.of(context).SettingPageProjectURL),
               onTap: () {
-                _openWeb("https://github.com/hanerx/flutter_dmzj");
+                _openWeb(S.of(context).SettingPageProjectURL);
               },
             ),
             ListTile(
-              title: Text('关于'),
-              subtitle: Text('想不到设置里面能塞啥'),
+              title: Text(S.of(context).SettingPageAboutTitle),
+              subtitle: Text(S.of(context).SettingPageAboutSubtitle),
               onTap: () {
                 showDialog(
                     context: context,
                     builder: (context) {
                       return AboutDialog(
-                        applicationName: '$appName',
+                        applicationName:
+                            '${Provider.of<SystemSettingModel>(context).backupApi ? S.of(context).AppNameUltimate : appName}',
                         applicationVersion: '$version',
                         applicationIcon: FlutterLogo(),
                         children: <Widget>[
-                          Text('基于flutter的第三方动漫之家简单app'),
+                          Text(S.of(context).SettingPageAboutDescription),
                         ],
                       );
                     });
               },
             ),
             ListTile(
-              title: Text("更新日志"),
-              subtitle: Text("记录了所有版本的更新日志，方便查看每个版本的内容不同"),
+              title: Text(S.of(context).SettingPageChangeLogTitle),
+              subtitle: Text(S.of(context).SettingPageChangeLogSubtitle),
               onTap: () async {
                 CustomHttp http = CustomHttp();
                 var response = await http.getReleases();
                 if (response.statusCode == 200) {
                   var data = "";
                   for (var item in response.data) {
-                    data +=
-                        '## ${item['name']} \n##### 发布时间：${item['published_at']}\n${item['body']}\n';
+                    data += S.of(context).SettingPageChangeLogContent(
+                        item['name'], item['published_at'], item['body']);
                   }
                   showDialog(
                       context: context,
                       builder: (context) {
                         return AlertDialog(
-                          title: Text('更新记录'),
+                          title: Text(S.of(context).SettingPageChangeLogTitle),
                           content: Container(
                             width: 400,
                             height: 700,
@@ -524,9 +552,12 @@ class _SettingPage extends State<SettingPage> {
             Divider(),
             ListTile(
               enabled: labState,
-              title: Text(labState ? '实验功能' : '占位符'),
-              subtitle: Text(
-                  labState ? '恭喜你发现了彩蛋，这里是平时不会放在外面的彩蛋功能开关的地方' : '想不到要拿来干啥，先占位'),
+              title: Text(labState
+                  ? S.of(context).SettingPageLabSettingTitle
+                  : S.of(context).SettingPagePlaceholderTitle),
+              subtitle: Text(labState
+                  ? S.of(context).SettingPageLabSettingSubtitle
+                  : S.of(context).SettingPagePlaceholderSubtitle),
               onTap: () {
                 Navigator.of(context)
                     .push(MaterialPageRoute(builder: (context) {
@@ -536,8 +567,8 @@ class _SettingPage extends State<SettingPage> {
             ),
             Divider(),
             ListTile(
-              title: Text('退出'),
-              subtitle: Text('其实你点外面的退出一样的'),
+              title: Text(S.of(context).SettingPageLogoutTitle),
+              subtitle: Text(S.of(context).SettingPageLogoutSubtitle),
               onTap: () {
                 DataBase dataBase = DataBase();
                 dataBase.setLoginState(false).then(() {

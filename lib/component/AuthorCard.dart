@@ -18,20 +18,34 @@ class AuthorCard extends StatelessWidget{
     return FlatButton(
       padding: EdgeInsets.all(1),
       child: Card(
+        elevation: 0,
         child: Container(
-          width: MediaQuery.of(context).size.width/3.3,
-          child: Column(
+          child: Wrap(
+            alignment: WrapAlignment.center,
             children: <Widget>[
-              CachedNetworkImage(
-                imageUrl: '$imageUrl',
-                httpHeaders: {'referer': 'http://images.dmzj.com'},
-                progressIndicatorBuilder: (context, url, downloadProgress) =>
-                    CircularProgressIndicator(value: downloadProgress.progress),
-                errorWidget: (context, url, error) => Icon(Icons.error),
+              ClipRRect(
+                child: AspectRatio(
+                  aspectRatio: 0.75,
+                  child:CachedNetworkImage(
+                    imageUrl: '$imageUrl',
+                    httpHeaders: {'referer': 'http://images.dmzj.com'},
+                    progressIndicatorBuilder: (context, url, downloadProgress) =>
+                        Center(child: CircularProgressIndicator(value: downloadProgress.progress),),
+                    errorWidget: (context, url, error) => Icon(Icons.error),
+                  ),),
+                borderRadius: BorderRadius.circular(5),
               ),
-              Text(
-                '$title',
-                overflow: TextOverflow.ellipsis,
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      '$title',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                    ),
+                  )
+                ],
               ),
               Text(
                 '$subtitle',

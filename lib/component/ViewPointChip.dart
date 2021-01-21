@@ -1,32 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class ViewPointChip extends StatefulWidget {
+class ViewPointChip extends StatelessWidget {
   final String content;
   final String id;
   final int num;
 
   ViewPointChip({this.content, this.id, this.num});
-
-  @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return _ViewPointChip(content, id, num);
-  }
-
-  @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    // TODO: implement toString
-    return '{content: $content, id: $id, num: $num, color: ${num ~/ 100 * 100 + 400}}';
-  }
-}
-
-class _ViewPointChip extends State<ViewPointChip> {
-  final String content;
-  final String id;
-  int num;
-
-  _ViewPointChip(this.content, this.id, this.num);
 
   @override
   Widget build(BuildContext context) {
@@ -39,12 +19,18 @@ class _ViewPointChip extends State<ViewPointChip> {
             avatar: CircleAvatar(
               child: Text('${num % 100}'),
               backgroundColor: Colors.blue[
-                  num ~/ 100 * 100 + 400 > 800 ? 800 : num ~/ 100 * 100 + 400],
+              num ~/ 100 * 100 + 400 > 800 ? 800 : num ~/ 100 * 100 + 400],
               foregroundColor: Colors.white,
             )),
         padding: EdgeInsets.all(0),
         onPressed: () {},
       ),
     );
+  }
+
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    // TODO: implement toString
+    return '{content: $content, id: $id, num: $num, color: ${num ~/ 100 * 100 + 400}}';
   }
 }

@@ -5,11 +5,11 @@ import 'package:flutterdmzj/view/comic_detail_page.dart';
 import 'package:flutterdmzj/view/subject_detail_page.dart';
 
 class CustomCard extends StatelessWidget {
-  String imageUrl = "";
-  String title = "";
-  String author = "";
-  int type;
-  String id;
+  final String imageUrl;
+  final String title;
+  final String author;
+  final int type;
+  final String id;
 
   CustomCard(this.imageUrl, this.title, this.author, this.type, this.id);
 
@@ -35,33 +35,45 @@ class CustomCard extends StatelessWidget {
         }
       },
       child: Card(
+          elevation: 0,
           child: new Container(
-        child: Column(
-          children: <Widget>[
-            ClipRRect(
-              child: CachedNetworkImage(
-                imageUrl: '$imageUrl',
-                httpHeaders: {'referer': 'http://images.dmzj.com'},
-                progressIndicatorBuilder: (context, url, downloadProgress) =>
-                    CircularProgressIndicator(value: downloadProgress.progress),
-                errorWidget: (context, url, error) => Icon(Icons.error),
-              ),
-              borderRadius: BorderRadius.circular(5),
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              children: <Widget>[
+                ClipRRect(
+                  child: CachedNetworkImage(
+                    imageUrl: '$imageUrl',
+                    httpHeaders: {'referer': 'http://images.dmzj.com'},
+                    progressIndicatorBuilder:
+                        (context, url, downloadProgress) =>
+                            CircularProgressIndicator(
+                                value: downloadProgress.progress),
+                    errorWidget: (context, url, error) => Icon(Icons.error),
+                  ),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        '$title',
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        textAlign: TextAlign.center,
+                      ),
+                    )
+                  ],
+                ),
+                Text(
+                  '${author != null ? author : ''}',
+                  style: TextStyle(color: Colors.grey, fontSize: 14),
+                  textDirection: TextDirection.ltr,
+                  textAlign: TextAlign.start,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
             ),
-            Text(
-              '$title',
-              overflow: TextOverflow.ellipsis,
-            ),
-            Text(
-              '${author != null ? author : ''}',
-              style: TextStyle(color: Colors.grey, fontSize: 14),
-              textDirection: TextDirection.ltr,
-              textAlign: TextAlign.start,
-              overflow: TextOverflow.ellipsis,
-            )
-          ],
-        ),
-      )),
+          )),
     ));
   }
 }

@@ -46,12 +46,24 @@ class TrackerModel extends BaseModel {
     notifyListeners();
   }
 
-  Future<void> subscribe(ComicDetailModel model) async {
+  Future<int> subscribe(ComicDetailModel model) async {
     if (await _provider.getComic(model.comicId) == null) {
       await add(model);
+      notifyListeners();
+      return 1;
     } else {
       await delete(model);
+      notifyListeners();
+      return 2;
     }
-    notifyListeners();
+  }
+
+  bool ifSubscribe(ComicDetailModel model){
+    for(var item in tracingComic){
+      if(item.comicId==model.comicId){
+        return true;
+      }
+    }
+    return false;
   }
 }

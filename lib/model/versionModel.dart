@@ -12,7 +12,7 @@ class VersionModel extends BaseModel {
   int _updateChannel = 0;
 
   static const List<String> channels=[
-    '发行通道','开发通道'
+    'release','beta'
   ];
 
   String _latestVersion = '0.0.1';

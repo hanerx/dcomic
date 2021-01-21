@@ -4,8 +4,8 @@ import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutterdmzj/generated/l10n.dart';
 import 'package:flutterdmzj/utils/log_output.dart';
-import 'package:flutterdmzj/utils/static_language.dart';
 import 'package:logger/logger.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:version/version.dart';
@@ -46,7 +46,7 @@ class ToolMethods {
     } else {
     Scaffold.of(context).showSnackBar(SnackBar(
     content: Text(
-    '${StaticLanguage.staticStrings['settingPage.canNotOpenWeb']}'),
+    S.of(context).CannotOpenWeb),
     ));
     }
   }

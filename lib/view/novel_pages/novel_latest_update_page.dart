@@ -3,12 +3,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutterdmzj/component/LoadingCube.dart';
-import 'package:flutterdmzj/component/LoadingTile.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:flutterdmzj/view/novel_pages/novel_detail_page.dart';
 
-import '../ranking_page.dart';
 
 class NovelLatestUpdatePage extends StatefulWidget{
   @override

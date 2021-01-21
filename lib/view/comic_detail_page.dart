@@ -1,4 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:direct_select_flutter/direct_select_container.dart';
+import 'package:direct_select_flutter/direct_select_item.dart';
+import 'package:direct_select_flutter/direct_select_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -76,205 +79,266 @@ class _ComicDetailPage extends State<ComicDetailPage> {
           widget.id, Provider.of<SystemSettingModel>(context).backupApi),
       builder: (context, child) {
         return Scaffold(
-          appBar: AppBar(
-            title: Text(Provider.of<ComicDetailModel>(context).title),
-            actions: <Widget>[
-              IconButton(
-                icon: Icon(Icons.share),
-                onPressed: () {
-                  Share.share(
-                      '【${Provider.of<ComicDetailModel>(context, listen: false).title}】 https://m.dmzj.com/info/${Provider.of<ComicDetailModel>(context, listen: false).comicId}.html');
-                },
-              ),
-              Builder(
-                builder: (context) {
-                  return IconButton(
-                    icon: Icon(
-                      Provider.of<ComicDetailModel>(context).sub
-                          ? Icons.favorite
-                          : Icons.favorite_border,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      if (Provider.of<ComicDetailModel>(context, listen: false)
-                          .loading) {
-                        Scaffold.of(context).showSnackBar(
-                            new SnackBar(content: Text('订阅信息还在加载中!')));
-                      } else if (!Provider.of<ComicDetailModel>(context,
-                              listen: false)
-                          .login) {
-                        Scaffold.of(context).showSnackBar(new SnackBar(
-                          content: Text('请先登录!'),
-                          action: SnackBarAction(
-                            label: '去登录',
-                            onPressed: () {
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) {
-                                return LoginPage();
-                              }));
-                            },
-                          ),
-                        ));
-                      } else {
-                        Provider.of<ComicDetailModel>(context, listen: false)
-                            .sub = !Provider.of<ComicDetailModel>(context,
+            appBar: AppBar(
+              title: Text(Provider.of<ComicDetailModel>(context).title),
+              actions: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.share),
+                  onPressed: () {
+                    Share.share(
+                        '【${Provider.of<ComicDetailModel>(context, listen: false).title}】 https://m.dmzj.com/info/${Provider.of<ComicDetailModel>(context, listen: false).comicId}.html');
+                  },
+                ),
+                Builder(
+                  builder: (context) {
+                    return IconButton(
+                      icon: Icon(
+                        Provider.of<ComicDetailModel>(context).sub
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        if (Provider.of<ComicDetailModel>(context,
                                 listen: false)
-                            .sub;
-                      }
-                    },
-                  );
-                },
-              ),
-            ],
-          ),
-          endDrawer: CustomDrawer(
-            child: CommentPage(
-                Provider.of<ComicDetailModel>(context, listen: false).comicId),
-            widthPercent: 0.9,
-          ),
-          floatingActionButton: Builder(
-            builder: (context) {
-              return FancyFab(
-                reverse: Provider.of<ComicDetailModel>(context).reverse,
-                onSort: () {
+                            .loading) {
+                          Scaffold.of(context).showSnackBar(
+                              new SnackBar(content: Text('订阅信息还在加载中!')));
+                        } else if (!Provider.of<ComicDetailModel>(context,
+                                listen: false)
+                            .login) {
+                          Scaffold.of(context).showSnackBar(new SnackBar(
+                            content: Text('请先登录!'),
+                            action: SnackBarAction(
+                              label: '去登录',
+                              onPressed: () {
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
+                                  return LoginPage();
+                                }));
+                              },
+                            ),
+                          ));
+                        } else {
+                          Provider.of<ComicDetailModel>(context, listen: false)
+                              .sub = !Provider.of<ComicDetailModel>(context,
+                                  listen: false)
+                              .sub;
+                        }
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
+            endDrawer: CustomDrawer(
+              child: CommentPage(
                   Provider.of<ComicDetailModel>(context, listen: false)
-                          .reverse =
-                      !Provider.of<ComicDetailModel>(context, listen: false)
-                          .reverse;
-                },
-                onPlay: () {
-                  if (Provider.of<ComicDetailModel>(context, listen: false)
-                          .lastChapterId !=
-                      '') {
-                    // 由于navigator里面context不包含provider，所以要先放在外面
-                    var comicId =
-                        Provider.of<ComicDetailModel>(context, listen: false)
-                            .comicId;
-                    var lastChapterId =
-                        Provider.of<ComicDetailModel>(context, listen: false)
-                            .lastChapterId;
-                    var lastChapterList =
-                        Provider.of<ComicDetailModel>(context, listen: false)
-                            .lastChapterList;
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                      return ComicViewPage(
-                          comicId: comicId,
-                          chapterId: lastChapterId,
-                          chapterList: lastChapterList);
-                    }));
-                  }else if(Provider.of<ComicDetailModel>(context, listen: false).lastChapterId==''){
-                    var comicId =
-                        Provider.of<ComicDetailModel>(context, listen: false)
-                            .comicId;
-                    var lastChapterId ='';
-                    var lastChapterList =
-                        Provider.of<ComicDetailModel>(context, listen: false)
-                            .chapters[0]['data']
-                          .map((value) => value['chapter_id'].toString())
-                          .toList();
+                      .comicId),
+              widthPercent: 0.9,
+            ),
+            floatingActionButton: Builder(
+              builder: (context) {
+                return FancyFab(
+                  reverse: Provider.of<ComicDetailModel>(context).reverse,
+                  isSubscribe: Provider.of<TrackerModel>(context).ifSubscribe(Provider.of<ComicDetailModel>(context)),
+                  onSort: () {
+                    Provider.of<ComicDetailModel>(context, listen: false)
+                            .reverse =
+                        !Provider.of<ComicDetailModel>(context, listen: false)
+                            .reverse;
+                  },
+                  onPlay: () {
+                    if (Provider.of<ComicDetailModel>(context, listen: false)
+                            .lastChapterId !=
+                        '') {
+                      // 由于navigator里面context不包含provider，所以要先放在外面
+                      var comicId =
+                          Provider.of<ComicDetailModel>(context, listen: false)
+                              .comicId;
+                      var lastChapterId =
+                          Provider.of<ComicDetailModel>(context, listen: false)
+                              .lastChapterId;
+                      var lastChapterList =
+                          Provider.of<ComicDetailModel>(context, listen: false)
+                              .lastChapterList;
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return ComicViewPage(
+                            comicId: comicId,
+                            chapterId: lastChapterId,
+                            chapterList: lastChapterList);
+                      }));
+                    } else if (Provider.of<ComicDetailModel>(context,
+                                listen: false)
+                            .lastChapterId ==
+                        '') {
+                      var comicId =
+                          Provider.of<ComicDetailModel>(context, listen: false)
+                              .comicId;
+                      var lastChapterId = '';
+                      var lastChapterList =
+                          Provider.of<ComicDetailModel>(context, listen: false)
+                              .chapters[0]['data']
+                              .map((value) => value['chapter_id'].toString())
+                              .toList();
                       if (lastChapterList.length > 0) {
                         lastChapterId =
                             lastChapterList[lastChapterList.length - 1];
                       }
                       Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                          return ComicViewPage(
-                              comicId: comicId,
-                              chapterId: lastChapterId,
-                              chapterList: lastChapterList);
-                        }));
-                  }
-                  else {
-                    Scaffold.of(context).showSnackBar(SnackBar(
-                      content: Text('好像没得记录，没法继续阅读'),
-                    ));
-                  }
-                },
-                onBlackBox: () {
-                  if(!Provider.of<SystemSettingModel>(context,listen: false).blackBox){
+                          MaterialPageRoute(builder: (context) {
+                        return ComicViewPage(
+                            comicId: comicId,
+                            chapterId: lastChapterId,
+                            chapterList: lastChapterList);
+                      }));
+                    } else {
+                      Scaffold.of(context).showSnackBar(SnackBar(
+                        content: Text('好像没得记录，没法继续阅读'),
+                      ));
+                    }
+                  },
+                  onBlackBox: () async{
+                    if (!Provider.of<SystemSettingModel>(context, listen: false)
+                        .blackBox) {
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return SimpleDialog(
+                              children: [
+                                SimpleDialogOption(
+                                  child: Text("Ops! 你遇到了一个没有用的按钮"),
+                                )
+                              ],
+                            );
+                          });
+                    } else {
+                      int flag=await Provider.of<TrackerModel>(context, listen: false)
+                          .subscribe(Provider.of<ComicDetailModel>(context,
+                              listen: false));
+                      Scaffold.of(context).showSnackBar(SnackBar(content: Text('${flag==1?'加入':'取消加入'}黑匣子成功'),));
+                    }
+                  },
+                  onDownload: () async {
+                    List<Widget> list = await Provider.of<ComicDetailModel>(
+                            context,
+                            listen: false)
+                        .buildDownloadWidgetList(context);
                     showDialog(
                         context: context,
                         builder: (context) {
-                          return SimpleDialog(
-                            children: [
-                              SimpleDialogOption(
-                                child: Text("Ops! 你遇到了一个没有用的按钮"),
-                              )
-                            ],
-                          );
-                        });
-                  }else{
-                    Provider.of<TrackerModel>(context,listen: false).subscribe(Provider.of<ComicDetailModel>(context,listen: false));
-                  }
-                },
-                onDownload: () async {
-                  List<Widget> list = await Provider.of<ComicDetailModel>(
-                          context,
-                          listen: false)
-                      .buildDownloadWidgetList(context);
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return Dialog(
-                          child: Container(
-                            child: SingleChildScrollView(
-                              child: Column(
-                                children: list,
+                          return Dialog(
+                            child: Container(
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  children: list,
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                      });
-                },
-              );
-            },
-          ),
-          body: EasyRefresh(
-            scrollController: ScrollController(),
-            onRefresh: ()async{
-              await Provider.of<ComicDetailModel>(context,listen: false).getComic(widget.id);
-            },
-            firstRefresh: true,
-            firstRefreshWidget: LoadingCube(),
-            child: SingleChildScrollView(
-              child: new Column(
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Parallax.inside(
-                          child: Image(
-                              image: CachedNetworkImageProvider(
-                                  Provider.of<ComicDetailModel>(context).cover,
-                                  headers: {'referer': 'http://images.dmzj.com'}),
-                              fit: BoxFit.cover),
-                          mainAxisExtent: 200.0,
-                        ),
-                      )
-                    ],
-                  ),
-                  DetailCard(
-                      Provider.of<ComicDetailModel>(context).title,
-                      Provider.of<ComicDetailModel>(context).updateDate,
-                      Provider.of<ComicDetailModel>(context).status,
-                      Provider.of<ComicDetailModel>(context).author,
-                      Provider.of<ComicDetailModel>(context).types,
-                      Provider.of<ComicDetailModel>(context).hotNum,
-                      Provider.of<ComicDetailModel>(context).subscribeNum,
-                      Provider.of<ComicDetailModel>(context).description),
-                  Card(
-                    margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                    child: Column(
-                      children: Provider.of<ComicDetailModel>(context)
-                          .buildChapterWidgetList(context),
-                    ),
-                  )
-                ],
-              ),
+                          );
+                        });
+                  },
+                );
+              },
             ),
-          )
-        );
+            body: DirectSelectContainer(
+                child: EasyRefresh(
+              scrollController: ScrollController(),
+              onRefresh: () async {
+                await Provider.of<ComicDetailModel>(context, listen: false)
+                    .getComic(widget.id);
+              },
+              firstRefresh: true,
+              firstRefreshWidget: LoadingCube(),
+              child: new Column(
+                  children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Parallax.inside(
+                            child: Image(
+                                image: CachedNetworkImageProvider(
+                                    Provider.of<ComicDetailModel>(context)
+                                        .cover,
+                                    headers: {
+                                      'referer': 'http://images.dmzj.com'
+                                    }),
+                                fit: BoxFit.cover),
+                            mainAxisExtent: 200.0,
+                          ),
+                        )
+                      ],
+                    ),
+                    DetailCard(
+                        Provider.of<ComicDetailModel>(context).title,
+                        Provider.of<ComicDetailModel>(context).updateDate,
+                        Provider.of<ComicDetailModel>(context).status,
+                        Provider.of<ComicDetailModel>(context).author,
+                        Provider.of<ComicDetailModel>(context).types,
+                        Provider.of<ComicDetailModel>(context).hotNum,
+                        Provider.of<ComicDetailModel>(context).subscribeNum,
+                        Provider.of<ComicDetailModel>(context).description),
+                    Card(
+                      elevation: 0,
+                      margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                      child: Row(
+                        children: [
+                          Padding(
+                            child: Text('数据提供商',style: TextStyle(fontWeight: FontWeight.bold),),
+                            padding: EdgeInsets.only(left: 10),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              child: DirectSelectList<String>(
+                                values: ['默认-动漫之家','MangaBz','分布式网络'],
+                                itemBuilder: (String value) =>
+                                    DirectSelectItem<String>(
+                                        itemHeight: 56,
+                                        value: value,
+                                        itemBuilder: (context, value) {
+                                          return Container(
+                                            child: Text(
+                                              value,
+                                              textAlign: TextAlign.start,
+                                            ),
+                                          );
+                                        }),
+                                onItemSelectedListener: (item, index, context) {
+                                  Scaffold.of(context).showSnackBar(
+                                      SnackBar(content: Text(item)));
+                                },
+                                focusedItemDecoration: BoxDecoration(
+                                  border: BorderDirectional(
+                                    bottom: BorderSide(
+                                        width: 1, color: Colors.black12),
+                                    top: BorderSide(
+                                        width: 1, color: Colors.black12),
+                                  ),
+                                ),
+                              ),
+                              padding: EdgeInsets.fromLTRB(20, 5, 5, 5),
+                            ),
+                          ),
+                          Padding(
+                            child: Icon(Icons.unfold_more,color: Theme.of(context).disabledColor,),
+                            padding: EdgeInsets.only(right: 10),
+                          )
+                        ],
+                      ),
+                    ),
+                    Card(
+                      elevation: 0,
+                      margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                      child: Column(
+                        children: Provider.of<ComicDetailModel>(context)
+                            .buildChapterWidgetList(context),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ));
       },
     );
   }
@@ -297,6 +361,7 @@ class DetailCard extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Card(
+        elevation: 0,
         margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
         child: Padding(
           padding: EdgeInsets.fromLTRB(4, 2, 4, 10),

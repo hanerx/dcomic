@@ -21,6 +21,7 @@ class _EndPage extends State<EndPage> {
           height: 300,
           width: 400,
           child: Card(
+            elevation: 0,
               child: Container(
             padding: EdgeInsets.all(10),
             child: Column(

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:yin_drag_sacle/core/drag_scale_widget.dart';
 
 import 'Common.dart';

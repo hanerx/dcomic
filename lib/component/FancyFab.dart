@@ -7,8 +7,9 @@ class FancyFab extends StatefulWidget {
   final VoidCallback onPlay;
   final VoidCallback onBlackBox;
   final VoidCallback onDownload;
+  final bool isSubscribe;
 
-  FancyFab({this.reverse: false, this.onSort, this.onPlay, this.onBlackBox,this.onDownload});
+  FancyFab({this.reverse: false, this.onSort, this.onPlay, this.onBlackBox,this.onDownload, this.isSubscribe});
 
   @override
   _FancyFabState createState() => _FancyFabState();
@@ -26,6 +27,7 @@ class _FancyFabState extends State<FancyFab>
 
   @override
   initState() {
+    super.initState();
     _animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 500))
           ..addListener(() {
@@ -55,7 +57,6 @@ class _FancyFabState extends State<FancyFab>
         curve: _curve,
       ),
     ));
-    super.initState();
   }
 
   @override
@@ -100,7 +101,7 @@ class _FancyFabState extends State<FancyFab>
         tooltip: '黑匣子',
         backgroundColor: Colors.black,
         elevation: isOpened ? 16 : 0,
-        child: Icon(Icons.inbox),
+        child: Icon(widget.isSubscribe?Icons.open_in_browser:Icons.move_to_inbox),
       ),
     );
   }
@@ -130,6 +131,7 @@ class _FancyFabState extends State<FancyFab>
         heroTag: "play",
         tooltip: '继续阅读',
         elevation: isOpened ? 16 : 0,
+        backgroundColor: Colors.blue,
         child: Icon(Icons.play_arrow),
       ),
     );

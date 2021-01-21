@@ -2,8 +2,7 @@ import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/utils/static_language.dart';
-import 'package:flutterdmzj/view/comic_detail_page.dart';
+import 'package:flutterdmzj/generated/l10n.dart';
 
 class SubscribeCard extends StatefulWidget {
   final String cover;
@@ -53,7 +52,7 @@ class _SubscribeCard extends State<SubscribeCard> {
             borderRadius: 5,
             child: _Card(widget.cover, widget.title, widget.subTitle),
             badgeContent: Text(
-              StaticLanguage.staticStrings['subscribeCard.newTip'],
+              S.of(context).TipsNew,
               style: TextStyle(color: Colors.white),
             ),
           )),
@@ -103,7 +102,7 @@ class _Card extends StatelessWidget {
           ],
         ),
         Text(
-          '${StaticLanguage.staticStrings['subscribeCard.latestUpdate']}$subTitle',
+          S.of(context).SubscribeLatestUpdate(subTitle),
           overflow: TextOverflow.ellipsis,
           maxLines: 1,
         )

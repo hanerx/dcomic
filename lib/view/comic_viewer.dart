@@ -2,12 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutterdmzj/component/CustomDrawer.dart';
-import 'package:flutterdmzj/component/comic_viewer/ComicPage.dart';
 import 'package:flutterdmzj/component/comic_viewer/HorizontalPageView.dart';
 import 'package:flutterdmzj/component/comic_viewer/Tips.dart';
 import 'package:flutterdmzj/component/comic_viewer/VerticalPageView.dart';
-import 'package:flutterdmzj/database/database.dart';
-import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/model/comic.dart';
 import 'package:flutterdmzj/model/comicViewerSettingModel.dart';
 import 'package:flutterdmzj/model/systemSettingModel.dart';
@@ -31,13 +28,12 @@ class ComicViewPage extends StatefulWidget {
 class _ComicViewPage extends State<ComicViewPage>
     with TickerProviderStateMixin {
   bool _show = false;
-  TabController _tabController;
+  int _initialIndex=0;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
     SystemChrome.setEnabledSystemUIOverlays([]);
   }
 
@@ -95,6 +91,7 @@ class _ComicViewPage extends State<ComicViewPage>
                                 data: BottomNavigationBarThemeData(
                                     selectedItemColor: Colors.white),
                                 child: BottomNavigationBar(
+                                  type: BottomNavigationBarType.fixed,
                                   onTap: (index) async {
                                     switch (index) {
                                       case 0:
@@ -111,8 +108,23 @@ class _ComicViewPage extends State<ComicViewPage>
                                         break;
                                       case 1:
                                         Scaffold.of(context).openEndDrawer();
+                                        setState(() {
+                                          _initialIndex=0;
+                                        });
                                         break;
                                       case 2:
+                                        Scaffold.of(context).openEndDrawer();
+                                        setState(() {
+                                          _initialIndex=1;
+                                        });
+                                        break;
+                                      case 3:
+                                        Scaffold.of(context).openEndDrawer();
+                                        setState(() {
+                                          _initialIndex=2;
+                                        });
+                                        break;
+                                      case 4:
                                         await Provider.of<ComicModel>(context,
                                                 listen: false)
                                             .nextChapter();
@@ -138,7 +150,15 @@ class _ComicViewPage extends State<ComicViewPage>
                                     ),
                                     BottomNavigationBarItem(
                                       title: Text('吐槽'),
+                                      icon: Icon(Icons.message),
+                                    ),
+                                    BottomNavigationBarItem(
+                                      title: Text('目录'),
                                       icon: Icon(Icons.list),
+                                    ),
+                                    BottomNavigationBarItem(
+                                      title: Text('设置'),
+                                      icon: Icon(Icons.settings),
                                     ),
                                     BottomNavigationBarItem(
                                       title: Text('下一话'),
@@ -167,18 +187,20 @@ class _ComicViewPage extends State<ComicViewPage>
               endDrawer: CustomDrawer(
                 widthPercent: 0.9,
                 child: DefaultTabController(
-                  length: 2,
+                  length: 3,
+                  initialIndex: _initialIndex,
                   child: Scaffold(
                     appBar: AppBar(
                       backgroundColor: Colors.black54,
                       title: Text("${Provider.of<ComicModel>(context).title}"),
                       bottom: TabBar(
-                        tabs: [Tab(text: "吐槽"), Tab(text: "设定")],
+                        tabs: [Tab(text: "吐槽"), Tab(text: '目录',),Tab(text: "设定")],
                       ),
                     ),
                     body: TabBarView(
                       children: [
                         _buildViewPoint(context),
+                        _buildCatalogue(context),
                         _buildConfig(context)
                       ],
                     ),
@@ -236,7 +258,7 @@ class _ComicViewPage extends State<ComicViewPage>
   Widget _buildViewPoint(BuildContext context) {
     return SingleChildScrollView(
       child: Wrap(
-        children: Provider.of<ComicModel>(context).viewPoints,
+        children: Provider.of<ComicModel>(context).buildViewPoint(context),
       ),
     );
   }
@@ -344,7 +366,7 @@ class _ComicViewPage extends State<ComicViewPage>
           subtitle: Text(
               "chapterId: ${Provider.of<ComicModel>(context).chapterId}\n"
               "comicId: ${Provider.of<ComicModel>(context).comicId}\n"
-              "chapterList: ${Provider.of<ComicModel>(context).chapterList}\n"
+              "chapterList: ${Provider.of<ComicModel>(context).chapterIdList}\n"
               "length: ${Provider.of<ComicModel>(context).length}\n"
               "pageAt: ${Provider.of<ComicModel>(context).pageAt}\n"
               "previous: ${Provider.of<ComicModel>(context).previous}\n"
@@ -394,6 +416,10 @@ class _ComicViewPage extends State<ComicViewPage>
         ),
       );
     }
+  }
+
+  Widget _buildCatalogue(context){
+    return ListView.builder(itemBuilder: Provider.of<ComicModel>(context).buildChapterWidget,itemCount: Provider.of<ComicModel>(context).catalogueLength,);
   }
 
   bool get show => _show;

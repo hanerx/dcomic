@@ -11,7 +11,7 @@ description: A 3rd-party dmzj application powered by flutter
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.4.5+26
+version: 1.4.6-beta.2+28
 
 environment:
   sdk: ">=2.2.2 <3.0.0"
@@ -40,7 +40,7 @@ dependencies:
   toast: ^0.1.5
   uni_links: ^0.4.0
   share: ^0.6.5+2
-  file_picker: ^2.0.6
+  file_picker: ^2.1.5
   flutter_downloader: ^1.5.2
   logger: ^0.9.4
   flutter_widget_from_html: ^0.5.1+5
@@ -49,6 +49,7 @@ dependencies:
   battery: ^1.0.7
   flutter_spinkit: "^4.1.2"
   version: ^1.2.0
+  direct_select_flutter: ^1.0.7
   logger_flutter:
     git: https://github.com/ewertonrp/logger_flutter.git
   flutter_localizations:
@@ -104,3 +105,5 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+flutter_intl:
+  enabled: true

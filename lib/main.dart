@@ -6,13 +6,12 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutterdmzj/component/Drawer.dart';
-import 'package:flutterdmzj/database/database.dart';
+import 'package:flutterdmzj/generated/l10n.dart';
 import 'package:flutterdmzj/model/comicViewerSettingModel.dart';
 import 'package:flutterdmzj/model/systemSettingModel.dart';
 import 'package:flutterdmzj/model/trackerModel.dart';
 import 'package:flutterdmzj/model/versionModel.dart';
 import 'package:flutterdmzj/utils/ChineseCupertinoLocalizations.dart';
-import 'package:flutterdmzj/utils/static_language.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:flutterdmzj/view/category_page.dart';
 import 'package:flutterdmzj/view/comic_detail_page.dart';
@@ -25,16 +24,10 @@ import 'package:flutterdmzj/view/ranking_page.dart';
 import 'package:flutterdmzj/view/setting_page.dart';
 import 'package:logger/logger.dart';
 import 'package:logger_flutter/logger_flutter.dart';
-import 'package:markdown_widget/markdown_widget.dart';
-import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 import 'package:uni_links/uni_links.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:event_bus/event_bus.dart';
 
 import 'component/search/SearchButton.dart';
-import 'event/ThemeChangeEvent.dart';
-import 'http/http.dart';
 
 void main() async {
   runApp(App());
@@ -50,13 +43,13 @@ class App extends StatelessWidget {
         lazy: false,
       ),
       ChangeNotifierProvider<ComicViewerSettingModel>(
-        create: (_)=>ComicViewerSettingModel(),
+        create: (_) => ComicViewerSettingModel(),
       ),
       ChangeNotifierProvider<VersionModel>(
-        create: (_)=>VersionModel(),
+        create: (_) => VersionModel(),
       ),
       ChangeNotifierProvider<TrackerModel>(
-        create: (_)=>TrackerModel(),
+        create: (_) => TrackerModel(),
       )
     ], child: MainFrame());
   }
@@ -132,13 +125,10 @@ class _MainFrame extends State<MainFrame> {
           "login": (BuildContext context) => new LoginPage(),
           "download": (BuildContext context) => new DownloadPage()
         },
-        supportedLocales: [
-          //此处
-          const Locale('zh', 'CH'),
-          const Locale('en', 'US'),
-        ],
+        supportedLocales: S.delegate.supportedLocales,
         localizationsDelegates: [
           //此处
+          S.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           DefaultCupertinoLocalizations.delegate,
@@ -163,7 +153,6 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPage extends State<MainPage> {
-
   Future<Null> initUniLinks() async {
     getUriLinksStream().listen((Uri event) {
       print(
@@ -179,11 +168,15 @@ class _MainPage extends State<MainPage> {
     });
   }
 
-  Future<void> checkUpdate()async{
-    await Provider.of<VersionModel>(context,listen: false).init();
-    if(ToolMethods.checkVersionSemver(Provider.of<VersionModel>(context,listen: false).localLatestVersion, Provider.of<VersionModel>(context,listen: false).latestVersion)){
-      Provider.of<VersionModel>(context,listen: false).localLatestVersion=Provider.of<VersionModel>(context,listen: false).latestVersion;
-      Provider.of<VersionModel>(context,listen: false).showUpdateDialog(context);
+  Future<void> checkUpdate() async {
+    await Provider.of<VersionModel>(context, listen: false).init();
+    if (ToolMethods.checkVersionSemver(
+        Provider.of<VersionModel>(context, listen: false).localLatestVersion,
+        Provider.of<VersionModel>(context, listen: false).latestVersion)) {
+      Provider.of<VersionModel>(context, listen: false).localLatestVersion =
+          Provider.of<VersionModel>(context, listen: false).latestVersion;
+      Provider.of<VersionModel>(context, listen: false)
+          .showUpdateDialog(context);
     }
   }
 
@@ -202,21 +195,21 @@ class _MainPage extends State<MainPage> {
       length: 4,
       child: new Scaffold(
           appBar: new AppBar(
-            title: Text('大妈之家(?)'),
+            title: Text(S.of(context).AppName),
             actions: <Widget>[SearchButton()],
             bottom: TabBar(
               tabs: <Widget>[
                 new Tab(
-                  text: '首页',
+                  text: S.of(context).MainPageTabHome,
                 ),
                 new Tab(
-                  text: '分类',
+                  text: S.of(context).MainPageTabCategory,
                 ),
                 new Tab(
-                  text: '排行',
+                  text: S.of(context).MainPageTabRanking,
                 ),
                 new Tab(
-                  text: '最新',
+                  text: S.of(context).MainPageTabLatest,
                 )
               ],
             ),

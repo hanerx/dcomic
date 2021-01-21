@@ -1,11 +1,9 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/model/systemSettingModel.dart';
-import 'package:flutterdmzj/utils/static_language.dart';
+import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class LabSettingPage extends StatefulWidget {
   @override
@@ -19,17 +17,6 @@ class _LabSettingPage extends State<LabSettingPage> {
   bool search = false;
   bool darkSide = false;
   bool novel = false;
-
-  _openWeb(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text(
-            '${StaticLanguage.staticStrings['settingPage.canNotOpenWeb']}'),
-      ));
-    }
-  }
 
   getDeepSearch() async {
     DataBase dataBase = DataBase();
@@ -167,7 +154,7 @@ class _LabSettingPage extends State<LabSettingPage> {
               },
             ),
             onLongPress: () {
-              _openWeb('https://github.com/torta/dark-dmzj');
+              ToolMethods.callWeb('https://github.com/torta/dark-dmzj',context);
             },
             onTap: () {
               setState(() {
