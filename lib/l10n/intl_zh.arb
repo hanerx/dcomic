@@ -1,6 +1,6 @@
 {
-  "@@locale" : "zh",
-  "AppName":"大妈之家",
+  "@@locale": "zh",
+  "AppName": "大妈之家",
   "AppNameUltimate": "真·不撸埃斯Ultimate外拓大妈之家",
   "Setting": "设置",
   "MainPageTabHome": "首页",
@@ -54,7 +54,7 @@
   "CheckUpdateUpToDate": "已经是最新版本了",
   "SettingPageUpdateChannelTitle": "更新通道",
   "SettingPageUpdateChannelSubtitle": "当前通道：{channel}",
-  "@SettingPageUpdateChannelSubtitle":{
+  "@SettingPageUpdateChannelSubtitle": {
     "placeholders": {
       "channel": {}
     }
@@ -109,5 +109,15 @@
       "title": {}
     }
   },
-  "NoData": "没有更多数据了"
+  "NoData": "没有更多数据了",
+  "SettingPageMainReadingTitle": "阅读设置",
+  "SettingPageMainReadingSubtitle": "所有阅读器相关的设置",
+  "SettingPageMainSourceTitle": "漫画源",
+  "SettingPageMainSourceSubtitle": "漫画源相关设置",
+  "SettingPageMainAboutTitle": "关于",
+  "SettingPageMainAboutSubtitle": "应用相关",
+  "SettingPageMainDebugTitle": "调试",
+  "SettingPageMainDebugSubtitle": "开发者功能",
+  "SettingPageMainUserTitle": "用户",
+  "SettingPageMainUserSubtitle": "用户相关设置"
 }

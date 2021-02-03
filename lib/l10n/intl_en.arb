@@ -109,5 +109,15 @@
       "title": {}
     }
   },
-  "NoData": "No more data"
+  "NoData": "No more data",
+  "SettingPageMainReadingTitle": "Reading",
+  "SettingPageMainReadingSubtitle": "Settings about reader",
+  "SettingPageMainSourceTitle": "Source",
+  "SettingPageMainSourceSubtitle": "Comic Source Setting",
+  "SettingPageMainAboutTitle": "About",
+  "SettingPageMainAboutSubtitle": "About application",
+  "SettingPageMainDebugTitle": "Debug",
+  "SettingPageMainDebugSubtitle": "Developer enhancement",
+  "SettingPageMainUserTitle": "Account",
+  "SettingPageMainUserSubtitle": "Account Setting"
 }

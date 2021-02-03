@@ -825,6 +825,106 @@ class S {
       args: [],
     );
   }
+
+  /// `Reading`
+  String get SettingPageMainReadingTitle {
+    return Intl.message(
+      'Reading',
+      name: 'SettingPageMainReadingTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Settings about reader`
+  String get SettingPageMainReadingSubtitle {
+    return Intl.message(
+      'Settings about reader',
+      name: 'SettingPageMainReadingSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Source`
+  String get SettingPageMainSourceTitle {
+    return Intl.message(
+      'Source',
+      name: 'SettingPageMainSourceTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Comic Source Setting`
+  String get SettingPageMainSourceSubtitle {
+    return Intl.message(
+      'Comic Source Setting',
+      name: 'SettingPageMainSourceSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `About`
+  String get SettingPageMainAboutTitle {
+    return Intl.message(
+      'About',
+      name: 'SettingPageMainAboutTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `About application`
+  String get SettingPageMainAboutSubtitle {
+    return Intl.message(
+      'About application',
+      name: 'SettingPageMainAboutSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Debug`
+  String get SettingPageMainDebugTitle {
+    return Intl.message(
+      'Debug',
+      name: 'SettingPageMainDebugTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Developer enhancement`
+  String get SettingPageMainDebugSubtitle {
+    return Intl.message(
+      'Developer enhancement',
+      name: 'SettingPageMainDebugSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Account`
+  String get SettingPageMainUserTitle {
+    return Intl.message(
+      'Account',
+      name: 'SettingPageMainUserTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Account Setting`
+  String get SettingPageMainUserSubtitle {
+    return Intl.message(
+      'Account Setting',
+      name: 'SettingPageMainUserSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
