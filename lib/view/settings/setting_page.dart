@@ -14,6 +14,9 @@ import 'package:flutterdmzj/view/database_detail_page.dart';
 import 'package:flutterdmzj/view/settings/about_setting_page.dart';
 import 'package:flutterdmzj/view/settings/debug_setting_page.dart';
 import 'package:flutterdmzj/view/settings/download_setting_page.dart';
+import 'package:flutterdmzj/view/settings/reader_setting_page.dart';
+import 'package:flutterdmzj/view/settings/source_setting_page.dart';
+import 'package:flutterdmzj/view/settings/user_setting_page.dart';
 import 'file:///C:/Users/hanerx/AndroidStudioProjects/flutter_dmzj/lib/view/settings/lab_setting_page.dart';
 import 'package:logger_flutter/logger_flutter.dart';
 import 'package:markdown_widget/markdown_widget.dart';
@@ -44,11 +47,17 @@ class _SettingPage extends State<SettingPage> {
             leading: Icon(Icons.book),
             title: Text(S.of(context).SettingPageMainReadingTitle),
             subtitle: Text(S.of(context).SettingPageMainReadingSubtitle),
+            onTap: (){
+              Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ReaderSettingPage()));
+            },
           ),
           ListTile(
             leading: Icon(Icons.cloud),
             title: Text(S.of(context).SettingPageMainSourceTitle),
             subtitle: Text(S.of(context).SettingPageMainSourceSubtitle),
+            onTap: (){
+              Navigator.of(context).push(MaterialPageRoute(builder: (context)=>SourceSettingPage()));
+            },
           ),
           ListTile(
             leading: Icon(Icons.file_download),
@@ -62,6 +71,9 @@ class _SettingPage extends State<SettingPage> {
             leading: Icon(Icons.account_box),
             title: Text(S.of(context).SettingPageMainUserTitle),
             subtitle: Text(S.of(context).SettingPageMainUserSubtitle),
+            onTap: (){
+              Navigator.of(context).push(MaterialPageRoute(builder: (context)=>UserSettingPage()));
+            },
           ),
           ListTile(
             leading: Icon(Icons.developer_mode),
