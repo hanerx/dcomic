@@ -2,9 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutterdmzj/component/DownloadComicListTile.dart';
 import 'package:flutterdmzj/database/downloader.dart';
 import 'package:flutterdmzj/model/baseModel.dart';
-import 'package:flutterdmzj/utils/log_output.dart';
-import 'package:logger/logger.dart';
-import 'package:logger_flutter/logger_flutter.dart';
 
 class DownloadModel extends BaseModel {
   List<Comic> data;

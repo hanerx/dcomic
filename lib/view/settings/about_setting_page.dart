@@ -5,7 +5,6 @@ import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/model/systemSettingModel.dart';
 import 'package:flutterdmzj/model/versionModel.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
-import 'package:markdown_widget/config/widget_config.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 import 'package:provider/provider.dart';
 

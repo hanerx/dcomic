@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'file:///C:/Users/hanerx/AndroidStudioProjects/flutter_dmzj/lib/component/search/SearchButton.dart';
+import 'package:flutterdmzj/component/search/SearchButton.dart';
+
 import 'package:flutterdmzj/view/category_page.dart';
 import 'package:flutterdmzj/view/novel_pages/novel_home_page.dart';
 import 'package:flutterdmzj/view/novel_pages/novel_latest_update_page.dart';

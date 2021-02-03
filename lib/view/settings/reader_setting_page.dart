@@ -19,6 +19,11 @@ class _ReaderSettingPage extends State<ReaderSettingPage>{
       appBar: AppBar(
         title: Text(S.of(context).SettingPageMainReadingTitle),
       ),
+      body: ListView(
+        children: [
+
+        ],
+      ),
     );
   }
 

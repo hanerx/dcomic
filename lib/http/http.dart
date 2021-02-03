@@ -2,9 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutterdmzj/database/database.dart';
-import 'package:markdown_widget/markdown_helper.dart';
 
 class CustomHttp {
   Dio dio;

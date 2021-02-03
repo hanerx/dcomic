@@ -22,7 +22,7 @@ import 'package:flutterdmzj/view/home_page.dart';
 import 'package:flutterdmzj/view/latest_update_page.dart';
 import 'package:flutterdmzj/view/login_page.dart';
 import 'package:flutterdmzj/view/ranking_page.dart';
-import 'file:///C:/Users/hanerx/AndroidStudioProjects/flutter_dmzj/lib/view/settings/setting_page.dart';
+import 'package:flutterdmzj/view/settings/setting_page.dart';
 import 'package:logger/logger.dart';
 import 'package:logger_flutter/logger_flutter.dart';
 import 'package:provider/provider.dart';

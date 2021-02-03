@@ -1,11 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/generated/l10n.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:logger_flutter/logger_flutter.dart';
-import 'package:toast/toast.dart';
 
 import '../database_detail_page.dart';
 

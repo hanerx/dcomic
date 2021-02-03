@@ -7,8 +7,9 @@ import 'package:flutterdmzj/component/LoadingCube.dart';
 import 'package:flutterdmzj/model/novelDetail.dart';
 import 'package:provider/provider.dart';
 
-import '../comic_detail_page.dart';
 import '../login_page.dart';
+
+
 
 class NovelDetailPage extends StatefulWidget {
   final int id;

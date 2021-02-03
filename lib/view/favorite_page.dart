@@ -5,7 +5,6 @@ import 'package:flutterdmzj/model/systemSettingModel.dart';
 import 'package:flutterdmzj/view/favorite/comic_favorite_page.dart';
 import 'package:flutterdmzj/view/favorite/novel_favorite_page.dart';
 import 'package:flutterdmzj/view/favorite/tracker_favorite_page.dart';
-import 'package:markdown_widget/markdown_helper.dart';
 import 'package:provider/provider.dart';
 
 class FavoritePage extends StatefulWidget {

@@ -19,6 +19,9 @@ class _SourceSettingPage extends State<SourceSettingPage>{
       appBar: AppBar(
         title: Text(S.of(context).SettingPageMainSourceTitle),
       ),
+      body: ListView(
+        children: [],
+      ),
     );
   }
 

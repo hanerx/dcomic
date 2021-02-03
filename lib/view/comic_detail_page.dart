@@ -11,20 +11,14 @@ import 'package:flutterdmzj/component/CustomDrawer.dart';
 import 'package:flutterdmzj/component/FancyFab.dart';
 import 'package:flutterdmzj/component/LoadingCube.dart';
 import 'package:flutterdmzj/component/TypeTags.dart';
-import 'package:flutterdmzj/database/database.dart';
-import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/model/comicDetail.dart';
-import 'package:flutterdmzj/model/comicViewerSettingModel.dart';
 import 'package:flutterdmzj/model/systemSettingModel.dart';
 import 'package:flutterdmzj/model/trackerModel.dart';
-import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:flutterdmzj/view/comment_page.dart';
 import 'package:flutterdmzj/view/login_page.dart';
-import 'package:markdown_widget/markdown_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 
-import 'comic_viewer.dart';
 import 'comic_viewer.dart';
 
 class ComicDetailPage extends StatefulWidget {
