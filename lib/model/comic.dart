@@ -270,6 +270,10 @@ class ComicModel extends BaseModel {
     }
   }
 
+  Future<void> refreshViewPoint()async{
+    await getViewPoint(pageAt, comicId);
+  }
+
   Future<bool> nextChapter() async {
     if (!refreshState && !right) {
       refreshState = true;

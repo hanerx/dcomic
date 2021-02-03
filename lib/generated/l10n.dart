@@ -815,6 +815,16 @@ class S {
       args: [title],
     );
   }
+
+  /// `No more data`
+  String get NoData {
+    return Intl.message(
+      'No more data',
+      name: 'NoData',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

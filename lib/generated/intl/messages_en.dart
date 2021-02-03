@@ -55,6 +55,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "MainPageTabHome" : MessageLookupByLibrary.simpleMessage("Home"),
     "MainPageTabLatest" : MessageLookupByLibrary.simpleMessage("Latest"),
     "MainPageTabRanking" : MessageLookupByLibrary.simpleMessage("Ranking"),
+    "NoData" : MessageLookupByLibrary.simpleMessage("No more data"),
     "Novel" : MessageLookupByLibrary.simpleMessage("Novel"),
     "Setting" : MessageLookupByLibrary.simpleMessage("Settings"),
     "SettingPageAboutDescription" : MessageLookupByLibrary.simpleMessage("A 3rd-party flutter dmzj application"),

@@ -108,5 +108,6 @@
     "placeholders": {
       "title": {}
     }
-  }
+  },
+  "NoData": "没有更多数据了"
 }

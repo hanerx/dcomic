@@ -40,21 +40,20 @@ class VersionModel extends BaseModel {
   Future<void> checkUpdate() async {
     try {
       CustomHttp http = CustomHttp();
-      var response = await http.checkUpdate();
-      if (response.statusCode == 200) {
+
         switch (_updateChannel) {
           case 0:
-            if (!response.data['prerelease']) {
+            var response = await http.checkUpdate();
+            if (response.statusCode == 200) {
               _latestVersion = response.data['tag_name'].substring(1);
             }
             break;
-          default:
-            _latestVersion = response.data['tag_name'].substring(1);
+          case 1:
+            var response=await http.getAllUpdateList();
+            _latestVersion = response.data.first['tag_name'].substring(1);
             break;
         }
-
         notifyListeners();
-      }
     } catch (e) {
       logger.e('class: VersionModel, action: checkUpdateFailed, exception: $e');
     }
