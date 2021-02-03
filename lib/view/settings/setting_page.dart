@@ -11,7 +11,9 @@ import 'package:flutterdmzj/model/systemSettingModel.dart';
 import 'package:flutterdmzj/model/versionModel.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:flutterdmzj/view/database_detail_page.dart';
+import 'package:flutterdmzj/view/settings/about_setting_page.dart';
 import 'package:flutterdmzj/view/settings/debug_setting_page.dart';
+import 'package:flutterdmzj/view/settings/download_setting_page.dart';
 import 'file:///C:/Users/hanerx/AndroidStudioProjects/flutter_dmzj/lib/view/settings/lab_setting_page.dart';
 import 'package:logger_flutter/logger_flutter.dart';
 import 'package:markdown_widget/markdown_widget.dart';
@@ -49,6 +51,14 @@ class _SettingPage extends State<SettingPage> {
             subtitle: Text(S.of(context).SettingPageMainSourceSubtitle),
           ),
           ListTile(
+            leading: Icon(Icons.file_download),
+            title: Text(S.of(context).SettingPageMainDownloadTitle),
+            subtitle: Text(S.of(context).SettingPageMainDownloadSubtitle),
+            onTap: (){
+              Navigator.of(context).push(MaterialPageRoute(builder: (context)=>DownloadSettingPage()));
+            },
+          ),
+          ListTile(
             leading: Icon(Icons.account_box),
             title: Text(S.of(context).SettingPageMainUserTitle),
             subtitle: Text(S.of(context).SettingPageMainUserSubtitle),
@@ -66,6 +76,9 @@ class _SettingPage extends State<SettingPage> {
             leading: Icon(Icons.apps),
             title: Text(S.of(context).SettingPageMainAboutTitle),
             subtitle: Text(S.of(context).SettingPageMainAboutSubtitle),
+            onTap: (){
+              Navigator.of(context).push(MaterialPageRoute(builder: (context)=>AboutSettingPage()));
+            },
           ),
         ],
       ),

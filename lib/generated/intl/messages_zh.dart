@@ -96,6 +96,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "SettingPageMainAboutTitle" : MessageLookupByLibrary.simpleMessage("关于"),
     "SettingPageMainDebugSubtitle" : MessageLookupByLibrary.simpleMessage("开发者功能"),
     "SettingPageMainDebugTitle" : MessageLookupByLibrary.simpleMessage("调试"),
+    "SettingPageMainDownloadSubtitle" : MessageLookupByLibrary.simpleMessage("下载相关设置"),
+    "SettingPageMainDownloadTitle" : MessageLookupByLibrary.simpleMessage("下载设置"),
     "SettingPageMainReadingSubtitle" : MessageLookupByLibrary.simpleMessage("所有阅读器相关的设置"),
     "SettingPageMainReadingTitle" : MessageLookupByLibrary.simpleMessage("阅读设置"),
     "SettingPageMainSourceSubtitle" : MessageLookupByLibrary.simpleMessage("漫画源相关设置"),

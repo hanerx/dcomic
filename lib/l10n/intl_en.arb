@@ -111,13 +111,15 @@
   },
   "NoData": "No more data",
   "SettingPageMainReadingTitle": "Reading",
-  "SettingPageMainReadingSubtitle": "Settings about reader",
+  "SettingPageMainReadingSubtitle": "Reader Setting",
   "SettingPageMainSourceTitle": "Source",
   "SettingPageMainSourceSubtitle": "Comic Source Setting",
   "SettingPageMainAboutTitle": "About",
-  "SettingPageMainAboutSubtitle": "About application",
+  "SettingPageMainAboutSubtitle": "About Application",
   "SettingPageMainDebugTitle": "Debug",
-  "SettingPageMainDebugSubtitle": "Developer enhancement",
+  "SettingPageMainDebugSubtitle": "Developer Enhancement",
   "SettingPageMainUserTitle": "Account",
-  "SettingPageMainUserSubtitle": "Account Setting"
+  "SettingPageMainUserSubtitle": "Account Setting",
+  "SettingPageMainDownloadTitle": "Download",
+  "SettingPageMainDownloadSubtitle": "Downloader Setting"
 }

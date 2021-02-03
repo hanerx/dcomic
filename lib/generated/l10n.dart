@@ -836,10 +836,10 @@ class S {
     );
   }
 
-  /// `Settings about reader`
+  /// `Reader Setting`
   String get SettingPageMainReadingSubtitle {
     return Intl.message(
-      'Settings about reader',
+      'Reader Setting',
       name: 'SettingPageMainReadingSubtitle',
       desc: '',
       args: [],
@@ -876,10 +876,10 @@ class S {
     );
   }
 
-  /// `About application`
+  /// `About Application`
   String get SettingPageMainAboutSubtitle {
     return Intl.message(
-      'About application',
+      'About Application',
       name: 'SettingPageMainAboutSubtitle',
       desc: '',
       args: [],
@@ -896,10 +896,10 @@ class S {
     );
   }
 
-  /// `Developer enhancement`
+  /// `Developer Enhancement`
   String get SettingPageMainDebugSubtitle {
     return Intl.message(
-      'Developer enhancement',
+      'Developer Enhancement',
       name: 'SettingPageMainDebugSubtitle',
       desc: '',
       args: [],
@@ -921,6 +921,26 @@ class S {
     return Intl.message(
       'Account Setting',
       name: 'SettingPageMainUserSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Download`
+  String get SettingPageMainDownloadTitle {
+    return Intl.message(
+      'Download',
+      name: 'SettingPageMainDownloadTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Downloader Setting`
+  String get SettingPageMainDownloadSubtitle {
+    return Intl.message(
+      'Downloader Setting',
+      name: 'SettingPageMainDownloadSubtitle',
       desc: '',
       args: [],
     );

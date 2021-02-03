@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/model/baseModel.dart';
@@ -17,6 +19,10 @@ class SystemSettingModel extends BaseModel {
 
   bool _blackBox = false;
 
+  String _savePath = '';
+
+  bool _noMedia = false;
+
   DataBase _dataBase = DataBase();
 
   SystemSettingModel() {
@@ -29,6 +35,8 @@ class SystemSettingModel extends BaseModel {
     _darkState = await _dataBase.getDarkMode();
     _backupApi = await _dataBase.getBackupApi();
     _blackBox = await _dataBase.getBlackBox();
+    _savePath = await _dataBase.getDownloadPath();
+    _noMedia = await File('$savePath/.nomedia').exists();
     notifyListeners();
   }
 
@@ -55,6 +63,35 @@ class SystemSettingModel extends BaseModel {
   set blackBox(bool value) {
     _dataBase.setBlackBox(value);
     _blackBox = value;
+    notifyListeners();
+  }
+
+  String get savePath => _savePath;
+
+  set savePath(String path) {
+    _dataBase.setDownloadPath(path);
+    _savePath = path;
+    notifyListeners();
+  }
+
+  bool get noMedia => _noMedia;
+
+  set noMedia(bool value) {
+    _noMedia = value;
+    var file = File('$savePath/.nomedia');
+    if (value) {
+      file.exists().then((value) {
+        if (!value) {
+          file.create(recursive: true);
+        }
+      });
+    } else {
+      file.exists().then((value) {
+        if (value) {
+          file.delete();
+        }
+      });
+    }
     notifyListeners();
   }
 }

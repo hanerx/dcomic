@@ -52,7 +52,7 @@ class DatabaseCommon {
   };
 
   static Future<Database> initDatabase() async {
-    return await openDatabase("dmzj_2.db", version: 12,
+    return await openDatabase("dmzj_2.db", version: 13,
         onCreate: (Database db, int version) async {
       // await db.execute(
       //     "CREATE TABLE cookies (id INTEGER PRIMARY KEY, key TEXT, value TEXT)");

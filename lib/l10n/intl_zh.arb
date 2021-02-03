@@ -119,5 +119,7 @@
   "SettingPageMainDebugTitle": "调试",
   "SettingPageMainDebugSubtitle": "开发者功能",
   "SettingPageMainUserTitle": "用户",
-  "SettingPageMainUserSubtitle": "用户相关设置"
+  "SettingPageMainUserSubtitle": "用户相关设置",
+  "SettingPageMainDownloadTitle": "下载设置",
+  "SettingPageMainDownloadSubtitle": "下载相关设置"
 }
