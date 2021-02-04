@@ -21,14 +21,10 @@ jobs:
       - uses: actions/checkout@v1
       - uses: actions/setup-java@v1
         with:
-          java-version: '12.x'
-      - uses: subosito/flutter-action@v1.3.2
+          java-version: '8.x'
+      - uses: subosito/flutter-action@v1.4.0
         with:
           flutter-version: '1.20.4'
-        env:
-          STORAGE_PASSWORD: ${{ secrets.STORAGE_PASSWORD }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-          HOME: /home/runner/work/flutter_dmzj/flutter_dmzj/android/test.properties
       - run: wget https://hanerx.top/key_store/${{ secrets.JKS_KEY_TOKEN }}.jks -O /home/runner/work/flutter_dmzj/flutter_dmzj/test.jks && echo -e "storePassword=${{ secrets.STORAGE_PASSWORD }}\nkeyPassword=${{ secrets.KEY_PASSWORD }}\nkeyAlias=key\nstoreFile=/home/runner/work/flutter_dmzj/flutter_dmzj/test.jks" > /home/runner/work/flutter_dmzj/flutter_dmzj/android/test.properties
       - run: cat /home/runner/work/flutter_dmzj/flutter_dmzj/android/test.properties
       - run: flutter pub get
