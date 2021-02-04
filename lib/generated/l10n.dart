@@ -945,6 +945,46 @@ class S {
       args: [],
     );
   }
+
+  /// `Comic Source`
+  String get SettingPageSourcePageSourceTitle {
+    return Intl.message(
+      'Comic Source',
+      name: 'SettingPageSourcePageSourceTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Config Comic Source`
+  String get SettingPageSourcePageSourceSubtitle {
+    return Intl.message(
+      'Config Comic Source',
+      name: 'SettingPageSourcePageSourceSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Comic Source Provider`
+  String get SettingPageSourcePageSourceProviderTitle {
+    return Intl.message(
+      'Comic Source Provider',
+      name: 'SettingPageSourcePageSourceProviderTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Config Comic Source Provider`
+  String get SettingPageSourcePageSourceProviderSubtitle {
+    return Intl.message(
+      'Config Comic Source Provider',
+      name: 'SettingPageSourcePageSourceProviderSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

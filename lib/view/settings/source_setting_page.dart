@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterdmzj/generated/l10n.dart';
+import 'package:flutterdmzj/view/comic_source/comic_source_page.dart';
 
 class SourceSettingPage extends StatefulWidget{
   @override
@@ -20,7 +21,19 @@ class _SourceSettingPage extends State<SourceSettingPage>{
         title: Text(S.of(context).SettingPageMainSourceTitle),
       ),
       body: ListView(
-        children: [],
+        children: [
+          ListTile(
+            title: Text(S.of(context).SettingPageSourcePageSourceTitle),
+            subtitle: Text(S.of(context).SettingPageSourcePageSourceSubtitle),
+            onTap: (){
+              Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ComicSourcePage()));
+            },
+          ),
+          ListTile(
+            title: Text(S.of(context).SettingPageSourcePageSourceProviderTitle),
+            subtitle: Text(S.of(context).SettingPageSourcePageSourceProviderSubtitle),
+          ),
+        ],
       ),
     );
   }

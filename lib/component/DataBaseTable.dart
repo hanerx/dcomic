@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 class DataBaseTable extends StatelessWidget {
   final List<String> headers;
   final List<Map<String, dynamic>> data;
+  final String table;
 
-  const DataBaseTable({Key key, this.headers, this.data}) : super(key: key);
+  const DataBaseTable({Key key, this.headers, this.data, this.table}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +36,7 @@ class DataBaseTable extends StatelessWidget {
     }
     return data
         .map((el) => DataRow(
+
             cells: headers
                 .map<DataCell>((e) => DataCell(Container(
                       child: Text('${el[e]}',style: TextStyle(fontWeight: e==headers.first?FontWeight.bold:null),),

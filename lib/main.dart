@@ -53,6 +53,7 @@ class App extends StatelessWidget {
         create: (_) => TrackerModel(),
       ),
       ChangeNotifierProvider<SourceProvider>(
+        lazy: false,
         create: (_) => SourceProvider(),
       )
     ], child: MainFrame());

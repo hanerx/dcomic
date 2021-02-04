@@ -60,7 +60,7 @@ class DatabaseDetailModel extends BaseModel{
   }
 
   List<Widget> getTabViews(context){
-    return tabs.map<Widget>((e) => DataBaseTable(headers:DatabaseCommon.databases[e].tables.keys.toList(),data: data[e],)).toList();
+    return tabs.map<Widget>((e) => DataBaseTable(headers:DatabaseCommon.databases[e].tables.keys.toList(),data: data[e],table: e,)).toList();
   }
 
   Widget getDatabaseDefine(context,index){

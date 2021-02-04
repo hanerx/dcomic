@@ -121,5 +121,9 @@
   "SettingPageMainUserTitle": "Account",
   "SettingPageMainUserSubtitle": "Account Setting",
   "SettingPageMainDownloadTitle": "Download",
-  "SettingPageMainDownloadSubtitle": "Downloader Setting"
+  "SettingPageMainDownloadSubtitle": "Downloader Setting",
+  "SettingPageSourcePageSourceTitle": "Comic Source",
+  "SettingPageSourcePageSourceSubtitle": "Config Comic Source",
+  "SettingPageSourcePageSourceProviderTitle": "Comic Source Provider",
+  "SettingPageSourcePageSourceProviderSubtitle": "Config Comic Source Provider"
 }

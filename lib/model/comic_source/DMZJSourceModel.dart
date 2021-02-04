@@ -1,11 +1,15 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutterdmzj/database/sourceDatabaseProvider.dart';
 import 'package:flutterdmzj/http/http.dart';
+import 'package:flutterdmzj/model/baseModel.dart';
 import 'package:flutterdmzj/model/comic_source/baseSourceModel.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
+import 'package:provider/provider.dart';
 
 class DMZJSourceModel extends BaseSourceModel {
-  DMZJSourceOptions _options;
+  DMZJSourceOptions _options = DMZJSourceOptions.fromMap({});
 
   DMZJSourceModel() {
     init();
@@ -77,12 +81,33 @@ class DMZJSourceModel extends BaseSourceModel {
   @override
   // TODO: implement type
   SourceDetail get type =>
-      SourceDetail('dmzj', '默认-动漫之家', '默认数据提供商，不可关闭', false);
+      SourceDetail('dmzj', '默认-动漫之家', '默认数据提供商，不可关闭', false, false);
 
   @override
-  List<Widget> getSettingWidget(context) {
+  Widget getSettingWidget(context) {
     // TODO: implement getSettingWidget
-    throw UnimplementedError();
+    return ChangeNotifierProvider(
+      create: (_) => DMZJConfigProvider(_options),
+      builder: (context, child) {
+        return ListView(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          children: [
+            ListTile(
+              title: Text('webApi'),
+              subtitle: Text('是否开启webApi'),
+              trailing: Switch(
+                value: Provider.of<DMZJConfigProvider>(context).webApi,
+                onChanged: (value) {
+                  Provider.of<DMZJConfigProvider>(context, listen: false)
+                      .webApi = value;
+                },
+              ),
+            )
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -90,13 +115,26 @@ class DMZJSourceModel extends BaseSourceModel {
   SourceOptions get options => _options;
 }
 
+class DMZJConfigProvider extends SourceOptionsProvider{
+  final DMZJSourceOptions options;
+
+  DMZJConfigProvider(this.options) : super(options);
+
+  bool get webApi=>options.webApi;
+
+  set webApi(bool value){
+    options.webApi=value;
+    notifyListeners();
+  }
+}
+
 class DMZJSourceOptions extends SourceOptions {
-  bool webApi;
+  bool _webApi;
   bool backupApi;
   bool deepSearch;
 
   DMZJSourceOptions.fromMap(Map map) {
-    webApi = map['web_api'] == '1';
+    _webApi = map['web_api'] == '1';
     backupApi = map['backup_api'] == '1';
     deepSearch = map['deep_search'] == '1';
   }
@@ -114,6 +152,20 @@ class DMZJSourceOptions extends SourceOptions {
   @override
   // TODO: implement active
   bool get active => true;
+
+  @override
+  set active(bool value) {
+    // TODO: implement active
+    return;
+  }
+
+  bool get webApi => _webApi;
+
+  set webApi(bool value) {
+    _webApi = value;
+    SourceDatabaseProvider.insertSourceOption('dmzj', 'web_api', value?'1':'0');
+    notifyListeners();
+  }
 }
 
 class DMZJComicDetail extends ComicDetail {

@@ -9,7 +9,7 @@ abstract class BaseSourceModel extends BaseModel {
   Future<Comic> getChapter(
       {String comicId, String title, String chapterId, String chapterTitle});
 
-  List<Widget> getSettingWidget(context);
+  Widget getSettingWidget(context);
 
   SourceDetail get type;
 
@@ -25,11 +25,33 @@ abstract class BaseSourceModel extends BaseModel {
   int get hashCode => type.hashCode;
 
   SourceOptions get options;
+
+  @override
+  String toString() {
+    // TODO: implement toString
+    return type.toString();
+  }
 }
 
 abstract class SourceOptions extends BaseModel {
   Map<String, dynamic> toMap();
+
   bool get active;
+
+  set active(bool value);
+}
+
+class SourceOptionsProvider extends BaseModel{
+  final SourceOptions options;
+
+  SourceOptionsProvider(this.options);
+
+  bool get active=>options.active;
+
+  set active(bool value){
+    options.active=value;
+    notifyListeners();
+  }
 }
 
 abstract class ComicDetail extends BaseModel {
@@ -75,8 +97,9 @@ class SourceDetail {
   final String title;
   final String description;
   final bool canDisable;
+  final bool cloud;
 
-  SourceDetail(this.name, this.description, this.title, this.canDisable);
+  SourceDetail(this.name, this.title, this.description, this.canDisable, this.cloud);
 
   @override
   // TODO: implement hashCode
@@ -89,6 +112,11 @@ class SourceDetail {
       return name == other.name;
     }
     return false;
+  }
+
+  @override
+  String toString() {
+    return '{name: $name, title: $title, description: $description, canDisable: $canDisable, cloud: $cloud}';
   }
 }
 

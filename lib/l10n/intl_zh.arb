@@ -121,5 +121,9 @@
   "SettingPageMainUserTitle": "用户",
   "SettingPageMainUserSubtitle": "用户相关设置",
   "SettingPageMainDownloadTitle": "下载设置",
-  "SettingPageMainDownloadSubtitle": "下载相关设置"
+  "SettingPageMainDownloadSubtitle": "下载相关设置",
+  "SettingPageSourcePageSourceTitle": "漫画源管理",
+  "SettingPageSourcePageSourceSubtitle": "管理所有漫画源的启用与关闭，同时配置设置",
+  "SettingPageSourcePageSourceProviderTitle": "漫画源提供源管理",
+  "SettingPageSourcePageSourceProviderSubtitle": "漫画源的云端更新配置"
 }

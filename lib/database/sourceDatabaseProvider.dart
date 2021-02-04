@@ -17,4 +17,13 @@ class SourceDatabaseProvider {
     }
     return data;
   }
+
+  static Future<void> insertSourceOption(
+      String name, String key, dynamic value) async {
+    Database database = await initDataBase();
+    await database.delete('source_options',
+        where: 'source_name = ? and key= ?', whereArgs: [name, key]);
+    await database.insert('source_options',
+        {'source_name': name, 'key': key, 'value': value.toString()});
+  }
 }
