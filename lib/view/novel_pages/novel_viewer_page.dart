@@ -86,20 +86,14 @@ class _NovelViewerPage extends State<NovelViewerPage>
             child: Stack(
               children: [
                 EasyRefresh(
-                  scrollController: ScrollController(),
+                  scrollController: _controller,
                   header: BezierCircleHeader(),
                   footer: BezierBounceFooter(),
-                  child: SingleChildScrollView(
-                      controller: _controller,
-                      child: Column(
+                  child: Column(
                         children: [
                           HtmlWidget(Provider.of<NovelModel>(context).data),
-                          Container(
-                            height: 70,
-                          )
                         ],
                       ),
-                  ),
                   onRefresh: ()async{
                     await Provider.of<NovelModel>(context,listen: false).previous();
                   },

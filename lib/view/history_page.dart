@@ -1,13 +1,8 @@
-import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterdmzj/component/CloudHistoryTab.dart';
-import 'package:flutterdmzj/component/HistoryListTile.dart';
 import 'package:flutterdmzj/component/LocalHistoryTab.dart';
-import 'package:flutterdmzj/database/database.dart';
-import 'package:flutterdmzj/http/http.dart';
-import 'package:flutterdmzj/view/login_page.dart';
 
 class HistoryPage extends StatefulWidget {
   @override

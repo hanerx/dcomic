@@ -108,5 +108,22 @@
     "placeholders": {
       "title": {}
     }
-  }
+  },
+  "NoData": "No more data",
+  "SettingPageMainReadingTitle": "Reading",
+  "SettingPageMainReadingSubtitle": "Reader Setting",
+  "SettingPageMainSourceTitle": "Source",
+  "SettingPageMainSourceSubtitle": "Comic Source Setting",
+  "SettingPageMainAboutTitle": "About",
+  "SettingPageMainAboutSubtitle": "About Application",
+  "SettingPageMainDebugTitle": "Debug",
+  "SettingPageMainDebugSubtitle": "Developer Enhancement",
+  "SettingPageMainUserTitle": "Account",
+  "SettingPageMainUserSubtitle": "Account Setting",
+  "SettingPageMainDownloadTitle": "Download",
+  "SettingPageMainDownloadSubtitle": "Downloader Setting",
+  "SettingPageSourcePageSourceTitle": "Comic Source",
+  "SettingPageSourcePageSourceSubtitle": "Config Comic Source",
+  "SettingPageSourcePageSourceProviderTitle": "Comic Source Provider",
+  "SettingPageSourcePageSourceProviderSubtitle": "Config Comic Source Provider"
 }

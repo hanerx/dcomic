@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutterdmzj/component/CustomDrawer.dart';
 import 'package:flutterdmzj/component/comic_viewer/HorizontalPageView.dart';
 import 'package:flutterdmzj/component/comic_viewer/Tips.dart';
@@ -256,7 +257,11 @@ class _ComicViewPage extends State<ComicViewPage>
   }
 
   Widget _buildViewPoint(BuildContext context) {
-    return SingleChildScrollView(
+    return EasyRefresh(
+      scrollController: ScrollController(),
+      onRefresh: ()async{
+        await Provider.of<ComicModel>(context,listen: false).refreshViewPoint();
+      },
       child: Wrap(
         children: Provider.of<ComicModel>(context).buildViewPoint(context),
       ),

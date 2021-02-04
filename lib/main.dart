@@ -8,6 +8,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutterdmzj/component/Drawer.dart';
 import 'package:flutterdmzj/generated/l10n.dart';
 import 'package:flutterdmzj/model/comicViewerSettingModel.dart';
+import 'package:flutterdmzj/model/comic_source/sourceProvider.dart';
 import 'package:flutterdmzj/model/systemSettingModel.dart';
 import 'package:flutterdmzj/model/trackerModel.dart';
 import 'package:flutterdmzj/model/versionModel.dart';
@@ -21,7 +22,7 @@ import 'package:flutterdmzj/view/home_page.dart';
 import 'package:flutterdmzj/view/latest_update_page.dart';
 import 'package:flutterdmzj/view/login_page.dart';
 import 'package:flutterdmzj/view/ranking_page.dart';
-import 'package:flutterdmzj/view/setting_page.dart';
+import 'package:flutterdmzj/view/settings/setting_page.dart';
 import 'package:logger/logger.dart';
 import 'package:logger_flutter/logger_flutter.dart';
 import 'package:provider/provider.dart';
@@ -50,6 +51,10 @@ class App extends StatelessWidget {
       ),
       ChangeNotifierProvider<TrackerModel>(
         create: (_) => TrackerModel(),
+      ),
+      ChangeNotifierProvider<SourceProvider>(
+        lazy: false,
+        create: (_) => SourceProvider(),
       )
     ], child: MainFrame());
   }

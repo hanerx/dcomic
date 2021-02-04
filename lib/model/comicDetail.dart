@@ -10,7 +10,6 @@ import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/model/baseModel.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:flutterdmzj/view/comic_viewer.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';

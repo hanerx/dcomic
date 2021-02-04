@@ -68,13 +68,6 @@ class _LoginPage extends State<LoginPage> {
     }
   }
 
-  _openWeb(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      print('打不开！url:$url');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,16 +1,12 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterdmzj/component/search/NovelSearchTab.dart';
 import 'file:///C:/Users/hanerx/AndroidStudioProjects/flutter_dmzj/lib/component/search/DeepSearchTab.dart';
-import 'file:///C:/Users/hanerx/AndroidStudioProjects/flutter_dmzj/lib/component/search/SearchListTile.dart';
 import 'file:///C:/Users/hanerx/AndroidStudioProjects/flutter_dmzj/lib/component/search/SearchTab.dart';
 import 'package:flutterdmzj/database/database.dart';
-import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/model/systemSettingModel.dart';
 import 'package:provider/provider.dart';
 
-import 'comic_detail_page.dart';
 
 class SearchPage extends StatefulWidget {
   @override

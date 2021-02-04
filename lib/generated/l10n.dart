@@ -815,6 +815,176 @@ class S {
       args: [title],
     );
   }
+
+  /// `No more data`
+  String get NoData {
+    return Intl.message(
+      'No more data',
+      name: 'NoData',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reading`
+  String get SettingPageMainReadingTitle {
+    return Intl.message(
+      'Reading',
+      name: 'SettingPageMainReadingTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reader Setting`
+  String get SettingPageMainReadingSubtitle {
+    return Intl.message(
+      'Reader Setting',
+      name: 'SettingPageMainReadingSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Source`
+  String get SettingPageMainSourceTitle {
+    return Intl.message(
+      'Source',
+      name: 'SettingPageMainSourceTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Comic Source Setting`
+  String get SettingPageMainSourceSubtitle {
+    return Intl.message(
+      'Comic Source Setting',
+      name: 'SettingPageMainSourceSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `About`
+  String get SettingPageMainAboutTitle {
+    return Intl.message(
+      'About',
+      name: 'SettingPageMainAboutTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `About Application`
+  String get SettingPageMainAboutSubtitle {
+    return Intl.message(
+      'About Application',
+      name: 'SettingPageMainAboutSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Debug`
+  String get SettingPageMainDebugTitle {
+    return Intl.message(
+      'Debug',
+      name: 'SettingPageMainDebugTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Developer Enhancement`
+  String get SettingPageMainDebugSubtitle {
+    return Intl.message(
+      'Developer Enhancement',
+      name: 'SettingPageMainDebugSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Account`
+  String get SettingPageMainUserTitle {
+    return Intl.message(
+      'Account',
+      name: 'SettingPageMainUserTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Account Setting`
+  String get SettingPageMainUserSubtitle {
+    return Intl.message(
+      'Account Setting',
+      name: 'SettingPageMainUserSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Download`
+  String get SettingPageMainDownloadTitle {
+    return Intl.message(
+      'Download',
+      name: 'SettingPageMainDownloadTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Downloader Setting`
+  String get SettingPageMainDownloadSubtitle {
+    return Intl.message(
+      'Downloader Setting',
+      name: 'SettingPageMainDownloadSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Comic Source`
+  String get SettingPageSourcePageSourceTitle {
+    return Intl.message(
+      'Comic Source',
+      name: 'SettingPageSourcePageSourceTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Config Comic Source`
+  String get SettingPageSourcePageSourceSubtitle {
+    return Intl.message(
+      'Config Comic Source',
+      name: 'SettingPageSourcePageSourceSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Comic Source Provider`
+  String get SettingPageSourcePageSourceProviderTitle {
+    return Intl.message(
+      'Comic Source Provider',
+      name: 'SettingPageSourcePageSourceProviderTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Config Comic Source Provider`
+  String get SettingPageSourcePageSourceProviderSubtitle {
+    return Intl.message(
+      'Config Comic Source Provider',
+      name: 'SettingPageSourcePageSourceProviderSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

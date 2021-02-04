@@ -11,20 +11,16 @@ import 'package:flutterdmzj/component/CustomDrawer.dart';
 import 'package:flutterdmzj/component/FancyFab.dart';
 import 'package:flutterdmzj/component/LoadingCube.dart';
 import 'package:flutterdmzj/component/TypeTags.dart';
-import 'package:flutterdmzj/database/database.dart';
-import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/model/comicDetail.dart';
-import 'package:flutterdmzj/model/comicViewerSettingModel.dart';
+import 'package:flutterdmzj/model/comic_source/baseSourceModel.dart';
+import 'package:flutterdmzj/model/comic_source/sourceProvider.dart';
 import 'package:flutterdmzj/model/systemSettingModel.dart';
 import 'package:flutterdmzj/model/trackerModel.dart';
-import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:flutterdmzj/view/comment_page.dart';
 import 'package:flutterdmzj/view/login_page.dart';
-import 'package:markdown_widget/markdown_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 
-import 'comic_viewer.dart';
 import 'comic_viewer.dart';
 
 class ComicDetailPage extends StatefulWidget {
@@ -290,23 +286,23 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                           ),
                           Expanded(
                             child: Padding(
-                              child: DirectSelectList<String>(
-                                values: ['默认-动漫之家','MangaBz','分布式网络'],
-                                itemBuilder: (String value) =>
-                                    DirectSelectItem<String>(
+                              child: DirectSelectList<BaseSourceModel>(
+                                values: Provider.of<SourceProvider>(context).activeSources,
+                                itemBuilder: (BaseSourceModel value) =>
+                                    DirectSelectItem<BaseSourceModel>(
                                         itemHeight: 56,
                                         value: value,
                                         itemBuilder: (context, value) {
                                           return Container(
                                             child: Text(
-                                              value,
+                                              value.type.title,
                                               textAlign: TextAlign.start,
                                             ),
                                           );
                                         }),
                                 onItemSelectedListener: (item, index, context) {
                                   Scaffold.of(context).showSnackBar(
-                                      SnackBar(content: Text(item)));
+                                      SnackBar(content: Text(item.type.title)));
                                 },
                                 focusedItemDecoration: BoxDecoration(
                                   border: BorderDirectional(

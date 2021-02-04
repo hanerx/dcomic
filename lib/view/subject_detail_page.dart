@@ -7,7 +7,7 @@ import 'package:flutterdmzj/http/http.dart';
 import 'comic_detail_page.dart';
 
 class SubjectDetailPage extends StatefulWidget {
-  String subjectId;
+  final String subjectId;
 
   SubjectDetailPage(this.subjectId);
 
