@@ -3,7 +3,7 @@
 [![](https://img.shields.io/github/v/release/hanerx/flutter_dmzj)](https://github.com/hanerx/flutter_dmzj/releases/latest) [![](https://img.shields.io/github/downloads/hanerx/flutter_dmzj/total)](https://github.com/hanerx/flutter_dmzj/releases) ![](https://img.shields.io/github/release-date/hanerx/flutter_dmzj)
 
 这是一个基于flutter实现的简单的大妈之家的APP，所有接口均来自于官方的APP抓包和网上的一些分享贴。
-
+**因为大妈之家本体也下线了，所以就不继续针对这个方向制作了，估计以后会以本地阅读器的状态更新出来**
 **最近有人在各种地方乱传这个东西啊，这里说一下别乱传啊，大家暗搓搓用就算了，跳脸到酷安去是几个意思，如果影响大了那我要删库了的啊**
 
 ## 免责声明
