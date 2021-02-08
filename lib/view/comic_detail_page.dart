@@ -24,9 +24,10 @@ import 'package:share/share.dart';
 import 'comic_viewer.dart';
 
 class ComicDetailPage extends StatefulWidget {
-  String id = '';
+  final String id;
+  final String title;
 
-  ComicDetailPage(this.id);
+  ComicDetailPage({this.id, this.title});
 
   @override
   State<StatefulWidget> createState() {
@@ -72,7 +73,7 @@ class _ComicDetailPage extends State<ComicDetailPage> {
 //     // TODO: implement build
     return ChangeNotifierProvider(
       create: (_) => ComicDetailModel(
-          widget.id, Provider.of<SystemSettingModel>(context).backupApi),
+          Provider.of<SourceProvider>(context).active,widget.title,widget.id),
       builder: (context, child) {
         return Scaffold(
             appBar: AppBar(
@@ -247,7 +248,7 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                 scrollController: ScrollController(),
                 onRefresh: () async {
                   await Provider.of<ComicDetailModel>(context, listen: false)
-                      .getComic(widget.id);
+                      .init();
                 },
                 firstRefresh: true,
                 firstRefreshWidget: LoadingCube(),
@@ -316,6 +317,7 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                                   Provider.of<SourceProvider>(context,
                                           listen: false)
                                       .active = item;
+                                  Provider.of<ComicDetailModel>(context,listen: false).changeModel(item);
                                 },
                                 focusedItemDecoration: BoxDecoration(
                                   border: BorderDirectional(

@@ -23,7 +23,7 @@ class CustomCard extends StatelessWidget {
         switch (type) {
           case 1:
             Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return ComicDetailPage(id);
+              return ComicDetailPage(id:id);
             }));
             break;
           case 5:

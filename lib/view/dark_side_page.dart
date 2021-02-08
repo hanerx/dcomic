@@ -139,7 +139,11 @@ class _DarkSidePage extends State<DarkSidePage> {
         ),
         body: EasyRefresh(
           firstRefresh: true,
-          firstRefreshWidget: LoadingCube(backgroundColor: Colors.black,textColor: Colors.white,cubeColor: Colors.teal,),
+          firstRefreshWidget: LoadingCube(
+            backgroundColor: Colors.black,
+            textColor: Colors.white,
+            cubeColor: Colors.teal,
+          ),
           child: ListView.builder(
               itemCount: list.length,
               itemBuilder: (context, index) {
@@ -194,17 +198,17 @@ class DarkCustomListTile extends StatelessWidget {
         child: FlatButton(
       padding: EdgeInsets.fromLTRB(1, 0, 1, 0),
       onPressed: () async {
-        if(Provider.of<SystemSettingModel>(context,listen: false).backupApi){
+        if (Provider.of<SystemSettingModel>(context, listen: false).backupApi) {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return ComicDetailPage(comicId);
+            return ComicDetailPage(id: comicId);
           }));
-        }else{
+        } else {
           CustomHttp http = CustomHttp();
           var response = await http.getComicDetail(comicId);
           if (response.statusCode == 200 &&
               response.data['chapters'].length > 0) {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return ComicDetailPage(comicId);
+              return ComicDetailPage(id: comicId);
             }));
           } else if (live) {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -216,9 +220,9 @@ class DarkCustomListTile extends StatelessWidget {
           } else {
             Scaffold.of(context).showSnackBar(SnackBar(
                 content: Text(
-                  '这本漫画是真的没有了，RIP',
-                  style: TextStyle(color: Colors.red),
-                )));
+              '这本漫画是真的没有了，RIP',
+              style: TextStyle(color: Colors.red),
+            )));
           }
         }
       },

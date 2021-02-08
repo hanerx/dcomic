@@ -50,6 +50,7 @@ dependencies:
   flutter_spinkit: "^4.1.2"
   version: ^1.2.0
   direct_select_flutter: ^1.0.7
+  archive: ^2.0.13
   logger_flutter:
     git: https://github.com/ewertonrp/logger_flutter.git
   flutter_localizations:

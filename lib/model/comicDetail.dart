@@ -8,6 +8,8 @@ import 'package:flutterdmzj/database/downloader.dart';
 import 'package:flutterdmzj/database/tracker.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/model/baseModel.dart';
+import 'package:flutterdmzj/model/comic_source/baseSourceModel.dart';
+import 'package:flutterdmzj/model/comic_source/sourceProvider.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:flutterdmzj/view/comic_viewer.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -17,27 +19,46 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 /// 漫画详情页，记录漫画订阅记录，漫画阅读记录，漫画下载记录，和提供章节的列表
 /// 预计多次迭代
 class ComicDetailModel extends BaseModel {
-  //漫画ID
-  final String comicId;
-  final bool backupApi;
+  BaseSourceModel _model;
+  void changeModel(BaseSourceModel model){
+    _model=model;
+    init();
+    notifyListeners();
+  }
+  String _comicId;
+  String _title;
+
+  ComicDetail detail;
 
   //漫画加载状态
   bool error = false;
   bool loading = true;
 
   //基础信息
-  String title = '加载中';
-  String cover = 'http://manhua.dmzj.com/css/img/mh_logo_dmzj.png?t=20131122';
-  List author = [];
-  List types = [];
-  int hotNum = 0;
-  int subscribeNum = 0;
-  String description = '加载中...';
-  String updateDate = '';
-  String status = '加载中';
+  String get title => detail == null ? "" : detail.title;
+
+  String get cover => detail == null
+      ? 'http://manhua.dmzj.com/css/img/mh_logo_dmzj.png?t=20131122'
+      : detail.cover;
+
+  List get author => detail == null ? [] : detail.authors;
+
+  List get types => detail == null ? [] : detail.tags;
+
+  int get hotNum => detail == null ? 0 : detail.hotNum;
+
+  int get subscribeNum => detail == null ? 0 : detail.subscribeNum;
+
+  String get description => detail == null ? '加载中...' : detail.description;
+
+  String get updateDate => detail == null ? '' : detail.updateTime;
+
+  String get status => detail == null ? '加载中' : detail.status;
+
+  String get comicId => detail == null ? '' : detail.comicId;
 
   //章节信息
-  List chapters = [];
+  List get chapters => detail == null ? [] : detail.getChapters();
   bool _reverse = false;
 
   //最后浏览记录
@@ -51,13 +72,17 @@ class ComicDetailModel extends BaseModel {
 
   Map data;
 
-  ComicDetailModel(this.comicId, this.backupApi) {
-    print('class: ComicDetailModel, action: init, comicId: ${this.comicId}');
-    this.getComic(this.comicId).then((value) {
-      this.getHistory(comicId).then((value) => this
-          .getIfSubscribe(comicId)
-          .then((value) => this.addReadHistory(comicId)));
-    });
+  ComicDetailModel(this._model, this._title, this._comicId) {
+    init();
+  }
+
+  Future<void> init() async {
+    try {
+      detail = await _model.get(title: this._title, comicId: this._comicId);
+      notifyListeners();
+    } catch (e) {
+      logger.w('class: ComicDetail, action: loadingFailed, exception: $e');
+    }
   }
 
   Future<void> addReadHistory(comicId) async {
@@ -132,83 +157,86 @@ class ComicDetailModel extends BaseModel {
     notifyListeners();
   }
 
-  Future<void> getComic(comicId) async {
-    try {
-      CustomHttp http = CustomHttp();
-      var response = await http.getComicDetail(comicId);
-      if (response.statusCode == 200) {
-        //获取基础信息
-        title = response.data['title'];
-        cover = response.data['cover'];
-        author = response.data['authors'];
-        types = response.data['types'];
-        hotNum = response.data['hot_num'];
-        subscribeNum = response.data['subscribe_num'];
-        description = response.data['description'];
-        updateDate =
-            ToolMethods.formatTimestamp(response.data['last_updatetime']);
-        //状态信息需要采取特殊处理
-        status = response.data['status']
-            .map((value) => value['tag_name'])
-            .toList()
-            .join('/');
-        chapters = response.data['chapters'];
-        if(chapters.length==0&&backupApi){
-          throw Exception('no chapters');
-        }
-        print(
-            'class: ComicDetailModel, action: detailLoading, comicId: ${this.comicId}, title: ${this.title}, author: ${this.author}');
-      }
-    } catch (e) {
-      //出现加载问题
-      this.error = true;
-      description = '错误代码: $e';
-      title = '加载出错';
-      status = '加载失败';
-      print(
-          'class: ComicDetailModel, action: detailLoadingFailed, comicId: ${this.comicId}, exception: $e');
-      if (backupApi) {
-        await getComicDetailBackup(comicId);
-      }
-    }
-    //唤醒UI
-    notifyListeners();
-  }
+  // Future<void> getComic(comicId) async {
+  //   try {
+  //     CustomHttp http = CustomHttp();
+  //     var response = await http.getComicDetail(comicId);
+  //     if (response.statusCode == 200) {
+  //       //获取基础信息
+  //       title = response.data['title'];
+  //       cover = response.data['cover'];
+  //       author = response.data['authors'];
+  //       types = response.data['types'];
+  //       hotNum = response.data['hot_num'];
+  //       subscribeNum = response.data['subscribe_num'];
+  //       description = response.data['description'];
+  //       updateDate =
+  //           ToolMethods.formatTimestamp(response.data['last_updatetime']);
+  //       //状态信息需要采取特殊处理
+  //       status = response.data['status']
+  //           .map((value) => value['tag_name'])
+  //           .toList()
+  //           .join('/');
+  //       chapters = response.data['chapters'];
+  //       if (chapters.length == 0 && backupApi) {
+  //         throw Exception('no chapters');
+  //       }
+  //       print(
+  //           'class: ComicDetailModel, action: detailLoading, comicId: ${this.comicId}, title: ${this.title}, author: ${this.author}');
+  //     }
+  //   } catch (e) {
+  //     //出现加载问题
+  //     this.error = true;
+  //     description = '错误代码: $e';
+  //     title = '加载出错';
+  //     status = '加载失败';
+  //     print(
+  //         'class: ComicDetailModel, action: detailLoadingFailed, comicId: ${this.comicId}, exception: $e');
+  //     if (backupApi) {
+  //       await getComicDetailBackup(comicId);
+  //     }
+  //   }
+  //   //唤醒UI
+  //   notifyListeners();
+  // }
 
-  Future<void> getComicDetailBackup(String comicId) async {
-    try {
-      CustomHttp http = CustomHttp();
-      var response = await http.getComicDetailDark(comicId);
-      if (response.statusCode == 200) {
-        var data = jsonDecode(response.data)['data'];
-        title = data['info']['title'];
-        cover = data['info']['cover'];
-        author = [
-          {'tag_name': data['info']['authors'], 'tag_id': null}
-        ];
-        types = [
-          {'tag_name': data['info']['types'], 'tag_id': null}
-        ];
-        description = data['info']['description'];
-        updateDate = ToolMethods.formatTimestamp(
-            int.parse(data['info']['last_updatetime']));
-        //状态信息需要采取特殊处理
-        status = data['info']['status'];
-        chapters = [
-          {
-            'data': data['list']
-                .map((e) =>
-                    {'chapter_id': e['id'], 'chapter_title': e['chapter_name'],'updatetime':int.parse(e['updatetime'])})
-                .toList(),
-            'title': '备用API'
-          }
-        ];
-      }
-    } catch (e) {
-      logger.w(
-          'class: ComicDetailModel, action: detailBackupLoadingFailed, comicId: ${this.comicId}, exception: $e');
-    }
-  }
+  // Future<void> getComicDetailBackup(String comicId) async {
+  //   try {
+  //     CustomHttp http = CustomHttp();
+  //     var response = await http.getComicDetailDark(comicId);
+  //     if (response.statusCode == 200) {
+  //       var data = jsonDecode(response.data)['data'];
+  //       title = data['info']['title'];
+  //       cover = data['info']['cover'];
+  //       author = [
+  //         {'tag_name': data['info']['authors'], 'tag_id': null}
+  //       ];
+  //       types = [
+  //         {'tag_name': data['info']['types'], 'tag_id': null}
+  //       ];
+  //       description = data['info']['description'];
+  //       updateDate = ToolMethods.formatTimestamp(
+  //           int.parse(data['info']['last_updatetime']));
+  //       //状态信息需要采取特殊处理
+  //       status = data['info']['status'];
+  //       chapters = [
+  //         {
+  //           'data': data['list']
+  //               .map((e) => {
+  //                     'chapter_id': e['id'],
+  //                     'chapter_title': e['chapter_name'],
+  //                     'updatetime': int.parse(e['updatetime'])
+  //                   })
+  //               .toList(),
+  //           'title': '备用API'
+  //         }
+  //       ];
+  //     }
+  //   } catch (e) {
+  //     logger.w(
+  //         'class: ComicDetailModel, action: detailBackupLoadingFailed, comicId: ${this.comicId}, exception: $e');
+  //   }
+  // }
 
   Widget _buildBasicButton(context, String title, style, VoidCallback onPress,
       {double width: 120}) {
@@ -288,13 +316,13 @@ class ComicDetailModel extends BaseModel {
         }
       }
       if (await downloadProvider.getComic(comicId) == null) {
-        Comic comic = Comic();
+        DownloadComic comic = DownloadComic();
         comic.title = title;
         comic.cover = cover;
         comic.comicId = comicId;
         await downloadProvider.insertComic(comic);
       }
-      Chapter chapter = Chapter();
+      DownloadChapter chapter = DownloadChapter();
       chapter.comicId = comicId;
       chapter.tasks = data;
       chapter.chapterId = chapterId;
@@ -387,7 +415,8 @@ class ComicDetailModel extends BaseModel {
     return lists;
   }
 
-  TracingComic get model=>TracingComic.fromMap({'comicId':comicId,'cover':cover,'title':title,'data':'{}'});
+  TracingComic get model => TracingComic.fromMap(
+      {'comicId': comicId, 'cover': cover, 'title': title, 'data': '{}'});
 
   set reverse(bool reverse) {
     this._reverse = reverse;

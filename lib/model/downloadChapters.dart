@@ -2,13 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterdmzj/database/downloader.dart';
 import 'package:flutterdmzj/model/baseModel.dart';
+import 'package:flutterdmzj/model/comic_source/DMZJSourceModel.dart';
 import 'package:flutterdmzj/view/comic_viewer.dart';
 import 'package:provider/provider.dart';
 
 class DownloadChaptersModel extends BaseModel {
   final String comicId;
 
-  List<Chapter> data;
+  List<DownloadChapter> data;
   List<Widget> list = [];
 
   BuildContext context;
@@ -81,6 +82,7 @@ class DownloadChaptersModel extends BaseModel {
               comicId: comicId,
               chapterId: item.chapterId,
               chapterList: data.map<String>((e) => e.chapterId).toList(),
+              comic: DMZJComic(comicId,item.chapterId,data.map<String>((e) => e.chapterId).toList(),),
             );
           }));
         },
