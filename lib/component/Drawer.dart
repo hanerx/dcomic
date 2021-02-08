@@ -8,6 +8,7 @@ import 'package:flutterdmzj/model/systemSettingModel.dart';
 import 'package:flutterdmzj/view/dark_side_page.dart';
 import 'package:flutterdmzj/view/favorite_page.dart';
 import 'package:flutterdmzj/view/login_page.dart';
+import 'package:flutterdmzj/view/mag_maker/mag_make_page.dart';
 import 'package:flutterdmzj/view/novel_pages/novel_main_page.dart';
 import 'package:provider/provider.dart';
 
@@ -27,7 +28,7 @@ class CustomDrawerState extends State<CustomDrawer> {
   bool darkSide = false;
   bool novel = false;
 
-  static const List darkMode=[
+  static const List darkMode = [
     Icons.brightness_4,
     Icons.brightness_5,
     Icons.brightness_2
@@ -67,7 +68,6 @@ class CustomDrawerState extends State<CustomDrawer> {
       darkSide = state;
     });
   }
-
 
   getNovel() async {
     DataBase dataBase = DataBase();
@@ -137,12 +137,19 @@ class CustomDrawerState extends State<CustomDrawer> {
         ),
         otherAccountsPictures: <Widget>[
           FlatButton(
-            child: Icon(darkMode[Provider.of<SystemSettingModel>(context).darkState],color: Colors.white,),
-            onPressed: (){
-              if (Provider.of<SystemSettingModel>(context,listen: false).darkState < darkMode.length - 1) {
-                Provider.of<SystemSettingModel>(context,listen: false).darkState++;
+            child: Icon(
+              darkMode[Provider.of<SystemSettingModel>(context).darkState],
+              color: Colors.white,
+            ),
+            onPressed: () {
+              if (Provider.of<SystemSettingModel>(context, listen: false)
+                      .darkState <
+                  darkMode.length - 1) {
+                Provider.of<SystemSettingModel>(context, listen: false)
+                    .darkState++;
               } else {
-                Provider.of<SystemSettingModel>(context,listen: false).darkState=0;
+                Provider.of<SystemSettingModel>(context, listen: false)
+                    .darkState = 0;
               }
             },
             shape: CircleBorder(),
@@ -236,6 +243,15 @@ class CustomDrawerState extends State<CustomDrawer> {
     }
 
     list += <Widget>[
+      Divider(),
+      ListTile(
+        title: Text('.manga制作器'),
+        leading: Icon(Icons.edit),
+        onTap: () {
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => MagMakePage()));
+        },
+      ),
       Divider(),
       ListTile(
         title: Text(S.of(context).Setting),
