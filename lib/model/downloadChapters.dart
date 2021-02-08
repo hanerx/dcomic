@@ -82,7 +82,6 @@ class DownloadChaptersModel extends BaseModel {
               comicId: comicId,
               chapterId: item.chapterId,
               chapterList: data.map<String>((e) => e.chapterId).toList(),
-              comic: DMZJComic(comicId,item.chapterId,data.map<String>((e) => e.chapterId).toList(),),
             );
           }));
         },
