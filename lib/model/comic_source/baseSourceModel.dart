@@ -79,7 +79,7 @@ abstract class ComicDetail extends BaseModel {
 
   String get status;
 
-
+  String get historyChapter;
 }
 
 abstract class Comic extends BaseModel {

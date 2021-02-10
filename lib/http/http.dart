@@ -12,6 +12,7 @@ class CustomHttp {
   String sacgUrl='https://sacg.dmzj1.com';
   String imgUrl='http://imgsmall.dmzj1.com';
   String iUrl='https://i.dmzj1.com';
+  String mUrl='https://m.dmzj.com';
   final String queryOptions = 'channel=Android&version=2.7.017';
   DioCacheManager _cacheManager;
 
@@ -29,6 +30,8 @@ class CustomHttp {
         .add(DioCacheManager(CacheConfig(baseUrl: apiUrl)).interceptor);
     dio.interceptors
         .add(DioCacheManager(CacheConfig(baseUrl: imgUrl)).interceptor);
+    dio.interceptors
+        .add(DioCacheManager(CacheConfig(baseUrl: mUrl)).interceptor);
     unCachedDio = Dio();
   }
 
@@ -89,6 +92,10 @@ class CustomHttp {
     Options options = await this.setHeader();
     return dio.get(baseUrl + '/comic/comic_$comicId.json?$queryOptions',
         options: buildCacheOptions(Duration(hours: 1), options: options));
+  }
+
+  Future<Response<T>> getComicDetailWeb<T>(String comicId) async {
+    return dio.get('$mUrl/info/$comicId.html');
   }
 
   Future<Response<T>> getComicDetailDark<T>(String comicId) async {

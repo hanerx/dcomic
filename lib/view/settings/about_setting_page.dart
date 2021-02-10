@@ -123,8 +123,8 @@ class _AboutSettingPage extends State<AboutSettingPage> {
                                 ),
                                 TextSpan(
                                     text:
-                                        ' ${Version.parse(Provider.of<VersionModel>(context).currentVersion).preRelease.length > 0 ? 'beta' : ''}',
-                                    style: TextStyle(color: Colors.deepOrange))
+                                        ' ${Version.parse(Provider.of<VersionModel>(context).currentVersion).preRelease.length > 0 ? 'beta' : 'release'}',
+                                    style: TextStyle(color: Version.parse(Provider.of<VersionModel>(context).currentVersion).preRelease.length > 0?Colors.deepOrange:Colors.lightGreen))
                               ]),
                               style: TextStyle(color: Colors.white),
                             ),

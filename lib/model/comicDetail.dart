@@ -62,7 +62,7 @@ class ComicDetailModel extends BaseModel {
   bool _reverse = false;
 
   //最后浏览记录
-  String lastChapterId;
+  String get lastChapterId=>detail==null?null:detail.historyChapter;
   List lastChapterList = [];
 
   //用户信息
@@ -73,7 +73,7 @@ class ComicDetailModel extends BaseModel {
   Map data;
 
   ComicDetailModel(this._model, this._title, this._comicId) {
-    init();
+    init().then((value) => getIfSubscribe(comicId).then((value) => getHistory(comicId)));
   }
 
   Future<void> init() async {
@@ -102,8 +102,6 @@ class ComicDetailModel extends BaseModel {
 
   Future<void> getHistory(comicId) async {
     //获取本地最后阅读记录
-    DataBase dataBase = DataBase();
-    lastChapterId = await dataBase.getHistory(comicId);
 
     //对没有记录的本地信息提供默认值
     // if (lastChapterId == '' && chapters.length > 0) {

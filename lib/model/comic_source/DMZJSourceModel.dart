@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:flutterdmzj/database/database.dart';
+import 'package:flutterdmzj/utils/soup.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -47,8 +49,10 @@ class DMZJSourceModel extends BaseSourceModel {
             .toList()
             .join('/');
         var chapters = response.data['chapters'];
+        DataBase dataBase = DataBase();
+        var lastChapterId = await dataBase.getHistory(comicId);
         return DMZJComicDetail(comicId, description, hotNum, subscribeNum,
-            title, cover, author, types, chapters, status, updateDate, options);
+            title, cover, author, types, chapters, status, updateDate,options,lastChapterId);
       }
     } catch (e) {
       if (_options.backupApi) {
@@ -91,14 +95,17 @@ class DMZJSourceModel extends BaseSourceModel {
             'title': '备用API'
           }
         ];
+        DataBase dataBase = DataBase();
+        var lastChapterId = await dataBase.getHistory(comicId);
         return DMZJComicDetail(comicId, description, 0, 0, title, cover, author,
-            types, chapters, status, updateDate, options);
+            types, chapters, status, updateDate, options, lastChapterId);
       }
     } catch (e) {
       logger.w(
           'class: ComicDetailModel, action: detailBackupLoadingFailed, comicId: $comicId, exception: $e');
       throw ComicLoadingError();
     }
+    return null;
   }
 
   @override
@@ -175,6 +182,119 @@ class DMZJSourceModel extends BaseSourceModel {
   @override
   // TODO: implement options
   SourceOptions get options => _options;
+}
+
+class DMZJWebSourceModel extends DMZJSourceModel {
+  @override
+  // TODO: implement _options
+  DMZJSourceOptions get _options => _webSourceOptions;
+
+  DMZJWebSourceOptions _webSourceOptions = DMZJWebSourceOptions.fromMap({});
+
+  DMZJWebSourceModel() {
+    init();
+  }
+
+  @override
+  Future<void> init() async {
+    // TODO: implement init
+    var map = await SourceDatabaseProvider.getSourceOptions(type.name);
+    _webSourceOptions = DMZJWebSourceOptions.fromMap(map);
+  }
+
+  @override
+  Future<ComicDetail> get({String comicId, String title}) async {
+    // TODO: implement get
+    if (comicId == null) {
+      throw IDInvalidError();
+    }
+    CustomHttp http = CustomHttp();
+    try {
+      var response = await http.getComicDetailWeb(comicId);
+      if (response.statusCode == 200) {
+        var jsonString =
+            RegExp('initIntroData(.*);').stringMatch(response.data);
+        var data = jsonDecode(jsonString.substring(
+            'initIntroData('.length, jsonString.length - 2));
+        BeautifulSoup doc = BeautifulSoup(response.data);
+        var title = doc.find(id: '#comicName').text;
+        var cover = doc.find(id: '#Cover').children.first.attributes['src'];
+        var txtItem = doc.findAll('.txtItme');
+        txtItem.forEach((element) {
+          element.children.removeAt(0);
+        });
+        var author = txtItem.first.children
+            .map<Map<String, dynamic>>(
+                (e) => {'tag_name': e.innerHtml, 'tag_id': null})
+            .toList();
+        var types = txtItem[1]
+            .children
+            .map<Map<String, dynamic>>(
+                (e) => {'tag_name': e.innerHtml, 'tag_id': null})
+            .toList();
+        var hotNum = 0;
+        var subscribeNum = 0;
+        var description = doc.find(id: '.txtDesc').innerHtml;
+        var updateDate = doc.find(id: '.date').innerHtml;
+        //状态信息需要采取特殊处理
+        var status = txtItem[2]
+            .children
+            .map<String>((e) => e.innerHtml)
+            .toList()
+            .join('/');
+        List<Map<String, dynamic>> chapters = [];
+        for (var item in data) {
+          var chapterList = [];
+          for (var chapter in item['data']) {
+            chapterList.add({
+              'chapter_id': chapter['id'],
+              'chapter_title': chapter['chapter_name'],
+              'updatetime': 0
+            });
+          }
+          chapters.add({"data": chapterList, 'title': item['title']});
+        }
+        DataBase dataBase = DataBase();
+        var lastChapterId = await dataBase.getHistory(comicId);
+        return DMZJComicDetail(
+            comicId,
+            description,
+            hotNum,
+            subscribeNum,
+            title,
+            cover,
+            author,
+            types,
+            chapters,
+            status,
+            updateDate,
+            options,
+            lastChapterId);
+      }
+    } catch (e) {
+      if (_options.backupApi) {
+        return this.getComicDetailBackup(comicId);
+      } else {
+        throw ComicLoadingError();
+      }
+    }
+    return null;
+  }
+
+  @override
+  // TODO: implement type
+  SourceDetail get type =>
+      SourceDetail('dmzj-web', '动漫之家网页', '大妈之家的网络接口', true, false);
+
+  @override
+  // TODO: implement options
+  SourceOptions get options => _options;
+
+  @override
+  Widget getSettingWidget(context) {
+    // TODO: implement getSettingWidget
+    return super.getSettingWidget(context);
+  }
 }
 
 class DMZJConfigProvider extends SourceOptionsProvider {
@@ -256,6 +376,35 @@ class DMZJSourceOptions extends SourceOptions {
   }
 }
 
+class DMZJWebSourceOptions extends DMZJSourceOptions {
+  bool _active;
+
+  DMZJWebSourceOptions.fromMap(Map map) : super.fromMap(map) {
+    _active = map['active'] == '1';
+  }
+
+  @override
+  Map<String, dynamic> toMap() {
+    // TODO: implement toMap
+    var map = super.toMap();
+    map['active'] = active;
+    return map;
+  }
+
+  @override
+  set active(bool value) {
+    // TODO: implement active
+    _active = value;
+    SourceDatabaseProvider.insertSourceOption(
+        'dmzj-web', 'active', value ? '1' : '0');
+    notifyListeners();
+  }
+
+  @override
+  // TODO: implement active
+  bool get active => _active;
+}
+
 class DMZJComicDetail extends ComicDetail {
   final String _comicId;
   final String _description;
@@ -269,6 +418,7 @@ class DMZJComicDetail extends ComicDetail {
   final String _status;
   final String _updateTime;
   final DMZJSourceOptions options;
+  final String _historyChapter;
 
   DMZJComicDetail(
       this._comicId,
@@ -282,7 +432,8 @@ class DMZJComicDetail extends ComicDetail {
       this._chapters,
       this._status,
       this._updateTime,
-      this.options);
+      this.options,
+      this._historyChapter);
 
   @override
   // TODO: implement comicId
@@ -343,6 +494,10 @@ class DMZJComicDetail extends ComicDetail {
   @override
   // TODO: implement updateTime
   String get updateTime => _updateTime;
+
+  @override
+  // TODO: implement historyChapter
+  String get historyChapter => _historyChapter;
 }
 
 class DMZJComic extends Comic {

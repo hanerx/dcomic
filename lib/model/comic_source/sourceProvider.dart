@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutterdmzj/component/ComicSourceCard.dart';
+import 'package:flutterdmzj/database/sourceDatabaseProvider.dart';
 import 'package:flutterdmzj/model/baseModel.dart';
 import 'package:flutterdmzj/model/comic_source/DMZJSourceModel.dart';
 import 'package:flutterdmzj/model/comic_source/IKanManSourceModel.dart';
@@ -17,8 +18,15 @@ class SourceProvider extends BaseModel {
   Future<void> init() async {
     sources.add(DMZJSourceModel());
     sources.add(IKanManSourceModel());
-    _active = sources.first;
-    _index = 0;
+    sources.add(DMZJWebSourceModel());
+    var options=await SourceDatabaseProvider.getSourceOptions('provider');
+    if(options.containsKey('index')){
+      _index = int.parse(options['index']);
+      _active = sources[index];
+    }else{
+      _active=sources.first;
+      _index=0;
+    }
     logger.i('class: SourceProvider, action: init, sources: $sources');
   }
 
@@ -43,7 +51,7 @@ class SourceProvider extends BaseModel {
 
   set active(BaseSourceModel active) {
     _active = active;
-    _index = activeSources.indexOf(active);
+    index = activeSources.indexOf(active);
     notifyListeners();
   }
 
@@ -52,6 +60,7 @@ class SourceProvider extends BaseModel {
   set index(int index) {
     if (index < activeSources.length) {
       _index = index;
+      SourceDatabaseProvider.insertSourceOption('provider', 'index', index);
       notifyListeners();
     }
   }

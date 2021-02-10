@@ -44,6 +44,9 @@
           "title": "第二章-本地图片",
           "data": [
             "./data/chapter2/1.webp"
+          ],
+          "comment_trackers": [
+
           ]
         },
         {
@@ -100,7 +103,7 @@
       }
     }
   ],
-  "comment_tracker": [
+  "comment_trackers": [
     {
       "decoder": "dmzj_comment_decoder",
       "url": "https://something.com/comment/test_manga",
