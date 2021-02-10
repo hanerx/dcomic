@@ -104,8 +104,10 @@ class SourceDetail {
   final String description;
   final bool canDisable;
   final bool cloud;
+  final bool deprecated;
 
-  SourceDetail(this.name, this.title, this.description, this.canDisable, this.cloud);
+
+  SourceDetail(this.name, this.title, this.description, this.canDisable, this.cloud, this.deprecated);
 
   @override
   // TODO: implement hashCode

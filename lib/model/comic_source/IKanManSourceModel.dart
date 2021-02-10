@@ -46,18 +46,15 @@ class IKanManSourceModel extends BaseSourceModel {
 
   @override
   // TODO: implement type
-  SourceDetail get type => SourceDetail('ikanman', '看漫画', '看漫画源', true, false);
+  SourceDetail get type => SourceDetail('ikanman', '看漫画', '一个毫无卵用的漫画源，写出来是因为cimoc的原版有这个，甚至没有实现', true, false,true);
 }
 
 class IKanManSourceOptions extends SourceOptions {
-  bool _active = false;
 
   @override
-  bool get active => _active;
+  bool get active => false;
 
-  IKanManSourceOptions.fromMap(Map map) {
-    _active = map['active'] == '1';
-  }
+  IKanManSourceOptions.fromMap(Map map);
 
   @override
   Map<String, dynamic> toMap() {
@@ -68,9 +65,6 @@ class IKanManSourceOptions extends SourceOptions {
   @override
   set active(bool value) {
     // TODO: implement active
-    _active = value;
-    SourceDatabaseProvider.insertSourceOption(
-        'ikanman', 'active', value ? '1' : '0');
-    notifyListeners();
+    return;
   }
 }

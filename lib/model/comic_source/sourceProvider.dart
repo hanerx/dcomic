@@ -22,7 +22,7 @@ class SourceProvider extends BaseModel {
     var options=await SourceDatabaseProvider.getSourceOptions('provider');
     if(options.containsKey('index')){
       _index = int.parse(options['index']);
-      _active = sources[index];
+      _active = activeSources[index];
     }else{
       _active=sources.first;
       _index=0;

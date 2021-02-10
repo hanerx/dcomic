@@ -135,9 +135,13 @@ class ComicDetailModel extends BaseModel {
       uid = await dataBase.getUid();
       //获取订阅信息
       CustomHttp http = CustomHttp();
-      var response = await http.getIfSubscribe(comicId, uid);
-      if (response.statusCode == 200 && response.data['code'] == 0) {
-        _sub = true;
+      try{
+        var response = await http.getIfSubscribe(comicId, uid);
+        if (response.statusCode == 200 && response.data['code'] == 0) {
+          _sub = true;
+        }
+      }catch(e){
+        logger.e('class: ComicDetailModel, action: subscribeLoadingFailed, login: $login, exception: $e');
       }
     }
     //解锁

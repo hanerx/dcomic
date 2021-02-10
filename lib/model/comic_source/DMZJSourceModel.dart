@@ -135,7 +135,7 @@ class DMZJSourceModel extends BaseSourceModel {
   @override
   // TODO: implement type
   SourceDetail get type =>
-      SourceDetail('dmzj', '默认-动漫之家', '默认数据提供商，不可关闭', false, false);
+      SourceDetail('dmzj', '默认-动漫之家', '默认数据提供商，不可关闭', false, false,false);
 
   @override
   Widget getSettingWidget(context) {
@@ -284,7 +284,7 @@ class DMZJWebSourceModel extends DMZJSourceModel {
   @override
   // TODO: implement type
   SourceDetail get type =>
-      SourceDetail('dmzj-web', '动漫之家网页', '大妈之家的网络接口', true, false);
+      SourceDetail('dmzj-web', '动漫之家网页', '使用大妈之家移动网页版的接口，让漫画重新可以看了', true, false,false);
 
   @override
   // TODO: implement options
@@ -403,6 +403,24 @@ class DMZJWebSourceOptions extends DMZJSourceOptions {
   @override
   // TODO: implement active
   bool get active => _active;
+
+  @override
+  set backupApi(bool value) {
+    // TODO: implement backupApi
+    _backupApi=value;
+    SourceDatabaseProvider.insertSourceOption(
+        'dmzj-web', 'backup_api', value ? '1' : '0');
+    notifyListeners();
+  }
+
+  @override
+  set webApi(bool value) {
+    // TODO: implement webApi
+    _webApi=value;
+    SourceDatabaseProvider.insertSourceOption(
+        'dmzj-web', 'web_api', value ? '1' : '0');
+    notifyListeners();
+  }
 }
 
 class DMZJComicDetail extends ComicDetail {
