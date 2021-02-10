@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -9,8 +8,6 @@ import 'package:flutterdmzj/database/tracker.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/model/baseModel.dart';
 import 'package:flutterdmzj/model/comic_source/baseSourceModel.dart';
-import 'package:flutterdmzj/model/comic_source/sourceProvider.dart';
-import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:flutterdmzj/view/comic_viewer.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -73,7 +70,7 @@ class ComicDetailModel extends BaseModel {
   Map data;
 
   ComicDetailModel(this._model, this._title, this._comicId) {
-    init().then((value) => getIfSubscribe(comicId).then((value) => getHistory(comicId)));
+    init().then((value) => getIfSubscribe(comicId).then((value) => getHistory(comicId).then((value) => addReadHistory(comicId))));
   }
 
   Future<void> init() async {
@@ -88,15 +85,11 @@ class ComicDetailModel extends BaseModel {
   Future<void> addReadHistory(comicId) async {
     // 添加历史记录
     DataBase dataBase = DataBase();
+    dataBase.insertUnread(comicId, DateTime.now().millisecondsSinceEpoch);
     bool loginState = await dataBase.getLoginState();
     if (loginState) {
-      var uid = await dataBase.getUid();
       CustomHttp http = CustomHttp();
-      http.addReadHistory(comicId, uid);
-      http.addReadHistory0(comicId, uid);
-      http.addReadHistory1(comicId);
       http.setUpRead(comicId);
-      dataBase.insertUnread(comicId, DateTime.now().millisecondsSinceEpoch);
     }
   }
 
