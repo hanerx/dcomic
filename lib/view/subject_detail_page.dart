@@ -3,8 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_parallax/flutter_parallax.dart';
 import 'package:flutterdmzj/http/http.dart';
+import 'package:flutterdmzj/view/comic_detail_page.dart';
 
-import 'comic_detail_page.dart';
 
 class SubjectDetailPage extends StatefulWidget {
   final String subjectId;

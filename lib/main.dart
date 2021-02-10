@@ -6,6 +6,7 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutterdmzj/component/Drawer.dart';
+import 'package:flutterdmzj/component/search/SearchButton.dart';
 import 'package:flutterdmzj/generated/l10n.dart';
 import 'package:flutterdmzj/model/comicViewerSettingModel.dart';
 import 'package:flutterdmzj/model/comic_source/sourceProvider.dart';
@@ -28,7 +29,6 @@ import 'package:logger_flutter/logger_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:uni_links/uni_links.dart';
 
-import 'component/search/SearchButton.dart';
 
 void main() async {
   runApp(App());

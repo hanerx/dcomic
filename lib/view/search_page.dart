@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterdmzj/component/search/DeepSearchTab.dart';
 import 'package:flutterdmzj/component/search/NovelSearchTab.dart';
-import 'file:///C:/Users/hanerx/AndroidStudioProjects/flutter_dmzj/lib/component/search/DeepSearchTab.dart';
-import 'file:///C:/Users/hanerx/AndroidStudioProjects/flutter_dmzj/lib/component/search/SearchTab.dart';
+import 'package:flutterdmzj/component/search/SearchTab.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/model/systemSettingModel.dart';
 import 'package:provider/provider.dart';
