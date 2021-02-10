@@ -49,7 +49,7 @@ class _SubscribeCard extends State<SubscribeCard> {
             animationType: BadgeAnimationType.scale,
             shape: BadgeShape.square,
             elevation: 0,
-            borderRadius: 5,
+            borderRadius: BorderRadius.circular(5),
             child: _Card(widget.cover, widget.title, widget.subTitle),
             badgeContent: Text(
               S.of(context).TipsNew,

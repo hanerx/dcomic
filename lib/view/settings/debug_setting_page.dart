@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/generated/l10n.dart';
 import 'package:flutterdmzj/http/http.dart';
+import 'package:flutterdmzj/view/database_detail_page.dart';
 import 'package:logger_flutter/logger_flutter.dart';
 
-import '../database_detail_page.dart';
+
 
 class DebugSettingPage extends StatefulWidget{
   @override

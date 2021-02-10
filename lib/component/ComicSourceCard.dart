@@ -27,11 +27,12 @@ class _ComicSourceCard extends State<ComicSourceCard> {
             child: Wrap(
               children: [
                 ListTile(
+                  enabled: !widget.model.type.deprecated,
                   title: Text('${widget.model.type.title}'),
                   subtitle: Text('${widget.model.type.description}'),
                   trailing: Switch(
                     value: Provider.of<SourceOptionsProvider>(context).active,
-                    onChanged: widget.model.type.canDisable
+                    onChanged: widget.model.type.canDisable&&!widget.model.type.deprecated
                         ? (value) {
                             Provider.of<SourceOptionsProvider>(context,
                                     listen: false)
