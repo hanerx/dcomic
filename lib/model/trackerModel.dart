@@ -28,7 +28,7 @@ class TrackerModel extends BaseModel {
               isUnread: false,
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => ComicDetailPage(e.comicId)));
+                    builder: (context) => ComicDetailPage(id: e.comicId)));
               },
             ))
         .toList();
@@ -58,9 +58,9 @@ class TrackerModel extends BaseModel {
     }
   }
 
-  bool ifSubscribe(ComicDetailModel model){
-    for(var item in tracingComic){
-      if(item.comicId==model.comicId){
+  bool ifSubscribe(ComicDetailModel model) {
+    for (var item in tracingComic) {
+      if (item.comicId == model.comicId) {
         return true;
       }
     }

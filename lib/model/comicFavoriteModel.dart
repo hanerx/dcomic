@@ -60,7 +60,7 @@ class ComicFavoriteModel extends BaseModel {
               isUnread: e['unread'],
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => ComicDetailPage(e['id'].toString())));
+                    builder: (context) => ComicDetailPage(id:e['id'].toString())));
               },
             ))
         .toList();

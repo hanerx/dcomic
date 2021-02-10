@@ -24,9 +24,10 @@ import 'package:share/share.dart';
 import 'comic_viewer.dart';
 
 class ComicDetailPage extends StatefulWidget {
-  String id = '';
+  final String id;
+  final String title;
 
-  ComicDetailPage(this.id);
+  ComicDetailPage({this.id, this.title});
 
   @override
   State<StatefulWidget> createState() {
@@ -72,7 +73,7 @@ class _ComicDetailPage extends State<ComicDetailPage> {
 //     // TODO: implement build
     return ChangeNotifierProvider(
       create: (_) => ComicDetailModel(
-          widget.id, Provider.of<SystemSettingModel>(context).backupApi),
+          Provider.of<SourceProvider>(context).active,widget.title,widget.id),
       builder: (context, child) {
         return Scaffold(
             appBar: AppBar(
@@ -137,7 +138,8 @@ class _ComicDetailPage extends State<ComicDetailPage> {
               builder: (context) {
                 return FancyFab(
                   reverse: Provider.of<ComicDetailModel>(context).reverse,
-                  isSubscribe: Provider.of<TrackerModel>(context).ifSubscribe(Provider.of<ComicDetailModel>(context)),
+                  isSubscribe: Provider.of<TrackerModel>(context)
+                      .ifSubscribe(Provider.of<ComicDetailModel>(context)),
                   onSort: () {
                     Provider.of<ComicDetailModel>(context, listen: false)
                             .reverse =
@@ -195,7 +197,7 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                       ));
                     }
                   },
-                  onBlackBox: () async{
+                  onBlackBox: () async {
                     if (!Provider.of<SystemSettingModel>(context, listen: false)
                         .blackBox) {
                       showDialog(
@@ -210,10 +212,13 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                             );
                           });
                     } else {
-                      int flag=await Provider.of<TrackerModel>(context, listen: false)
+                      int flag = await Provider.of<TrackerModel>(context,
+                              listen: false)
                           .subscribe(Provider.of<ComicDetailModel>(context,
                               listen: false));
-                      Scaffold.of(context).showSnackBar(SnackBar(content: Text('${flag==1?'加入':'取消加入'}黑匣子成功'),));
+                      Scaffold.of(context).showSnackBar(SnackBar(
+                        content: Text('${flag == 1 ? '加入' : '取消加入'}黑匣子成功'),
+                      ));
                     }
                   },
                   onDownload: () async {
@@ -239,15 +244,15 @@ class _ComicDetailPage extends State<ComicDetailPage> {
               },
             ),
             body: DirectSelectContainer(
-                child: EasyRefresh(
-              scrollController: ScrollController(),
-              onRefresh: () async {
-                await Provider.of<ComicDetailModel>(context, listen: false)
-                    .getComic(widget.id);
-              },
-              firstRefresh: true,
-              firstRefreshWidget: LoadingCube(),
-              child: new Column(
+              child: EasyRefresh(
+                scrollController: ScrollController(),
+                onRefresh: () async {
+                  await Provider.of<ComicDetailModel>(context, listen: false)
+                      .init();
+                },
+                firstRefresh: true,
+                firstRefreshWidget: LoadingCube(),
+                child: new Column(
                   children: <Widget>[
                     Row(
                       children: <Widget>[
@@ -281,13 +286,19 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                       child: Row(
                         children: [
                           Padding(
-                            child: Text('数据提供商',style: TextStyle(fontWeight: FontWeight.bold),),
+                            child: Text(
+                              '数据提供商',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
                             padding: EdgeInsets.only(left: 10),
                           ),
                           Expanded(
                             child: Padding(
                               child: DirectSelectList<BaseSourceModel>(
-                                values: Provider.of<SourceProvider>(context).activeSources,
+                                values: Provider.of<SourceProvider>(context)
+                                    .activeSources,
+                                defaultItemIndex:
+                                    Provider.of<SourceProvider>(context).index,
                                 itemBuilder: (BaseSourceModel value) =>
                                     DirectSelectItem<BaseSourceModel>(
                                         itemHeight: 56,
@@ -303,6 +314,10 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                                 onItemSelectedListener: (item, index, context) {
                                   Scaffold.of(context).showSnackBar(
                                       SnackBar(content: Text(item.type.title)));
+                                  Provider.of<SourceProvider>(context,
+                                          listen: false)
+                                      .active = item;
+                                  Provider.of<ComicDetailModel>(context,listen: false).changeModel(item);
                                 },
                                 focusedItemDecoration: BoxDecoration(
                                   border: BorderDirectional(
@@ -317,7 +332,10 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                             ),
                           ),
                           Padding(
-                            child: Icon(Icons.unfold_more,color: Theme.of(context).disabledColor,),
+                            child: Icon(
+                              Icons.unfold_more,
+                              color: Theme.of(context).disabledColor,
+                            ),
                             padding: EdgeInsets.only(right: 10),
                           )
                         ],

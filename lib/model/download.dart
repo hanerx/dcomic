@@ -4,7 +4,7 @@ import 'package:flutterdmzj/database/downloader.dart';
 import 'package:flutterdmzj/model/baseModel.dart';
 
 class DownloadModel extends BaseModel {
-  List<Comic> data;
+  List<DownloadComic> data;
 
 
   DownloadModel() {

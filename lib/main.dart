@@ -166,7 +166,7 @@ class _MainPage extends State<MainPage> {
         case '/comic':
           var params = event.queryParameters;
           Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-            return ComicDetailPage(params['id']);
+            return ComicDetailPage(id:params['id']);
           }));
           break;
       }

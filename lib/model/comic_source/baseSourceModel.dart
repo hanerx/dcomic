@@ -57,7 +57,7 @@ class SourceOptionsProvider extends BaseModel{
 abstract class ComicDetail extends BaseModel {
   Future<Comic> getChapter({String title, String chapterId});
 
-  List<List<Map<String, dynamic>>> getChapters();
+  List<Map<String, dynamic>> getChapters();
 
   String get title;
 
@@ -78,6 +78,8 @@ abstract class ComicDetail extends BaseModel {
   String get updateTime;
 
   String get status;
+
+  String get historyChapter;
 }
 
 abstract class Comic extends BaseModel {
@@ -90,6 +92,10 @@ abstract class Comic extends BaseModel {
   String get title;
 
   List<Map<String, dynamic>> get viewpoints;
+
+  List get chapters;
+
+  Future<void> addReadHistory({String title,String comicId,int page});
 }
 
 class SourceDetail {

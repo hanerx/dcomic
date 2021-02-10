@@ -4,7 +4,7 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutterdmzj/database/databaseCommon.dart';
 import 'package:sqflite/sqflite.dart';
 
-class Chapter {
+class DownloadChapter {
   int id;
   String title;
   String comicId;
@@ -24,9 +24,9 @@ class Chapter {
     return map;
   }
 
-  Chapter();
+  DownloadChapter();
 
-  Chapter.fromMap(Map<String, dynamic> map) {
+  DownloadChapter.fromMap(Map<String, dynamic> map) {
     id = map['id'];
     title = map['title'];
     chapterId = map['chapterId'];
@@ -72,7 +72,7 @@ class Chapter {
   int get total => tasks == null ? 100 : tasks.length * 100;
 }
 
-class Comic {
+class DownloadComic {
   int id;
   String title;
   String comicId;
@@ -90,9 +90,9 @@ class Comic {
     return map;
   }
 
-  Comic();
+  DownloadComic();
 
-  Comic.fromMap(Map<String, dynamic> map) {
+  DownloadComic.fromMap(Map<String, dynamic> map) {
     id = map['id'];
     title = map['title'];
     comicId = map['comicId'];
@@ -112,43 +112,43 @@ class DownloadProvider {
     _database = await DatabaseCommon.initDatabase();
   }
 
-  Future<Chapter> insertChapter(Chapter chapter) async {
+  Future<DownloadChapter> insertChapter(DownloadChapter chapter) async {
     await initDataBase();
     chapter.id =
         await _database.insert('download_chapter_info', chapter.toMap());
     return chapter;
   }
 
-  Future<Chapter> getChapter(String chapterId) async {
+  Future<DownloadChapter> getChapter(String chapterId) async {
     await initDataBase();
     List<Map> maps = await _database.query('download_chapter_info',
         where: 'chapterId = ?', whereArgs: [chapterId]);
     if (maps.length > 0) {
       _database.close();
-      return Chapter.fromMap(maps.first);
+      return DownloadChapter.fromMap(maps.first);
     }
     return null;
   }
 
-  Future<int> deleteChapter(Chapter chapter) async{
+  Future<int> deleteChapter(DownloadChapter chapter) async{
     await initDataBase();
     await chapter.delete();
     return await _database.delete('download_chapter_info',where: 'chapterId=?',whereArgs: [chapter.chapterId]);
   }
 
-  Future<Comic> insertComic(Comic comic) async {
+  Future<DownloadComic> insertComic(DownloadComic comic) async {
     await initDataBase();
     comic.id = await _database.insert('download_comic_info', comic.toMap());
     return comic;
   }
 
-  Future<Comic> getComic(String comicId) async {
+  Future<DownloadComic> getComic(String comicId) async {
     await initDataBase();
     List<Map> maps = await _database.query('download_comic_info',
         where: 'comicId = ?', whereArgs: [comicId]);
     if (maps.length > 0) {
       _database.close();
-      return Comic.fromMap(maps.first);
+      return DownloadComic.fromMap(maps.first);
     }
     return null;
   }
@@ -158,23 +158,23 @@ class DownloadProvider {
     return await _database.delete('download_comic_info',where: 'comicId=?',whereArgs: [comicId]);
   }
 
-  Future<List<Comic>> getAllComic() async {
+  Future<List<DownloadComic>> getAllComic() async {
     await initDataBase();
     List<Map> maps = await _database.query('download_comic_info');
-    List<Comic> data = [];
+    List<DownloadComic> data = [];
     for (var item in maps) {
-      data.add(Comic.fromMap(item));
+      data.add(DownloadComic.fromMap(item));
     }
     return data;
   }
 
-  Future<List<Chapter>> getAllChapter(String comicId) async {
+  Future<List<DownloadChapter>> getAllChapter(String comicId) async {
     await initDataBase();
     List<Map> maps = await _database.query('download_chapter_info',
         where: 'comicId = ?', whereArgs: [comicId]);
-    List<Chapter> data = [];
+    List<DownloadChapter> data = [];
     for (var item in maps) {
-      data.add(Chapter.fromMap(item));
+      data.add(DownloadChapter.fromMap(item));
     }
     return data;
   }
