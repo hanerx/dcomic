@@ -8,15 +8,13 @@ import 'package:flutterdmzj/component/comic_viewer/Tips.dart';
 import 'package:flutterdmzj/component/comic_viewer/VerticalPageView.dart';
 import 'package:flutterdmzj/model/comic.dart';
 import 'package:flutterdmzj/model/comicViewerSettingModel.dart';
-import 'package:flutterdmzj/model/systemSettingModel.dart';
+import 'package:flutterdmzj/model/comic_source/baseSourceModel.dart';
 import 'package:provider/provider.dart';
 
 class ComicViewPage extends StatefulWidget {
-  final String comicId;
-  final String chapterId;
-  final List chapterList;
+  final Comic comic;
 
-  const ComicViewPage({Key key, this.comicId, this.chapterId, this.chapterList})
+  const ComicViewPage({Key key, this.comic})
       : super(key: key);
 
   @override
@@ -54,12 +52,7 @@ class _ComicViewPage extends State<ComicViewPage>
   Widget build(BuildContext context) {
     // TODO: implement build
     return ChangeNotifierProvider(
-        create: (_) => ComicModel(
-            widget.comicId,
-            widget.chapterId,
-            widget.chapterList,
-            Provider.of<SystemSettingModel>(context).backupApi,
-            Provider.of<ComicViewerSettingModel>(context).webApi),
+        create: (_) => ComicModel(widget.comic),
         builder: (context, test) {
           return Scaffold(
               backgroundColor: ComicViewerSettingModel.backgroundColors[Provider.of<ComicViewerSettingModel>(context).backgroundColor],
@@ -289,26 +282,6 @@ class _ComicViewPage extends State<ComicViewPage>
         ),
         Divider(),
         ListTile(
-          title: Text('使用WebApi'),
-          subtitle: Text('使用网页版的API，据说能提画质(说实话我没感觉啊，手机的api就挺高清了啊)'),
-          trailing: Switch(
-            value: Provider.of<ComicViewerSettingModel>(context).webApi,
-            onChanged: (val){
-              Provider.of<ComicViewerSettingModel>(context,listen: false).webApi=val;
-              Provider.of<ComicModel>(context,listen: false).webApi=val;
-              Provider.of<ComicModel>(context,listen: false).getComic(widget.comicId,
-                widget.chapterId);
-            },
-          ),
-          onTap: (){
-            Provider.of<ComicViewerSettingModel>(context,listen: false).webApi=!Provider.of<ComicViewerSettingModel>(context,listen: false).webApi;
-            Provider.of<ComicModel>(context,listen: false).webApi=!Provider.of<ComicViewerSettingModel>(context,listen: false).webApi;
-            Provider.of<ComicModel>(context,listen: false).getComic(widget.comicId,
-                widget.chapterId);
-          },
-        ),
-        Divider(),
-        ListTile(
           title: Text("显示碰撞箱"),
           subtitle: Text("可以调整上下点击翻页的触发面积，由于底层架构的升级不会出现手势打架的情况了"),
           trailing: Switch(
@@ -371,11 +344,9 @@ class _ComicViewPage extends State<ComicViewPage>
           subtitle: Text(
               "chapterId: ${Provider.of<ComicModel>(context).chapterId}\n"
               "comicId: ${Provider.of<ComicModel>(context).comicId}\n"
-              "chapterList: ${Provider.of<ComicModel>(context).chapterIdList}\n"
+              "chapterList: ${Provider.of<ComicModel>(context).chapters}\n"
               "length: ${Provider.of<ComicModel>(context).length}\n"
               "pageAt: ${Provider.of<ComicModel>(context).pageAt}\n"
-              "previous: ${Provider.of<ComicModel>(context).previous}\n"
-              "next: ${Provider.of<ComicModel>(context).next}\n"
               "left: ${Provider.of<ComicModel>(context).left} right: ${Provider.of<ComicModel>(context).right}\n"
               ""),
         )
@@ -403,7 +374,7 @@ class _ComicViewPage extends State<ComicViewPage>
               Provider.of<ComicModel>(context, listen: false).index =
                   index.toInt();
               if (Provider.of<ComicViewerSettingModel>(context,listen: false).direction) {
-                horizontalKey.currentState.animateToPage(index.toInt() + 1);
+                horizontalKey.currentState.animateToPage(index.toInt());
               }
             }
           },

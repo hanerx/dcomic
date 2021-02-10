@@ -73,7 +73,7 @@ class _ComicDetailPage extends State<ComicDetailPage> {
 //     // TODO: implement build
     return ChangeNotifierProvider(
       create: (_) => ComicDetailModel(
-          Provider.of<SourceProvider>(context).active,widget.title,widget.id),
+          Provider.of<SourceProvider>(context).active, widget.title, widget.id),
       builder: (context, child) {
         return Scaffold(
             appBar: AppBar(
@@ -146,26 +146,23 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                         !Provider.of<ComicDetailModel>(context, listen: false)
                             .reverse;
                   },
-                  onPlay: () {
+                  onPlay: () async {
                     if (Provider.of<ComicDetailModel>(context, listen: false)
                             .lastChapterId !=
                         '') {
                       // 由于navigator里面context不包含provider，所以要先放在外面
-                      var comicId =
-                          Provider.of<ComicDetailModel>(context, listen: false)
-                              .comicId;
                       var lastChapterId =
                           Provider.of<ComicDetailModel>(context, listen: false)
                               .lastChapterId;
-                      var lastChapterList =
-                          Provider.of<ComicDetailModel>(context, listen: false)
-                              .lastChapterList;
+                      Comic comic = await Provider.of<ComicDetailModel>(context,
+                              listen: false)
+                          .detail
+                          .getChapter(chapterId: lastChapterId);
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
                         return ComicViewPage(
-                            comicId: comicId,
-                            chapterId: lastChapterId,
-                            chapterList: lastChapterList);
+                          comic: comic,
+                        );
                       }));
                     } else if (Provider.of<ComicDetailModel>(context,
                                 listen: false)
@@ -184,12 +181,15 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                         lastChapterId =
                             lastChapterList[lastChapterList.length - 1];
                       }
+                      Comic comic = await Provider.of<ComicDetailModel>(context,
+                              listen: false)
+                          .detail
+                          .getChapter(chapterId: lastChapterId);
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
                         return ComicViewPage(
-                            comicId: comicId,
-                            chapterId: lastChapterId,
-                            chapterList: lastChapterList);
+                          comic: comic,
+                        );
                       }));
                     } else {
                       Scaffold.of(context).showSnackBar(SnackBar(
@@ -317,7 +317,9 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                                   Provider.of<SourceProvider>(context,
                                           listen: false)
                                       .active = item;
-                                  Provider.of<ComicDetailModel>(context,listen: false).changeModel(item);
+                                  Provider.of<ComicDetailModel>(context,
+                                          listen: false)
+                                      .changeModel(item);
                                 },
                                 focusedItemDecoration: BoxDecoration(
                                   border: BorderDirectional(

@@ -260,7 +260,7 @@ class ComicDetailModel extends BaseModel {
         chapter['chapter_id'].toString() ==
                 Provider.of<ComicDetailModel>(context).lastChapterId
             ? TextStyle(color: Colors.blue)
-            : null, () {
+            : null, () async{
       DataBase dataBase = DataBase();
       dataBase.addReadHistory(
           comicId,
@@ -269,11 +269,10 @@ class ComicDetailModel extends BaseModel {
           chapter['chapter_title'],
           chapter['chapter_id'].toString(),
           DateTime.now().millisecondsSinceEpoch ~/ 1000);
+      Comic comic=await detail.getChapter(title: chapter['chapter_title'],chapterId: chapter['chapter_id'].toString());
       Navigator.push(context, MaterialPageRoute(builder: (context) {
         return ComicViewPage(
-          comicId: comicId,
-          chapterId: chapter['chapter_id'].toString(),
-          chapterList: chapterIdList
+          comic: comic,
         );
       }));
     });

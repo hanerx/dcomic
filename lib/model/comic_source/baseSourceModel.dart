@@ -83,19 +83,37 @@ abstract class ComicDetail extends BaseModel {
 }
 
 abstract class Comic extends BaseModel {
-  Future<void> next();
+  Future<bool> next();
 
-  Future<void> previous();
+  Future<bool> previous();
+
+  String get comicId;
+
+  String get chapterId;
+
+  String get pageAt;
 
   List<String> get comicPages;
 
   String get title;
 
-  List<Map<String, dynamic>> get viewpoints;
+  List get viewpoints;
 
   List get chapters;
 
+  bool get canPrevious;
+
+  bool get canNext;
+
   Future<void> addReadHistory({String title,String comicId,int page});
+
+  Future<void> getComic({String title,String comicId,String chapterId,String chapterTitle});
+
+  Future<void> init();
+
+  int get type;
+
+  Future<void> getViewPoint();
 }
 
 class SourceDetail {

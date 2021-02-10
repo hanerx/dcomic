@@ -6,6 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutterdmzj/component/LoadingCube.dart';
 import 'package:flutterdmzj/http/http.dart';
+import 'package:flutterdmzj/model/comic_source/DMZJSourceModel.dart';
+import 'package:flutterdmzj/model/comic_source/baseSourceModel.dart';
+import 'package:flutterdmzj/model/comic_source/sourceProvider.dart';
 import 'package:flutterdmzj/model/systemSettingModel.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:flutterdmzj/view/comic_viewer.dart';
@@ -211,11 +214,10 @@ class DarkCustomListTile extends StatelessWidget {
               return ComicDetailPage(id: comicId);
             }));
           } else if (live) {
+            Comic comic=DMZJComic(comicId, lastChapterId, [lastChapterId],Provider.of<SourceProvider>(context,listen: false).sources.first.options);
             Navigator.push(context, MaterialPageRoute(builder: (context) {
               return ComicViewPage(
-                  comicId: comicId,
-                  chapterId: lastChapterId,
-                  chapterList: [lastChapterId]);
+                  comic: comic,);
             }));
           } else {
             Scaffold.of(context).showSnackBar(SnackBar(

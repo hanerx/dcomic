@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutterdmzj/database/database.dart';
+import 'package:flutterdmzj/database/downloader.dart';
 import 'package:flutterdmzj/utils/soup.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -51,8 +52,20 @@ class DMZJSourceModel extends BaseSourceModel {
         var chapters = response.data['chapters'];
         DataBase dataBase = DataBase();
         var lastChapterId = await dataBase.getHistory(comicId);
-        return DMZJComicDetail(comicId, description, hotNum, subscribeNum,
-            title, cover, author, types, chapters, status, updateDate,options,lastChapterId);
+        return DMZJComicDetail(
+            comicId,
+            description,
+            hotNum,
+            subscribeNum,
+            title,
+            cover,
+            author,
+            types,
+            chapters,
+            status,
+            updateDate,
+            options,
+            lastChapterId);
       }
     } catch (e) {
       if (_options.backupApi) {
@@ -135,7 +148,7 @@ class DMZJSourceModel extends BaseSourceModel {
   @override
   // TODO: implement type
   SourceDetail get type =>
-      SourceDetail('dmzj', '默认-动漫之家', '默认数据提供商，不可关闭', false, false,false);
+      SourceDetail('dmzj', '默认-动漫之家', '默认数据提供商，不可关闭', false, false, false);
 
   @override
   Widget getSettingWidget(context) {
@@ -283,8 +296,8 @@ class DMZJWebSourceModel extends DMZJSourceModel {
 
   @override
   // TODO: implement type
-  SourceDetail get type =>
-      SourceDetail('dmzj-web', '动漫之家网页', '使用大妈之家移动网页版的接口，让漫画重新可以看了', true, false,false);
+  SourceDetail get type => SourceDetail(
+      'dmzj-web', '动漫之家网页', '使用大妈之家移动网页版的接口，让漫画重新可以看了', true, false, false);
 
   @override
   // TODO: implement options
@@ -407,7 +420,7 @@ class DMZJWebSourceOptions extends DMZJSourceOptions {
   @override
   set backupApi(bool value) {
     // TODO: implement backupApi
-    _backupApi=value;
+    _backupApi = value;
     SourceDatabaseProvider.insertSourceOption(
         'dmzj-web', 'backup_api', value ? '1' : '0');
     notifyListeners();
@@ -416,7 +429,7 @@ class DMZJWebSourceOptions extends DMZJSourceOptions {
   @override
   set webApi(bool value) {
     // TODO: implement webApi
-    _webApi=value;
+    _webApi = value;
     SourceDatabaseProvider.insertSourceOption(
         'dmzj-web', 'web_api', value ? '1' : '0');
     notifyListeners();
@@ -468,8 +481,10 @@ class DMZJComicDetail extends ComicDetail {
       throw IDInvalidError();
     }
     for (var item in _chapters) {
-      if (item['chapter_id'].toString() == chapterId) {
-        return DMZJComic(_comicId, chapterId, _chapters, options);
+      for(var chapter in item['data']){
+        if (chapter['chapter_id'].toString() == chapterId) {
+          return DMZJComic(_comicId, chapterId, item['data'], options);
+        }
       }
     }
     return null;
@@ -523,9 +538,11 @@ class DMZJComic extends Comic {
   final String _chapterId;
   final List _chapters;
   final DMZJSourceOptions options;
-  List<String> _pages;
+  List<String> _pages=[];
   String _title;
   List<String> _chapterIdList;
+  int _type = 0;
+  List _viewPoints=[];
 
   String _previous;
   String _next;
@@ -537,16 +554,50 @@ class DMZJComic extends Comic {
         .toList();
     _chapterIdList = List.generate(_chapterIdList.length,
         (index) => _chapterIdList[_chapterIdList.length - 1 - index]);
-    getComic(_comicId, _chapterId);
+
   }
 
-  Future<void> getComic(String comicId, String chapterId) async {
+
+  Future<void> getComic(
+      {String title,
+      String comicId,
+      String chapterId,
+      String chapterTitle}) async {
+    _pageAt = chapterId;
+    DownloadProvider downloadProvider = DownloadProvider();
+    var localData = await downloadProvider.getChapter(chapterId);
+    if (localData != null) {
+      logger.i(
+          'action: loadLocalData, chapter: $chapterId, tasks: ${localData.tasks}');
+      _type = 1;
+      _title = localData.title;
+      List<String> paths = await localData.paths;
+      logger.i('action: loadLocalPath, paths: $paths');
+      _pages = paths;
+      if (_chapterIdList.indexOf(chapterId) > 0) {
+        _previous = _chapterIdList[_chapterIdList.indexOf(chapterId) - 1];
+      } else {
+        _previous = null;
+      }
+      if (_chapterIdList.indexOf(chapterId) < _chapterIdList.length - 1) {
+        _next = _chapterIdList[_chapterIdList.indexOf(chapterId) + 1];
+      } else {
+        _next = null;
+      }
+      await getViewPoint();
+      notifyListeners();
+      return;
+    }
+    if (options.webApi) {
+      await getComicWeb(comicId, chapterId);
+      return;
+    }
     CustomHttp http = CustomHttp();
     try {
       var response = await http.getComic(comicId, chapterId);
       if (response.statusCode == 200) {
         _pageAt = chapterId;
-        _pages = response.data['page_url'];
+        _pages = response.data['page_url'].map<String>((e)=>e.toString()).toList();
         _title = response.data['title'];
         if (_chapterIdList.indexOf(chapterId) > 0) {
           _previous = _chapterIdList[_chapterIdList.indexOf(chapterId) - 1];
@@ -562,6 +613,91 @@ class DMZJComic extends Comic {
       }
     } catch (e) {
       logger.e('class: DMZJComic, action: getComicFailed, exception: $e');
+      if (options.backupApi) {
+        await this.getComicBackup(comicId, chapterId);
+      }
+    }
+    await getViewPoint();
+    notifyListeners();
+  }
+
+  Future<void> getComicWeb(String comicId, String chapterId) async {
+    CustomHttp http = CustomHttp();
+    try {
+      var response = await http.getComicWeb(comicId, chapterId);
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.data);
+        _title = data['chapter_name'];
+        _pages = data['page_url'].map<String>((e)=>e.toString()).toList();
+        if (_chapterIdList.indexOf(chapterId) > 0) {
+          _previous = _chapterIdList[_chapterIdList.indexOf(chapterId) - 1];
+        } else {
+          _previous = null;
+        }
+        if (_chapterIdList.indexOf(chapterId) < _chapterIdList.length - 1) {
+          _next = _chapterIdList[_chapterIdList.indexOf(chapterId) + 1];
+        } else {
+          _next = null;
+        }
+      }
+    } catch (e) {
+      logger
+          .e("action:error, chapterId:$chapterId, comicId:$comicId, error:$e");
+      if (options.backupApi) {
+        await this.getComicBackup(comicId, chapterId);
+      }
+    }
+    await getViewPoint();
+    notifyListeners();
+  }
+
+  Future<void> getComicBackup(String comicId, String chapterId) async {
+    try {
+      CustomHttp http = CustomHttp();
+      var response = await http.getComicDetailDark(comicId);
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.data)['data'];
+        var firstLetter = data['info']['first_letter'];
+        for (var item in data['list']) {
+          if (item['id'] == chapterId) {
+            _title = item['chapter_name'];
+          }
+        }
+        int page = 0;
+        List<String> pages = [];
+        while (true) {
+          try {
+            var item =
+                await http.getComicPage(firstLetter, comicId, chapterId, page);
+            if (item.headers.value('Content-Type') == 'image/jpeg') {
+              pages.add(
+                  'http://imgsmall.dmzj.com/$firstLetter/$comicId/$chapterId/$page.jpg');
+              page++;
+            } else {
+              break;
+            }
+          } catch (e) {
+            logger.w(
+                'class ComicModel, action: getComicBackupFailed, page $page');
+            break;
+          }
+        }
+        this._pages = pages;
+        if (_chapterIdList.indexOf(chapterId) > 0) {
+          _previous = _chapterIdList[_chapterIdList.indexOf(chapterId) - 1];
+        } else {
+          _previous = null;
+        }
+        if (_chapterIdList.indexOf(chapterId) < _chapterIdList.length - 1) {
+          _next = _chapterIdList[_chapterIdList.indexOf(chapterId) + 1];
+        } else {
+          _next = null;
+        }
+        notifyListeners();
+      }
+    } catch (e) {
+      logger.w(
+          'class: ComicModel, action: getComicBackupFailed, comicId: $comicId, chapterId: $chapterId, exception: $e');
     }
   }
 
@@ -575,24 +711,30 @@ class DMZJComic extends Comic {
 
   String get pageAt => this._pageAt;
 
-  @override
-  // TODO: implement viewpoints
-  List<Map<String, dynamic>> get viewpoints => throw UnimplementedError();
+  String get comicId => _comicId;
 
   @override
-  Future<void> next() async {
+  // TODO: implement viewpoints
+  List get viewpoints => _viewPoints;
+
+  @override
+  Future<bool> next() async {
     // TODO: implement next
     if (_next != null) {
-      await getComic(_comicId, _next);
+      await getComic(comicId: _comicId, chapterId: _next);
+      return true;
     }
+    return false;
   }
 
   @override
-  Future<void> previous() async {
+  Future<bool> previous() async {
     // TODO: implement previous
     if (_previous != null) {
-      await getComic(_comicId, _previous);
+      await getComic(comicId: _comicId, chapterId: _previous);
+      return true;
     }
+    return false;
   }
 
   @override
@@ -601,7 +743,45 @@ class DMZJComic extends Comic {
     throw UnimplementedError();
   }
 
+  Future<void> getViewPoint() async {
+    CustomHttp http = CustomHttp();
+    try {
+      var response = await http.getViewPoint(_comicId, _pageAt);
+      if (response.statusCode == 200) {
+        print(
+            "class: ComicModel, action: getViewPoint, responseCode: ${response.statusCode} chapterId:$_chapterId comicId:$_comicId responseData: ${response.data}");
+        response.data
+            .sort((a, b) => int.parse(b['num'].toString()).compareTo(a['num']));
+        this._viewPoints = response.data;
+        print(
+            "class: ComicModel, action: getViewPoint, viewpoints: $_viewPoints");
+      }
+    } catch (e) {
+      print("action:error, chapterId:$_chapterId, comicId:$_comicId, error:$e");
+    }
+  }
+
   @override
   // TODO: implement chapters
   List get chapters => _chapters;
+
+  int get type => _type;
+
+  @override
+  // TODO: implement canPrevious
+  bool get canPrevious => _previous != null && _previous != '';
+
+  @override
+  // TODO: implement canNext
+  bool get canNext => _next != null && _next != '';
+
+  @override
+  // TODO: implement chapterId
+  String get chapterId => _chapterId;
+
+  @override
+  Future<void> init() async{
+    // TODO: implement init
+    await getComic(comicId: _comicId, chapterId: _chapterId);
+  }
 }

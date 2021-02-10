@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutterdmzj/database/downloader.dart';
 import 'package:flutterdmzj/model/baseModel.dart';
 import 'package:flutterdmzj/model/comic_source/DMZJSourceModel.dart';
+import 'package:flutterdmzj/model/comic_source/sourceProvider.dart';
 import 'package:flutterdmzj/view/comic_viewer.dart';
 import 'package:provider/provider.dart';
+
+import 'comic_source/baseSourceModel.dart';
 
 class DownloadChaptersModel extends BaseModel {
   final String comicId;
@@ -76,12 +79,11 @@ class DownloadChaptersModel extends BaseModel {
                 .getChapters(comicId);
           },
         ),
-        onTap: () {
+        onTap: () async{
+          Comic comic= await Provider.of<SourceProvider>(context,listen: false).active.getChapter(chapterId: item.chapterId,comicId: item.comicId);
           Navigator.of(context).push(MaterialPageRoute(builder: (context) {
             return ComicViewPage(
-              comicId: comicId,
-              chapterId: item.chapterId,
-              chapterList: data.map<String>((e) => e.chapterId).toList(),
+              comic: comic,
             );
           }));
         },
