@@ -1,19 +1,20 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
+import 'package:flutterdmzj/view/mag_maker/mag_example_page.dart';
 import 'package:flutterdmzj/view/mag_maker/new_mag_page.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
 
-class MagMakePage extends StatefulWidget{
+class MagMakePage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
     return _MagMakePage();
   }
-
 }
 
-class _MagMakePage extends State<MagMakePage>{
+class _MagMakePage extends State<MagMakePage> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -33,8 +34,9 @@ class _MagMakePage extends State<MagMakePage>{
                 trailing: Icon(Icons.chevron_right),
               ),
             ),
-            onPressed: (){
-              Navigator.of(context).push(MaterialPageRoute(builder: (context)=>NewMagPage()));
+            onPressed: () {
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (context) => NewMagPage()));
             },
           ),
           FlatButton(
@@ -47,9 +49,7 @@ class _MagMakePage extends State<MagMakePage>{
                 trailing: Icon(Icons.chevron_right),
               ),
             ),
-            onPressed: (){
-
-            },
+            onPressed: () {},
           ),
           FlatButton(
             padding: EdgeInsets.all(5),
@@ -61,9 +61,7 @@ class _MagMakePage extends State<MagMakePage>{
                 trailing: Icon(Icons.chevron_right),
               ),
             ),
-            onPressed: (){
-
-            },
+            onPressed: () {},
           ),
           FlatButton(
             padding: EdgeInsets.all(5),
@@ -75,8 +73,13 @@ class _MagMakePage extends State<MagMakePage>{
                 trailing: Icon(Icons.chevron_right),
               ),
             ),
-            onPressed: (){
-
+            onPressed: () async {
+              String example =
+                  await rootBundle.loadString('assets/guide/example.json');
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => MagExamplePage(
+                        example: example,
+                      )));
             },
           ),
           FlatButton(
@@ -89,13 +92,13 @@ class _MagMakePage extends State<MagMakePage>{
                 trailing: Icon(Icons.open_in_browser),
               ),
             ),
-            onPressed: (){
-              ToolMethods.callWeb('https://github.com/hanerx/flutter_dmzj/wiki', context);
+            onPressed: () {
+              ToolMethods.callWeb(
+                  'https://github.com/hanerx/flutter_dmzj/wiki', context);
             },
           ),
         ],
       ),
     );
   }
-
 }

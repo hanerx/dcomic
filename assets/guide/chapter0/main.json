@@ -1,0 +1,211 @@
+[
+  {
+    "type": 0,
+    "data": "嘿嘿，这里是作者，我们今天来写点东西，看到上面的编辑器了吗，来让我们来写上一个json",
+    "replace": true
+  },
+  {
+    "type": 1,
+    "data": {
+      "type": 1,
+      "path": "assets/guide/chapter0/example0.json"
+    },
+    "replace": true
+  },
+  {
+    "type": 0,
+    "data": "嘿嘿，是不是很神奇，这里是我们的.manga文件的教程展示处，下面这个是作者的话，上面的是代码实例。对了，你可以点击edit来尝试编辑，但是最好不要在动画在动的时候操作，毕竟我不知道会不会出bug",
+    "replace": true
+  },
+  {
+    "type": 0,
+    "data": "你可以用侧边栏查看你写好的json文件的结构，比如像这样。",
+    "replace": true
+  },
+  {
+    "type": 2,
+    "tab": 0
+  },
+  {
+    "type": 3
+  },
+  {
+    "type": 0,
+    "data": "你也可以点击右上角弹出侧边栏或者干脆直接侧滑，都可以打开这个东西。",
+    "replace": false
+  },
+  {
+    "type": 0,
+    "data": "如果感觉现在这个速度很难看清字幕，或者你脑子跟不上了，你可以点击暂停或者上一步和下一步，这些都会自动停止播放让你有休息时间",
+    "replace": true
+  },
+  {
+    "type": 0,
+    "data": "那我们开始吧，先写个最简单meta文件",
+    "replace": true
+  },
+  {
+    "type": 1,
+    "data": {
+      "type": 1,
+      "path": "assets/guide/chapter0/example1.json"
+    },
+    "replace": true
+  },
+  {
+    "type": 0,
+    "data": "我们先来说明一下.manga文件的原理和目录结构：\n    manga文件其实是一个zip封装文件，而里面主要分为两个部分，一个是meta.json一个是data文件夹。meta.json是文件的入口文件，而data文件夹则存储数据使用。\n**TIPS：data文件夹并不是必须的，你要存储的文件也不是必须存在data文件夹下，唯一必须的是你的meta.json**",
+    "replace": true
+  },
+  {
+    "type": 0,
+    "data": "那我们回到meta.json这个入口文件。最简单的meta.json只需要两个参数————对，就是上面两个。第一个说是name其实是manga文件的唯一识别符，所有的manga文件不管你里面塞得是啥，判断两个文件是不是同一本漫画就依靠的是这个属性。\n    个人比较推荐你们使用罗马音的标题并不带有章节号等其他内容，空格使用下划线_替代。至于原因，为了通用性，毕竟不是所有软件都是支持utf-8的，全英文字母的罗马音既保证不会出现翻译歧义也可以保证兼容性。",
+    "replace": true
+  },
+  {
+    "type": 0,
+    "data": "至于title属性，大家快乐就好。你写个霸道总裁爱上我然后name写上素晴的罗马音也行，程序会认为这本和素晴是同一种东西。。。",
+    "replace": true
+  },
+  {
+    "type": 0,
+    "data": "好，这个基础版的meta文件是不是已经熟悉了？那我们来点高级的，让我们加点“细节”",
+    "replace": true
+  },
+  {
+    "type": 1,
+    "data": {
+      "type": 1,
+      "path": "assets/guide/chapter0/example2.json"
+    },
+    "replace": true
+  },
+  {
+    "type": 0,
+    "data": "好der，我们现在加了两行。是不是就合理多了，alias记录了这本漫画的别名，你可以把各种翻译版的译名或者原名赛在这里，当然这个只是看看的，并不会影响软件判断是不是同一本漫画，永远起效的只有name。第二个就更好理解了，就是一个作者列表，不过其实后面可以玩出花来，我们现在先这样放着",
+    "replace": true
+  },
+  {
+    "type": 0,
+    "data": "行，我们继续。让我们把最重要的加上去",
+    "replace": true
+  },
+  {
+    "type": 1,
+    "data": {
+      "type": 2,
+      "data": {
+        "name": "test_manga",
+        "title": "简单学会如何制作.manga文件",
+        "alias": [
+          ".manga从入门到精通",
+          ".manga Program design"
+        ],
+        "authors": [
+          "hanerx"
+        ],
+        "data": [
+          {
+            "name": "default",
+            "title": "连载",
+            "data": [
+              {
+                "decoder": "url_decoder",
+                "timestamp": 10205605364,
+                "name": "chapter1",
+                "order": 1,
+                "title": "第一章-网络图片",
+                "data": [
+                  "https://something.com/1.jpg",
+                  "https://something.com/2.jpg"
+                ],
+                "headers": {
+                  "referer": "https://img.something.com"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "replace": true
+  },
+  {
+    "type": 0,
+    "data": "# 哦豁\n突然变成一坨，是不是很尼玛，没事没事，我们慢慢讲解。首先，介绍的是最外面的那一层，也就是data那里。\n嘿呀，data这层没啥好说的吧，就是漫画的核心内容了，但是呢，很多漫画是有很多大类的，什么连载版啊、web版啊、推特小剧场啊，对吧。所以data下面有又套了一层。那我们把下面的单独拿出来看看。",
+    "replace": true
+  },
+  {
+    "type": 1,
+    "data": {
+      "type": 2,
+      "data": {
+        "name": "default",
+        "title": "连载",
+        "data": [
+          {
+            "decoder": "url_decoder",
+            "timestamp": 10205605364,
+            "name": "chapter1",
+            "order": 1,
+            "title": "第一章-网络图片",
+            "data": [
+              "https://something.com/1.jpg",
+              "https://something.com/2.jpg"
+            ],
+            "headers": {
+              "referer": "https://img.something.com"
+            }
+          }
+        ]
+      }
+    },
+    "replace": true
+  },
+  {
+    "type": 0,
+    "data": "嗯，是不是好看多了。那我们来说一下这个东西到底是啥。\n首先这个很明显是个连载板块，那么再来看这个name，和外面的name一样，这个name也是来标记这个板块是不是同一个的，在两个.manga文件合并的时候就会看这个来合并板块。",
+    "replace": true
+  },
+  {
+    "type": 0,
+    "data": "好，我们继续。title不用说了吧，和之前一样，显示在头上的。可惜这个没有alias字段，啥，为啥没有？你会给连载这种标题取别名吗，不会吧，不会吧，不会真有人会想要给看漫画的人看长到要换行的标题吧。行，那我们再往里深入一下，终于我们到了真的用来记录漫画数据的地方，也就是真正的data字段，这里是也只能是一个列表，请不要赛点奇怪的东西进来。那我们继续提取里面的东西，为了好看，我们再拿出来重写一下",
+    "replace": true
+  },
+  {
+    "type": 1,
+    "data": {
+      "type": 2,
+      "data": {
+        "decoder": "url_decoder",
+        "timestamp": 10205605364,
+        "name": "chapter1",
+        "order": 1,
+        "title": "第一章-网络图片",
+        "data": [
+          "https://something.com/1.jpg",
+          "https://something.com/2.jpg"
+        ],
+        "headers": {
+          "referer": "https://img.something.com"
+        }
+      }
+    },
+    "replace":true
+  },
+  {
+    "type": 0,
+    "data": "好我们到了最好玩的地方了，也就是每章节的实现，这里我们就要引入一个特别的功能了，叫做decoder，这也是这个格式比较大的一个卖点。这个格式可以允许你使用不同的decoder来解析每章节的内容，是不是开始高端起来了？不过这里只要直到这个是什么就行，下面我们讲的是比较通用的各个decoder也都认的通用内容。详细的decoder的教程会在后面章节写明。",
+    "replace": true
+  },
+  {
+    "type": 0,
+    "data": "那么我们继续，首先decoder是必须的，你必须告诉程序我们用啥进行解析，要不然肯定报错对吧。然后第二个必要的的name，还是一样，为了识别这个章节到底是哪个章节，然后还有老熟人title，这两个应该不用介绍了吧。好我们看到timestamp和order这两个，timestamp是用来标记更新时间的，用的是正常人看不懂的时间戳，你可以百度一下，也有很多在线工具。order是用来标记你这个章节的更新位置的，总有些人喜欢反过来标记，所以这个也是必须的，这个是章节排序的唯一指标",
+    "replace": true
+  },
+  {
+    "type": 0,
+    "data": "行，下面就是些不必要的了，反正后面也会讲你可以跳过，所以就这样？好，下课！现在暂时只有第一章的内容，毕竟是一个特别基础的开发版，decoder的程序我都没写完，所以就这样我们1.4.8版本的时候再说这些",
+    "replace": true
+  }
+]

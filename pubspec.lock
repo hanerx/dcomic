@@ -681,6 +681,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.3"
+  pretty_json:
+    dependency: "direct main"
+    description:
+      name: pretty_json
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.1.0"
   process:
     dependency: transitive
     description:

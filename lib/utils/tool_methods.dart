@@ -4,6 +4,7 @@ import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:flutterdmzj/generated/l10n.dart';
 import 'package:flutterdmzj/utils/log_output.dart';
 import 'package:logger/logger.dart';
@@ -66,5 +67,21 @@ class ToolMethods {
     }
   }
 
-
+  static Future<String> eval(String eval,{String url:'http://www.mangabz.com/'})async{
+    FlutterWebviewPlugin webView = FlutterWebviewPlugin();
+    String data;
+    webView.onStateChanged.listen((viewState) async {
+      if (viewState.type == WebViewState.finishLoad) {
+        webView.evalJavascript(eval).then((value){
+          data=value;
+        });
+      }
+    });
+    await webView.launch(url,hidden: true);
+    while(data==null){
+      await Future.delayed(Duration(seconds: 1));
+    }
+    await webView.close();
+    return data;
+  }
 }
