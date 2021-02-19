@@ -23,6 +23,8 @@ class SystemSettingModel extends BaseModel {
 
   bool _noMedia = false;
 
+  bool _labState=false;
+
   DataBase _dataBase = DataBase();
 
   SystemSettingModel() {
@@ -37,6 +39,7 @@ class SystemSettingModel extends BaseModel {
     _blackBox = await _dataBase.getBlackBox();
     _savePath = await _dataBase.getDownloadPath();
     _noMedia = await File('$savePath/.nomedia').exists();
+    _labState=await _dataBase.getLabState();
     notifyListeners();
   }
 
@@ -92,6 +95,14 @@ class SystemSettingModel extends BaseModel {
         }
       });
     }
+    notifyListeners();
+  }
+
+  bool get labState=>_labState;
+
+  set labState(bool value){
+    _dataBase.setLabState(value);
+    _labState=value;
     notifyListeners();
   }
 }

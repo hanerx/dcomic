@@ -98,6 +98,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "SettingPageMainDebugTitle" : MessageLookupByLibrary.simpleMessage("Debug"),
     "SettingPageMainDownloadSubtitle" : MessageLookupByLibrary.simpleMessage("Downloader Setting"),
     "SettingPageMainDownloadTitle" : MessageLookupByLibrary.simpleMessage("Download"),
+    "SettingPageMainLabSubtitle" : MessageLookupByLibrary.simpleMessage("Oh! you found easter egg."),
+    "SettingPageMainLabTitle" : MessageLookupByLibrary.simpleMessage("Experiment Setting"),
     "SettingPageMainReadingSubtitle" : MessageLookupByLibrary.simpleMessage("Reader Setting"),
     "SettingPageMainReadingTitle" : MessageLookupByLibrary.simpleMessage("Reading"),
     "SettingPageMainSourceSubtitle" : MessageLookupByLibrary.simpleMessage("Comic Source Setting"),
