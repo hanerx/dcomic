@@ -1,18 +1,20 @@
 import 'dart:convert';
 import 'dart:async';
+import 'dart:io';
 
 import 'package:code_editor/code_editor.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_json_widget/flutter_json_widget.dart';
 import 'package:flutterdmzj/component/CustomDrawer.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
-import 'package:fluttericon/font_awesome_icons.dart';
-import 'package:markdown_widget/markdown_helper.dart';
+import 'package:markdown_widget/markdown_widget.dart';
+import 'package:pretty_json/pretty_json.dart';
 
 class MagGuidePage extends StatefulWidget {
-  final List guide;
+  final GuideChapter guide;
 
   const MagGuidePage({Key key, this.guide}) : super(key: key);
 
@@ -24,19 +26,46 @@ class MagGuidePage extends StatefulWidget {
 }
 
 class _MagGuidePage extends State<MagGuidePage> {
-  String code = '';
-  String text = '';
+  String _code = '';
+  String _text = '';
+
+  String get code => _code;
+
+  String get text => _text;
+
+  set code(String code) {
+    setState(() {
+      _code = code;
+    });
+  }
+
+  set text(String text) {
+    setState(() {
+      _text = text;
+    });
+  }
 
   int _index = 0;
-  int _step = 0;
+
+  set index(int index) {
+    setState(() {
+      _index = index;
+    });
+  }
+
+  int get index => _index;
+
+  int step = 0;
   bool _play = true;
 
   Timer _mainTimer;
-  Timer _timer;
-  Lock _lock=Lock();
+  Timer timer;
+  Lock lock = Lock();
 
-  GlobalKey<ScaffoldState> _scaffoldKey=GlobalKey();
+  int stepDuration = 100;
+  int duration = 2;
 
+  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
 
   @override
   void initState() {
@@ -46,94 +75,45 @@ class _MagGuidePage extends State<MagGuidePage> {
   }
 
   play() async {
-    _mainTimer = Timer.periodic(Duration(seconds: 1), (timer) async {
+    _mainTimer = Timer.periodic(Duration(seconds: duration), (timer) async {
       if (_index >= widget.guide.length) {
         _mainTimer.cancel();
         return;
       }
-      if(!_lock.locked){
+      if (!lock.locked) {
         await show(widget.guide[_index]);
       }
     });
   }
 
-  show(data,{animate:true}) async {
-    _lock.lock();
-    if(_index<0||_index>=widget.guide.length){
-      _lock.unlock();
+  show(GuideAction data, {animate: true}) async {
+    lock.lock();
+    if (_index < 0 || _index >= widget.guide.length) {
+      lock.unlock();
       return;
     }
-    switch (data['type']) {
-      case 0:
-        if(data['replace']&&_step==0){
-          setState(() {
-            text='';
-          });
-        }
-        if(animate){
-          _timer=Timer.periodic(Duration(milliseconds: 100), (timer) async{await showStep(data['data'], 0); });
-        }else{
-          setState(() {
-            text=data['data'];
-          });
-          _lock.unlock();
-        }
-        break;
-      case 1:
-        if(data['replace']&&_step==0){
-          setState(() {
-            code='';
-          });
-        }
-        if(animate){
-          _timer=Timer.periodic(Duration(milliseconds: 100), (timer) async{await showStep(data['data'], 1); });
-        }else{
-          setState(() {
-            code=data['data'];
-          });
-          _lock.unlock();
-        }
-        break;
-      case 2:
-        if(animate){
-          _scaffoldKey.currentState.openEndDrawer();
-          setState(() {
-            _index++;
-          });
-        }
-        _lock.unlock();
-        break;
-      case 3:
-        if(animate){
-          Navigator.of(context).pop();
-          setState(() {
-            _index++;
-          });
-        }
-        _lock.unlock();
-        break;
-    }
+    data.show(this, animate: animate);
   }
 
   showStep(data, type) async {
-    if (_step >= data.length) {
+    if (step >= data.length) {
       setState(() {
-        _step = 0;
+        step = 0;
         _index++;
       });
-      _timer.cancel();
-      _lock.unlock();
+      timer.cancel();
+      lock.unlock();
       return;
     }
-    if (type == 0) {
+    if (type == GuideType.showText) {
       setState(() {
-        text += data[_step];
-        _step++;
+        _text += data[step];
+        step++;
       });
-    } else {
+    } else if (type == GuideType.showCode) {
       setState(() {
-        code += data[_step];
-        _step++;
+        _code += data[step];
+        step++;
       });
     }
   }
@@ -142,11 +122,11 @@ class _MagGuidePage extends State<MagGuidePage> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    if(_mainTimer!=null){
+    if (_mainTimer != null) {
       _mainTimer.cancel();
     }
-    if(_timer!=null){
-      _timer.cancel();
+    if (timer != null) {
+      timer.cancel();
     }
   }
 
@@ -154,7 +134,7 @@ class _MagGuidePage extends State<MagGuidePage> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-      key: _scaffoldKey,
+      key: scaffoldKey,
       appBar: AppBar(
         title: Text('新手上路'),
       ),
@@ -164,7 +144,8 @@ class _MagGuidePage extends State<MagGuidePage> {
           BottomNavigationBarItem(
               icon: Icon(Icons.arrow_left), title: Text('上一步')),
           BottomNavigationBarItem(
-              icon: Icon(_play?Icons.pause:Icons.play_arrow), title: Text(_play?'暂停':'播放')),
+              icon: Icon(_play ? Icons.pause : Icons.play_arrow),
+              title: Text(_play ? '暂停' : '播放')),
           BottomNavigationBarItem(
               icon: Icon(Icons.settings), title: Text('设置')),
           BottomNavigationBarItem(
@@ -174,20 +155,20 @@ class _MagGuidePage extends State<MagGuidePage> {
           switch (index) {
             case 0:
               _mainTimer.cancel();
-              _timer.cancel();
-              _lock.unlock();
+              timer.cancel();
+              lock.unlock();
               setState(() {
-                _play=false;
-                if(_step==0){
-                  if(_index>0){
+                _play = false;
+                if (step == 0) {
+                  if (_index > 0) {
                     _index--;
-                  }else{
-                    _index=0;
+                  } else {
+                    _index = 0;
                   }
                 }
-                _step=0;
+                step = 0;
               });
-              show(widget.guide[_index],animate: false);
+              show(widget.guide[_index], animate: false);
               break;
             case 1:
               setState(() {
@@ -195,28 +176,74 @@ class _MagGuidePage extends State<MagGuidePage> {
               });
               if (_play) {
                 play();
-              }else{
+              } else {
                 _mainTimer.cancel();
-                _timer.cancel();
-                _lock.unlock();
+                timer.cancel();
+                lock.unlock();
               }
+              break;
+            case 2:
+              showModalBottomSheet(
+                  context: context,
+                  builder: (context) => StatefulBuilder(
+                        builder: (context,
+                                void Function(void Function()) setState) =>
+                            Container(
+                          height: 200,
+                          child: ListView(
+                            padding: EdgeInsets.only(top: 20),
+                            children: [
+                              ListTile(
+                                title: Text('打字间隔时间(ms)'),
+                                subtitle: Slider(
+                                  value: stepDuration.toDouble(),
+                                  min: 0,
+                                  max: 1000,
+                                  divisions: 100,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      stepDuration = value.toInt();
+                                    });
+                                  },
+                                  label: '$stepDuration',
+                                ),
+                              ),
+                              ListTile(
+                                title: Text('间隔时间(s)'),
+                                subtitle: Slider(
+                                  value: duration.toDouble(),
+                                  min: 1,
+                                  max: 10,
+                                  divisions: 10,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      duration = value.toInt();
+                                    });
+                                  },
+                                  label: '$duration',
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ));
               break;
             case 3:
               _mainTimer.cancel();
-              _timer.cancel();
-              _lock.unlock();
+              timer.cancel();
+              lock.unlock();
               setState(() {
-                _play=false;
-                if(_step==0){
-                  if(_index<widget.guide.length-1){
+                _play = false;
+                if (step == 0) {
+                  if (_index < widget.guide.length - 1) {
                     _index++;
-                  }else{
-                    _index=widget.guide.length-1;
+                  } else {
+                    _index = widget.guide.length - 1;
                   }
                 }
-                _step=0;
+                step = 0;
               });
-              show(widget.guide[_index],animate: false);
+              show(widget.guide[_index], animate: false);
               break;
           }
         },
@@ -229,7 +256,8 @@ class _MagGuidePage extends State<MagGuidePage> {
           ),
           body: Builder(builder: (context) {
             try {
-              return JsonViewerWidget(jsonDecode(code));
+              return SingleChildScrollView(
+                  child: JsonViewerWidget(jsonDecode(_code)));
             } catch (e) {
               return Center(
                 child: Text('你的json好像没写对啊，没法渲染啊'),
@@ -242,11 +270,11 @@ class _MagGuidePage extends State<MagGuidePage> {
         children: [
           CodeEditor(
             model: EditorModel(files: [
-              FileEditor(code: code, language: 'json', name: 'meta.json')
+              FileEditor(code: _code, language: 'json', name: 'meta.json')
             ]),
             onSubmit: (lang, value) {
               setState(() {
-                code = value;
+                _code = value;
               });
             },
           ),
@@ -260,7 +288,7 @@ class _MagGuidePage extends State<MagGuidePage> {
                   Expanded(
                     child: Padding(
                       padding: EdgeInsets.only(left: 5),
-                      child: Text('$text'),
+                      child: MarkdownWidget(data: '$_text'),
                     ),
                   )
                 ],
@@ -271,4 +299,197 @@ class _MagGuidePage extends State<MagGuidePage> {
       ),
     );
   }
+}
+
+enum GuideType { showText, showCode, showDrawer, closeDrawer }
+
+class GuideChapter {
+  GuideChapter();
+
+  Future<void> initFromString(String string) async {
+    var data = jsonDecode(string);
+    for (var item in data) {
+      _list.add(await parse(item));
+    }
+  }
+
+  Future<GuideAction> parse(Map map) async {
+    switch (GuideType.values[map['type']]) {
+      case GuideType.showText:
+        if (map['data'] is String) {
+          return TextAction(map['data'], replace: map['replace']);
+        } else if (map['data'] is Map) {
+          switch (map['data']['type']) {
+            case 0:
+              File file = File(map['data']['path']);
+              if (await file.exists()) {
+                return TextAction(await file.readAsString(),
+                    replace: map['replace']);
+              }
+              break;
+            case 1:
+              return TextAction(
+                  await rootBundle.loadString(map['data']['path']),
+                  replace: map['replace']);
+              break;
+            case 2:
+              return TextAction(prettyJson(map['data']['data']),
+                  replace: map['replace']);
+              break;
+          }
+        }
+        return TextAction('', replace: false);
+        break;
+      case GuideType.showCode:
+        if (map['data'] is String) {
+          return CodeAction(map['data'], replace: map['replace']);
+        } else if (map['data'] is Map) {
+          switch (map['data']['type']) {
+            case 0:
+              File file = File(map['data']['path']);
+              if (await file.exists()) {
+                return CodeAction(await file.readAsString(),
+                    replace: map['replace']);
+              }
+              break;
+            case 1:
+              return CodeAction(
+                  await rootBundle.loadString(map['data']['path']),
+                  replace: map['replace']);
+              break;
+            case 2:
+              return CodeAction(prettyJson(map['data']['data']),
+                  replace: map['replace']);
+              break;
+          }
+        }
+        return CodeAction('', replace: false);
+        break;
+      case GuideType.showDrawer:
+        return OpenDrawerAction();
+        break;
+      case GuideType.closeDrawer:
+        return CloseDrawerAction();
+        break;
+    }
+    return null;
+  }
+
+  List<GuideAction> _list = [];
+
+  int get length => _list.length;
+
+  @override
+  GuideAction operator [](int index) {
+    // TODO: implement ==
+    return _list[index];
+  }
+}
+
+abstract class GuideAction {
+  GuideType get type;
+
+  show(_MagGuidePage state, {bool animate: true});
+}
+
+abstract class StringAction extends GuideAction {
+  String data;
+  bool replace;
+
+  StringAction(this.data, {this.replace: true});
+
+  @override
+  show(_MagGuidePage state, {bool animate: true}) {
+    // TODO: implement show
+    if (animate) {
+      state.timer = Timer.periodic(Duration(milliseconds: state.stepDuration),
+          (timer) async {
+        await state.showStep(data, type);
+      });
+    }
+  }
+}
+
+class TextAction extends StringAction {
+  TextAction(data, {replace}) : super(data, replace: replace);
+
+  @override
+  // TODO: implement type
+  GuideType get type => GuideType.showText;
+
+  @override
+  show(_MagGuidePage state, {bool animate: true}) {
+    // TODO: implement show
+    if (animate) {
+      if (replace && state.step == 0) {
+        state.text = '';
+      }
+      return super.show(state, animate: animate);
+    } else {
+      if (replace) {
+        state.text = data;
+      } else {
+        state.text += data;
+      }
+      state.lock.unlock();
+    }
+  }
+}
+
+class CodeAction extends StringAction {
+  CodeAction(data, {replace}) : super(data, replace: replace);
+
+  @override
+  // TODO: implement type
+  GuideType get type => GuideType.showCode;
+
+  @override
+  show(_MagGuidePage state, {bool animate: true}) {
+    // TODO: implement show
+    if (animate) {
+      if (replace && state.step == 0) {
+        state.code = '';
+      }
+      return super.show(state, animate: animate);
+    } else {
+      if (replace) {
+        state.code = data;
+      } else {
+        state.code += data;
+      }
+      state.lock.unlock();
+    }
+  }
+}
+
+class OpenDrawerAction extends GuideAction {
+  @override
+  show(_MagGuidePage state, {bool animate = true}) {
+    // TODO: implement show
+    if (animate) {
+      state.scaffoldKey.currentState.openEndDrawer();
+      state.index++;
+    }
+    state.lock.unlock();
+  }
+
+  @override
+  // TODO: implement type
+  GuideType get type => GuideType.showDrawer;
+}
+
+class CloseDrawerAction extends GuideAction {
+  @override
+  show(_MagGuidePage state, {bool animate = true}) {
+    // TODO: implement show
+    if (animate) {
+      Navigator.of(state.context).pop();
+      state.index++;
+    }
+    state.lock.unlock();
+  }
+
+  @override
+  // TODO: implement type
+  GuideType get type => GuideType.closeDrawer;
 }
