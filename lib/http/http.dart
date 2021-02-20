@@ -7,13 +7,13 @@ import 'package:flutterdmzj/database/database.dart';
 class CustomHttp {
   Dio dio;
   Dio unCachedDio;
-  String baseUrl = 'https://nnv3api.dmzj1.com';
+  String baseUrl = 'https://v3api.dmzj1.com';
   String apiUrl='https://api.dmzj1.com';
   String sacgUrl='https://sacg.dmzj1.com';
   String imgUrl='http://imgsmall.dmzj1.com';
   String iUrl='https://i.dmzj1.com';
   String mUrl='https://m.dmzj.com';
-  final String queryOptions = 'channel=Android&version=2.7.017';
+  final String queryOptions = 'channel=Android&version=1.2.0';
   DioCacheManager _cacheManager;
 
   CustomHttp() {

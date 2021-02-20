@@ -116,6 +116,7 @@ class ComicModel extends BaseModel {
         local: comic.type == 1,
         index: index,
         cover: false,
+        headers: comic.headers,
       );
     }
     return null;

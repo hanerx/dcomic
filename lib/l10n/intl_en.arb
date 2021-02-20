@@ -125,5 +125,9 @@
   "SettingPageSourcePageSourceTitle": "Comic Source",
   "SettingPageSourcePageSourceSubtitle": "Config Comic Source",
   "SettingPageSourcePageSourceProviderTitle": "Comic Source Provider",
-  "SettingPageSourcePageSourceProviderSubtitle": "Config Comic Source Provider"
+  "SettingPageSourcePageSourceProviderSubtitle": "Config Comic Source Provider",
+  "SettingPageMainLabTitle": "Experiment Setting",
+  "SettingPageMainLabSubtitle": "Oh! you found easter egg.",
+  "SettingPageDebugTestTitle": "API Test Page",
+  "SettingPageDebugTestSubtitle": "Provide a test page to test API"
 }

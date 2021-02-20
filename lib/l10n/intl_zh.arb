@@ -125,5 +125,9 @@
   "SettingPageSourcePageSourceTitle": "漫画源管理",
   "SettingPageSourcePageSourceSubtitle": "管理所有漫画源的启用与关闭，同时配置设置",
   "SettingPageSourcePageSourceProviderTitle": "漫画源提供源管理",
-  "SettingPageSourcePageSourceProviderSubtitle": "漫画源的云端更新配置"
+  "SettingPageSourcePageSourceProviderSubtitle": "漫画源的云端更新配置",
+  "SettingPageMainLabTitle": "实验设置",
+  "SettingPageMainLabSubtitle": "实验性功能（彩蛋）",
+  "SettingPageDebugTestTitle": "调试测试接口功能",
+  "SettingPageDebugTestSubtitle": "提供一个测试页面测试各种平时外面看不到的接口"
 }

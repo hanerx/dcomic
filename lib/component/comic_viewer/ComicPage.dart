@@ -17,6 +17,7 @@ class ComicPage extends StatefulWidget {
   final int index;
   final bool cover;
   final bool local;
+  final Map headers;
 
   const ComicPage(
       {Key key,
@@ -25,7 +26,7 @@ class ComicPage extends StatefulWidget {
       this.title,
       this.index,
       this.cover,
-      this.local: false})
+      this.local: false,this.headers})
       : super(key: key);
 
   @override
@@ -117,7 +118,7 @@ class _ComicPage extends State<ComicPage> {
       child: CachedNetworkImage(
         fit: widget.cover ? BoxFit.cover : BoxFit.contain,
         imageUrl: widget.url,
-        httpHeaders: {'referer': 'http://images.dmzj.com'},
+        httpHeaders: widget.headers,
         progressIndicatorBuilder: (context, url, downloadProgress) => Center(
             child: Container(
           height: 500,

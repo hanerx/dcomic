@@ -4,6 +4,7 @@ import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/generated/l10n.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/view/database_detail_page.dart';
+import 'package:flutterdmzj/view/settings/debug_test_page.dart';
 import 'package:logger_flutter/logger_flutter.dart';
 
 
@@ -26,6 +27,14 @@ class _DebugSettingPage extends State<DebugSettingPage>{
       ),
       body: ListView(
         children: [
+          ListTile(
+            title: Text(S.of(context).SettingPageDebugTestTitle),
+            subtitle: Text(S.of(context).SettingPageDebugTestSubtitle),
+            onTap: (){
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => DebugTestPage()));
+            },
+          ),
           Divider(),
           ListTile(
             title: Text(S.of(context).SettingPageDatabaseDetailTitle),

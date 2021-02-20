@@ -4,6 +4,7 @@ import 'package:flutterdmzj/database/sourceDatabaseProvider.dart';
 import 'package:flutterdmzj/model/baseModel.dart';
 import 'package:flutterdmzj/model/comic_source/DMZJSourceModel.dart';
 import 'package:flutterdmzj/model/comic_source/IKanManSourceModel.dart';
+import 'package:flutterdmzj/model/comic_source/MangabzSourceModel.dart';
 import 'package:flutterdmzj/model/comic_source/baseSourceModel.dart';
 
 class SourceProvider extends BaseModel {
@@ -19,6 +20,7 @@ class SourceProvider extends BaseModel {
     sources.add(DMZJSourceModel());
     sources.add(IKanManSourceModel());
     sources.add(DMZJWebSourceModel());
+    sources.add(MangabzSourceModel());
     var options=await SourceDatabaseProvider.getSourceOptions('provider');
     if(options.containsKey('index')){
       _index = int.parse(options['index']);

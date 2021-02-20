@@ -985,6 +985,46 @@ class S {
       args: [],
     );
   }
+
+  /// `Experiment Setting`
+  String get SettingPageMainLabTitle {
+    return Intl.message(
+      'Experiment Setting',
+      name: 'SettingPageMainLabTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Oh! you found easter egg.`
+  String get SettingPageMainLabSubtitle {
+    return Intl.message(
+      'Oh! you found easter egg.',
+      name: 'SettingPageMainLabSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `API Test Page`
+  String get SettingPageDebugTestTitle {
+    return Intl.message(
+      'API Test Page',
+      name: 'SettingPageDebugTestTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Provide a test page to test API`
+  String get SettingPageDebugTestSubtitle {
+    return Intl.message(
+      'Provide a test page to test API',
+      name: 'SettingPageDebugTestSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

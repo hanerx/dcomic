@@ -49,7 +49,7 @@ class DMZJSourceModel extends BaseSourceModel {
             .map((value) => value['tag_name'])
             .toList()
             .join('/');
-        var chapters = response.data['chapters'];
+        var chapters = response.data['chapters'].map<Map<String,dynamic>>((e)=>e as Map<String,dynamic>).toList();
         DataBase dataBase = DataBase();
         var lastChapterId = await dataBase.getHistory(comicId);
         return DMZJComicDetail(
@@ -140,7 +140,7 @@ class DMZJSourceModel extends BaseSourceModel {
   }
 
   @override
-  Future<List<ComicDetail>> search(String keyword) {
+  Future<List<SearchResult>> search(String keyword) {
     // TODO: implement search
     throw UnimplementedError();
   }
@@ -531,6 +531,10 @@ class DMZJComicDetail extends ComicDetail {
   @override
   // TODO: implement historyChapter
   String get historyChapter => _historyChapter;
+
+  @override
+  // TODO: implement headers
+  Map<String,String> get headers => {'referer':'http://images.dmzj.com'};
 }
 
 class DMZJComic extends Comic {
@@ -784,4 +788,8 @@ class DMZJComic extends Comic {
     // TODO: implement init
     await getComic(comicId: _comicId, chapterId: _chapterId);
   }
+
+  @override
+  // TODO: implement headers
+  Map<String,String> get headers => {'referer':'http://images.dmzj.com'};
 }

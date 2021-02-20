@@ -28,7 +28,7 @@ class TrackerModel extends BaseModel {
               isUnread: false,
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => ComicDetailPage(id: e.comicId)));
+                    builder: (context) => ComicDetailPage(id: e.comicId,title: e.title,)));
               },
             ))
         .toList();

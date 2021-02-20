@@ -39,7 +39,7 @@ class IKanManSourceModel extends BaseSourceModel {
   SourceOptions get options => _options;
 
   @override
-  Future<List<ComicDetail>> search(String keyword) {
+  Future<List<SearchResult>> search(String keyword) {
     // TODO: implement search
     throw UnimplementedError();
   }
