@@ -129,7 +129,7 @@ class VersionModel extends BaseModel {
   String get updateChannelName=>_updateChannel<channels.length?channels[_updateChannel]:'未知通道';
 
   set updateChannel(int channel) {
-    if(channel<channels.length){
+    if(0<=channel&&channel<channels.length){
       _updateChannel = channel;
     }else{
       _updateChannel=0;

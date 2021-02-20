@@ -26,7 +26,7 @@ class SearchListTile extends StatelessWidget {
         switch (novel) {
           case 0:
             Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return ComicDetailPage(id:comicId);
+              return ComicDetailPage(id:comicId,title: this.title,);
             }));
             break;
           case 1:

@@ -20,31 +20,11 @@ class _SearchPage extends State<SearchPage> {
   TextEditingController _controller = TextEditingController();
   FocusNode _node = FocusNode();
   String keyword = '';
-  bool deepSearch = false;
-  bool novelSearch = false;
-
-  getDeepSearch() async {
-    DataBase dataBase = DataBase();
-    bool state = await dataBase.getDeepSearch();
-    setState(() {
-      deepSearch = state;
-    });
-  }
-
-  getNovelSearch() async {
-    DataBase dataBase = DataBase();
-    bool state = await dataBase.getNovelState();
-    setState(() {
-      novelSearch = state;
-    });
-  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getDeepSearch();
-    getNovelSearch();
   }
 
   @override
@@ -57,7 +37,7 @@ class _SearchPage extends State<SearchPage> {
     List views = <Widget>[
       SearchTab(key: UniqueKey(), keyword: keyword),
     ];
-    if (novelSearch) {
+    if (Provider.of<SystemSettingModel>(context,listen: false).novel) {
       tabs.add(Tab(
         text: '轻小说搜索',
       ));
@@ -66,7 +46,7 @@ class _SearchPage extends State<SearchPage> {
         key: UniqueKey(),
       ));
     }
-    if (deepSearch) {
+    if (Provider.of<SystemSettingModel>(context,listen: false).deepSearch) {
       tabs.add(Tab(
         text: '隐藏搜索',
       ));

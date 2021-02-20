@@ -1005,6 +1005,26 @@ class S {
       args: [],
     );
   }
+
+  /// `API Test Page`
+  String get SettingPageDebugTestTitle {
+    return Intl.message(
+      'API Test Page',
+      name: 'SettingPageDebugTestTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Provide a test page to test API`
+  String get SettingPageDebugTestSubtitle {
+    return Intl.message(
+      'Provide a test page to test API',
+      name: 'SettingPageDebugTestSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

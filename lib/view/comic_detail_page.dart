@@ -262,9 +262,7 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                                 image: CachedNetworkImageProvider(
                                     Provider.of<ComicDetailModel>(context)
                                         .cover,
-                                    headers: {
-                                      'referer': 'http://images.dmzj.com'
-                                    }),
+                                    headers: Provider.of<ComicDetailModel>(context).headers),
                                 fit: BoxFit.cover),
                             mainAxisExtent: 200.0,
                           ),

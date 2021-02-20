@@ -203,7 +203,7 @@ class DarkCustomListTile extends StatelessWidget {
       onPressed: () async {
         if (Provider.of<SystemSettingModel>(context, listen: false).backupApi) {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return ComicDetailPage(id: comicId);
+            return ComicDetailPage(id: comicId,title: title,);
           }));
         } else {
           CustomHttp http = CustomHttp();
@@ -211,7 +211,7 @@ class DarkCustomListTile extends StatelessWidget {
           if (response.statusCode == 200 &&
               response.data['chapters'].length > 0) {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return ComicDetailPage(id: comicId);
+              return ComicDetailPage(id: comicId,title: title,);
             }));
           } else if (live) {
             Comic comic=DMZJComic(comicId, lastChapterId, [lastChapterId],Provider.of<SourceProvider>(context,listen: false).sources.first.options);

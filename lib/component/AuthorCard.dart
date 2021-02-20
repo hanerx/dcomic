@@ -60,7 +60,7 @@ class AuthorCard extends StatelessWidget{
       ),
       onPressed: (){
         Navigator.push(context, MaterialPageRoute(builder: (context){
-          return ComicDetailPage(id:id.toString());
+          return ComicDetailPage(id:id.toString(),title: title,);
         }));
       },
     );

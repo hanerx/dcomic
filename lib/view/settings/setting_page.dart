@@ -24,7 +24,7 @@ class SettingPage extends StatefulWidget {
 class _SettingPage extends State<SettingPage> {
   @override
   Widget build(BuildContext context) {
-    List list=[
+    List<Widget> list=[
       ListTile(
         leading: Icon(Icons.book),
         title: Text(S.of(context).SettingPageMainReadingTitle),

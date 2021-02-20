@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutterdmzj/model/baseModel.dart';
 
 abstract class BaseSourceModel extends BaseModel {
-  Future<List<ComicDetail>> search(String keyword);
+  Future<List<SearchResult>> search(String keyword);
 
   Future<ComicDetail> get({String comicId, String title});
 
@@ -41,15 +41,15 @@ abstract class SourceOptions extends BaseModel {
   set active(bool value);
 }
 
-class SourceOptionsProvider extends BaseModel{
+class SourceOptionsProvider extends BaseModel {
   final SourceOptions options;
 
   SourceOptionsProvider(this.options);
 
-  bool get active=>options.active;
+  bool get active => options.active;
 
-  set active(bool value){
-    options.active=value;
+  set active(bool value) {
+    options.active = value;
     notifyListeners();
   }
 }
@@ -80,6 +80,8 @@ abstract class ComicDetail extends BaseModel {
   String get status;
 
   String get historyChapter;
+
+  Map<String,String> get headers;
 }
 
 abstract class Comic extends BaseModel {
@@ -105,9 +107,12 @@ abstract class Comic extends BaseModel {
 
   bool get canNext;
 
-  Future<void> addReadHistory({String title,String comicId,int page});
+  Map<String,String> get headers;
 
-  Future<void> getComic({String title,String comicId,String chapterId,String chapterTitle});
+  Future<void> addReadHistory({String title, String comicId, int page});
+
+  Future<void> getComic(
+      {String title, String comicId, String chapterId, String chapterTitle});
 
   Future<void> init();
 
@@ -124,8 +129,8 @@ class SourceDetail {
   final bool cloud;
   final bool deprecated;
 
-
-  SourceDetail(this.name, this.title, this.description, this.canDisable, this.cloud, this.deprecated);
+  SourceDetail(this.name, this.title, this.description, this.canDisable,
+      this.cloud, this.deprecated);
 
   @override
   // TODO: implement hashCode
@@ -146,6 +151,18 @@ class SourceDetail {
   }
 }
 
+abstract class SearchResult extends BaseModel{
+  String get title;
+  String get comicId;
+  String get cover;
+  String get author;
+  String get tag;
+}
+
 class IDInvalidError implements Exception {}
 
 class ComicLoadingError implements Exception {}
+
+class ComicIdNotBoundError implements Exception {}
+
+class ComicSearchError implements Exception {}

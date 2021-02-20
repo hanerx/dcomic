@@ -48,11 +48,17 @@ class DatabaseCommon {
       'source_name': 'TEXT',
       'key': 'TEXT',
       'value': 'TEXT'
+    }),
+    'comic_bounding':DatabaseStaticModel(14,{
+      'id':'INTEGER PRIMARY KEY',
+      'comic_id':'TEXT',
+      'bound_id':'TEXT',
+      'source_name':'TEXT'
     })
   };
 
   static Future<Database> initDatabase() async {
-    return await openDatabase("dmzj_2.db", version: 13,
+    return await openDatabase("dmzj_2.db", version: 14,
         onCreate: (Database db, int version) async {
       // await db.execute(
       //     "CREATE TABLE cookies (id INTEGER PRIMARY KEY, key TEXT, value TEXT)");

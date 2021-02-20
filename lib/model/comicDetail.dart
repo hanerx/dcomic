@@ -17,6 +17,8 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 /// 预计多次迭代
 class ComicDetailModel extends BaseModel {
   BaseSourceModel _model;
+
+  get headers => detail==null?{'referer':'http://image.dmzj.com'}:detail.headers;
   void changeModel(BaseSourceModel model){
     _model=model;
     init();
@@ -70,7 +72,7 @@ class ComicDetailModel extends BaseModel {
   Map data;
 
   ComicDetailModel(this._model, this._title, this._comicId) {
-    init().then((value) => getIfSubscribe(comicId).then((value) => getHistory(comicId).then((value) => addReadHistory(comicId))));
+    init().then((value) => getIfSubscribe(_comicId).then((value) => getHistory(_comicId).then((value) => addReadHistory(_comicId))));
   }
 
   Future<void> init() async {
@@ -152,86 +154,6 @@ class ComicDetailModel extends BaseModel {
     notifyListeners();
   }
 
-  // Future<void> getComic(comicId) async {
-  //   try {
-  //     CustomHttp http = CustomHttp();
-  //     var response = await http.getComicDetail(comicId);
-  //     if (response.statusCode == 200) {
-  //       //获取基础信息
-  //       title = response.data['title'];
-  //       cover = response.data['cover'];
-  //       author = response.data['authors'];
-  //       types = response.data['types'];
-  //       hotNum = response.data['hot_num'];
-  //       subscribeNum = response.data['subscribe_num'];
-  //       description = response.data['description'];
-  //       updateDate =
-  //           ToolMethods.formatTimestamp(response.data['last_updatetime']);
-  //       //状态信息需要采取特殊处理
-  //       status = response.data['status']
-  //           .map((value) => value['tag_name'])
-  //           .toList()
-  //           .join('/');
-  //       chapters = response.data['chapters'];
-  //       if (chapters.length == 0 && backupApi) {
-  //         throw Exception('no chapters');
-  //       }
-  //       print(
-  //           'class: ComicDetailModel, action: detailLoading, comicId: ${this.comicId}, title: ${this.title}, author: ${this.author}');
-  //     }
-  //   } catch (e) {
-  //     //出现加载问题
-  //     this.error = true;
-  //     description = '错误代码: $e';
-  //     title = '加载出错';
-  //     status = '加载失败';
-  //     print(
-  //         'class: ComicDetailModel, action: detailLoadingFailed, comicId: ${this.comicId}, exception: $e');
-  //     if (backupApi) {
-  //       await getComicDetailBackup(comicId);
-  //     }
-  //   }
-  //   //唤醒UI
-  //   notifyListeners();
-  // }
-
-  // Future<void> getComicDetailBackup(String comicId) async {
-  //   try {
-  //     CustomHttp http = CustomHttp();
-  //     var response = await http.getComicDetailDark(comicId);
-  //     if (response.statusCode == 200) {
-  //       var data = jsonDecode(response.data)['data'];
-  //       title = data['info']['title'];
-  //       cover = data['info']['cover'];
-  //       author = [
-  //         {'tag_name': data['info']['authors'], 'tag_id': null}
-  //       ];
-  //       types = [
-  //         {'tag_name': data['info']['types'], 'tag_id': null}
-  //       ];
-  //       description = data['info']['description'];
-  //       updateDate = ToolMethods.formatTimestamp(
-  //           int.parse(data['info']['last_updatetime']));
-  //       //状态信息需要采取特殊处理
-  //       status = data['info']['status'];
-  //       chapters = [
-  //         {
-  //           'data': data['list']
-  //               .map((e) => {
-  //                     'chapter_id': e['id'],
-  //                     'chapter_title': e['chapter_name'],
-  //                     'updatetime': int.parse(e['updatetime'])
-  //                   })
-  //               .toList(),
-  //           'title': '备用API'
-  //         }
-  //       ];
-  //     }
-  //   } catch (e) {
-  //     logger.w(
-  //         'class: ComicDetailModel, action: detailBackupLoadingFailed, comicId: ${this.comicId}, exception: $e');
-  //   }
-  // }
 
   Widget _buildBasicButton(context, String title, style, VoidCallback onPress,
       {double width: 120}) {

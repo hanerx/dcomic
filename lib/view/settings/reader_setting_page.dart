@@ -43,20 +43,6 @@ class _ReaderSettingPage extends State<ReaderSettingPage>{
               ),
               Divider(),
               ListTile(
-                title: Text('使用WebApi'),
-                subtitle: Text('使用网页版的API，据说能提画质(说实话我没感觉啊，手机的api就挺高清了啊)'),
-                trailing: Switch(
-                  value: Provider.of<ComicViewerSettingModel>(context).webApi,
-                  onChanged: (val){
-                    Provider.of<ComicViewerSettingModel>(context,listen: false).webApi=val;
-                  },
-                ),
-                onTap: (){
-                  Provider.of<ComicViewerSettingModel>(context,listen: false).webApi=!Provider.of<ComicViewerSettingModel>(context,listen: false).webApi;
-                },
-              ),
-              Divider(),
-              ListTile(
                 title: Text('碰撞体积'),
                 subtitle: Slider(
                   min: 0,

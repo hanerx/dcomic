@@ -14,6 +14,9 @@ import 'package:version/version.dart';
 
 class ToolMethods {
   static String formatTimestamp(int timestamp) {
+    if(timestamp==null){
+      return '1970-01-01';
+    }
     var dateTime = DateTime.fromMicrosecondsSinceEpoch(timestamp * 1000000);
     return '${dateTime.year}-${dateTime.month}-${dateTime.day}';
   }
@@ -79,6 +82,26 @@ class ToolMethods {
     });
     await webView.launch(url,hidden: true);
     while(data==null){
+      await Future.delayed(Duration(milliseconds: 100));
+    }
+    await webView.close();
+    return data;
+  }
+
+  static Future<List<String>> evalList(List<String> codes,{String url:'http://www.mangabz.com/'})async{
+    FlutterWebviewPlugin webView = FlutterWebviewPlugin();
+    List<String> data=[];
+    webView.onStateChanged.listen((viewState) async {
+      if (viewState.type == WebViewState.finishLoad) {
+        for(var item in codes){
+          webView.evalJavascript(item).then((value){
+            data.add(value);
+          });
+        }
+      }
+    });
+    await webView.launch(url,hidden: true);
+    while(data.length<codes.length){
       await Future.delayed(Duration(seconds: 1));
     }
     await webView.close();

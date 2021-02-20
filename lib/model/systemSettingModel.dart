@@ -25,6 +25,12 @@ class SystemSettingModel extends BaseModel {
 
   bool _labState=false;
 
+  bool _novel=false;
+
+  bool _deepSearch=false;
+
+  bool _darkSide=false;
+
   DataBase _dataBase = DataBase();
 
   SystemSettingModel() {
@@ -40,6 +46,9 @@ class SystemSettingModel extends BaseModel {
     _savePath = await _dataBase.getDownloadPath();
     _noMedia = await File('$savePath/.nomedia').exists();
     _labState=await _dataBase.getLabState();
+    _novel=await _dataBase.getNovelState();
+    _darkSide=await _dataBase.getDarkSide();
+    _deepSearch=await _dataBase.getDeepSearch();
     notifyListeners();
   }
 
@@ -103,6 +112,31 @@ class SystemSettingModel extends BaseModel {
   set labState(bool value){
     _dataBase.setLabState(value);
     _labState=value;
+    notifyListeners();
+  }
+
+
+  bool get darkSide => _darkSide;
+
+  set darkSide(bool value) {
+    _dataBase.setDarkSide(value);
+    _darkSide = value;
+    notifyListeners();
+  }
+
+  bool get deepSearch => _deepSearch;
+
+  set deepSearch(bool value) {
+    _dataBase.setDeepSearch(value);
+    _deepSearch = value;
+    notifyListeners();
+  }
+
+  bool get novel => _novel;
+
+  set novel(bool value) {
+    _dataBase.setNovelState(value);
+    _novel = value;
     notifyListeners();
   }
 }

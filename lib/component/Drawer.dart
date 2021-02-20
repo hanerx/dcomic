@@ -25,8 +25,6 @@ class CustomDrawerState extends State<CustomDrawer> {
   String avatar = 'https://avatar.dmzj.com/default.png';
   String nickname = '请先登录';
   String uid = '';
-  bool darkSide = false;
-  bool novel = false;
 
   static const List darkMode = [
     Icons.brightness_4,
@@ -61,22 +59,6 @@ class CustomDrawerState extends State<CustomDrawer> {
     }
   }
 
-  getDarkSide() async {
-    DataBase dataBase = DataBase();
-    bool state = await dataBase.getDarkSide();
-    setState(() {
-      darkSide = state;
-    });
-  }
-
-  getNovel() async {
-    DataBase dataBase = DataBase();
-    bool state = await dataBase.getNovelState();
-    setState(() {
-      novel = state;
-    });
-  }
-
   @override
   void deactivate() {
     super.deactivate();
@@ -93,8 +75,6 @@ class CustomDrawerState extends State<CustomDrawer> {
     // TODO: implement initState
     super.initState();
     getLoginState();
-    getDarkSide();
-    getNovel();
   }
 
   @override
@@ -211,7 +191,7 @@ class CustomDrawerState extends State<CustomDrawer> {
         },
       )
     ];
-    if (darkSide) {
+    if (Provider.of<SystemSettingModel>(context, listen: false).darkSide) {
       list += <Widget>[
         Divider(),
         ListTile(
@@ -226,7 +206,7 @@ class CustomDrawerState extends State<CustomDrawer> {
         )
       ];
     }
-    if (novel) {
+    if (Provider.of<SystemSettingModel>(context, listen: false).novel) {
       list += <Widget>[
         Divider(),
         ListTile(
