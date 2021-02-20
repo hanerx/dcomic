@@ -27,4 +27,6 @@ class ComicCategoryModel extends BaseModel{
   List<Widget> buildCategoryWidget(context){
     return category.map<Widget>((e) => CategoryCard(e['cover'], e['title'],e['tag_id'],type: type,)).toList();
   }
+
+  bool get empty=>category.length==0;
 }

@@ -78,8 +78,11 @@ class ComicDetailModel extends BaseModel {
   Future<void> init() async {
     try {
       detail = await _model.get(title: this._title, comicId: this._comicId);
+      error=false;
       notifyListeners();
     } catch (e) {
+      error=true;
+      notifyListeners();
       logger.w('class: ComicDetail, action: loadingFailed, exception: $e');
     }
   }

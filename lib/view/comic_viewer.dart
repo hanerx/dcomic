@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutterdmzj/component/CustomDrawer.dart';
+import 'package:flutterdmzj/component/EmptyView.dart';
 import 'package:flutterdmzj/component/comic_viewer/HorizontalPageView.dart';
 import 'package:flutterdmzj/component/comic_viewer/Tips.dart';
 import 'package:flutterdmzj/component/comic_viewer/VerticalPageView.dart';
@@ -255,6 +256,7 @@ class _ComicViewPage extends State<ComicViewPage>
       onRefresh: ()async{
         await Provider.of<ComicModel>(context,listen: false).refreshViewPoint();
       },
+      emptyWidget: Provider.of<ComicModel>(context).emptyViewPoint?EmptyView():null,
       child: Wrap(
         children: Provider.of<ComicModel>(context).buildViewPoint(context),
       ),

@@ -66,4 +66,6 @@ class TrackerModel extends BaseModel {
     }
     return false;
   }
+
+  bool get empty=>tracingComic.length==0;
 }

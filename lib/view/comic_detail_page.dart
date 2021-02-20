@@ -8,6 +8,7 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_parallax/flutter_parallax.dart';
 import 'package:flutterdmzj/component/Authors.dart';
 import 'package:flutterdmzj/component/CustomDrawer.dart';
+import 'package:flutterdmzj/component/EmptyView.dart';
 import 'package:flutterdmzj/component/FancyFab.dart';
 import 'package:flutterdmzj/component/LoadingCube.dart';
 import 'package:flutterdmzj/component/TypeTags.dart';
@@ -130,119 +131,130 @@ class _ComicDetailPage extends State<ComicDetailPage> {
             ),
             endDrawer: CustomDrawer(
               child: CommentPage(
-                  Provider.of<ComicDetailModel>(context, listen: false)
-                      .comicId),
+                  Provider.of<ComicDetailModel>(context, listen: false).comicId,
+                  0),
               widthPercent: 0.9,
             ),
-            floatingActionButton: Builder(
-              builder: (context) {
-                return FancyFab(
-                  reverse: Provider.of<ComicDetailModel>(context).reverse,
-                  isSubscribe: Provider.of<TrackerModel>(context)
-                      .ifSubscribe(Provider.of<ComicDetailModel>(context)),
-                  onSort: () {
-                    Provider.of<ComicDetailModel>(context, listen: false)
-                            .reverse =
-                        !Provider.of<ComicDetailModel>(context, listen: false)
-                            .reverse;
-                  },
-                  onPlay: () async {
-                    if (Provider.of<ComicDetailModel>(context, listen: false)
-                            .lastChapterId !=
-                        '') {
-                      // 由于navigator里面context不包含provider，所以要先放在外面
-                      var lastChapterId =
+            floatingActionButton: Provider.of<ComicDetailModel>(context).error
+                ? null
+                : Builder(
+                    builder: (context) {
+                      return FancyFab(
+                        reverse: Provider.of<ComicDetailModel>(context).reverse,
+                        isSubscribe: Provider.of<TrackerModel>(context)
+                            .ifSubscribe(
+                                Provider.of<ComicDetailModel>(context)),
+                        onSort: () {
                           Provider.of<ComicDetailModel>(context, listen: false)
-                              .lastChapterId;
-                      Comic comic = await Provider.of<ComicDetailModel>(context,
-                              listen: false)
-                          .detail
-                          .getChapter(chapterId: lastChapterId);
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return ComicViewPage(
-                          comic: comic,
-                        );
-                      }));
-                    } else if (Provider.of<ComicDetailModel>(context,
-                                listen: false)
-                            .lastChapterId ==
-                        '') {
-                      var comicId =
-                          Provider.of<ComicDetailModel>(context, listen: false)
-                              .comicId;
-                      var lastChapterId = '';
-                      var lastChapterList =
-                          Provider.of<ComicDetailModel>(context, listen: false)
-                              .chapters[0]['data']
-                              .map((value) => value['chapter_id'].toString())
-                              .toList();
-                      if (lastChapterList.length > 0) {
-                        lastChapterId =
-                            lastChapterList[lastChapterList.length - 1];
-                      }
-                      Comic comic = await Provider.of<ComicDetailModel>(context,
-                              listen: false)
-                          .detail
-                          .getChapter(chapterId: lastChapterId);
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return ComicViewPage(
-                          comic: comic,
-                        );
-                      }));
-                    } else {
-                      Scaffold.of(context).showSnackBar(SnackBar(
-                        content: Text('好像没得记录，没法继续阅读'),
-                      ));
-                    }
-                  },
-                  onBlackBox: () async {
-                    if (!Provider.of<SystemSettingModel>(context, listen: false)
-                        .blackBox) {
-                      showDialog(
-                          context: context,
-                          builder: (context) {
-                            return SimpleDialog(
-                              children: [
-                                SimpleDialogOption(
-                                  child: Text("Ops! 你遇到了一个没有用的按钮"),
-                                )
-                              ],
-                            );
-                          });
-                    } else {
-                      int flag = await Provider.of<TrackerModel>(context,
-                              listen: false)
-                          .subscribe(Provider.of<ComicDetailModel>(context,
-                              listen: false));
-                      Scaffold.of(context).showSnackBar(SnackBar(
-                        content: Text('${flag == 1 ? '加入' : '取消加入'}黑匣子成功'),
-                      ));
-                    }
-                  },
-                  onDownload: () async {
-                    List<Widget> list = await Provider.of<ComicDetailModel>(
-                            context,
-                            listen: false)
-                        .buildDownloadWidgetList(context);
-                    showDialog(
-                        context: context,
-                        builder: (context) {
-                          return Dialog(
-                            child: Container(
-                              child: SingleChildScrollView(
-                                child: Column(
-                                  children: list,
-                                ),
-                              ),
-                            ),
-                          );
-                        });
-                  },
-                );
-              },
-            ),
+                              .reverse = !Provider.of<ComicDetailModel>(context,
+                                  listen: false)
+                              .reverse;
+                        },
+                        onPlay: () async {
+                          if (Provider.of<ComicDetailModel>(context,
+                                      listen: false)
+                                  .lastChapterId !=
+                              '') {
+                            // 由于navigator里面context不包含provider，所以要先放在外面
+                            var lastChapterId = Provider.of<ComicDetailModel>(
+                                    context,
+                                    listen: false)
+                                .lastChapterId;
+                            Comic comic = await Provider.of<ComicDetailModel>(
+                                    context,
+                                    listen: false)
+                                .detail
+                                .getChapter(chapterId: lastChapterId);
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
+                              return ComicViewPage(
+                                comic: comic,
+                              );
+                            }));
+                          } else if (Provider.of<ComicDetailModel>(context,
+                                      listen: false)
+                                  .lastChapterId ==
+                              '') {
+                            var comicId = Provider.of<ComicDetailModel>(context,
+                                    listen: false)
+                                .comicId;
+                            var lastChapterId = '';
+                            var lastChapterList = Provider.of<ComicDetailModel>(
+                                    context,
+                                    listen: false)
+                                .chapters[0]['data']
+                                .map((value) => value['chapter_id'].toString())
+                                .toList();
+                            if (lastChapterList.length > 0) {
+                              lastChapterId =
+                                  lastChapterList[lastChapterList.length - 1];
+                            }
+                            Comic comic = await Provider.of<ComicDetailModel>(
+                                    context,
+                                    listen: false)
+                                .detail
+                                .getChapter(chapterId: lastChapterId);
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
+                              return ComicViewPage(
+                                comic: comic,
+                              );
+                            }));
+                          } else {
+                            Scaffold.of(context).showSnackBar(SnackBar(
+                              content: Text('好像没得记录，没法继续阅读'),
+                            ));
+                          }
+                        },
+                        onBlackBox: () async {
+                          if (!Provider.of<SystemSettingModel>(context,
+                                  listen: false)
+                              .blackBox) {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return SimpleDialog(
+                                    children: [
+                                      SimpleDialogOption(
+                                        child: Text("Ops! 你遇到了一个没有用的按钮"),
+                                      )
+                                    ],
+                                  );
+                                });
+                          } else {
+                            int flag = await Provider.of<TrackerModel>(context,
+                                    listen: false)
+                                .subscribe(Provider.of<ComicDetailModel>(
+                                    context,
+                                    listen: false));
+                            Scaffold.of(context).showSnackBar(SnackBar(
+                              content:
+                                  Text('${flag == 1 ? '加入' : '取消加入'}黑匣子成功'),
+                            ));
+                          }
+                        },
+                        onDownload: () async {
+                          List<Widget> list =
+                              await Provider.of<ComicDetailModel>(context,
+                                      listen: false)
+                                  .buildDownloadWidgetList(context);
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return Dialog(
+                                  child: Container(
+                                    child: SingleChildScrollView(
+                                      child: Column(
+                                        children: list,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              });
+                        },
+                      );
+                    },
+                  ),
             body: DirectSelectContainer(
               child: EasyRefresh(
                 scrollController: ScrollController(),
@@ -252,6 +264,9 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                 },
                 firstRefresh: true,
                 firstRefreshWidget: LoadingCube(),
+                emptyWidget: Provider.of<ComicDetailModel>(context).error
+                    ? ComicDetailEmptyView()
+                    : null,
                 child: new Column(
                   children: <Widget>[
                     Row(
@@ -262,7 +277,9 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                                 image: CachedNetworkImageProvider(
                                     Provider.of<ComicDetailModel>(context)
                                         .cover,
-                                    headers: Provider.of<ComicDetailModel>(context).headers),
+                                    headers:
+                                        Provider.of<ComicDetailModel>(context)
+                                            .headers),
                                 fit: BoxFit.cover),
                             mainAxisExtent: 200.0,
                           ),

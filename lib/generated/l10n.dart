@@ -826,6 +826,16 @@ class S {
     );
   }
 
+  /// `Cannot load comic, change provider to fix it`
+  String get NoComicData {
+    return Intl.message(
+      'Cannot load comic, change provider to fix it',
+      name: 'NoComicData',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Reading`
   String get SettingPageMainReadingTitle {
     return Intl.message(

@@ -2,24 +2,26 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutterdmzj/component/EmptyView.dart';
 import 'package:flutterdmzj/component/LoadingCube.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
+import 'package:markdown_widget/markdown_helper.dart';
 
 class CommentPage extends StatefulWidget {
-  final String comicId;
+  final String id;
+  final int type;
 
-  CommentPage(this.comicId);
+  CommentPage(this.id, this.type);
 
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
-    return _CommentPage(comicId);
+    return _CommentPage();
   }
 }
 
 class _CommentPage extends State<CommentPage> {
-  final String comicId;
   List icons = [Icons.fiber_new, Icons.whatshot];
   int type = 0;
   int page = 0;
@@ -29,12 +31,12 @@ class _CommentPage extends State<CommentPage> {
   ];
   EasyRefreshController _controller=EasyRefreshController();
 
-  _CommentPage(this.comicId);
+  _CommentPage();
 
   getComment() async {
     try {
       CustomHttp http = CustomHttp();
-      var response = await http.getComicComment(comicId, page, type);
+      var response = await http.getComicComment(widget.id, page, type);
       if (response.statusCode == 200 && mounted) {
         setState(() {
           if (response.data.length == 0) {
@@ -135,18 +137,7 @@ class _CommentPage extends State<CommentPage> {
           });
           getComment();
         },
-        header: ClassicalHeader(
-            refreshedText: '刷新完成',
-            refreshFailedText: '刷新失败',
-            refreshingText: '刷新中',
-            refreshText: '下拉刷新',
-            refreshReadyText: '释放刷新'),
-        footer: ClassicalFooter(
-            loadReadyText: '下拉加载更多',
-            loadFailedText: '加载失败',
-            loadingText: '加载中',
-            loadedText: '加载完成',
-            noMoreText: '没有更多内容了'),
+        emptyWidget: list.length==0?EmptyView():null,
         child: ListView.builder(
             itemCount: list.length,
             itemBuilder: (context, index) {

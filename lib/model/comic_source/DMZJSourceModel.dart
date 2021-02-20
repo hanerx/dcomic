@@ -742,9 +742,23 @@ class DMZJComic extends Comic {
   }
 
   @override
-  Future<void> addReadHistory({String title, String comicId, int page}) {
+  Future<void> addReadHistory({String title, String comicId, int page,String chapterTitle,String chapterId}) async {
     // TODO: implement addReadHistory
-    throw UnimplementedError();
+    if(comicId==null||chapterId==null){
+      throw IDInvalidError();
+    }
+    DataBase dataBase = DataBase();
+    await dataBase.insertHistory(comicId, chapterId);
+    var login = await dataBase.getLoginState();
+    //确认登录状态
+    if (login) {
+      //获取UID
+      var uid = await dataBase.getUid();
+      CustomHttp http = CustomHttp();
+      http.addHistoryNew(int.parse(comicId), uid, int.parse(chapterId),
+          page:page);
+    }
+    notifyListeners();
   }
 
   Future<void> getViewPoint() async {

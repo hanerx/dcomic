@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutterdmzj/component/EmptyView.dart';
 import 'package:flutterdmzj/component/LoadingCube.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
@@ -166,6 +167,7 @@ class _NovelRankingPage extends State<NovelRankingPage> {
             firstRefreshWidget: LoadingCube(),
             firstRefresh: true,
             scrollController: ScrollController(),
+            emptyWidget: list.length==0?EmptyView():null,
             onRefresh: ()async{
               setState(() {
                 refreshState = true;
@@ -181,19 +183,6 @@ class _NovelRankingPage extends State<NovelRankingPage> {
               });
               await loadRankingList();
             },
-            header: ClassicalHeader(
-                refreshedText: '刷新完成',
-                refreshFailedText: '刷新失败',
-                refreshingText: '刷新中',
-                refreshText: '下拉刷新',
-                refreshReadyText: '释放刷新'),
-            footer: ClassicalFooter(
-                loadReadyText: '下拉加载更多',
-                loadFailedText: '加载失败',
-                loadingText: '加载中',
-                loadedText: '加载完成',
-                noMoreText: '没有更多内容了'
-            ),
             child: ListView.builder(
               itemCount: list.length,
               itemBuilder: (context, index) {

@@ -55,6 +55,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "MainPageTabHome" : MessageLookupByLibrary.simpleMessage("首页"),
     "MainPageTabLatest" : MessageLookupByLibrary.simpleMessage("最新"),
     "MainPageTabRanking" : MessageLookupByLibrary.simpleMessage("排行"),
+    "NoComicData" : MessageLookupByLibrary.simpleMessage("无法加载数据，你可以尝试修改漫画源"),
     "NoData" : MessageLookupByLibrary.simpleMessage("没有更多数据了"),
     "Novel" : MessageLookupByLibrary.simpleMessage("轻小说"),
     "Setting" : MessageLookupByLibrary.simpleMessage("设置"),

@@ -3,7 +3,7 @@ import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:flutterdmzj/http/UniversalRequestModel.dart';
 
 class MangabzRequestHandler extends RequestHandler {
-  MangabzRequestHandler() : super('http://www.mangabz.com/');
+  MangabzRequestHandler() : super('http://www.mangabz.com');
 
   Future<Map<String, dynamic>> getOptions(String url) async {
     try {
@@ -43,7 +43,7 @@ class MangabzRequestHandler extends RequestHandler {
   }
 
   Future<Response> getChapter(String chapterId)async{
-    return dio.get('$baseUrl/$chapterId');
+    return dio.get('$baseUrl/$chapterId/',options: Options(headers: {'User-Agent':'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Mobile Safari/537.36'}));
   }
 
   Future<Response> search(String keyword) {

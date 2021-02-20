@@ -110,6 +110,7 @@
     }
   },
   "NoData": "No more data",
+  "NoComicData": "Cannot load comic, change provider to fix it",
   "SettingPageMainReadingTitle": "Reading",
   "SettingPageMainReadingSubtitle": "Reader Setting",
   "SettingPageMainSourceTitle": "Source",
