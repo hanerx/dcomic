@@ -259,9 +259,9 @@ class CustomHttp {
     return dio.get('https://dark-dmzj.hloli.net/data.json');
   }
 
-  Future<Response<T>> getComicComment<T>(String comicId, int page, int type) {
+  Future<Response<T>> getComicComment<T>(String comicId, int page, int type,{int novel:0}) {
     return dio.get(
-        '$baseUrl/old/comment/0/$type/$comicId/$page.json?$queryOptions',
+        '$baseUrl/old/comment/$novel/$type/$comicId/$page.json?$queryOptions',
         options: buildCacheOptions(Duration(days: 1)));
   }
 

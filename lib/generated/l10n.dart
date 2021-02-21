@@ -826,6 +826,26 @@ class S {
     );
   }
 
+  /// `Cannot load comic, change provider to fix it`
+  String get NoComicData {
+    return Intl.message(
+      'Cannot load comic, change provider to fix it',
+      name: 'NoComicData',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cannot automatic bound comicId, try bound id by manual search`
+  String get ComicIdNotBound {
+    return Intl.message(
+      'Cannot automatic bound comicId, try bound id by manual search',
+      name: 'ComicIdNotBound',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Reading`
   String get SettingPageMainReadingTitle {
     return Intl.message(

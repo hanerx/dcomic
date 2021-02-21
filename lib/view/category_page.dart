@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutterdmzj/component/EmptyView.dart';
 import 'package:flutterdmzj/component/LoadingCube.dart';
 import 'package:flutterdmzj/model/comicCategoryModel.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +19,6 @@ class CategoryPage extends StatefulWidget {
 }
 
 class _CategoryPage extends State<CategoryPage> {
-
   @override
   void initState() {
     // TODO: implement initState
@@ -39,6 +39,9 @@ class _CategoryPage extends State<CategoryPage> {
           },
           firstRefresh: true,
           firstRefreshWidget: LoadingCube(),
+          emptyWidget: Provider.of<ComicCategoryModel>(context).empty
+              ? EmptyView()
+              : null,
           child: GridView.count(
             physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,

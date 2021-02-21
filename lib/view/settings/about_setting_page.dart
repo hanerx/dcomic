@@ -143,7 +143,7 @@ class _AboutSettingPage extends State<AboutSettingPage> {
                         children: [
                           Builder(
                             builder: (context) {
-                              return ListTile(
+                              return InkWell(child:ListTile(
                                 title: Text(
                                     S.of(context).SettingPageCheckUpdateTitle),
                                 subtitle: Text(S
@@ -172,95 +172,103 @@ class _AboutSettingPage extends State<AboutSettingPage> {
                                     ));
                                   }
                                 },
-                              );
+                              ));
                             },
                           ),
-                          ListTile(
-                            title: Text(
-                                S.of(context).SettingPageUpdateChannelTitle),
-                            subtitle: Text(S
-                                .of(context)
-                                .SettingPageUpdateChannelSubtitle(S
-                                    .of(context)
-                                    .SettingPageUpdateChannels(
-                                        Provider.of<VersionModel>(context)
-                                            .updateChannelName))),
-                            onTap: () {
-                              Provider.of<VersionModel>(context, listen: false)
-                                  .updateChannel++;
-                            },
+                          InkWell(
+                            child: ListTile(
+                              title: Text(
+                                  S.of(context).SettingPageUpdateChannelTitle),
+                              subtitle: Text(S
+                                  .of(context)
+                                  .SettingPageUpdateChannelSubtitle(S
+                                  .of(context)
+                                  .SettingPageUpdateChannels(
+                                  Provider.of<VersionModel>(context)
+                                      .updateChannelName))),
+                              onTap: () {
+                                Provider.of<VersionModel>(context, listen: false)
+                                    .updateChannel++;
+                              },
+                            ),
                           ),
                           Divider(),
-                          ListTile(
-                            title:
-                                Text(S.of(context).SettingPageProjectURLTitle),
-                            subtitle: Text(S.of(context).SettingPageProjectURL),
-                            onTap: () {
-                              ToolMethods.callWeb(
-                                  S.of(context).SettingPageProjectURL, context);
-                            },
+                          InkWell(
+                            child: ListTile(
+                              title:
+                              Text(S.of(context).SettingPageProjectURLTitle),
+                              subtitle: Text(S.of(context).SettingPageProjectURL),
+                              onTap: () {
+                                ToolMethods.callWeb(
+                                    S.of(context).SettingPageProjectURL, context);
+                              },
+                            ),
                           ),
-                          ListTile(
-                            title: Text(S.of(context).SettingPageAboutTitle),
-                            subtitle:
-                                Text(S.of(context).SettingPageAboutSubtitle),
-                            onTap: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AboutDialog(
-                                      applicationName:
-                                          '${Provider.of<SystemSettingModel>(context).backupApi ? S.of(context).AppNameUltimate : S.of(context).AppName}',
-                                      applicationVersion:
-                                          '${Provider.of<VersionModel>(context).currentVersion}',
-                                      applicationIcon: FlutterLogo(),
-                                      children: <Widget>[
-                                        Text(S
-                                            .of(context)
-                                            .SettingPageAboutDescription),
-                                      ],
-                                    );
-                                  });
-                            },
-                          ),
-                          ListTile(
-                            title:
-                                Text(S.of(context).SettingPageChangeLogTitle),
-                            subtitle: Text(
-                                S.of(context).SettingPageChangeLogSubtitle),
-                            onTap: () async {
-                              CustomHttp http = CustomHttp();
-                              var response = await http.getReleases();
-                              if (response.statusCode == 200) {
-                                var data = "";
-                                for (var item in response.data) {
-                                  data += S
-                                      .of(context)
-                                      .SettingPageChangeLogContent(item['name'],
-                                          item['published_at'], item['body']);
-                                }
+                          InkWell(
+                            child: ListTile(
+                              title: Text(S.of(context).SettingPageAboutTitle),
+                              subtitle:
+                              Text(S.of(context).SettingPageAboutSubtitle),
+                              onTap: () {
                                 showDialog(
                                     context: context,
                                     builder: (context) {
-                                      return AlertDialog(
-                                        title: Text(S
-                                            .of(context)
-                                            .SettingPageChangeLogTitle),
-                                        content: Container(
-                                          width: 400,
-                                          height: 700,
-                                          child: MarkdownWidget(
-                                            data: data,
-                                            styleConfig: StyleConfig(pConfig:
-                                                PConfig(onLinkTap: (url) {
-                                              ToolMethods.callWeb(url, context);
-                                            })),
-                                          ),
-                                        ),
+                                      return AboutDialog(
+                                        applicationName:
+                                        '${Provider.of<SystemSettingModel>(context).backupApi ? S.of(context).AppNameUltimate : S.of(context).AppName}',
+                                        applicationVersion:
+                                        '${Provider.of<VersionModel>(context).currentVersion}',
+                                        applicationIcon: FlutterLogo(),
+                                        children: <Widget>[
+                                          Text(S
+                                              .of(context)
+                                              .SettingPageAboutDescription),
+                                        ],
                                       );
                                     });
-                              }
-                            },
+                              },
+                            ),
+                          ),
+                          InkWell(
+                            child: ListTile(
+                              title:
+                              Text(S.of(context).SettingPageChangeLogTitle),
+                              subtitle: Text(
+                                  S.of(context).SettingPageChangeLogSubtitle),
+                              onTap: () async {
+                                CustomHttp http = CustomHttp();
+                                var response = await http.getReleases();
+                                if (response.statusCode == 200) {
+                                  var data = "";
+                                  for (var item in response.data) {
+                                    data += S
+                                        .of(context)
+                                        .SettingPageChangeLogContent(item['name'],
+                                        item['published_at'], item['body']);
+                                  }
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          title: Text(S
+                                              .of(context)
+                                              .SettingPageChangeLogTitle),
+                                          content: Container(
+                                            width: 400,
+                                            height: 700,
+                                            child: MarkdownWidget(
+                                              data: data,
+                                              styleConfig: StyleConfig(pConfig:
+                                              PConfig(onLinkTap: (url) {
+                                                ToolMethods.callWeb(url, context);
+                                              })),
+                                            ),
+                                          ),
+                                        );
+                                      });
+                                }
+                              },
+                            ),
                           ),
                         ],
                       ),

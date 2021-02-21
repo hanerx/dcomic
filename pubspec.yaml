@@ -11,7 +11,7 @@ description: A 3rd-party dmzj application powered by flutter
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.4.8-beta.1+33
+version: 1.4.8-beta.2+34
 
 environment:
   sdk: ">=2.2.2 <3.0.0"
@@ -20,6 +20,7 @@ dependencies:
   flutter:
     sdk: flutter
   dio: "^3.0.0"
+  dio_proxy: ^1.0.10
   flutter_parallax: "^0.1.2"
   cached_network_image: "^2.2.0"
   dio_http_cache: '^0.2.0'
@@ -90,6 +91,7 @@ flutter:
     - assets/guide/chapter0/example2.json
     - assets/guide/chapter0/main.json
     - assets/guide/example.json
+    - assets/js/lzString.js
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

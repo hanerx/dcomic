@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutterdmzj/component/EmptyView.dart';
 import 'package:flutterdmzj/component/LoadingCube.dart';
 import 'package:flutterdmzj/model/novelFavoriteModel.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +19,6 @@ class NovelFavoritePage extends StatefulWidget {
 }
 
 class _NovelFavoritePage extends State<NovelFavoritePage> {
-
   @override
   void initState() {
     // TODO: implement initState
@@ -29,28 +29,21 @@ class _NovelFavoritePage extends State<NovelFavoritePage> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return ChangeNotifierProvider(
-      create: (_)=>NovelFavoriteModel(widget.uid),
-      builder: (context,child){
+      create: (_) => NovelFavoriteModel(widget.uid),
+      builder: (context, child) {
         return EasyRefresh(
           scrollController: ScrollController(),
           onRefresh: () async {
-            await Provider.of<NovelFavoriteModel>(context,listen: false).refresh();
+            await Provider.of<NovelFavoriteModel>(context, listen: false)
+                .refresh();
           },
           onLoad: () async {
-            await Provider.of<NovelFavoriteModel>(context,listen: false).nextPage();
+            await Provider.of<NovelFavoriteModel>(context, listen: false)
+                .nextPage();
           },
-          header: ClassicalHeader(
-              refreshedText: '刷新完成',
-              refreshFailedText: '刷新失败',
-              refreshingText: '刷新中',
-              refreshText: '下拉刷新',
-              refreshReadyText: '释放刷新'),
-          footer: ClassicalFooter(
-              loadReadyText: '下拉加载更多',
-              loadFailedText: '加载失败',
-              loadingText: '加载中',
-              loadedText: '加载完成',
-              noMoreText: '没有更多内容了'),
+          emptyWidget: Provider.of<NovelFavoriteModel>(context).empty
+              ? EmptyView()
+              : null,
           firstRefresh: true,
           firstRefreshWidget: LoadingCube(),
           child: Container(
@@ -60,7 +53,8 @@ class _NovelFavoritePage extends State<NovelFavoritePage> {
               shrinkWrap: true,
               crossAxisCount: 3,
               childAspectRatio: 0.6,
-              children: Provider.of<NovelFavoriteModel>(context).getFavoriteWidget(context),
+              children: Provider.of<NovelFavoriteModel>(context)
+                  .getFavoriteWidget(context),
             ),
           ),
         );

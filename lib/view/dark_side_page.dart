@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutterdmzj/component/EmptyView.dart';
 import 'package:flutterdmzj/component/LoadingCube.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/model/comic_source/DMZJSourceModel.dart';
@@ -147,6 +148,7 @@ class _DarkSidePage extends State<DarkSidePage> {
             textColor: Colors.white,
             cubeColor: Colors.teal,
           ),
+          emptyWidget: list.length == 0 ? EmptyView() : null,
           child: ListView.builder(
               itemCount: list.length,
               itemBuilder: (context, index) {
@@ -203,7 +205,10 @@ class DarkCustomListTile extends StatelessWidget {
       onPressed: () async {
         if (Provider.of<SystemSettingModel>(context, listen: false).backupApi) {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return ComicDetailPage(id: comicId,title: title,);
+            return ComicDetailPage(
+              id: comicId,
+              title: title,
+            );
           }));
         } else {
           CustomHttp http = CustomHttp();
@@ -211,13 +216,24 @@ class DarkCustomListTile extends StatelessWidget {
           if (response.statusCode == 200 &&
               response.data['chapters'].length > 0) {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return ComicDetailPage(id: comicId,title: title,);
+              return ComicDetailPage(
+                id: comicId,
+                title: title,
+              );
             }));
           } else if (live) {
-            Comic comic=DMZJComic(comicId, lastChapterId, [lastChapterId],Provider.of<SourceProvider>(context,listen: false).sources.first.options);
+            Comic comic = DMZJComic(
+                comicId,
+                lastChapterId,
+                [lastChapterId],
+                Provider.of<SourceProvider>(context, listen: false)
+                    .sources
+                    .first
+                    .options);
             Navigator.push(context, MaterialPageRoute(builder: (context) {
               return ComicViewPage(
-                  comic: comic,);
+                comic: comic,
+              );
             }));
           } else {
             Scaffold.of(context).showSnackBar(SnackBar(

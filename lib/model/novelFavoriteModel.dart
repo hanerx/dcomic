@@ -58,4 +58,6 @@ class NovelFavoriteModel extends BaseModel{
     ))
         .toList();
   }
+
+  bool get empty=>novels.length==0;
 }

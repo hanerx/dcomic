@@ -26,4 +26,6 @@ class ComicAuthorModel extends BaseModel{
   List<Widget> buildAuthorWidget(context){
     return comics.map<Widget>((e) => AuthorCard(e['cover'],e['name'],e['status'],e['id'])).toList();
   }
+
+  bool get empty=>comics.length==0;
 }

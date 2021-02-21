@@ -1,13 +1,16 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutterdmzj/database/sourceDatabaseProvider.dart';
+import 'package:flutterdmzj/generated/l10n.dart';
 import 'package:flutterdmzj/http/UniversalRequestModel.dart';
 import 'package:flutterdmzj/model/comic_source/baseSourceModel.dart';
 import 'package:flutterdmzj/utils/soup.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:lpinyin/lpinyin.dart';
+import 'package:provider/provider.dart';
 
 class MangabzSourceModel extends BaseSourceModel {
   MangabzSourceOptions _options = MangabzSourceOptions.fromMap({});
@@ -86,10 +89,19 @@ class MangabzSourceModel extends BaseSourceModel {
                   'updatetime': 0
                 })
             .toList();
-        return MangabzComicDetail(title, authors, cover, description, comicId,
-            status, updateTime, tags, <Map<String, dynamic>>[
-          {'data': chapters, 'title': 'Mangabz连载'}
-        ]);
+        return MangabzComicDetail(
+            title,
+            authors,
+            cover,
+            description,
+            comicId,
+            status,
+            updateTime,
+            tags,
+            <Map<String, dynamic>>[
+              {'data': chapters, 'title': 'Mangabz连载'}
+            ],
+            _options);
       }
     } catch (e) {
       throw ComicLoadingError();
@@ -111,7 +123,69 @@ class MangabzSourceModel extends BaseSourceModel {
   @override
   Widget getSettingWidget(context) {
     // TODO: implement getSettingWidget
-    return Container();
+    return ChangeNotifierProvider(
+      create: (_) => MangabzOptionProvider(_options),
+      builder: (context, child) {
+        return ListView(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          children: [
+            ListTile(
+              title: Text('漫画加载模式'),
+              subtitle: Text(
+                  '${MangabzSourceOptions.modes[Provider.of<MangabzOptionProvider>(context).mode]}'),
+              onTap: () {
+                Provider.of<MangabzOptionProvider>(context, listen: false)
+                    .mode++;
+              },
+            ),
+            ListTile(
+              title: Text('js脚本执行网址'),
+              enabled: Provider.of<MangabzOptionProvider>(context).mode != 1,
+              subtitle:
+                  Text('${Provider.of<MangabzOptionProvider>(context).url}'),
+              onTap: () async {
+                TextEditingController controller = TextEditingController();
+                controller.text =
+                    Provider.of<MangabzOptionProvider>(context, listen: false)
+                        .url;
+                var data = await showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        content: TextField(
+                          controller: controller,
+                          decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'js脚本执行网址',
+                              helperText: '由于使用到了js脚本为了脚本执行速度，所以请选择一个执行网址'),
+                        ),
+                        actions: [
+                          FlatButton(
+                            child: Text(S.of(context).Cancel),
+                            onPressed: () {
+                              Navigator.of(context).pop(false);
+                            },
+                          ),
+                          FlatButton(
+                            child: Text(S.of(context).Confirm),
+                            onPressed: () {
+                              Navigator.of(context).pop(true);
+                            },
+                          )
+                        ],
+                      );
+                    });
+                if (data != null && data) {
+                  Provider.of<MangabzOptionProvider>(context, listen: false)
+                      .url = controller.text;
+                }
+              },
+            )
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -119,7 +193,7 @@ class MangabzSourceModel extends BaseSourceModel {
   SourceOptions get options => _options;
 
   @override
-  Future<List<SearchResult>> search(String keyword) async {
+  Future<List<SearchResult>> search(String keyword, {int page: 0}) async {
     // TODO: implement search
     try {
       var response =
@@ -156,15 +230,45 @@ class MangabzSourceModel extends BaseSourceModel {
 
   @override
   // TODO: implement type
-  SourceDetail get type => SourceDetail('mangabz', 'Mangabz',
-      'Mangabz的漫画源，嘿呀，你妈的好难实现的，为了这个功能我已经快燃尽自己了', true, false, false);
+  SourceDetail get type => SourceDetail(
+      'mangabz',
+      'Mangabz',
+      'Mangabz的漫画源，嘿呀，你妈的好难实现的，为了这个功能我已经快燃尽自己了',
+      true,
+      SourceType.LocalDecoderSource,
+      false);
+}
+
+class MangabzOptionProvider extends SourceOptionsProvider {
+  final MangabzSourceOptions options;
+
+  MangabzOptionProvider(this.options) : super(options);
+
+  int get mode => options.mode;
+
+  set mode(int mode) {
+    options.mode = mode;
+    notifyListeners();
+  }
+
+  String get url => options.url;
+
+  set url(String url) {
+    options.url = url;
+    notifyListeners();
+  }
 }
 
 class MangabzSourceOptions extends SourceOptions {
   bool _active = false;
+  int _mode = 0;
+  String _url;
+  static List modes = ['evalJs', 'newImgs', 'PC API'];
 
   MangabzSourceOptions.fromMap(Map map) {
     _active = map['active'] == '1';
+    _mode = int.parse(map['mode'] == null ? '0' : map['mode']);
+    _url = map['url'];
   }
 
   @override
@@ -177,10 +281,30 @@ class MangabzSourceOptions extends SourceOptions {
     notifyListeners();
   }
 
+  String get url => _url == null ? 'about:blank' : _url;
+
+  set url(String value) {
+    _url = value;
+    SourceDatabaseProvider.insertSourceOption('mangabz', 'url', value);
+    notifyListeners();
+  }
+
+  int get mode => _mode;
+
+  set mode(int value) {
+    if (0 <= value && value < modes.length) {
+      _mode = value;
+    } else {
+      _mode = 0;
+    }
+    SourceDatabaseProvider.insertSourceOption('mangabz', 'mode', _mode);
+    notifyListeners();
+  }
+
   @override
   Map<String, dynamic> toMap() {
     // TODO: implement toMap
-    return {'active': active};
+    return {'active': active, 'url': url, 'mode': mode};
   }
 }
 
@@ -194,6 +318,7 @@ class MangabzComicDetail extends ComicDetail {
   final String _updateTime;
   final List _tags;
   final List _chapters;
+  final MangabzSourceOptions options;
 
   MangabzComicDetail(
       this._title,
@@ -204,7 +329,8 @@ class MangabzComicDetail extends ComicDetail {
       this._status,
       this._updateTime,
       this._tags,
-      this._chapters);
+      this._chapters,
+      this.options);
 
   @override
   String toString() {
@@ -233,7 +359,7 @@ class MangabzComicDetail extends ComicDetail {
     for (var item in _chapters) {
       for (var chapter in item['data']) {
         if (chapter['chapter_id'].toString() == chapterId) {
-          return MangabzComic(_comicId, chapterId, item['data']);
+          return MangabzComic(_comicId, chapterId, item['data'], options);
         }
       }
     }
@@ -276,7 +402,7 @@ class MangabzComicDetail extends ComicDetail {
 
   @override
   // TODO: implement headers
-  Map<String,String> get headers => {'referer':'http://images.dmzj.com'};
+  Map<String, String> get headers => {'referer': 'http://images.dmzj.com'};
 }
 
 class MangabzSearchResult extends SearchResult {
@@ -311,6 +437,7 @@ class MangabzComic extends Comic {
   final String _comicId;
   final String _chapterId;
   final List _chapters;
+  final MangabzSourceOptions options;
   List<String> _pages = [];
   String _title;
   List<String> _chapterIdList;
@@ -321,7 +448,7 @@ class MangabzComic extends Comic {
   String _next;
   String _pageAt;
 
-  MangabzComic(this._comicId, this._chapterId, this._chapters) {
+  MangabzComic(this._comicId, this._chapterId, this._chapters, this.options) {
     _chapterIdList = _chapters
         .map<String>((value) => value['chapter_id'].toString())
         .toList();
@@ -330,7 +457,12 @@ class MangabzComic extends Comic {
   }
 
   @override
-  Future<void> addReadHistory({String title, String comicId, int page}) async {
+  Future<void> addReadHistory(
+      {String title,
+      String comicId,
+      int page,
+      String chapterTitle,
+      String chapterId}) async {
     // TODO: implement addReadHistory
     return;
   }
@@ -376,32 +508,53 @@ class MangabzComic extends Comic {
       if (response.statusCode == 200) {
         var soup = BeautifulSoup(
             ChineseHelper.convertToSimplifiedChinese(response.data.toString()));
-        this._title = soup.find(id: '.top-title').text.replaceAll(' ', '');
-        // _pageAt = chapterId;
-        // var length = RegExp('(?<=var MANGABZ_IMAGE_COUNT=)[^;]*;')
-        //     .stringMatch(response.data.toString());
-        // length = length.substring(0, length.length - 1);
-        // int page = 0;
-        // var codes = <String>[];
-        // while (page < int.parse(length)) {
-        //   try {
-        //     var data = await UniversalRequestModel()
-        //         .mangabzRequestHandler
-        //         .getChapterImage(chapterId, page);
-        //     if (data.statusCode == 200) {
-        //       codes.add(data.data.toString());
-        //     }
-        //   } catch (e) {}
-        //   page++;
-        // }
-        // List<String> pages = [];
-        // List<String> result = await ToolMethods.evalList(codes);
-        // for (var item in result) {
-        //   pages += jsonDecode(item).map<String>((e) => e.toString()).toList();
-        // }
-        // _pages = pages.toSet().toList();
-        this._pages = jsonDecode(await ToolMethods.eval('newImgs',url: '${UniversalRequestModel()
-            .mangabzRequestHandler.baseUrl}/$chapterId')).map<String>((e) => e.toString()).toList();
+        this._title =
+            soup.find(id: '.top-title').text.replaceAll(' ', '').split('?')[2];
+        _pageAt = chapterId;
+        switch (options.mode) {
+          case 0:
+            UniversalRequestModel().mangabzRequestHandler.clearCache();
+            var eval =
+                RegExp('eval(.*);?').stringMatch(response.data.toString());
+            this._pages = jsonDecode(await ToolMethods.eval('$eval;newImgs',
+                    url: '${options.url}'))
+                .map<String>((e) => e.toString())
+                .toList();
+            break;
+          case 1:
+            this._pages = jsonDecode(await ToolMethods.eval('newImgs',
+                    url:
+                        '${UniversalRequestModel().mangabzRequestHandler.baseUrl}/$chapterId'))
+                .map<String>((e) => e.toString())
+                .toList();
+            break;
+          case 2:
+            var length = RegExp('(?<=var MANGABZ_IMAGE_COUNT=)[^;]*;')
+                .stringMatch(response.data.toString());
+            length = length.substring(0, length.length - 1);
+            int page = 0;
+            var codes = <String>[];
+            while (page < int.parse(length)) {
+              try {
+                var data = await UniversalRequestModel()
+                    .mangabzRequestHandler
+                    .getChapterImage(chapterId, page);
+                if (data.statusCode == 200) {
+                  codes.add(data.data.toString());
+                }
+              } catch (e) {}
+              page++;
+            }
+            List<String> pages = [];
+            List<String> result =
+                await ToolMethods.evalList(codes, url: options.url);
+            for (var item in result) {
+              pages +=
+                  jsonDecode(item).map<String>((e) => e.toString()).toList();
+            }
+            _pages = pages.toSet().toList();
+            break;
+        }
         if (_chapterIdList.indexOf(chapterId) > 0) {
           _previous = _chapterIdList[_chapterIdList.indexOf(chapterId) - 1];
         } else {

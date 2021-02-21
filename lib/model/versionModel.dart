@@ -61,55 +61,74 @@ class VersionModel extends BaseModel {
 
   void showUpdateDialog(context)async{
     CustomHttp http = CustomHttp();
-    var response = await http.checkUpdate();
+    String tagName;
+    String body;
+    String htmlUrl;
+    String downloadUrl;
+    switch(_updateChannel){
+      case 0:
+        var response = await http.checkUpdate();
+        tagName=response.data['tag_name'];
+        body=response.data['body'];
+        htmlUrl=response.data['html_url'];
+        if(response.data['assets'].length>0){
+          downloadUrl=response.data['assets'][0]['browser_download_url'];
+        }
+        break;
+      case 1:
+        var response=await http.getAllUpdateList();
+        tagName=response.data.first['tag_name'];
+        body=response.data.first['body'];
+        htmlUrl=response.data.first['html_url'];
+        if(response.data.first['assets'].length>0){
+          downloadUrl=response.data.first['assets'][0]['browser_download_url'];
+        }
+        break;
+    }
     showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('版本点亮：${response.data['tag_name']}'),
+            title: Text('版本点亮：$tagName'),
             content: Container(
               width: 300,
               height: 300,
-              child: MarkdownWidget(data: response.data['body']),
+              child: MarkdownWidget(data: body),
             ),
             actions: <Widget>[
               FlatButton(
                 child: Text('打开网页'),
                 onPressed: () {
-                  ToolMethods.callWeb('${response.data['html_url']}', context);
+                  ToolMethods.callWeb('$htmlUrl', context);
                 },
               ),
               FlatButton(
                 child: Text('更新'),
                 onPressed: () async {
-                  if (response.data['assets'].length > 0) {
-                    String url =
-                    response.data['assets'][0]['browser_download_url'];
+                  if (downloadUrl!=null) {
                     DataBase dataBase = DataBase();
                     var downloadPath = await dataBase.getDownloadPath();
                     FlutterDownloader.enqueue(
-                        url: url, savedDir: '$downloadPath');
+                        url: downloadUrl, savedDir: '$downloadPath');
                     Navigator.pop(context);
                   } else {
-                    ToolMethods.callWeb('${response.data['html_url']}', context);
+                    ToolMethods.callWeb('$htmlUrl', context);
                   }
                 },
               ),
               FlatButton(
                 child: Text('镜像更新'),
                 onPressed: () async {
-                  if (response.data['assets'].length > 0) {
-                    String url =
-                    response.data['assets'][0]['browser_download_url'];
+                  if (downloadUrl!=null) {
                     DataBase dataBase = DataBase();
                     var downloadPath = await dataBase.getDownloadPath();
                     FlutterDownloader.enqueue(
                         url:
-                        'https://divine-boat-417a.hanerx.workers.dev/$url',
+                        'https://divine-boat-417a.hanerx.workers.dev/$downloadUrl',
                         savedDir: '$downloadPath');
                     Navigator.pop(context);
                   } else {
-                    ToolMethods.callWeb('${response.data['html_url']}', context);
+                    ToolMethods.callWeb('$htmlUrl', context);
                   }
                 },
               ),
