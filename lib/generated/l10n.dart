@@ -836,6 +836,16 @@ class S {
     );
   }
 
+  /// `Cannot automatic bound comicId, try bound id by manual search`
+  String get ComicIdNotBound {
+    return Intl.message(
+      'Cannot automatic bound comicId, try bound id by manual search',
+      name: 'ComicIdNotBound',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Reading`
   String get SettingPageMainReadingTitle {
     return Intl.message(

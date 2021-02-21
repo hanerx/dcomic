@@ -193,7 +193,7 @@ class MangabzSourceModel extends BaseSourceModel {
   SourceOptions get options => _options;
 
   @override
-  Future<List<SearchResult>> search(String keyword) async {
+  Future<List<SearchResult>> search(String keyword, {int page: 0}) async {
     // TODO: implement search
     try {
       var response =
@@ -230,8 +230,13 @@ class MangabzSourceModel extends BaseSourceModel {
 
   @override
   // TODO: implement type
-  SourceDetail get type => SourceDetail('mangabz', 'Mangabz',
-      'Mangabz的漫画源，嘿呀，你妈的好难实现的，为了这个功能我已经快燃尽自己了', true, false, false);
+  SourceDetail get type => SourceDetail(
+      'mangabz',
+      'Mangabz',
+      'Mangabz的漫画源，嘿呀，你妈的好难实现的，为了这个功能我已经快燃尽自己了',
+      true,
+      SourceType.LocalDecoderSource,
+      false);
 }
 
 class MangabzOptionProvider extends SourceOptionsProvider {
@@ -452,7 +457,12 @@ class MangabzComic extends Comic {
   }
 
   @override
-  Future<void> addReadHistory({String title, String comicId, int page,String chapterTitle,String chapterId}) async {
+  Future<void> addReadHistory(
+      {String title,
+      String comicId,
+      int page,
+      String chapterTitle,
+      String chapterId}) async {
     // TODO: implement addReadHistory
     return;
   }
@@ -498,7 +508,8 @@ class MangabzComic extends Comic {
       if (response.statusCode == 200) {
         var soup = BeautifulSoup(
             ChineseHelper.convertToSimplifiedChinese(response.data.toString()));
-        this._title = soup.find(id: '.top-title').text.replaceAll(' ', '').split('?')[2];
+        this._title =
+            soup.find(id: '.top-title').text.replaceAll(' ', '').split('?')[2];
         _pageAt = chapterId;
         switch (options.mode) {
           case 0:

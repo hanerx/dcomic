@@ -218,6 +218,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.2.11"
+  dio_proxy:
+    dependency: "direct main"
+    description:
+      name: dio_proxy
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.10"
   direct_select_flutter:
     dependency: "direct main"
     description:

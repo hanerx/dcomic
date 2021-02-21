@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutterdmzj/model/baseModel.dart';
 
 abstract class BaseSourceModel extends BaseModel {
-  Future<List<SearchResult>> search(String keyword);
+  Future<List<SearchResult>> search(String keyword,{int page:0});
 
   Future<ComicDetail> get({String comicId, String title});
 
@@ -121,16 +121,23 @@ abstract class Comic extends BaseModel {
   Future<void> getViewPoint();
 }
 
+enum SourceType{
+  LocalSource,
+  LocalDecoderSource,
+  CloudDecoderSource,
+  DeprecatedSource
+}
+
 class SourceDetail {
   final String name;
   final String title;
   final String description;
   final bool canDisable;
-  final bool cloud;
+  final SourceType sourceType;
   final bool deprecated;
 
   SourceDetail(this.name, this.title, this.description, this.canDisable,
-      this.cloud, this.deprecated);
+      this.sourceType, this.deprecated);
 
   @override
   // TODO: implement hashCode
@@ -147,7 +154,7 @@ class SourceDetail {
 
   @override
   String toString() {
-    return '{name: $name, title: $title, description: $description, canDisable: $canDisable, cloud: $cloud}';
+    return '{name: $name, title: $title, description: $description, canDisable: $canDisable, sourceType:$sourceType}';
   }
 }
 
@@ -157,6 +164,11 @@ abstract class SearchResult extends BaseModel{
   String get cover;
   String get author;
   String get tag;
+
+  @override
+  String toString() {
+    return 'SearchResult{title: $title, comicId: $comicId, cover: $cover, author: $author, tag: $tag}';
+  }
 }
 
 class IDInvalidError implements Exception {}

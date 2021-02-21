@@ -30,7 +30,7 @@ class ComicDetailModel extends BaseModel {
   ComicDetail detail;
 
   //漫画加载状态
-  bool error = false;
+  Exception error =null;
   bool loading = true;
 
   //基础信息
@@ -78,10 +78,10 @@ class ComicDetailModel extends BaseModel {
   Future<void> init() async {
     try {
       detail = await _model.get(title: this._title, comicId: this._comicId);
-      error=false;
+      error=null;
       notifyListeners();
     } catch (e) {
-      error=true;
+      error=e;
       notifyListeners();
       logger.w('class: ComicDetail, action: loadingFailed, exception: $e');
     }

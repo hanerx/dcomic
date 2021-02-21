@@ -7,7 +7,7 @@ class MangabzRequestHandler extends RequestHandler {
 
   Future<Map<String, dynamic>> getOptions(String url) async {
     try {
-      var response = await dio.get('$baseUrl/$url');
+      var response = await dio.get('/$url');
       if (response.statusCode == 200) {
         var cid = RegExp('(?<=var MANGABZ_CID=)[^;]*;')
             .stringMatch(response.data.toString());
@@ -29,7 +29,7 @@ class MangabzRequestHandler extends RequestHandler {
 
   Future<Response> getChapterImage(String chapterId, int page) async {
     var param = await getOptions('$chapterId');
-    return dio.get('$baseUrl/$chapterId/chapterimage.ashx',
+    return dio.get('/$chapterId/chapterimage.ashx',
         options: buildCacheOptions(Duration(days: 1), subKey: 'page=$page',options: Options(headers: {'referer': '$baseUrl'}),),
         queryParameters: {
           'cid': param['cid'],
@@ -43,14 +43,14 @@ class MangabzRequestHandler extends RequestHandler {
   }
 
   Future<Response> getChapter(String chapterId)async{
-    return dio.get('$baseUrl/$chapterId/',options: Options(headers: {'User-Agent':'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Mobile Safari/537.36'}));
+    return dio.get('/$chapterId/',options: Options(headers: {'User-Agent':'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Mobile Safari/537.36'}));
   }
 
   Future<Response> search(String keyword) {
-    return dio.get('$baseUrl/search?title=$keyword');
+    return dio.get('/search?title=$keyword');
   }
 
   Future<Response> getComic(String comicId){
-    return dio.get('$baseUrl/$comicId');
+    return dio.get('/$comicId');
   }
 }

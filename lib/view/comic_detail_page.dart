@@ -135,7 +135,9 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                   0),
               widthPercent: 0.9,
             ),
-            floatingActionButton: Provider.of<ComicDetailModel>(context).error
+            floatingActionButton: Provider.of<ComicDetailModel>(context)
+                        .error !=
+                    null
                 ? null
                 : Builder(
                     builder: (context) {
@@ -264,8 +266,13 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                 },
                 firstRefresh: true,
                 firstRefreshWidget: LoadingCube(),
-                emptyWidget: Provider.of<ComicDetailModel>(context).error
-                    ? ComicDetailEmptyView()
+                emptyWidget: Provider.of<ComicDetailModel>(context).error !=
+                        null
+                    ? ComicDetailEmptyView(
+                        exception: Provider.of<ComicDetailModel>(context).error,
+                        title: widget.title,
+                        comicId: widget.id,
+                      )
                     : null,
                 child: new Column(
                   children: <Widget>[

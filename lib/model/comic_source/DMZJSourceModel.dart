@@ -140,7 +140,7 @@ class DMZJSourceModel extends BaseSourceModel {
   }
 
   @override
-  Future<List<SearchResult>> search(String keyword) {
+  Future<List<SearchResult>> search(String keyword,{int page:0}) {
     // TODO: implement search
     throw UnimplementedError();
   }
@@ -148,7 +148,7 @@ class DMZJSourceModel extends BaseSourceModel {
   @override
   // TODO: implement type
   SourceDetail get type =>
-      SourceDetail('dmzj', '默认-动漫之家', '默认数据提供商，不可关闭', false, false, false);
+      SourceDetail('dmzj', '默认-动漫之家', '默认数据提供商，不可关闭', false, SourceType.LocalDecoderSource, false);
 
   @override
   Widget getSettingWidget(context) {
@@ -297,7 +297,7 @@ class DMZJWebSourceModel extends DMZJSourceModel {
   @override
   // TODO: implement type
   SourceDetail get type => SourceDetail(
-      'dmzj-web', '动漫之家网页', '使用大妈之家移动网页版的接口，让漫画重新可以看了', true, false, false);
+      'dmzj-web', '动漫之家网页', '使用大妈之家移动网页版的接口，让漫画重新可以看了', true, SourceType.LocalDecoderSource, false);
 
   @override
   // TODO: implement options

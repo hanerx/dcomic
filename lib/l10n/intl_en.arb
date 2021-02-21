@@ -111,6 +111,7 @@
   },
   "NoData": "No more data",
   "NoComicData": "Cannot load comic, change provider to fix it",
+  "ComicIdNotBound": "Cannot automatic bound comicId, try bound id by manual search",
   "SettingPageMainReadingTitle": "Reading",
   "SettingPageMainReadingSubtitle": "Reader Setting",
   "SettingPageMainSourceTitle": "Source",

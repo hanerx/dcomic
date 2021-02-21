@@ -111,6 +111,7 @@
   },
   "NoData": "没有更多数据了",
   "NoComicData": "无法加载数据，你可以尝试修改漫画源",
+  "ComicIdNotBound": "无法自动绑定漫画ID，请尝试手动绑定或者更换漫画源",
   "SettingPageMainReadingTitle": "阅读设置",
   "SettingPageMainReadingSubtitle": "所有阅读器相关的设置",
   "SettingPageMainSourceTitle": "漫画源",

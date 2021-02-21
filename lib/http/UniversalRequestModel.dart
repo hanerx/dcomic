@@ -1,10 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
+import 'package:dio_proxy/dio_proxy.dart';
+import 'package:flutterdmzj/http/ManHuaGuiRequestHandler.dart';
 
 import 'MangabzRequestHandler.dart';
 
 class UniversalRequestModel {
-  MangabzRequestHandler get mangabzRequestHandler => MangabzRequestHandler();
+  MangabzRequestHandler mangabzRequestHandler = MangabzRequestHandler();
+
+  ManHuaGuiRequestHandler manHuaGuiRequestHandler = ManHuaGuiRequestHandler();
 }
 
 abstract class RequestHandler {
@@ -13,7 +17,7 @@ abstract class RequestHandler {
   final String baseUrl;
 
   RequestHandler(this.baseUrl) {
-    dio = Dio();
+    dio = Dio()..options.baseUrl = baseUrl;
     cacheManager = DioCacheManager(CacheConfig(baseUrl: baseUrl));
     dio.interceptors.add(cacheManager.interceptor);
   }
@@ -24,5 +28,13 @@ abstract class RequestHandler {
 
   Future<bool> clearExpired() {
     return cacheManager.clearExpired();
+  }
+
+  void setProxy(String ip, int port) {
+    dio = Dio()
+      ..options.baseUrl = baseUrl
+      ..httpClientAdapter = HttpProxyAdapter(ipAddr: ip, port: port);
+    cacheManager = DioCacheManager(CacheConfig(baseUrl: baseUrl));
+    dio.interceptors.add(cacheManager.interceptor);
   }
 }
