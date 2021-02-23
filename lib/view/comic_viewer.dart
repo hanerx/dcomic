@@ -225,6 +225,7 @@ class _ComicViewPage extends State<ComicViewPage>
         onTap: (index) {
           this.show = !this.show;
         },
+        animation: Provider.of<ComicViewerSettingModel>(context).animation,
       );
     } else {
       return VerticalPageView(
@@ -280,6 +281,14 @@ class _ComicViewPage extends State<ComicViewPage>
           enabled: Provider.of<ComicViewerSettingModel>(context).direction,
           onTap: () {
             Provider.of<ComicViewerSettingModel>(context,listen: false).reverse=!Provider.of<ComicViewerSettingModel>(context,listen:false).reverse;
+          },
+        ),
+        ListTile(
+          title: Text('翻页动画设置'),
+          subtitle: Text('${Provider.of<ComicViewerSettingModel>(context).animation ? '启用动画' : '禁用动画'}'),
+          enabled: Provider.of<ComicViewerSettingModel>(context).direction,
+          onTap: () {
+            Provider.of<ComicViewerSettingModel>(context,listen: false).animation=!Provider.of<ComicViewerSettingModel>(context,listen:false).animation;
           },
         ),
         Divider(),

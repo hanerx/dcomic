@@ -10,6 +10,7 @@ class ComicViewerSettingModel extends BaseModel{
   double _range = 500;
   bool _reverse = false;
   int _backgroundColor = 0;
+  bool _animation=true;
   DataBase _dataBase=DataBase();
   static const List backgroundColors = [
     Colors.white,
@@ -32,6 +33,7 @@ class ComicViewerSettingModel extends BaseModel{
     _range=await _dataBase.getRange();
     _reverse=await _dataBase.getHorizontalDirection();
     _backgroundColor=await _dataBase.getBackground();
+    _animation=await _dataBase.getAnimation();
     notifyListeners();
   }
 
@@ -87,6 +89,14 @@ class ComicViewerSettingModel extends BaseModel{
   set direction(bool value) {
     _dataBase.setReadDirection(value);
     _direction = value;
+    notifyListeners();
+  }
+
+  bool get animation=>_animation;
+
+  set animation(bool value){
+    _dataBase.setAnimation(value);
+    _animation=value;
     notifyListeners();
   }
 }

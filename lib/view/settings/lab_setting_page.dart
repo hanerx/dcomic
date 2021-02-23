@@ -32,7 +32,7 @@ class _LabSettingPage extends State<LabSettingPage> {
           ListTile(
             title: Text('隐藏漫画搜索功能'),
             subtitle: Text(
-                '通过调用奇葩的接口实现把一部分隐藏的漫画显示出来，该功能会讲搜索变成两部分，一部分使用普通搜索，另一部分使用隐藏搜索'),
+                '通过调用奇葩的接口实现把一部分隐藏的漫画显示出来，该功能会讲搜索变成两部分，一部分使用普通搜索，另一部分使用隐藏搜索（由于接口被修复，不再具有影藏搜索的功能）'),
             trailing: Switch(
               onChanged: (val) {
                 Provider.of<SystemSettingModel>(context, listen: false)

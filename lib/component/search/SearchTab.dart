@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutterdmzj/component/EmptyView.dart';
 import 'package:flutterdmzj/component/LoadingCube.dart';
 import 'package:flutterdmzj/http/http.dart';
+import 'package:markdown_widget/markdown_helper.dart';
 
 import 'SearchListTile.dart';
 
@@ -74,6 +76,7 @@ class _SearchTab extends State<SearchTab>{
         });
         search();
       },
+      emptyWidget: list.length==0?EmptyView():null,
       child: ListView.builder(
         itemCount: list.length,
         itemBuilder: (context, index) {

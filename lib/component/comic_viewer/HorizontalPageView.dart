@@ -23,6 +23,7 @@ class HorizontalPageView extends StatefulWidget {
   final bool enableClick;
   final PageController controller;
   final bool reverse;
+  final bool animation;
 
   const HorizontalPageView(
       {Key key,
@@ -38,7 +39,7 @@ class HorizontalPageView extends StatefulWidget {
       this.controller,
       this.onTap,
       this.debug = false,
-      this.enableClick, this.reverse})
+      this.enableClick, this.reverse, this.animation:true})
       : super(key: key);
 
   @override
@@ -61,26 +62,10 @@ class _HorizontalPageView extends State<HorizontalPageView> {
         .listen((event) {
       if (event == 0) {
         print("class: HorizontalPageView, action: VolumeUp, event: $event");
-        if (_controller.hasClients) {
-          if(widget.reverse){
-            _controller.nextPage(
-                duration: Duration(milliseconds: 200), curve: Curves.easeIn);
-          }else{
-            _controller.previousPage(
-                duration: Duration(milliseconds: 200), curve: Curves.easeIn);
-          }
-        }
+        previousPage();
       } else if (event == 1) {
         print("class: HorizontalPageView, action: VolumeDown, event: $event");
-        if (_controller.hasClients) {
-          if(widget.reverse){
-            _controller.previousPage(
-                duration: Duration(milliseconds: 200), curve: Curves.easeIn);
-          }else{
-            _controller.nextPage(
-                duration: Duration(milliseconds: 200), curve: Curves.easeIn);
-          }
-        }
+        nextPage();
       }
     });
   }
@@ -110,6 +95,50 @@ class _HorizontalPageView extends State<HorizontalPageView> {
     }
   }
 
+  Future<void> previousPage()async{
+    if (_controller.hasClients) {
+      if(widget.reverse){
+        if(widget.animation){
+          _controller.nextPage(
+              duration: Duration(milliseconds: 200),
+              curve: Curves.easeIn);
+        }else{
+          _controller.jumpToPage(_controller.page.round()+1);
+        }
+      }else{
+        if(widget.animation){
+          _controller.previousPage(
+              duration: Duration(milliseconds: 200),
+              curve: Curves.easeIn);
+        }else{
+          _controller.jumpToPage(_controller.page.round()-1);
+        }
+      }
+    }
+  }
+
+  Future<void> nextPage()async{
+    if (_controller.hasClients) {
+      if(widget.reverse){
+        if(widget.animation){
+          _controller.previousPage(
+              duration: Duration(milliseconds: 200),
+              curve: Curves.easeIn);
+        }else{
+          _controller.jumpToPage(_controller.page.round()-1);
+        }
+      }else{
+        if(widget.animation){
+          _controller.nextPage(
+              duration: Duration(milliseconds: 200),
+              curve: Curves.easeIn);
+        }else{
+          _controller.jumpToPage(_controller.page.round()+1);
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -134,17 +163,7 @@ class _HorizontalPageView extends State<HorizontalPageView> {
                   : null,
             ),
             onTap: () {
-              if (_controller.hasClients) {
-                if(widget.reverse){
-                  _controller.nextPage(
-                      duration: Duration(milliseconds: 200),
-                      curve: Curves.easeIn);
-                }else{
-                  _controller.previousPage(
-                      duration: Duration(milliseconds: 200),
-                      curve: Curves.easeIn);
-                }
-              }
+              previousPage();
             },
           ),
         ),
@@ -163,17 +182,7 @@ class _HorizontalPageView extends State<HorizontalPageView> {
                   : null,
             ),
             onTap: () {
-              if (_controller.hasClients) {
-                if(widget.reverse){
-                  _controller.previousPage(
-                      duration: Duration(milliseconds: 200),
-                      curve: Curves.easeIn);
-                }else{
-                  _controller.nextPage(
-                      duration: Duration(milliseconds: 200),
-                      curve: Curves.easeIn);
-                }
-              }
+              nextPage();
             },
           ),
         ),

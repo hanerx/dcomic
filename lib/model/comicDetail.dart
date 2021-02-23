@@ -18,23 +18,28 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 class ComicDetailModel extends BaseModel {
   BaseSourceModel _model;
 
-  get headers => detail==null?{'referer':'http://image.dmzj.com'}:detail.headers;
-  void changeModel(BaseSourceModel model){
-    _model=model;
+  get headers =>
+      detail == null ? {'referer': 'http://image.dmzj.com'} : detail.headers;
+
+  void changeModel(BaseSourceModel model) {
+    _model = model;
     init();
     notifyListeners();
   }
+
   String _comicId;
   String _title;
 
   ComicDetail detail;
 
   //漫画加载状态
-  Exception error =null;
+  Exception error;
   bool loading = true;
 
   //基础信息
   String get title => detail == null ? "" : detail.title;
+
+  String get rawComicId => _comicId;
 
   String get cover => detail == null
       ? 'http://manhua.dmzj.com/css/img/mh_logo_dmzj.png?t=20131122'
@@ -61,7 +66,7 @@ class ComicDetailModel extends BaseModel {
   bool _reverse = false;
 
   //最后浏览记录
-  String get lastChapterId=>detail==null?null:detail.historyChapter;
+  String get lastChapterId => detail == null ? null : detail.historyChapter;
   List lastChapterList = [];
 
   //用户信息
@@ -72,16 +77,17 @@ class ComicDetailModel extends BaseModel {
   Map data;
 
   ComicDetailModel(this._model, this._title, this._comicId) {
-    init().then((value) => getIfSubscribe(_comicId).then((value) => getHistory(_comicId).then((value) => addReadHistory(_comicId))));
+    init().then((value) => getIfSubscribe(_comicId).then((value) =>
+        getHistory(_comicId).then((value) => addReadHistory(_comicId))));
   }
 
   Future<void> init() async {
     try {
       detail = await _model.get(title: this._title, comicId: this._comicId);
-      error=null;
+      error = null;
       notifyListeners();
     } catch (e) {
-      error=e;
+      error = e;
       notifyListeners();
       logger.w('class: ComicDetail, action: loadingFailed, exception: $e');
     }
@@ -140,13 +146,14 @@ class ComicDetailModel extends BaseModel {
       uid = await dataBase.getUid();
       //获取订阅信息
       CustomHttp http = CustomHttp();
-      try{
+      try {
         var response = await http.getIfSubscribe(comicId, uid);
         if (response.statusCode == 200 && response.data['code'] == 0) {
           _sub = true;
         }
-      }catch(e){
-        logger.e('class: ComicDetailModel, action: subscribeLoadingFailed, login: $login, exception: $e');
+      } catch (e) {
+        logger.e(
+            'class: ComicDetailModel, action: subscribeLoadingFailed, login: $login, exception: $e');
       }
     }
     //解锁
@@ -156,7 +163,6 @@ class ComicDetailModel extends BaseModel {
     //唤醒UI
     notifyListeners();
   }
-
 
   Widget _buildBasicButton(context, String title, style, VoidCallback onPress,
       {double width: 120}) {
@@ -185,7 +191,7 @@ class ComicDetailModel extends BaseModel {
         chapter['chapter_id'].toString() ==
                 Provider.of<ComicDetailModel>(context).lastChapterId
             ? TextStyle(color: Colors.blue)
-            : null, () async{
+            : null, () async {
       DataBase dataBase = DataBase();
       dataBase.addReadHistory(
           comicId,
@@ -194,7 +200,9 @@ class ComicDetailModel extends BaseModel {
           chapter['chapter_title'],
           chapter['chapter_id'].toString(),
           DateTime.now().millisecondsSinceEpoch ~/ 1000);
-      Comic comic=await detail.getChapter(title: chapter['chapter_title'],chapterId: chapter['chapter_id'].toString());
+      Comic comic = await detail.getChapter(
+          title: chapter['chapter_title'],
+          chapterId: chapter['chapter_id'].toString());
       Navigator.push(context, MaterialPageRoute(builder: (context) {
         return ComicViewPage(
           comic: comic,
@@ -335,7 +343,7 @@ class ComicDetailModel extends BaseModel {
   }
 
   TracingComic get model => TracingComic.fromMap(
-      {'comicId': comicId, 'cover': cover, 'title': title, 'data': '{}'});
+      {'comicId': rawComicId, 'cover': cover, 'title': title, 'data': '{}'});
 
   set reverse(bool reverse) {
     this._reverse = reverse;
