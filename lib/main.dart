@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -25,8 +24,6 @@ import 'package:flutterdmzj/view/latest_update_page.dart';
 import 'package:flutterdmzj/view/login_page.dart';
 import 'package:flutterdmzj/view/ranking_page.dart';
 import 'package:flutterdmzj/view/settings/setting_page.dart';
-import 'package:logger/logger.dart';
-import 'package:logger_flutter/logger_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:uni_links/uni_links.dart';
 
@@ -79,10 +76,6 @@ class _MainFrame extends State<MainFrame> {
     FlutterDownloader.registerCallback(ToolMethods.downloadCallback);
   }
 
-  initLogger() {
-    LogConsole.add(OutputEvent(Level.debug, ['init']));
-  }
-
   initEasyRefresh() {
     EasyRefresh.defaultHeader = ClassicalHeader(
         refreshedText: '刷新完成',
@@ -103,7 +96,6 @@ class _MainFrame extends State<MainFrame> {
     // TODO: implement initState
     super.initState();
     initDownloader();
-    initLogger();
     initEasyRefresh();
   }
 

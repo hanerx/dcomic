@@ -8,11 +8,11 @@ class CustomHttp {
   Dio dio;
   Dio unCachedDio;
   String baseUrl = 'https://v3api.dmzj1.com';
-  String apiUrl='https://api.dmzj1.com';
-  String sacgUrl='https://sacg.dmzj1.com';
-  String imgUrl='http://imgsmall.dmzj1.com';
-  String iUrl='https://i.dmzj1.com';
-  String mUrl='https://m.dmzj.com';
+  String apiUrl = 'https://api.dmzj1.com';
+  String sacgUrl = 'http://s.acg.dmzj.com';
+  String imgUrl = 'http://imgsmall.dmzj1.com';
+  String iUrl = 'https://i.dmzj1.com';
+  String mUrl = 'https://m.dmzj.com';
   final String queryOptions = 'channel=Android&version=1.2.0';
   DioCacheManager _cacheManager;
 
@@ -23,9 +23,8 @@ class CustomHttp {
     dio.interceptors.add(
         DioCacheManager(CacheConfig(baseUrl: 'https://dark-dmzj.hloli.net'))
             .interceptor);
-    dio.interceptors.add(
-        DioCacheManager(CacheConfig(baseUrl: sacgUrl))
-            .interceptor);
+    dio.interceptors
+        .add(DioCacheManager(CacheConfig(baseUrl: sacgUrl)).interceptor);
     dio.interceptors
         .add(DioCacheManager(CacheConfig(baseUrl: apiUrl)).interceptor);
     dio.interceptors
@@ -259,7 +258,8 @@ class CustomHttp {
     return dio.get('https://dark-dmzj.hloli.net/data.json');
   }
 
-  Future<Response<T>> getComicComment<T>(String comicId, int page, int type,{int novel:0}) {
+  Future<Response<T>> getComicComment<T>(String comicId, int page, int type,
+      {int novel: 0}) {
     return dio.get(
         '$baseUrl/old/comment/$novel/$type/$comicId/$page.json?$queryOptions',
         options: buildCacheOptions(Duration(days: 1)));
@@ -270,7 +270,7 @@ class CustomHttp {
         'https://api.github.com/repos/hanerx/flutter_dmzj/releases/latest');
   }
 
-  Future<Response<T>> getAllUpdateList<T>(){
+  Future<Response<T>> getAllUpdateList<T>() {
     return dio.get('https://api.github.com/repos/hanerx/flutter_dmzj/releases');
   }
 
@@ -283,8 +283,7 @@ class CustomHttp {
   }
 
   Future<Response<T>> deepSearch<T>(String search) {
-    return dio
-        .get('$sacgUrl/comicsum/search.php?s=$search&callback=');
+    return dio.get('$sacgUrl/comicsum/search.php?s=$search&callback=');
   }
 
   Future<Response<T>> downloadFile<T>(String url, String savePath) {
@@ -315,11 +314,16 @@ class CustomHttp {
         options: buildCacheOptions(Duration(days: 30)));
   }
 
-  Future<Response<T>> getComicPage<T>(String firstLetter, String comicId, String chapterId, int page){
+  Future<Response<T>> getComicPage<T>(
+      String firstLetter, String comicId, String chapterId, int page) {
     return dio.get('$imgUrl/$firstLetter/$comicId/$chapterId/$page.jpg',
         options: Options(
             headers: {'referer': 'http://images.dmzj.com'},
             responseType: ResponseType.bytes));
   }
 
+  Future<Response> getSubscribeWeb() async {
+    Options options = await setHeader();
+    return dio.get('$mUrl/mysubscribe',options: options);
+  }
 }

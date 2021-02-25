@@ -1,13 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutterdmzj/component/EmptyView.dart';
 import 'package:flutterdmzj/component/LoadingCube.dart';
 import 'package:flutterdmzj/http/http.dart';
 
 import 'SearchListTile.dart';
 
 class SearchTab extends StatefulWidget{
-  String keyword;
-  Key key;
+  final String keyword;
+  final Key key;
 
   SearchTab({this.key,@required this.keyword});
 
@@ -74,6 +75,7 @@ class _SearchTab extends State<SearchTab>{
         });
         search();
       },
+      emptyWidget: list.length==0?EmptyView():null,
       child: ListView.builder(
         itemCount: list.length,
         itemBuilder: (context, index) {

@@ -6,7 +6,6 @@ import 'package:flutterdmzj/component/EmptyView.dart';
 import 'package:flutterdmzj/component/LoadingCube.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
-import 'package:markdown_widget/markdown_helper.dart';
 
 class CommentPage extends StatefulWidget {
   final String id;

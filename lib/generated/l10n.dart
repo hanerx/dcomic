@@ -636,13 +636,13 @@ class S {
     );
   }
 
-  /// `## {name}\n#### release date：{update_time}\n {body}\n`
-  String SettingPageChangeLogContent(Object name, Object update_time, Object body) {
+  /// `## {name}\n#### release date：{updateTime}\n {body}\n`
+  String SettingPageChangeLogContent(Object name, Object updateTime, Object body) {
     return Intl.message(
-      '## $name\n#### release date：$update_time\n $body\n',
+      '## $name\n#### release date：$updateTime\n $body\n',
       name: 'SettingPageChangeLogContent',
       desc: '',
-      args: [name, update_time, body],
+      args: [name, updateTime, body],
     );
   }
 

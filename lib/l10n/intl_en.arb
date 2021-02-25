@@ -74,11 +74,11 @@
   "SettingPageAboutDescription": "A 3rd-party flutter dmzj application",
   "SettingPageChangeLogTitle": "ChangeLog",
   "SettingPageChangeLogSubtitle": "All change logs record in github",
-  "SettingPageChangeLogContent": "## {name}\n#### release date：{update_time}\n {body}\n",
+  "SettingPageChangeLogContent": "## {name}\n#### release date：{updateTime}\n {body}\n",
   "@SettingPageChangeLogContent": {
     "placeholders": {
       "name": {},
-      "update_time": {},
+      "updateTime": {},
       "body": {}
     }
   },

@@ -8,3 +8,14 @@ class ConsoleLogOutput extends ConsoleOutput {
     LogConsole.add(event);
   }
 }
+
+class ReleaseFilter extends LogFilter {
+  @override
+  bool shouldLog(LogEvent event) {
+    var shouldLog = false;
+    if (event.level.index >= level.index) {
+      shouldLog = true;
+    }
+    return shouldLog;
+  }
+}

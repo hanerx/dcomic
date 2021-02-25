@@ -11,6 +11,7 @@ import 'package:flutterdmzj/component/CustomDrawer.dart';
 import 'package:flutterdmzj/component/EmptyView.dart';
 import 'package:flutterdmzj/component/FancyFab.dart';
 import 'package:flutterdmzj/component/LoadingCube.dart';
+import 'package:flutterdmzj/component/SearchDialog.dart';
 import 'package:flutterdmzj/component/TypeTags.dart';
 import 'package:flutterdmzj/model/comicDetail.dart';
 import 'package:flutterdmzj/model/comic_source/baseSourceModel.dart';
@@ -177,9 +178,6 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                                       listen: false)
                                   .lastChapterId ==
                               '') {
-                            var comicId = Provider.of<ComicDetailModel>(context,
-                                    listen: false)
-                                .comicId;
                             var lastChapterId = '';
                             var lastChapterList = Provider.of<ComicDetailModel>(
                                     context,
@@ -302,6 +300,57 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                         Provider.of<ComicDetailModel>(context).hotNum,
                         Provider.of<ComicDetailModel>(context).subscribeNum,
                         Provider.of<ComicDetailModel>(context).description),
+                    Card(
+                        elevation: 0,
+                        margin: EdgeInsets.only(bottom: 10),
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 5, right: 5),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Center(
+                                  child: Text('源漫画ID: '),
+                                ),
+                              ),
+                              Expanded(
+                                child: Center(
+                                  child: SelectableText(
+                                      '${Provider.of<ComicDetailModel>(context).rawComicId}'),
+                                ),
+                              ),
+                              Expanded(
+                                child: Center(
+                                  child: Text('绑定漫画ID: '),
+                                ),
+                              ),
+                              Expanded(
+                                child: Center(
+                                  child: SelectableText(
+                                      '${Provider.of<ComicDetailModel>(context).comicId}'),
+                                ),
+                              ),
+                              IconButton(
+                                tooltip: '重新绑定漫画ID',
+                                icon: Icon(Icons.refresh),
+                                onPressed: ()async {
+                                  var flag = await showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                          StatefulBuilder(builder: (context, state) {
+                                            return SearchDialog(
+                                              model: Provider.of<SourceProvider>(context).active,
+                                              keyword: widget.title,
+                                              comicId: widget.id,
+                                            );
+                                          }));
+                                  if (flag != null && flag) {
+                                    Provider.of<ComicDetailModel>(context,listen: false).init();
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                        )),
                     Card(
                       elevation: 0,
                       margin: EdgeInsets.fromLTRB(0, 0, 0, 10),

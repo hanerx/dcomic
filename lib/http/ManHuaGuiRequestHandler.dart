@@ -2,7 +2,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutterdmzj/http/UniversalRequestModel.dart';
 
-class ManHuaGuiRequestHandler extends RequestHandler{
+class ManHuaGuiRequestHandler extends SingleDomainRequestHandler{
   ManHuaGuiRequestHandler() : super('https://m.manhuagui.com');
 
 

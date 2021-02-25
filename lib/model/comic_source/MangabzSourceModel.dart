@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutterdmzj/database/sourceDatabaseProvider.dart';
 import 'package:flutterdmzj/generated/l10n.dart';
 import 'package:flutterdmzj/http/UniversalRequestModel.dart';
@@ -130,6 +129,13 @@ class MangabzSourceModel extends BaseSourceModel {
           shrinkWrap: true,
           physics: NeverScrollableScrollPhysics(),
           children: [
+            ListTile(
+              title: Text('当前Ping(点击测试)'),
+              subtitle: Text('${Provider.of<MangabzOptionProvider>(context).ping} ms'),
+              onTap: ()async{
+                Provider.of<MangabzOptionProvider>(context,listen: false).ping=await UniversalRequestModel().mangabzRequestHandler.ping();
+              },
+            ),
             ListTile(
               title: Text('漫画加载模式'),
               subtitle: Text(

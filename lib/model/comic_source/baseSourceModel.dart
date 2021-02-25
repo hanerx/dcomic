@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutterdmzj/model/baseModel.dart';
 
 abstract class BaseSourceModel extends BaseModel {
-  Future<List<SearchResult>> search(String keyword,{int page:0});
+  Future<List<SearchResult>> search(String keyword, {int page: 0});
 
   Future<ComicDetail> get({String comicId, String title});
 
@@ -43,6 +43,7 @@ abstract class SourceOptions extends BaseModel {
 
 class SourceOptionsProvider extends BaseModel {
   final SourceOptions options;
+  int _ping = -1;
 
   SourceOptionsProvider(this.options);
 
@@ -50,6 +51,13 @@ class SourceOptionsProvider extends BaseModel {
 
   set active(bool value) {
     options.active = value;
+    notifyListeners();
+  }
+
+  int get ping => _ping;
+
+  set ping(int value) {
+    _ping = value;
     notifyListeners();
   }
 }
@@ -81,7 +89,12 @@ abstract class ComicDetail extends BaseModel {
 
   String get historyChapter;
 
-  Map<String,String> get headers;
+  Map<String, String> get headers;
+
+  @override
+  String toString() {
+    return 'ComicDetail{title: $title, comicId: $comicId}';
+  }
 }
 
 abstract class Comic extends BaseModel {
@@ -107,9 +120,14 @@ abstract class Comic extends BaseModel {
 
   bool get canNext;
 
-  Map<String,String> get headers;
+  Map<String, String> get headers;
 
-  Future<void> addReadHistory({String title, String comicId, int page,String chapterTitle,String chapterId});
+  Future<void> addReadHistory(
+      {String title,
+      String comicId,
+      int page,
+      String chapterTitle,
+      String chapterId});
 
   Future<void> getComic(
       {String title, String comicId, String chapterId, String chapterTitle});
@@ -121,7 +139,7 @@ abstract class Comic extends BaseModel {
   Future<void> getViewPoint();
 }
 
-enum SourceType{
+enum SourceType {
   LocalSource,
   LocalDecoderSource,
   CloudDecoderSource,
@@ -158,11 +176,15 @@ class SourceDetail {
   }
 }
 
-abstract class SearchResult extends BaseModel{
+abstract class SearchResult extends BaseModel {
   String get title;
+
   String get comicId;
+
   String get cover;
+
   String get author;
+
   String get tag;
 
   @override
@@ -173,7 +195,17 @@ abstract class SearchResult extends BaseModel{
 
 class IDInvalidError implements Exception {}
 
-class ComicLoadingError implements Exception {}
+class ComicLoadingError implements Exception {
+  dynamic exception;
+
+  ComicLoadingError({this.exception});
+
+  @override
+  String toString() {
+    // TODO: implement toString
+    return 'ComicLoadingError{exception: $exception}';
+  }
+}
 
 class ComicIdNotBoundError implements Exception {}
 

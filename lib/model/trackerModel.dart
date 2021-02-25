@@ -41,13 +41,13 @@ class TrackerModel extends BaseModel {
   }
 
   Future<void> delete(ComicDetailModel model) async {
-    await _provider.deleteComic(model.comicId);
+    await _provider.deleteComic(model.rawComicId);
     await init();
     notifyListeners();
   }
 
   Future<int> subscribe(ComicDetailModel model) async {
-    if (await _provider.getComic(model.comicId) == null) {
+    if (await _provider.getComic(model.rawComicId) == null) {
       await add(model);
       notifyListeners();
       return 1;
@@ -60,7 +60,7 @@ class TrackerModel extends BaseModel {
 
   bool ifSubscribe(ComicDetailModel model) {
     for (var item in tracingComic) {
-      if (item.comicId == model.comicId) {
+      if (item.comicId == model.rawComicId) {
         return true;
       }
     }

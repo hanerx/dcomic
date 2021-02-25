@@ -74,11 +74,11 @@
   "SettingPageAboutDescription": "基于flutter的第三方动漫之家简单app",
   "SettingPageChangeLogTitle": "更新日志",
   "SettingPageChangeLogSubtitle": "记录了所有版本的更新日志，方便查看每个版本的内容不同",
-  "SettingPageChangeLogContent": "## {name}\n#### 发布时间：{update_time}\n {body}\n",
+  "SettingPageChangeLogContent": "## {name}\n#### 发布时间：{updateTime}\n {body}\n",
   "@SettingPageChangeLogContent": {
     "placeholders": {
       "name": {},
-      "update_time": {},
+      "updateTime": {},
       "body": {}
     }
   },

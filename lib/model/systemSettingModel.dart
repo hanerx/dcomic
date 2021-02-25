@@ -31,6 +31,7 @@ class SystemSettingModel extends BaseModel {
 
   bool _darkSide=false;
 
+
   DataBase _dataBase = DataBase();
 
   SystemSettingModel() {
@@ -139,4 +140,6 @@ class SystemSettingModel extends BaseModel {
     _novel = value;
     notifyListeners();
   }
+
+
 }

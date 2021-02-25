@@ -21,7 +21,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static m0(author) => "作者-${author}";
 
-  static m1(name, update_time, body) => "## ${name}\n#### 发布时间：${update_time}\n ${body}\n";
+  static m1(name, updateTime, body) => "## ${name}\n#### 发布时间：${updateTime}\n ${body}\n";
 
   static m2(version) => "当前版本：${version}";
 

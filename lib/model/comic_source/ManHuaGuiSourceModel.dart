@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutterdmzj/database/sourceDatabaseProvider.dart';
 import 'package:flutterdmzj/generated/l10n.dart';
 import 'package:flutterdmzj/http/UniversalRequestModel.dart';
@@ -48,7 +47,7 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
     } else if (title == null) {
       throw IDInvalidError();
     } else {
-      throw ComicLoadingError();
+      throw ComicLoadingError(exception: Exception('未知的判断问题'));
     }
   }
 
@@ -103,7 +102,7 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
             _options);
       }
     } catch (e) {
-      throw ComicLoadingError();
+      throw ComicLoadingError(exception: e);
     }
     return null;
   }
@@ -128,6 +127,26 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
         children: [
+          ListTile(
+            title: Text('当前Ping(点击测试)'),
+            subtitle: Text(
+                '${Provider.of<ManHuaGuiOptionsProvider>(context).ping} ms'),
+            onTap: () async {
+              var model = UniversalRequestModel();
+              if (Provider.of<ManHuaGuiOptionsProvider>(context, listen: false)
+                  .enableProxy) {
+                model.manHuaGuiRequestHandler.setProxy(
+                    Provider.of<ManHuaGuiOptionsProvider>(context,
+                            listen: false)
+                        .proxy,
+                    Provider.of<ManHuaGuiOptionsProvider>(context,
+                            listen: false)
+                        .port);
+              }
+              Provider.of<ManHuaGuiOptionsProvider>(context, listen: false)
+                  .ping = await model.manHuaGuiRequestHandler.ping();
+            },
+          ),
           ListTile(
             title: Text('启用内置代理'),
             subtitle: Text('启用后将会根据下方代理服务器代理漫画柜流量，不开启则使用系统代理设置'),
@@ -240,12 +259,11 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
   Future<List<SearchResult>> search(String keyword, {int page: 0}) async {
     // TODO: implement search
     try {
-      var model=UniversalRequestModel();
+      var model = UniversalRequestModel();
       if (_options.enableProxy) {
         model.manHuaGuiRequestHandler.setProxy(_options.proxy, _options.port);
       }
-      var response =
-          await model.manHuaGuiRequestHandler.search(keyword);
+      var response = await model.manHuaGuiRequestHandler.search(keyword);
       if (response.statusCode == 200) {
         var soup = BeautifulSoup(response.data);
         List<SearchResult> list = [];
@@ -574,7 +592,7 @@ class ManHuaGuiComic extends Comic {
         notifyListeners();
       }
     } catch (e) {
-      throw ComicLoadingError();
+      throw ComicLoadingError(exception: e);
     }
   }
 

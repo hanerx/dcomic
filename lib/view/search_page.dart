@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutterdmzj/component/search/DeepSearchTab.dart';
 import 'package:flutterdmzj/component/search/NovelSearchTab.dart';
 import 'package:flutterdmzj/component/search/SearchTab.dart';
-import 'package:flutterdmzj/database/database.dart';
+import 'package:flutterdmzj/generated/l10n.dart';
 import 'package:flutterdmzj/model/systemSettingModel.dart';
+import 'package:flutterdmzj/view/comic_detail_page.dart';
 import 'package:provider/provider.dart';
 
 
@@ -25,6 +26,42 @@ class _SearchPage extends State<SearchPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+  }
+
+  void _onSubmit(){
+    _node.unfocus();
+    setState(() {
+      keyword = _controller.text;
+    });
+    if (keyword == '宝塔镇河妖') {
+      Provider.of<SystemSettingModel>(context, listen: false)
+          .backupApi = true;
+    } else if (keyword == '天王盖地虎') {
+      Provider.of<SystemSettingModel>(context, listen: false)
+          .backupApi = false;
+    }
+    var comicId=int.tryParse(keyword);
+    if(comicId!=null){
+      showDialog(context: context,builder: (context)=>AlertDialog(
+        title: Text('看起来你输入了一个漫画ID'),
+        content: Text('是否直接跳转至漫画'),
+        actions: [
+          FlatButton(
+            child: Text(S.of(context).Cancel),
+            onPressed: (){
+              Navigator.of(context).pop();
+            },
+          ),
+          FlatButton(
+            child: Text(S.of(context).Confirm),
+            onPressed: (){
+              Navigator.of(context).pop();
+              Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ComicDetailPage(id: comicId.toString(),title: '',)));
+            },
+          )
+        ],
+      ));
+    }
   }
 
   @override
@@ -74,17 +111,7 @@ class _SearchPage extends State<SearchPage> {
             ),
             textInputAction: TextInputAction.search,
             onSubmitted: (val) {
-              _node.unfocus();
-              setState(() {
-                keyword = _controller.text;
-              });
-              if (keyword == '宝塔镇河妖') {
-                Provider.of<SystemSettingModel>(context, listen: false)
-                    .backupApi = true;
-              } else if (keyword == '天王盖地虎') {
-                Provider.of<SystemSettingModel>(context, listen: false)
-                    .backupApi = false;
-              }
+              _onSubmit();
             },
           ),
           bottom: TabBar(
@@ -97,17 +124,7 @@ class _SearchPage extends State<SearchPage> {
                 color: Colors.white,
               ),
               onPressed: () {
-                _node.unfocus();
-                setState(() {
-                  keyword = _controller.text;
-                });
-                if (keyword == '宝塔镇河妖') {
-                  Provider.of<SystemSettingModel>(context, listen: false)
-                      .backupApi = true;
-                } else if (keyword == '天王盖地虎') {
-                  Provider.of<SystemSettingModel>(context, listen: false)
-                      .backupApi = false;
-                }
+                _onSubmit();
               },
             )
           ],

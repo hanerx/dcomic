@@ -569,4 +569,28 @@ class DataBase {
     await batch.commit();
   }
 
+  setAnimation(bool state) async {
+    await initDataBase();
+    var batch = _database.batch();
+    batch.delete("configures", where: "key='animation'");
+    batch.insert(
+        "configures", {'key': 'animation', 'value': state ? '1' : '0'});
+    await batch.commit();
+  }
+
+  getAnimation() async {
+    await initDataBase();
+    var batch = _database.batch();
+    batch.query("configures", where: "key='animation'");
+    var result = await batch.commit();
+    try {
+      if (result.first[0]['value'] == '0') {
+        return false;
+      }
+    } catch (e) {
+      _logger.w('action: deepSearchNotFound, exception: $e');
+    }
+    return true;
+  }
+
 }

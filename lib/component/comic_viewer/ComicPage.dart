@@ -26,7 +26,8 @@ class ComicPage extends StatefulWidget {
       this.title,
       this.index,
       this.cover,
-      this.local: false,this.headers})
+      this.local: false,
+      this.headers})
       : super(key: key);
 
   @override
@@ -119,6 +120,7 @@ class _ComicPage extends State<ComicPage> {
         fit: widget.cover ? BoxFit.cover : BoxFit.contain,
         imageUrl: widget.url,
         httpHeaders: widget.headers,
+        // cacheManager: ProxyCacheManager('192.168.123.47', 7890),
         progressIndicatorBuilder: (context, url, downloadProgress) => Center(
             child: Container(
           height: 500,
@@ -130,8 +132,14 @@ class _ComicPage extends State<ComicPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.error,color: Colors.redAccent,),
-              Text('$error',style: TextStyle(color: Colors.redAccent),)
+              Icon(
+                Icons.error,
+                color: Colors.redAccent,
+              ),
+              Text(
+                '$error',
+                style: TextStyle(color: Colors.redAccent),
+              )
             ],
           ),
         ),

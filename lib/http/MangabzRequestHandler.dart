@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:flutterdmzj/http/UniversalRequestModel.dart';
 
-class MangabzRequestHandler extends RequestHandler {
+class MangabzRequestHandler extends SingleDomainRequestHandler {
   MangabzRequestHandler() : super('http://www.mangabz.com');
 
   Future<Map<String, dynamic>> getOptions(String url) async {
