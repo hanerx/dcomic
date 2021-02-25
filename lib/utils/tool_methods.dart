@@ -21,6 +21,10 @@ class ToolMethods {
     return '${dateTime.year}-${dateTime.month}-${dateTime.day}';
   }
 
+  static int formatTimeString(String time){
+    return DateTime.parse(time).millisecondsSinceEpoch;
+  }
+
   static bool checkVersion(String version, String lastVersion) {
     var list1 = version.split(".");
     List list2 = lastVersion.split(".");

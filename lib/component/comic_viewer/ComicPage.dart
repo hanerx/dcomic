@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
+import 'package:flutterdmzj/utils/ProxyCacheManager.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:toast/toast.dart';
@@ -26,7 +28,8 @@ class ComicPage extends StatefulWidget {
       this.title,
       this.index,
       this.cover,
-      this.local: false,this.headers})
+      this.local: false,
+      this.headers})
       : super(key: key);
 
   @override
@@ -119,6 +122,7 @@ class _ComicPage extends State<ComicPage> {
         fit: widget.cover ? BoxFit.cover : BoxFit.contain,
         imageUrl: widget.url,
         httpHeaders: widget.headers,
+        // cacheManager: ProxyCacheManager('192.168.123.47', 7890),
         progressIndicatorBuilder: (context, url, downloadProgress) => Center(
             child: Container(
           height: 500,
@@ -130,8 +134,14 @@ class _ComicPage extends State<ComicPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.error,color: Colors.redAccent,),
-              Text('$error',style: TextStyle(color: Colors.redAccent),)
+              Icon(
+                Icons.error,
+                color: Colors.redAccent,
+              ),
+              Text(
+                '$error',
+                style: TextStyle(color: Colors.redAccent),
+              )
             ],
           ),
         ),

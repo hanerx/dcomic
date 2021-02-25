@@ -49,7 +49,9 @@ class DMZJSourceModel extends BaseSourceModel {
             .map((value) => value['tag_name'])
             .toList()
             .join('/');
-        var chapters = response.data['chapters'].map<Map<String,dynamic>>((e)=>e as Map<String,dynamic>).toList();
+        var chapters = response.data['chapters']
+            .map<Map<String, dynamic>>((e) => e as Map<String, dynamic>)
+            .toList();
         DataBase dataBase = DataBase();
         var lastChapterId = await dataBase.getHistory(comicId);
         return DMZJComicDetail(
@@ -140,15 +142,15 @@ class DMZJSourceModel extends BaseSourceModel {
   }
 
   @override
-  Future<List<SearchResult>> search(String keyword,{int page:0}) {
+  Future<List<SearchResult>> search(String keyword, {int page: 0}) async {
     // TODO: implement search
-    throw UnimplementedError();
+    return [];
   }
 
   @override
   // TODO: implement type
-  SourceDetail get type =>
-      SourceDetail('dmzj', '默认-动漫之家', '默认数据提供商，不可关闭', false, SourceType.LocalDecoderSource, false);
+  SourceDetail get type => SourceDetail('dmzj', '默认-动漫之家', '默认数据提供商，不可关闭',
+      false, SourceType.LocalDecoderSource, false);
 
   @override
   Widget getSettingWidget(context) {
@@ -296,8 +298,8 @@ class DMZJWebSourceModel extends DMZJSourceModel {
 
   @override
   // TODO: implement type
-  SourceDetail get type => SourceDetail(
-      'dmzj-web', '动漫之家网页', '使用大妈之家移动网页版的接口，让漫画重新可以看了', true, SourceType.LocalDecoderSource, false);
+  SourceDetail get type => SourceDetail('dmzj-web', '动漫之家网页',
+      '使用大妈之家移动网页版的接口，让漫画重新可以看了', true, SourceType.LocalDecoderSource, false);
 
   @override
   // TODO: implement options
@@ -481,7 +483,7 @@ class DMZJComicDetail extends ComicDetail {
       throw IDInvalidError();
     }
     for (var item in _chapters) {
-      for(var chapter in item['data']){
+      for (var chapter in item['data']) {
         if (chapter['chapter_id'].toString() == chapterId) {
           return DMZJComic(_comicId, chapterId, item['data'], options);
         }
@@ -534,7 +536,7 @@ class DMZJComicDetail extends ComicDetail {
 
   @override
   // TODO: implement headers
-  Map<String,String> get headers => {'referer':'http://images.dmzj.com'};
+  Map<String, String> get headers => {'referer': 'http://images.dmzj.com'};
 }
 
 class DMZJComic extends Comic {
@@ -542,11 +544,11 @@ class DMZJComic extends Comic {
   final String _chapterId;
   final List _chapters;
   final DMZJSourceOptions options;
-  List<String> _pages=[];
+  List<String> _pages = [];
   String _title;
   List<String> _chapterIdList;
   int _type = 0;
-  List _viewPoints=[];
+  List _viewPoints = [];
 
   String _previous;
   String _next;
@@ -558,9 +560,7 @@ class DMZJComic extends Comic {
         .toList();
     _chapterIdList = List.generate(_chapterIdList.length,
         (index) => _chapterIdList[_chapterIdList.length - 1 - index]);
-
   }
-
 
   Future<void> getComic(
       {String title,
@@ -601,7 +601,8 @@ class DMZJComic extends Comic {
       var response = await http.getComic(comicId, chapterId);
       if (response.statusCode == 200) {
         _pageAt = chapterId;
-        _pages = response.data['page_url'].map<String>((e)=>e.toString()).toList();
+        _pages =
+            response.data['page_url'].map<String>((e) => e.toString()).toList();
         _title = response.data['title'];
         if (_chapterIdList.indexOf(chapterId) > 0) {
           _previous = _chapterIdList[_chapterIdList.indexOf(chapterId) - 1];
@@ -632,7 +633,7 @@ class DMZJComic extends Comic {
       if (response.statusCode == 200) {
         var data = jsonDecode(response.data);
         _title = data['chapter_name'];
-        _pages = data['page_url'].map<String>((e)=>e.toString()).toList();
+        _pages = data['page_url'].map<String>((e) => e.toString()).toList();
         if (_chapterIdList.indexOf(chapterId) > 0) {
           _previous = _chapterIdList[_chapterIdList.indexOf(chapterId) - 1];
         } else {
@@ -742,9 +743,14 @@ class DMZJComic extends Comic {
   }
 
   @override
-  Future<void> addReadHistory({String title, String comicId, int page,String chapterTitle,String chapterId}) async {
+  Future<void> addReadHistory(
+      {String title,
+      String comicId,
+      int page,
+      String chapterTitle,
+      String chapterId}) async {
     // TODO: implement addReadHistory
-    if(comicId==null||chapterId==null){
+    if (comicId == null || chapterId == null) {
       throw IDInvalidError();
     }
     DataBase dataBase = DataBase();
@@ -756,7 +762,7 @@ class DMZJComic extends Comic {
       var uid = await dataBase.getUid();
       CustomHttp http = CustomHttp();
       http.addHistoryNew(int.parse(comicId), uid, int.parse(chapterId),
-          page:page);
+          page: page);
     }
     notifyListeners();
   }
@@ -798,12 +804,12 @@ class DMZJComic extends Comic {
   String get chapterId => _chapterId;
 
   @override
-  Future<void> init() async{
+  Future<void> init() async {
     // TODO: implement init
     await getComic(comicId: _comicId, chapterId: _chapterId);
   }
 
   @override
   // TODO: implement headers
-  Map<String,String> get headers => {'referer':'http://images.dmzj.com'};
+  Map<String, String> get headers => {'referer': 'http://images.dmzj.com'};
 }

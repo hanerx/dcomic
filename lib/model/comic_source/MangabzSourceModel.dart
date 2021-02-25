@@ -131,6 +131,13 @@ class MangabzSourceModel extends BaseSourceModel {
           physics: NeverScrollableScrollPhysics(),
           children: [
             ListTile(
+              title: Text('当前Ping(点击测试)'),
+              subtitle: Text('${Provider.of<MangabzOptionProvider>(context).ping} ms'),
+              onTap: ()async{
+                Provider.of<MangabzOptionProvider>(context,listen: false).ping=await UniversalRequestModel().mangabzRequestHandler.ping();
+              },
+            ),
+            ListTile(
               title: Text('漫画加载模式'),
               subtitle: Text(
                   '${MangabzSourceOptions.modes[Provider.of<MangabzOptionProvider>(context).mode]}'),

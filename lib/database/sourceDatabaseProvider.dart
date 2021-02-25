@@ -29,11 +29,13 @@ class SourceDatabaseProvider {
 
   static Future<void> boundComic(
       String name, String comicId, String boundId) async {
-    Database database = await initDataBase();
-    await database.delete('comic_bounding',
-        where: 'source_name = ? and comic_id= ?', whereArgs: [name, comicId]);
-    await database.insert('comic_bounding',
-        {'comic_id': comicId, 'bound_id': boundId, 'source_name': name});
+    if(comicId!=null&&boundId!=null){
+      Database database = await initDataBase();
+      await database.delete('comic_bounding',
+          where: 'source_name = ? and comic_id= ?', whereArgs: [name, comicId]);
+      await database.insert('comic_bounding',
+          {'comic_id': comicId, 'bound_id': boundId, 'source_name': name});
+    }
   }
 
   static Future<Map> getBoundComic(String name, String comicId) async {

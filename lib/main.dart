@@ -79,10 +79,6 @@ class _MainFrame extends State<MainFrame> {
     FlutterDownloader.registerCallback(ToolMethods.downloadCallback);
   }
 
-  initLogger() {
-    LogConsole.add(OutputEvent(Level.debug, ['init']));
-  }
-
   initEasyRefresh() {
     EasyRefresh.defaultHeader = ClassicalHeader(
         refreshedText: '刷新完成',
@@ -103,7 +99,6 @@ class _MainFrame extends State<MainFrame> {
     // TODO: implement initState
     super.initState();
     initDownloader();
-    initLogger();
     initEasyRefresh();
   }
 
