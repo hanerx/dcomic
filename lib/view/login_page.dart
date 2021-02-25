@@ -8,7 +8,6 @@ import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class LoginPage extends StatefulWidget {
   @override

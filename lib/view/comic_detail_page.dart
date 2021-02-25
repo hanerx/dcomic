@@ -178,9 +178,6 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                                       listen: false)
                                   .lastChapterId ==
                               '') {
-                            var comicId = Provider.of<ComicDetailModel>(context,
-                                    listen: false)
-                                .comicId;
                             var lastChapterId = '';
                             var lastChapterList = Provider.of<ComicDetailModel>(
                                     context,

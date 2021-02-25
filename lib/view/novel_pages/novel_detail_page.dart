@@ -3,13 +3,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_parallax/flutter_parallax.dart';
-import 'package:flutterdmzj/component/CustomDrawer.dart';
 import 'package:flutterdmzj/component/EmptyView.dart';
 import 'package:flutterdmzj/component/LoadingCube.dart';
 import 'package:flutterdmzj/model/novelDetail.dart';
 import 'package:provider/provider.dart';
 
-import '../comment_page.dart';
 import '../login_page.dart';
 
 class NovelDetailPage extends StatefulWidget {

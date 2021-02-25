@@ -99,16 +99,13 @@ class _NovelHomePage extends State<NovelHomePage> {
 }
 
 class _CardView extends StatelessWidget {
-  String title = '';
-  List list;
-  int row = 2;
+  final String title;
+  final List list;
+  final int row;
   List mainList = <Widget>[];
   Widget action = Container();
 
-  _CardView(title, list, row, categoryId) {
-    this.title = title;
-    this.list = list;
-    this.row = row;
+  _CardView(this.title, this.list, this.row, categoryId) {
     mainList = <Widget>[
       Padding(
         padding: EdgeInsets.fromLTRB(5, 4, 0, 4),

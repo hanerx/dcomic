@@ -3,13 +3,12 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutterdmzj/component/EmptyView.dart';
 import 'package:flutterdmzj/component/LoadingCube.dart';
 import 'package:flutterdmzj/http/http.dart';
-import 'package:markdown_widget/markdown_helper.dart';
 
 import 'SearchListTile.dart';
 
 class SearchTab extends StatefulWidget{
-  String keyword;
-  Key key;
+  final String keyword;
+  final Key key;
 
   SearchTab({this.key,@required this.keyword});
 

@@ -1,12 +1,8 @@
-import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterdmzj/component/ViewPointChip.dart';
 import 'package:flutterdmzj/component/comic_viewer/ComicPage.dart';
-import 'package:flutterdmzj/database/database.dart';
-import 'package:flutterdmzj/database/downloader.dart';
-import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/model/baseModel.dart';
 import 'package:flutterdmzj/model/comic_source/baseSourceModel.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';

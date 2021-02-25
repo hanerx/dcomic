@@ -379,7 +379,6 @@ class GuideChapter {
 
   int get length => _list.length;
 
-  @override
   GuideAction operator [](int index) {
     // TODO: implement ==
     return _list[index];

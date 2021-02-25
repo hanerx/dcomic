@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -14,7 +13,6 @@ import 'package:flutterdmzj/model/comic_source/MangabzSourceModel.dart';
 import 'package:flutterdmzj/model/comic_source/baseSourceModel.dart';
 import 'package:flutterdmzj/model/comic_source/sourceProvider.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
-import 'package:flutterdmzj/view/ranking_page.dart';
 import 'package:provider/provider.dart';
 
 import '../comic_detail_page.dart';

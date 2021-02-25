@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterdmzj/database/downloader.dart';
 import 'package:flutterdmzj/model/baseModel.dart';
-import 'package:flutterdmzj/model/comic_source/DMZJSourceModel.dart';
 import 'package:flutterdmzj/model/comic_source/sourceProvider.dart';
 import 'package:flutterdmzj/view/comic_viewer.dart';
 import 'package:provider/provider.dart';

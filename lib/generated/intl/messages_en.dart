@@ -21,7 +21,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static m0(author) => "Author-${author}";
 
-  static m1(name, update_time, body) => "## ${name}\n#### release date：${update_time}\n ${body}\n";
+  static m1(name, updateTime, body) => "## ${name}\n#### release date：${updateTime}\n ${body}\n";
 
   static m2(version) => "Current version: ${version}";
 

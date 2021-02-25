@@ -7,8 +7,8 @@ import 'package:flutterdmzj/http/http.dart';
 import 'SearchListTile.dart';
 
 class NovelSearchTab extends StatefulWidget {
-  String keyword;
-  Key key;
+  final String keyword;
+  final Key key;
 
   NovelSearchTab({this.key, @required this.keyword});
 

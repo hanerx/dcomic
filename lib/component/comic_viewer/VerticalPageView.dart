@@ -57,7 +57,7 @@ class _VerticalPageView extends State<VerticalPageView> {
   bool loading = false;
   StreamSubscription _channel;
 
-  _VerticalPageView() {}
+  _VerticalPageView();
 
   @override
   void initState() {
@@ -198,7 +198,7 @@ class _VerticalPageView extends State<VerticalPageView> {
               scrollController: _controller,
               taskIndependence: true,
               onRefresh: () async {
-                bool flag = await widget.onTop();
+                await widget.onTop();
                 _easyRefreshController.resetLoadState();
                 _easyRefreshController.finishRefresh(
                     success: true, noMore: widget.left);
