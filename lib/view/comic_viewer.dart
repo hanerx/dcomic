@@ -15,8 +15,7 @@ import 'package:provider/provider.dart';
 class ComicViewPage extends StatefulWidget {
   final Comic comic;
 
-  const ComicViewPage({Key key, this.comic})
-      : super(key: key);
+  const ComicViewPage({Key key, this.comic}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -28,7 +27,7 @@ class ComicViewPage extends StatefulWidget {
 class _ComicViewPage extends State<ComicViewPage>
     with TickerProviderStateMixin {
   bool _show = false;
-  int _initialIndex=0;
+  int _initialIndex = 0;
 
   @override
   void initState() {
@@ -56,7 +55,7 @@ class _ComicViewPage extends State<ComicViewPage>
         create: (_) => ComicModel(widget.comic),
         builder: (context, test) {
           return Scaffold(
-              backgroundColor: ComicViewerSettingModel.backgroundColors[Provider.of<ComicViewerSettingModel>(context).backgroundColor],
+              backgroundColor: _getBackgroundColor(context),
               body: Stack(
                 children: [
                   _buildViewer(context),
@@ -93,42 +92,52 @@ class _ComicViewPage extends State<ComicViewPage>
                                         await Provider.of<ComicModel>(context,
                                                 listen: false)
                                             .previousChapter();
-                                        if (Provider.of<ComicViewerSettingModel>(context,listen: false).direction) {
+                                        if (Provider.of<
+                                                    ComicViewerSettingModel>(
+                                                context,
+                                                listen: false)
+                                            .direction) {
                                           horizontalKey.currentState
                                               .moveToTop();
                                         } else {
                                           verticalKey.currentState.moveToTop();
-                                          verticalKey.currentState.onPreviousChapter();
+                                          verticalKey.currentState
+                                              .onPreviousChapter();
                                         }
                                         break;
                                       case 1:
                                         Scaffold.of(context).openEndDrawer();
                                         setState(() {
-                                          _initialIndex=0;
+                                          _initialIndex = 0;
                                         });
                                         break;
                                       case 2:
                                         Scaffold.of(context).openEndDrawer();
                                         setState(() {
-                                          _initialIndex=1;
+                                          _initialIndex = 1;
                                         });
                                         break;
                                       case 3:
                                         Scaffold.of(context).openEndDrawer();
                                         setState(() {
-                                          _initialIndex=2;
+                                          _initialIndex = 2;
                                         });
                                         break;
                                       case 4:
                                         await Provider.of<ComicModel>(context,
                                                 listen: false)
                                             .nextChapter();
-                                        if (Provider.of<ComicViewerSettingModel>(context,listen: false).direction) {
+                                        if (Provider.of<
+                                                    ComicViewerSettingModel>(
+                                                context,
+                                                listen: false)
+                                            .direction) {
                                           horizontalKey.currentState
                                               .moveToTop();
                                         } else {
                                           verticalKey.currentState.moveToTop();
-                                          verticalKey.currentState.onNextChapter();
+                                          verticalKey.currentState
+                                              .onNextChapter();
                                         }
                                         break;
                                     }
@@ -189,7 +198,13 @@ class _ComicViewPage extends State<ComicViewPage>
                       backgroundColor: Colors.black54,
                       title: Text("${Provider.of<ComicModel>(context).title}"),
                       bottom: TabBar(
-                        tabs: [Tab(text: "吐槽"), Tab(text: '目录',),Tab(text: "设定")],
+                        tabs: [
+                          Tab(text: "吐槽"),
+                          Tab(
+                            text: '目录',
+                          ),
+                          Tab(text: "设定")
+                        ],
                       ),
                     ),
                     body: TabBarView(
@@ -205,8 +220,18 @@ class _ComicViewPage extends State<ComicViewPage>
         });
   }
 
+  Color _getBackgroundColor(context) {
+    if (!Provider.of<ComicViewerSettingModel>(context).autoDark ||
+        Theme.of(context).brightness == Brightness.light) {
+      return ComicViewerSettingModel.backgroundColors[
+          Provider.of<ComicViewerSettingModel>(context).backgroundColor];
+    }
+    return null;
+  }
+
   Widget _buildViewer(BuildContext context) {
-    if (Provider.of<ComicViewerSettingModel>(context,listen: false).direction) {
+    if (Provider.of<ComicViewerSettingModel>(context, listen: false)
+        .direction) {
       return HorizontalPageView(
         key: horizontalKey,
         builder: (context, index) =>
@@ -254,10 +279,12 @@ class _ComicViewPage extends State<ComicViewPage>
   Widget _buildViewPoint(BuildContext context) {
     return EasyRefresh(
       scrollController: ScrollController(),
-      onRefresh: ()async{
-        await Provider.of<ComicModel>(context,listen: false).refreshViewPoint();
+      onRefresh: () async {
+        await Provider.of<ComicModel>(context, listen: false)
+            .refreshViewPoint();
       },
-      emptyWidget: Provider.of<ComicModel>(context).emptyViewPoint?EmptyView():null,
+      emptyWidget:
+          Provider.of<ComicModel>(context).emptyViewPoint ? EmptyView() : null,
       child: Wrap(
         children: Provider.of<ComicModel>(context).buildViewPoint(context),
       ),
@@ -270,25 +297,37 @@ class _ComicViewPage extends State<ComicViewPage>
       children: [
         ListTile(
           title: Text("阅读方向"),
-          subtitle: Text("${Provider.of<ComicViewerSettingModel>(context).direction ? '横向阅读' : '纵向阅读'}"),
+          subtitle: Text(
+              "${Provider.of<ComicViewerSettingModel>(context).direction ? '横向阅读' : '纵向阅读'}"),
           onTap: () {
-            Provider.of<ComicViewerSettingModel>(context,listen: false).direction=!Provider.of<ComicViewerSettingModel>(context,listen:false).direction;
+            Provider.of<ComicViewerSettingModel>(context, listen: false)
+                    .direction =
+                !Provider.of<ComicViewerSettingModel>(context, listen: false)
+                    .direction;
           },
         ),
         ListTile(
           title: Text('横向阅读方向'),
-          subtitle: Text('${Provider.of<ComicViewerSettingModel>(context).reverse ? '从右到左' : '从左到右'}'),
+          subtitle: Text(
+              '${Provider.of<ComicViewerSettingModel>(context).reverse ? '从右到左' : '从左到右'}'),
           enabled: Provider.of<ComicViewerSettingModel>(context).direction,
           onTap: () {
-            Provider.of<ComicViewerSettingModel>(context,listen: false).reverse=!Provider.of<ComicViewerSettingModel>(context,listen:false).reverse;
+            Provider.of<ComicViewerSettingModel>(context, listen: false)
+                    .reverse =
+                !Provider.of<ComicViewerSettingModel>(context, listen: false)
+                    .reverse;
           },
         ),
         ListTile(
           title: Text('翻页动画设置'),
-          subtitle: Text('${Provider.of<ComicViewerSettingModel>(context).animation ? '启用动画' : '禁用动画'}'),
+          subtitle: Text(
+              '${Provider.of<ComicViewerSettingModel>(context).animation ? '启用动画' : '禁用动画'}'),
           enabled: Provider.of<ComicViewerSettingModel>(context).direction,
           onTap: () {
-            Provider.of<ComicViewerSettingModel>(context,listen: false).animation=!Provider.of<ComicViewerSettingModel>(context,listen:false).animation;
+            Provider.of<ComicViewerSettingModel>(context, listen: false)
+                    .animation =
+                !Provider.of<ComicViewerSettingModel>(context, listen: false)
+                    .animation;
           },
         ),
         Divider(),
@@ -298,7 +337,8 @@ class _ComicViewPage extends State<ComicViewPage>
           trailing: Switch(
             value: Provider.of<ComicViewerSettingModel>(context).debug,
             onChanged: (state) {
-              Provider.of<ComicViewerSettingModel>(context,listen: false).debug=state;
+              Provider.of<ComicViewerSettingModel>(context, listen: false)
+                  .debug = state;
             },
           ),
         ),
@@ -309,7 +349,8 @@ class _ComicViewPage extends State<ComicViewPage>
             max: 200,
             value: Provider.of<ComicViewerSettingModel>(context).hitBox,
             onChanged: (value) {
-              Provider.of<ComicViewerSettingModel>(context,listen: false).hitBox=value;
+              Provider.of<ComicViewerSettingModel>(context, listen: false)
+                  .hitBox = value;
             },
           ),
         ),
@@ -322,11 +363,23 @@ class _ComicViewPage extends State<ComicViewPage>
             max: 1000,
             value: Provider.of<ComicViewerSettingModel>(context).range,
             onChanged: (value) {
-              Provider.of<ComicViewerSettingModel>(context,listen: false).range=value;
+              Provider.of<ComicViewerSettingModel>(context, listen: false)
+                  .range = value;
             },
           ),
         ),
         Divider(),
+        ListTile(
+          title: Text('阅读器背景自动夜间模式'),
+          subtitle: Text('启用后不管你选择了任何背景颜色，在进入夜间模式后均会自动变成黑色'),
+          trailing: Switch(
+            value: Provider.of<ComicViewerSettingModel>(context).autoDark,
+            onChanged: (value) {
+              Provider.of<ComicViewerSettingModel>(context, listen: false)
+                  .autoDark = value;
+            },
+          ),
+        ),
         Container(
           child: ListTile(
             title: Text(
@@ -341,7 +394,11 @@ class _ComicViewPage extends State<ComicViewPage>
                           color: e,
                         ),
                         onPressed: () {
-                          Provider.of<ComicViewerSettingModel>(context,listen: false).backgroundColor=ComicViewerSettingModel.backgroundColors.indexOf(e);
+                          Provider.of<ComicViewerSettingModel>(context,
+                                      listen: false)
+                                  .backgroundColor =
+                              ComicViewerSettingModel.backgroundColors
+                                  .indexOf(e);
                         },
                       ))
                   .toList(),
@@ -366,7 +423,8 @@ class _ComicViewPage extends State<ComicViewPage>
   }
 
   Widget _buildSlider(context) {
-    if (Provider.of<ComicViewerSettingModel>(context,listen: false).direction) {
+    if (Provider.of<ComicViewerSettingModel>(context, listen: false)
+        .direction) {
       return Container(
         color: Colors.black54,
         child: Slider(
@@ -384,7 +442,8 @@ class _ComicViewPage extends State<ComicViewPage>
                     Provider.of<ComicModel>(context, listen: false).length) {
               Provider.of<ComicModel>(context, listen: false).index =
                   index.toInt();
-              if (Provider.of<ComicViewerSettingModel>(context,listen: false).direction) {
+              if (Provider.of<ComicViewerSettingModel>(context, listen: false)
+                  .direction) {
                 horizontalKey.currentState.animateToPage(index.toInt());
               }
             }
@@ -405,8 +464,11 @@ class _ComicViewPage extends State<ComicViewPage>
     }
   }
 
-  Widget _buildCatalogue(context){
-    return ListView.builder(itemBuilder: Provider.of<ComicModel>(context).buildChapterWidget,itemCount: Provider.of<ComicModel>(context).catalogueLength,);
+  Widget _buildCatalogue(context) {
+    return ListView.builder(
+      itemBuilder: Provider.of<ComicModel>(context).buildChapterWidget,
+      itemCount: Provider.of<ComicModel>(context).catalogueLength,
+    );
   }
 
   bool get show => _show;

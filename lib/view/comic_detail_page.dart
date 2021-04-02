@@ -85,7 +85,7 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                   icon: Icon(Icons.share),
                   onPressed: () {
                     Share.share(
-                        '【${Provider.of<ComicDetailModel>(context, listen: false).title}】 https://m.dmzj.com/info/${Provider.of<ComicDetailModel>(context, listen: false).comicId}.html');
+                        '【${Provider.of<ComicDetailModel>(context, listen: false).title}】 https://m.dmzj.com/info/${Provider.of<ComicDetailModel>(context, listen: false).rawComicId}.html');
                   },
                 ),
                 Builder(
@@ -132,7 +132,7 @@ class _ComicDetailPage extends State<ComicDetailPage> {
             ),
             endDrawer: CustomDrawer(
               child: CommentPage(
-                  Provider.of<ComicDetailModel>(context, listen: false).comicId,
+                  Provider.of<ComicDetailModel>(context).rawComicId,
                   0),
               widthPercent: 0.9,
             ),

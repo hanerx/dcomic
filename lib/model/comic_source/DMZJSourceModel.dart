@@ -197,6 +197,60 @@ class DMZJSourceModel extends BaseSourceModel {
   @override
   // TODO: implement options
   SourceOptions get options => _options;
+
+  @override
+  // TODO: implement userConfig
+  UserConfig get userConfig => throw UnimplementedError();
+}
+
+class DMZJUserConfig extends UserConfig{
+  @override
+  // TODO: implement avatar
+  String get avatar => throw UnimplementedError();
+
+  @override
+  Widget getLoginWidget(context) {
+    // TODO: implement getLoginWidget
+    throw UnimplementedError();
+  }
+
+  @override
+  Widget getSettingWidget(context) {
+    // TODO: implement getSettingWidget
+    return Card(
+      child: ListView(
+        shrinkWrap: true,
+        children: [
+
+        ],
+      ),
+    );
+  }
+
+  @override
+  Future<bool> login(String username, String password) {
+    // TODO: implement login
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool> logout() {
+    // TODO: implement logout
+    throw UnimplementedError();
+  }
+
+  @override
+  // TODO: implement nickname
+  String get nickname => throw UnimplementedError();
+
+  @override
+  // TODO: implement status
+  UserStatus get status => throw UnimplementedError();
+
+  @override
+  // TODO: implement userId
+  String get userId => throw UnimplementedError();
+  
 }
 
 class DMZJWebSourceModel extends DMZJSourceModel {

@@ -1,10 +1,15 @@
+import 'package:direct_select_flutter/direct_select_container.dart';
+import 'package:direct_select_flutter/direct_select_item.dart';
+import 'package:direct_select_flutter/direct_select_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutterdmzj/component/EmptyView.dart';
 import 'package:flutterdmzj/component/LoadingCube.dart';
-import 'package:flutterdmzj/http/http.dart';
-import 'package:flutterdmzj/view/ranking_page.dart';
+import 'package:flutterdmzj/component/comic/comicListTile.dart';
+import 'package:flutterdmzj/model/comicCategoryDetailModel.dart';
+import 'package:flutterdmzj/view/comic_detail_page.dart';
+import 'package:provider/provider.dart';
 
 class CategoryDetailPage extends StatefulWidget {
   final int categoryId;
@@ -14,212 +19,217 @@ class CategoryDetailPage extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return _CategoryDetailPage(categoryId, title);
+    return _CategoryDetailPage();
   }
 }
 
 class _CategoryDetailPage extends State<CategoryDetailPage> {
-  int categoryId;
-  String title = '加载中';
-  int filterDate = 0;
-  int filterType = 0;
-  int filterTag = 0;
-  int page = 0;
-  bool refreshState = false;
-  List list = <Widget>[];
-  Map dateTypeList = <int, String>{};
-  List typeTypeList = <String>['按人气', '按更新'];
-  Map tagTypeList = <int, String>{};
 
-  _CategoryDetailPage(this.categoryId, this.title);
-
-  void getCategoryFilter() async {
-    CustomHttp http = CustomHttp();
-    var response = await http.getCategoryFilter();
-    if (response.statusCode == 200 && mounted) {
-      setState(() {
-        response.data[2]['items'].forEach(
-            (item) => {dateTypeList[item['tag_id']] = item['tag_name']});
-        response.data[3]['items'].forEach(
-            (item) => {tagTypeList[item['tag_id']] = item['tag_name']});
-      });
-    }
-  }
-
-  getCategoryDetail() async {
-    CustomHttp http = CustomHttp();
-    var response = await http.getCategoryDetail(
-        categoryId, filterDate, filterTag, filterType, page);
-    if (response.statusCode == 200 && mounted) {
-      setState(() {
-        for (var item in response.data) {
-          list.add(CustomListTile(item['cover'], item['title'], item['types'],
-              item['last_updatetime'], item['id'].toString(), item['authors']));
-        }
-        refreshState = false;
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    getCategoryFilter();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('分类浏览-$title'),
-        actions: <Widget>[
-          FlatButton(
-            child: Icon(
-              Icons.filter_list,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              if (dateTypeList.length == 0 || tagTypeList.length == 0) {
-                getCategoryFilter();
-                return;
-              }
-              showModalBottomSheet(
-                  context: context,
-                  builder: (context) {
-                    return Container(
-                        height: 220,
-                        child: ListView(
-                          children: <Widget>[
-                            ListTile(
-                              leading: Icon(Icons.date_range),
-                              title: Text('按进度'),
-                              subtitle: Text(dateTypeList[filterDate]),
-                              trailing: PopupMenuButton(
-                                  child: Icon(Icons.arrow_drop_down),
-                                  onSelected: (int value) {
-                                    setState(() {
-                                      filterDate = value;
-                                      setState(() {
-                                        list.clear();
-                                        page = 0;
-                                      });
-                                      getCategoryDetail();
-                                      Navigator.pop(context);
-                                    });
-                                  },
-                                  itemBuilder: (BuildContext context) {
-                                    var data = <PopupMenuItem<int>>[];
-                                    dateTypeList.forEach((key, value) {
-                                      data.add(PopupMenuItem(
-                                        child: Text(value),
-                                        value: key,
-                                      ));
-                                    });
-                                    return data;
-                                  }),
-                            ),
-                            ListTile(
-                              leading: Icon(Icons.category),
-                              title: Text('按地域'),
-                              subtitle: Text(tagTypeList[filterTag]),
-                              trailing: PopupMenuButton(
-                                child: Icon(Icons.arrow_drop_down),
-                                onSelected: (int value) {
-                                  setState(() {
-                                    filterTag = value;
-                                    setState(() {
-                                      list.clear();
-                                      page = 0;
-                                    });
-                                    getCategoryDetail();
-                                    Navigator.pop(context);
-                                  });
+        appBar: AppBar(
+          title: Text('分类浏览-${widget.title}'),
+        ),
+        body: ChangeNotifierProvider(
+            create: (_) =>
+                ComicCategoryDetailModel(widget.categoryId, widget.title),
+            builder: (context, child) => DirectSelectContainer(
+                  child: Column(
+                    children: <Widget>[
+                      _buildFilter(context),
+                      Expanded(
+                        child: EasyRefresh(
+                          firstRefreshWidget: LoadingCube(),
+                          firstRefresh: true,
+                          onRefresh: () async {
+                            await Provider.of<ComicCategoryDetailModel>(context,
+                                    listen: false)
+                                .refresh();
+                            return;
+                          },
+                          onLoad: () async {
+                            await Provider.of<ComicCategoryDetailModel>(context,
+                                    listen: false)
+                                .next();
+                          },
+                          emptyWidget: Provider.of<ComicCategoryDetailModel>(context).length == 0 ? EmptyView() : null,
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount:
+                                Provider.of<ComicCategoryDetailModel>(context)
+                                    .length,
+                            itemBuilder: (context, index) {
+                              var item = Provider.of<ComicCategoryDetailModel>(
+                                      context,
+                                      listen: false)
+                                  .data[index];
+                              return ComicListTile(
+                                cover: item['cover'],
+                                title: item['title'],
+                                date: item['last_updatetime'],
+                                authors: item['authors'],
+                                tag: item['types'],
+                                onPressed: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => ComicDetailPage(
+                                            id: item['id'].toString(),
+                                            title: item['title'],
+                                          )));
                                 },
-                                itemBuilder: (context) {
-                                  var data = <PopupMenuItem<int>>[];
-                                  tagTypeList.forEach((key, value) {
-                                    data.add(PopupMenuItem(
-                                        child: Text(value), value: key));
-                                  });
-                                  return data;
-                                },
-                              ),
-                            ),
-                            ListTile(
-                              leading: Icon(Icons.list),
-                              title: Text('按种类'),
-                              subtitle: Text(typeTypeList[filterType]),
-                              trailing: PopupMenuButton(
-                                  child: Icon(Icons.arrow_drop_down),
-                                  onSelected: (int value) {
-                                    setState(() {
-                                      filterType = value;
-                                      setState(() {
-                                        list.clear();
-                                        page = 0;
-                                      });
-                                      getCategoryDetail();
-                                      Navigator.pop(context);
-                                    });
-                                  },
-                                  itemBuilder: (BuildContext context) {
-                                    var data = <PopupMenuItem<int>>[];
-                                    typeTypeList.forEach((item) {
-                                      data.add(PopupMenuItem(
-                                        child: Text(item),
-                                        value: typeTypeList.indexOf(item),
-                                      ));
-                                    });
-                                    return data;
-                                  }),
-                            )
-                          ],
-                        ));
-                  });
-            },
-          )
-        ],
-      ),
-      body: Column(
+                                headers: {'referer': 'https://m.dmzj.com'},
+                              );
+                            },
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                )));
+  }
+
+  Widget _buildFilter(context) {
+    return Container(
+      height: 45,
+      child: Row(
         children: <Widget>[
-          Row(
-            children: <Widget>[
-              Container(
-                  padding: EdgeInsets.all(7),
-                  child: Text(
-                        '当前:${dateTypeList[filterDate]}-${tagTypeList[filterTag]}-${typeTypeList[filterType]}'),
-                  )
-            ],
+          Expanded(
+            flex: 2,
+            child: Padding(
+              child: DirectSelectList<int>(
+                values: Provider.of<ComicCategoryDetailModel>(context)
+                    .dateTypeList
+                    .keys
+                    .toList(),
+                defaultItemIndex: Provider.of<ComicCategoryDetailModel>(context)
+                    .dateTypeList
+                    .keys
+                    .toList()
+                    .indexOf(Provider.of<ComicCategoryDetailModel>(context)
+                    .filterDate),
+                itemBuilder: (int value) => DirectSelectItem<int>(
+                    itemHeight: 56,
+                    value: value,
+                    itemBuilder: (context, value) {
+                      return Container(
+                        child: Text(
+                          Provider.of<ComicCategoryDetailModel>(context)
+                              .dateTypeList[value],
+                          textAlign: TextAlign.center,
+                        ),
+                      );
+                    }),
+                onItemSelectedListener: (item, index, context) {
+                  Provider.of<ComicCategoryDetailModel>(context, listen: false)
+                      .filterDate = item;
+                  Provider.of<ComicCategoryDetailModel>(context, listen: false)
+                      .refresh();
+                },
+                focusedItemDecoration: BoxDecoration(
+                  border: BorderDirectional(
+                    bottom: BorderSide(width: 1, color: Colors.black12),
+                    top: BorderSide(width: 1, color: Colors.black12),
+                  ),
+                ),
+              ),
+              padding: EdgeInsets.only(left: 15),
+            ),
           ),
           Expanded(
-            child: EasyRefresh(
-              scrollController: ScrollController(),
-              firstRefreshWidget: LoadingCube(),
-              firstRefresh: true,
-              onRefresh: () async {
-                setState(() {
-                  refreshState = true;
-                  page = 0;
-                  list.clear();
-                });
-                await getCategoryDetail();
-              },
-              onLoad: () async {
-                setState(() {
-                  refreshState = true;
-                  page++;
-                });
-                await getCategoryDetail();
-              },
-              emptyWidget: list.length==0?EmptyView():null,
-              child: ListView.builder(
-                itemCount: list.length,
-                itemBuilder: (context, index) {
-                  return list[index];
-                },
-              ),
+            child: Icon(
+              Icons.unfold_more,
+              color: Theme.of(context).disabledColor,
             ),
-          )
+          ),
+          Expanded(
+              flex: 2,
+              child: Padding(
+                child: DirectSelectList<int>(
+                  values: Provider.of<ComicCategoryDetailModel>(context)
+                      .tagTypeList
+                      .keys
+                      .toList(),
+                  defaultItemIndex: Provider.of<ComicCategoryDetailModel>(context)
+                      .tagTypeList
+                      .keys
+                      .toList()
+                      .indexOf(Provider.of<ComicCategoryDetailModel>(context)
+                      .filterTag),
+                  itemBuilder: (int value) => DirectSelectItem<int>(
+                      itemHeight: 56,
+                      value: value,
+                      itemBuilder: (context, value) {
+                        return Container(
+                          child: Text(
+                            Provider.of<ComicCategoryDetailModel>(context,
+                                listen: false)
+                                .tagTypeList[value],
+                            textAlign: TextAlign.center,
+                          ),
+                        );
+                      }),
+                  onItemSelectedListener: (item, index, context) {
+                    Provider.of<ComicCategoryDetailModel>(context, listen: false)
+                        .filterTag = item;
+                    Provider.of<ComicCategoryDetailModel>(context, listen: false)
+                        .refresh();
+                  },
+                  focusedItemDecoration: BoxDecoration(
+                    border: BorderDirectional(
+                      bottom: BorderSide(width: 1, color: Colors.black12),
+                      top: BorderSide(width: 1, color: Colors.black12),
+                    ),
+                  ),
+                ),
+                padding: EdgeInsets.only(left: 15),
+              )),
+          Expanded(
+            child: Icon(
+              Icons.unfold_more,
+              color: Theme.of(context).disabledColor,
+            ),
+          ),
+          Expanded(
+              flex: 2,
+              child: Padding(
+                child: DirectSelectList<String>(
+                  values:
+                  Provider.of<ComicCategoryDetailModel>(context).typeTypeList,
+                  defaultItemIndex:
+                  Provider.of<ComicCategoryDetailModel>(context).filterType,
+                  itemBuilder: (String value) => DirectSelectItem<String>(
+                      itemHeight: 56,
+                      value: value,
+                      itemBuilder: (context, value) {
+                        return Container(
+                          child: Text(
+                            value,
+                            textAlign: TextAlign.center,
+                          ),
+                        );
+                      }),
+                  onItemSelectedListener: (item, index, context) {
+                    Provider.of<ComicCategoryDetailModel>(context, listen: false)
+                        .filterType = index;
+                    Provider.of<ComicCategoryDetailModel>(context, listen: false)
+                        .refresh();
+                  },
+                  focusedItemDecoration: BoxDecoration(
+                    border: BorderDirectional(
+                      bottom: BorderSide(width: 1, color: Colors.black12),
+                      top: BorderSide(width: 1, color: Colors.black12),
+                    ),
+                  ),
+                ),
+                padding: EdgeInsets.only(left: 15),
+              )),
+          Expanded(
+            child: Icon(
+              Icons.unfold_more,
+              color: Theme.of(context).disabledColor,
+            ),
+          ),
         ],
       ),
     );

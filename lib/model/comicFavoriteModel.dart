@@ -67,4 +67,5 @@ class ComicFavoriteModel extends BaseModel {
   }
 
   bool get empty=>comics.length==0;
+
 }

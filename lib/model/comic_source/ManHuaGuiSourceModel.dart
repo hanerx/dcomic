@@ -291,6 +291,10 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
   // TODO: implement type
   SourceDetail get type => SourceDetail('manhuagui', '漫画柜', '漫画柜漫画源，需要代理', true,
       SourceType.LocalDecoderSource, false);
+
+  @override
+  // TODO: implement userConfig
+  UserConfig get userConfig => InactiveUserConfig();
 }
 
 class ManHuaGuiSearchResult extends SearchResult {
