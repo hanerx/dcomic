@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutterdmzj/component/EmptyView.dart';
 import 'package:flutterdmzj/component/LoadingCube.dart';
-import 'package:flutterdmzj/component/comic/rankingListTile.dart';
+import 'package:flutterdmzj/component/comic/comicListTile.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/model/comicRankingListModel.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
