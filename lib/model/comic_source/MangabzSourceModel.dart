@@ -243,6 +243,10 @@ class MangabzSourceModel extends BaseSourceModel {
       true,
       SourceType.LocalDecoderSource,
       false);
+
+  @override
+  // TODO: implement userConfig
+  UserConfig get userConfig => InactiveUserConfig();
 }
 
 class MangabzOptionProvider extends SourceOptionsProvider {

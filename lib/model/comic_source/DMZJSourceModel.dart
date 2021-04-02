@@ -197,6 +197,10 @@ class DMZJSourceModel extends BaseSourceModel {
   @override
   // TODO: implement options
   SourceOptions get options => _options;
+
+  @override
+  // TODO: implement userConfig
+  UserConfig get userConfig => throw UnimplementedError();
 }
 
 class DMZJWebSourceModel extends DMZJSourceModel {

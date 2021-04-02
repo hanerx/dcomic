@@ -593,4 +593,28 @@ class DataBase {
     return true;
   }
 
+  setAutoDark(bool state) async {
+    await initDataBase();
+    var batch = _database.batch();
+    batch.delete("configures", where: "key='auto_dark'");
+    batch.insert(
+        "configures", {'key': 'auto_dark', 'value': state ? '1' : '0'});
+    await batch.commit();
+  }
+
+  getAutoDark() async {
+    await initDataBase();
+    var batch = _database.batch();
+    batch.query("configures", where: "key='auto_dark'");
+    var result = await batch.commit();
+    try {
+      if (result.first[0]['value'] == '1') {
+        return true;
+      }
+    } catch (e) {
+      _logger.w('action: autoDarkNotFound, exception: $e');
+    }
+    return false;
+  }
+
 }

@@ -1,10 +1,18 @@
+import 'package:direct_select_flutter/direct_select_container.dart';
+import 'package:direct_select_flutter/direct_select_item.dart';
+import 'package:direct_select_flutter/direct_select_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutterdmzj/component/EmptyView.dart';
 import 'package:flutterdmzj/component/LoadingCube.dart';
+import 'package:flutterdmzj/component/comic/rankingListTile.dart';
 import 'package:flutterdmzj/http/http.dart';
+import 'package:flutterdmzj/model/comicLatestUpdateModel.dart';
 import 'package:flutterdmzj/view/ranking_page.dart';
+import 'package:provider/provider.dart';
+
+import 'comic_detail_page.dart';
 
 class LatestUpdatePage extends StatefulWidget {
   @override
@@ -15,121 +23,121 @@ class LatestUpdatePage extends StatefulWidget {
 }
 
 class _LatestUpdatePage extends State<LatestUpdatePage> {
-  int filterTag = 100;
-  int page = 0;
-  bool refreshState = false;
-  List list = <Widget>[];
-  Map tagTypeList = <int, String>{100: '全部漫画', 1: '原创漫画', 0: '译制漫画'};
-
-  getLatestList() async {
-    CustomHttp http = CustomHttp();
-    var response = await http.getLatestList(filterTag, page);
-    if (response.statusCode == 200 && mounted) {
-      setState(() {
-        if (response.data.length == 0) {
-          refreshState = true;
-          return;
-        }
-        for (var item in response.data) {
-          list.add(CustomListTile(item['cover'], item['title'], item['types'],
-              item['last_updatetime'], item['id'].toString(), item['authors']));
-        }
-        refreshState = false;
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return Column(
-      children: [
-        Row(
-          children: <Widget>[
-            Expanded(
-              child: Text('当前:${tagTypeList[filterTag]}'),
-            ),
-            FlatButton(
-              child: Icon(Icons.filter_list),
-              onPressed: () {
-                showModalBottomSheet(
-                    context: context,
-                    builder: (context) {
-                      return Container(
-                          height: 80,
-                          child: ListView(
-                            children: <Widget>[
-                              ListTile(
-                                leading: Icon(Icons.list),
-                                title: Text('按分类'),
-                                subtitle: Text(tagTypeList[filterTag]),
-                                trailing: PopupMenuButton(
-                                  child: Icon(Icons.arrow_drop_down),
-                                  onSelected: (int value) {
-                                    setState(() {
-                                      filterTag = value;
-                                      setState(() {
-                                        list.clear();
-                                        page = 0;
-                                      });
-                                      getLatestList();
-                                      Navigator.pop(context);
-                                    });
-                                  },
-                                  itemBuilder: (context) {
-                                    var data = <PopupMenuItem<int>>[];
-                                    tagTypeList.forEach((key, value) {
-                                      data.add(PopupMenuItem(
-                                          child: Text(value), value: key));
-                                    });
-                                    return data;
-                                  },
-                                ),
-                              ),
-                            ],
-                          ));
-                    });
-              },
-            )
-          ],
-        ),
-        Expanded(
-          child: EasyRefresh(
-            firstRefreshWidget: LoadingCube(),
-            firstRefresh: true,
-            onRefresh: () async {
-              setState(() {
-                refreshState = true;
-                page = 0;
-                list.clear();
-              });
-              await getLatestList();
-              return;
-            },
-            onLoad: () async {
-              setState(() {
-                refreshState = true;
-                page++;
-              });
-              await getLatestList();
-              return;
-            },
-            emptyWidget: list.length==0?EmptyView():null,
-            child: ListView.builder(
-              itemCount: list.length,
-              itemBuilder: (context, index) {
-                return list[index];
-              },
+    return ChangeNotifierProvider(
+        create: (_) => ComicLatestUpdateModel(),
+        builder: (context, child) => DirectSelectContainer(
+                child: Column(
+              children: [
+                _buildFilter(context),
+                Expanded(
+                  child: EasyRefresh(
+                    firstRefreshWidget: LoadingCube(),
+                    firstRefresh: true,
+                    onRefresh: () async {
+                      await Provider.of<ComicLatestUpdateModel>(context,
+                              listen: false)
+                          .refresh();
+                      return;
+                    },
+                    onLoad: () async {
+                      await Provider.of<ComicLatestUpdateModel>(context,
+                              listen: false)
+                          .next();
+                      return;
+                    },
+                    emptyWidget:
+                        Provider.of<ComicLatestUpdateModel>(context).length == 0
+                            ? EmptyView()
+                            : null,
+                    child: ListView.builder(
+                      itemCount:
+                          Provider.of<ComicLatestUpdateModel>(context).length,
+                      itemBuilder: (context, index) {
+                        var item = Provider.of<ComicLatestUpdateModel>(context,
+                                listen: false)
+                            .data[index];
+                        return ComicListTile(
+                          title: item['title'],
+                          cover: item['cover'],
+                          tag: item['types'],
+                          authors: item['authors'],
+                          date: item['latest_updatetime'],
+                          headers: {'referer': 'https://m.dmzj.com'},
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => ComicDetailPage(
+                                      id: item['id'].toString(),
+                                      title: item['title'],
+                                    )));
+                          },
+                        );
+                        // return list[index];
+                      },
+                    ),
+                  ),
+                )
+              ],
+            )));
+  }
+
+  Widget _buildFilter(context) {
+    return Container(
+      height: 45,
+      child: Row(
+        children: <Widget>[
+          Expanded(
+              flex: 10,
+              child: Padding(
+                child: DirectSelectList<int>(
+                  values: Provider.of<ComicLatestUpdateModel>(context)
+                      .tagTypeList
+                      .keys
+                      .toList(),
+                  defaultItemIndex: Provider.of<ComicLatestUpdateModel>(context)
+                      .tagTypeList
+                      .keys
+                      .toList()
+                      .indexOf(
+                      Provider.of<ComicLatestUpdateModel>(context).filterTag),
+                  itemBuilder: (int value) => DirectSelectItem<int>(
+                      itemHeight: 56,
+                      value: value,
+                      itemBuilder: (context, value) {
+                        return Container(
+                          child: Text(
+                            Provider.of<ComicLatestUpdateModel>(context,
+                                listen: false)
+                                .tagTypeList[value],
+                            textAlign: TextAlign.center,
+                          ),
+                        );
+                      }),
+                  onItemSelectedListener: (item, index, context) {
+                    Provider.of<ComicLatestUpdateModel>(context, listen: false)
+                        .filterTag = item;
+                    Provider.of<ComicLatestUpdateModel>(context, listen: false)
+                        .refresh();
+                  },
+                  focusedItemDecoration: BoxDecoration(
+                    border: BorderDirectional(
+                      bottom: BorderSide(width: 1, color: Colors.black12),
+                      top: BorderSide(width: 1, color: Colors.black12),
+                    ),
+                  ),
+                ),
+                padding: EdgeInsets.only(left: 15),
+              )),
+          Expanded(
+            child: Icon(
+              Icons.unfold_more,
+              color: Theme.of(context).disabledColor,
             ),
           ),
-        )
-      ],
+        ],
+      ),
     );
   }
 }

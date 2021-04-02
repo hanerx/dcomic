@@ -220,6 +220,10 @@ class KuKuSourceModel extends BaseSourceModel {
   // TODO: implement type
   SourceDetail get type => SourceDetail(
       'kuku', 'KuKu动漫', 'KuKu动漫源，存在四个节点，请根据延迟自行选择。由于采用多线程脚本，可能会导致你被服务器ban掉，所以请轻拿轻放。', true, SourceType.LocalDecoderSource, false);
+
+  @override
+  // TODO: implement userConfig
+  UserConfig get userConfig => InactiveUserConfig();
 }
 
 class KuKuOptionsProvider extends SourceOptionsProvider {

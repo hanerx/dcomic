@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutterdmzj/model/baseModel.dart';
 
 abstract class BaseSourceModel extends BaseModel {
@@ -26,11 +27,33 @@ abstract class BaseSourceModel extends BaseModel {
 
   SourceOptions get options;
 
+  UserConfig get userConfig;
+
   @override
   String toString() {
     // TODO: implement toString
     return type.toString();
   }
+}
+
+enum UserStatus { login, logout, inactivate }
+
+abstract class UserConfig extends BaseModel {
+  String get nickname;
+
+  String get userId;
+
+  String get avatar;
+
+  Future<bool> login(String username, String password);
+
+  Future<bool> logout();
+
+  Widget getSettingWidget(context);
+
+  Widget getLoginWidget(context);
+
+  UserStatus get status;
 }
 
 abstract class SourceOptions extends BaseModel {
@@ -210,3 +233,58 @@ class ComicLoadingError implements Exception {
 class ComicIdNotBoundError implements Exception {}
 
 class ComicSearchError implements Exception {}
+
+class InactiveUserConfig extends UserConfig{
+  @override
+  // TODO: implement avatar
+  String get avatar => '';
+
+  @override
+  Widget getLoginWidget(context) {
+    // TODO: implement getLoginWidget
+    return Card(
+      child: Container(
+        child: Center(
+          child: Text('该源不支持用户设置'),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget getSettingWidget(context) {
+    // TODO: implement getSettingWidget
+    return Card(
+      child: Container(
+        child: Center(
+          child: Text('该源不支持用户设置'),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Future<bool> login(String username, String password) {
+    // TODO: implement login
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool> logout() {
+    // TODO: implement logout
+    throw UnimplementedError();
+  }
+
+  @override
+  // TODO: implement nickname
+  String get nickname => '';
+
+  @override
+  // TODO: implement status
+  UserStatus get status => UserStatus.inactivate;
+
+  @override
+  // TODO: implement userId
+  String get userId => '';
+
+}

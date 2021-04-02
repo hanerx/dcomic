@@ -11,6 +11,7 @@ class ComicViewerSettingModel extends BaseModel{
   bool _reverse = false;
   int _backgroundColor = 0;
   bool _animation=true;
+  bool _autoDark=false;
   DataBase _dataBase=DataBase();
   static const List backgroundColors = [
     Colors.white,
@@ -34,6 +35,7 @@ class ComicViewerSettingModel extends BaseModel{
     _reverse=await _dataBase.getHorizontalDirection();
     _backgroundColor=await _dataBase.getBackground();
     _animation=await _dataBase.getAnimation();
+    _autoDark=await _dataBase.getAutoDark();
     notifyListeners();
   }
 
@@ -97,6 +99,14 @@ class ComicViewerSettingModel extends BaseModel{
   set animation(bool value){
     _dataBase.setAnimation(value);
     _animation=value;
+    notifyListeners();
+  }
+
+  bool get autoDark=>_autoDark;
+
+  set autoDark(bool value){
+    _dataBase.setAutoDark(value);
+    _autoDark=value;
     notifyListeners();
   }
 }

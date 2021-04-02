@@ -46,6 +46,10 @@ class IKanManSourceModel extends BaseSourceModel {
   @override
   // TODO: implement type
   SourceDetail get type => SourceDetail('ikanman', '看漫画', '一个毫无卵用的漫画源，写出来是因为cimoc的原版有这个，甚至没有实现', true, SourceType.DeprecatedSource,true);
+
+  @override
+  // TODO: implement userConfig
+  UserConfig get userConfig => InactiveUserConfig();
 }
 
 class IKanManSourceOptions extends SourceOptions {
