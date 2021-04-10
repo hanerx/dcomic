@@ -10,6 +10,7 @@ import 'package:flutterdmzj/component/search/SearchButton.dart';
 import 'package:flutterdmzj/generated/l10n.dart';
 import 'package:flutterdmzj/model/comicViewerSettingModel.dart';
 import 'package:flutterdmzj/model/comic_source/sourceProvider.dart';
+import 'package:flutterdmzj/model/ipfsSettingProvider.dart';
 import 'package:flutterdmzj/model/systemSettingModel.dart';
 import 'package:flutterdmzj/model/trackerModel.dart';
 import 'package:flutterdmzj/model/versionModel.dart';
@@ -53,6 +54,9 @@ class App extends StatelessWidget {
       ChangeNotifierProvider<SourceProvider>(
         lazy: false,
         create: (_) => SourceProvider(),
+      ),
+      ChangeNotifierProvider<IPFSSettingProvider>(
+        create: (_)=>IPFSSettingProvider(),
       )
     ], child: MainFrame());
   }

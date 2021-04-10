@@ -677,6 +677,7 @@ class DMZJComic extends Comic {
       }
     }
     await getViewPoint();
+    addReadHistory(comicId: comicId,page: 0,chapterTitle: title,chapterId:chapterId);
     notifyListeners();
   }
 
@@ -707,6 +708,7 @@ class DMZJComic extends Comic {
       }
     }
     await getViewPoint();
+    addReadHistory(comicId: comicId,page: 0,chapterTitle: title,chapterId:chapterId);
     notifyListeners();
   }
 
@@ -752,6 +754,7 @@ class DMZJComic extends Comic {
         } else {
           _next = null;
         }
+        addReadHistory(comicId: comicId,page: 0,chapterTitle: title,chapterId:chapterId);
         notifyListeners();
       }
     } catch (e) {

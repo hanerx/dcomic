@@ -113,6 +113,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.9.10"
+  chopper:
+    dependency: transitive
+    description:
+      name: chopper
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "3.0.3"
   cli_util:
     dependency: transitive
     description:
@@ -267,6 +274,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.1.5+1"
+  fixnum:
+    dependency: transitive
+    description:
+      name: fixnum
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.10.11"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -434,6 +448,20 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.2.0"
+  googleapis_auth:
+    dependency: transitive
+    description:
+      name: googleapis_auth
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.2.12+1"
+  grpc:
+    dependency: transitive
+    description:
+      name: grpc
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.9.0"
   highlight:
     dependency: transitive
     description:
@@ -455,6 +483,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.12.2"
+  http2:
+    dependency: transitive
+    description:
+      name: http2
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.1"
   http_parser:
     dependency: transitive
     description:
@@ -469,6 +504,15 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.16.1"
+  ipfs:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: cd1e20cd603ca5670f92d10db840b76c6640e9fa
+      url: "https://github.com/hanerx/ipfs-dart.git"
+    source: git
+    version: "1.0.3"
   js:
     dependency: transitive
     description:
@@ -716,6 +760,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.0.13"
+  protobuf:
+    dependency: transitive
+    description:
+      name: protobuf
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.1.3"
   provider:
     dependency: "direct main"
     description:

@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutterdmzj/generated/l10n.dart';
 import 'package:flutterdmzj/http/UniversalRequestModel.dart';
@@ -13,7 +15,9 @@ import 'package:flutterdmzj/model/comic_source/MangabzSourceModel.dart';
 import 'package:flutterdmzj/model/comic_source/baseSourceModel.dart';
 import 'package:flutterdmzj/model/comic_source/sourceProvider.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:ipfs/ipfs.dart';
 
 import '../comic_detail_page.dart';
 
@@ -28,12 +32,36 @@ class DebugTestPage extends StatefulWidget {
 class _DebugTestPage extends State<DebugTestPage> {
   String _data;
   List<ComicDetail> _subs = [];
+  var image;
+  var channel=MethodChannel('top.hanerx/ipfs-lite');
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    startPeer();
+  }
+
+  startPeer()async{
+    try{
+      channel.invokeMethod('startPeer',{'debug':false,'path':(await getTemporaryDirectory()).path+'/ipfs/'});
+    }catch(e){
+      print('started');
+    }
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    channel.invokeMethod('stopPeer');
+  }
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return DefaultTabController(
-      length: 5,
+      length: 6,
       child: Scaffold(
         appBar: AppBar(
           title: Text(S.of(context).SettingPageDebugTestTitle),
@@ -52,6 +80,9 @@ class _DebugTestPage extends State<DebugTestPage> {
             ),
             Tab(
               text: '获取订阅',
+            ),
+            Tab(
+              text: 'IPFS测试',
             )
           ]),
         ),
@@ -153,7 +184,36 @@ class _DebugTestPage extends State<DebugTestPage> {
               },
               itemCount: _subs.length,
             ),
-          )
+          ),
+          SingleChildScrollView(
+            child: Center(
+              child: Column(
+                children: [
+                  OutlineButton(
+                    child: Text('Test'),
+                    onPressed: () async {
+                      // Ipfs ipfs = Ipfs(baseUrl: 'hanerx.top',port: 5001);
+                      // ipfs.getPeers();
+                      // String cid = 'QmSY5BqPor7aQD8EsSJvXdixkgLoAdQHP3uq5yX28jGwsT';
+                      // var item=await ipfs.catObject(cid);
+                      // setState(() {
+                      //   image=Uint8List.fromList(item);
+                      // });
+
+
+                      print('start cat peer');
+                      Uint8List data=await channel.invokeMethod('cat',{'cid':'QmSY5BqPor7aQD8EsSJvXdixkgLoAdQHP3uq5yX28jGwsT'});
+                      print(data);
+                      setState(() {
+                        image=data;
+                      });
+                    },
+                  ),
+                  image==null?Text('还没返回值'):Image.memory(image)
+                ],
+              ),
+            ),
+          ),
         ]),
       ),
     );

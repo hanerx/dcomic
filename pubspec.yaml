@@ -60,6 +60,8 @@ dependencies:
   gbk_codec: ^0.3.2
   logger_flutter:
     git: https://github.com/ewertonrp/logger_flutter.git
+  ipfs:
+    git: https://github.com/hanerx/ipfs-dart.git
   flutter_localizations:
     sdk: flutter
 

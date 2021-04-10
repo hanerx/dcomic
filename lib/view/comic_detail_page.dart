@@ -28,8 +28,9 @@ import 'comic_viewer.dart';
 class ComicDetailPage extends StatefulWidget {
   final String id;
   final String title;
+  final BaseSourceModel model;
 
-  ComicDetailPage({this.id, this.title});
+  ComicDetailPage({this.id, this.title, this.model});
 
   @override
   State<StatefulWidget> createState() {
@@ -39,6 +40,8 @@ class ComicDetailPage extends StatefulWidget {
 }
 
 class _ComicDetailPage extends State<ComicDetailPage> {
+  bool _lock = true;
+
   _ComicDetailPage();
 
   @override
@@ -73,6 +76,12 @@ class _ComicDetailPage extends State<ComicDetailPage> {
 //       );
 //     }
 //     // TODO: implement build
+    if (widget.model != null && _lock) {
+      // 初始化默认的model，解决后面多model的问题
+      Provider.of<SourceProvider>(context, listen: false)
+          .setActiveWithoutNotify(widget.model);
+      _lock = false;
+    }
     return ChangeNotifierProvider(
       create: (_) => ComicDetailModel(
           Provider.of<SourceProvider>(context).active, widget.title, widget.id),
@@ -132,8 +141,7 @@ class _ComicDetailPage extends State<ComicDetailPage> {
             ),
             endDrawer: CustomDrawer(
               child: CommentPage(
-                  Provider.of<ComicDetailModel>(context).rawComicId,
-                  0),
+                  Provider.of<ComicDetailModel>(context).rawComicId, 0),
               widthPercent: 0.9,
             ),
             floatingActionButton: Provider.of<ComicDetailModel>(context)
@@ -332,19 +340,24 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                               IconButton(
                                 tooltip: '重新绑定漫画ID',
                                 icon: Icon(Icons.refresh),
-                                onPressed: ()async {
+                                onPressed: () async {
                                   var flag = await showDialog(
                                       context: context,
-                                      builder: (context) =>
-                                          StatefulBuilder(builder: (context, state) {
+                                      builder: (context) => StatefulBuilder(
+                                              builder: (context, state) {
                                             return SearchDialog(
-                                              model: Provider.of<SourceProvider>(context).active,
+                                              model:
+                                                  Provider.of<SourceProvider>(
+                                                          context)
+                                                      .active,
                                               keyword: widget.title,
                                               comicId: widget.id,
                                             );
                                           }));
                                   if (flag != null && flag) {
-                                    Provider.of<ComicDetailModel>(context,listen: false).init();
+                                    Provider.of<ComicDetailModel>(context,
+                                            listen: false)
+                                        .init();
                                   }
                                 },
                               ),

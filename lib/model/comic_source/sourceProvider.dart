@@ -60,6 +60,12 @@ class SourceProvider extends BaseModel {
 
   BaseSourceModel get active => _active;
 
+  void setActiveWithoutNotify(BaseSourceModel model){
+    _active=model;
+    _index=activeSources.indexOf(model);
+    SourceDatabaseProvider.insertSourceOption('provider', 'index', index);
+  }
+
   set active(BaseSourceModel active) {
     _active = active;
     index = activeSources.indexOf(active);
