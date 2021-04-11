@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutterdmzj/database/configDatabaseProvider.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/model/baseModel.dart';
 
@@ -23,16 +24,16 @@ class SystemSettingModel extends BaseModel {
 
   bool _noMedia = false;
 
-  bool _labState=false;
+  bool _labState = false;
 
-  bool _novel=false;
+  bool _novel = false;
 
-  bool _deepSearch=false;
+  bool _deepSearch = false;
 
-  bool _darkSide=false;
+  bool _darkSide = false;
 
-
-  DataBase _dataBase = DataBase();
+  SystemConfigDatabaseProvider _databaseProvider =
+      SystemConfigDatabaseProvider();
 
   SystemSettingModel() {
     this
@@ -41,22 +42,22 @@ class SystemSettingModel extends BaseModel {
   }
 
   Future<void> init() async {
-    _darkState = await _dataBase.getDarkMode();
-    _backupApi = await _dataBase.getBackupApi();
-    _blackBox = await _dataBase.getBlackBox();
-    _savePath = await _dataBase.getDownloadPath();
+    _darkState = await _databaseProvider.darkMode;
+    _backupApi = await _databaseProvider.backupApi;
+    _blackBox = await _databaseProvider.blackBox;
+    _savePath = await _databaseProvider.downloadPath;
     _noMedia = await File('$savePath/.nomedia').exists();
-    _labState=await _dataBase.getLabState();
-    _novel=await _dataBase.getNovelState();
-    _darkSide=await _dataBase.getDarkSide();
-    _deepSearch=await _dataBase.getDeepSearch();
+    _labState = await _databaseProvider.labState;
+    _novel = await _databaseProvider.novelState;
+    _darkSide = await _databaseProvider.darkSide;
+    _deepSearch = await _databaseProvider.deepSearch;
     notifyListeners();
   }
 
   ThemeMode get themeMode => darkMode[_darkState];
 
   set darkState(int state) {
-    _dataBase.setDarkMode(state);
+    _databaseProvider.darkMode = Future.value(state);
     _darkState = state;
     notifyListeners();
   }
@@ -66,7 +67,7 @@ class SystemSettingModel extends BaseModel {
   bool get backupApi => _backupApi;
 
   set backupApi(bool state) {
-    _dataBase.setBackupApi(state);
+    _databaseProvider.backupApi = Future.value(state);
     _backupApi = state;
     notifyListeners();
   }
@@ -74,7 +75,7 @@ class SystemSettingModel extends BaseModel {
   bool get blackBox => _blackBox;
 
   set blackBox(bool value) {
-    _dataBase.setBlackBox(value);
+    _databaseProvider.blackBox = Future.value(value);
     _blackBox = value;
     notifyListeners();
   }
@@ -82,7 +83,7 @@ class SystemSettingModel extends BaseModel {
   String get savePath => _savePath;
 
   set savePath(String path) {
-    _dataBase.setDownloadPath(path);
+    _databaseProvider.downloadPath = Future.value(path);
     _savePath = path;
     notifyListeners();
   }
@@ -108,19 +109,18 @@ class SystemSettingModel extends BaseModel {
     notifyListeners();
   }
 
-  bool get labState=>_labState;
+  bool get labState => _labState;
 
-  set labState(bool value){
-    _dataBase.setLabState(value);
-    _labState=value;
+  set labState(bool value) {
+    _databaseProvider.labState = Future.value(value);
+    _labState = value;
     notifyListeners();
   }
-
 
   bool get darkSide => _darkSide;
 
   set darkSide(bool value) {
-    _dataBase.setDarkSide(value);
+    _databaseProvider.darkSide = Future.value(value);
     _darkSide = value;
     notifyListeners();
   }
@@ -128,7 +128,7 @@ class SystemSettingModel extends BaseModel {
   bool get deepSearch => _deepSearch;
 
   set deepSearch(bool value) {
-    _dataBase.setDeepSearch(value);
+    _databaseProvider.deepSearch = Future.value(value);
     _deepSearch = value;
     notifyListeners();
   }
@@ -136,10 +136,8 @@ class SystemSettingModel extends BaseModel {
   bool get novel => _novel;
 
   set novel(bool value) {
-    _dataBase.setNovelState(value);
+    _databaseProvider.novelState = Future.value(value);
     _novel = value;
     notifyListeners();
   }
-
-
 }

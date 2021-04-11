@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
+import 'package:dio_proxy/dio_proxy.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -16,7 +18,7 @@ class ProxyCacheManager extends BaseCacheManager {
   }
 
   ProxyCacheManager._(String ipAddr, int port)
-      : super(key, fileService: ProxyFileService(ipAddr, port));
+      : super(key, fileService: ProxyFileService.proxy(ipAddr, port));
 
   @override
   Future<String> getFilePath() async {
@@ -27,24 +29,19 @@ class ProxyCacheManager extends BaseCacheManager {
 }
 
 class ProxyFileService implements FileService {
-  HttpClient _httpClient;
+  Dio _dio;
 
-  ProxyFileService(String ipAddr, int port) {
-    _httpClient = HttpClient();
-    String proxy = '$ipAddr:$port';
-    _httpClient.findProxy = (url) {
-      return 'PROXY $proxy';
-    };
-    _httpClient.badCertificateCallback =
-        (X509Certificate cert, String host, int port) => true;
+  ProxyFileService.proxy(String ipAddr, int port) {
+    _dio=Dio();
+    _dio..httpClientAdapter = HttpProxyAdapter(ipAddr: ipAddr, port: port);
   }
 
   @override
   Future<FileServiceResponse> get(String url,
       {Map<String, String> headers = const {}}) async {
-
-    final req = http.Request('GET', Uri.parse(url));
-    req.headers.addAll(headers);
-    return HttpGetResponse(await req.send());
+    var response = await _dio.get(url,
+        options: Options(headers: headers, responseType: ResponseType.bytes));
+    return HttpGetResponse(http.StreamedResponse(
+        http.ByteStream.fromBytes(response.data), response.statusCode));
   }
 }

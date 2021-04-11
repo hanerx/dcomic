@@ -68,8 +68,10 @@ class DatabaseCommon {
     })
   };
 
+  static String databaseFileName='dmzj_2.db';
+
   static Future<Database> initDatabase() async {
-    return await openDatabase("dmzj_2.db", version: 15,
+    return await openDatabase(databaseFileName, version: 15,
         onCreate: (Database db, int version) async {
       // await db.execute(
       //     "CREATE TABLE cookies (id INTEGER PRIMARY KEY, key TEXT, value TEXT)");
@@ -102,6 +104,10 @@ class DatabaseCommon {
         }
       });
     });
+  }
+
+  static Future<void> resetDataBase() async {
+    await deleteDatabase(databaseFileName);
   }
 }
 

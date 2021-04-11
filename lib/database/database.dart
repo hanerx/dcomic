@@ -4,6 +4,7 @@ import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
+
 class DataBase {
   Database _database;
   Logger _logger;
@@ -158,6 +159,7 @@ class DataBase {
     return false;
   }
 
+  @Deprecated('')
   setReadDirection(bool d) async {
     await initDataBase();
     var batch = _database.batch();
@@ -167,6 +169,7 @@ class DataBase {
     await batch.commit();
   }
 
+  @Deprecated('')
   getReadDirection() async {
     await initDataBase();
     var batch = _database.batch();
@@ -182,6 +185,7 @@ class DataBase {
     return false;
   }
 
+  @Deprecated('修改viewer实现，已弃用')
   setCoverType(bool d) async {
     await initDataBase();
     var batch = _database.batch();
@@ -190,6 +194,7 @@ class DataBase {
     await batch.commit();
   }
 
+  @Deprecated('修改viewer实现，已弃用')
   getCoverType() async {
     await initDataBase();
     var batch = _database.batch();
@@ -205,6 +210,7 @@ class DataBase {
     return false;
   }
 
+  @Deprecated('使用新实现方案，已弃用')
   setVersion(String version) async {
     await initDataBase();
     var batch = _database.batch();
@@ -213,6 +219,7 @@ class DataBase {
     await batch.commit();
   }
 
+  @Deprecated('使用新实现方案，已弃用')
   getVersion() async {
     await initDataBase();
     var batch = _database.batch();
@@ -226,6 +233,7 @@ class DataBase {
     return '';
   }
 
+  @Deprecated('修改viewer实现，已弃用')
   setClickToRead(bool click) async {
     await initDataBase();
     var batch = _database.batch();
@@ -235,6 +243,7 @@ class DataBase {
     await batch.commit();
   }
 
+  @Deprecated('修改viewer实现，已弃用')
   getClickToRead() async {
     await initDataBase();
     var batch = _database.batch();
@@ -250,6 +259,7 @@ class DataBase {
     return false;
   }
 
+  @Deprecated('使用新实现方案，已弃用')
   setControlSize(double size) async {
     await initDataBase();
     var batch = _database.batch();
@@ -259,6 +269,7 @@ class DataBase {
     await batch.commit();
   }
 
+  @Deprecated('使用新实现方案，已弃用')
   getControlSize() async {
     await initDataBase();
     var batch = _database.batch();
@@ -272,6 +283,7 @@ class DataBase {
     return 100.0.toDouble();
   }
 
+  @Deprecated('使用新实现方案，已弃用')
   setRange(double range) async {
     await initDataBase();
     var batch = _database.batch();
@@ -280,6 +292,7 @@ class DataBase {
     await batch.commit();
   }
 
+  @Deprecated('使用新实现方案，已弃用')
   getRange() async {
     await initDataBase();
     var batch = _database.batch();
@@ -293,6 +306,7 @@ class DataBase {
     return 500.toDouble();
   }
 
+  @Deprecated('使用新实现方案，已弃用')
   setLabState(bool state) async {
     await initDataBase();
     var batch = _database.batch();
@@ -302,6 +316,7 @@ class DataBase {
     await batch.commit();
   }
 
+  @Deprecated('使用新实现方案，已弃用')
   getLabState() async {
     await initDataBase();
     var batch = _database.batch();
@@ -317,6 +332,7 @@ class DataBase {
     return false;
   }
 
+  @Deprecated('使用新实现方案，已弃用')
   setDeepSearch(bool state) async {
     await initDataBase();
     var batch = _database.batch();
@@ -326,6 +342,7 @@ class DataBase {
     await batch.commit();
   }
 
+  @Deprecated('使用新实现方案，已弃用')
   getDeepSearch() async {
     await initDataBase();
     var batch = _database.batch();
@@ -341,6 +358,7 @@ class DataBase {
     return false;
   }
 
+  @Deprecated('使用新实现方案，已弃用')
   setDarkSide(bool state) async {
     await initDataBase();
     var batch = _database.batch();
@@ -350,6 +368,7 @@ class DataBase {
     await batch.commit();
   }
 
+  @Deprecated('使用新实现方案，已弃用')
   getDarkSide() async {
     await initDataBase();
     var batch = _database.batch();
@@ -365,6 +384,7 @@ class DataBase {
     return false;
   }
 
+  @Deprecated('使用新实现方案，已弃用')
   setBlackBox(bool state) async {
     await initDataBase();
     var batch = _database.batch();
@@ -374,6 +394,7 @@ class DataBase {
     await batch.commit();
   }
 
+  @Deprecated('使用新实现方案，已弃用')
   getBlackBox() async {
     await initDataBase();
     var batch = _database.batch();
@@ -389,6 +410,7 @@ class DataBase {
     return false;
   }
 
+  @Deprecated('使用新实现方案，已弃用')
   setDownloadPath(String path) async {
     await initDataBase();
     var batch = _database.batch();
@@ -397,6 +419,7 @@ class DataBase {
     await batch.commit();
   }
 
+  @Deprecated('使用新实现方案，已弃用')
   getDownloadPath() async {
     await initDataBase();
     var batch = _database.batch();
@@ -410,6 +433,7 @@ class DataBase {
     return (await getExternalStorageDirectory()).path;
   }
 
+  @Deprecated('使用新实现方案，已弃用')
   setDarkMode(int mode) async {
     await initDataBase();
     var batch = _database.batch();
@@ -418,6 +442,7 @@ class DataBase {
     await batch.commit();
   }
 
+  @Deprecated('使用新实现方案，已弃用')
   Future<int> getDarkMode() async {
     await initDataBase();
     var batch = _database.batch();
@@ -430,7 +455,7 @@ class DataBase {
     }
     return 0;
   }
-
+  @Deprecated('使用新实现方案，已弃用')
   setBackground(int mode) async {
     await initDataBase();
     var batch = _database.batch();
@@ -439,6 +464,7 @@ class DataBase {
     await batch.commit();
   }
 
+  @Deprecated('使用新实现方案，已弃用')
   Future<int> getBackground() async {
     await initDataBase();
     var batch = _database.batch();
@@ -452,6 +478,7 @@ class DataBase {
     return 0;
   }
 
+  @Deprecated('使用新实现方案，已弃用')
   setHorizontalDirection(bool direction) async {
     await initDataBase();
     var batch = _database.batch();
@@ -460,7 +487,7 @@ class DataBase {
         {'key': 'horizontal_direction', 'value': direction ? '1' : '0'});
     await batch.commit();
   }
-
+  @Deprecated('使用新实现方案，已弃用')
   Future<bool> getHorizontalDirection() async {
     await initDataBase();
     var batch = _database.batch();
@@ -476,6 +503,7 @@ class DataBase {
     return false;
   }
 
+  @Deprecated('使用新实现方案，已弃用')
   Future<bool> getNovelState() async {
     await initDataBase();
     var batch = _database.batch();
@@ -491,6 +519,7 @@ class DataBase {
     return false;
   }
 
+  @Deprecated('使用新实现方案，已弃用')
   Future<void> setNovelState(bool novel) async {
     await initDataBase();
     var batch = _database.batch();
@@ -500,6 +529,7 @@ class DataBase {
     await batch.commit();
   }
 
+  @Deprecated('使用新实现方案，已弃用')
   Future<bool> getBackupApi() async{
     await initDataBase();
     var batch = _database.batch();
@@ -515,6 +545,7 @@ class DataBase {
     return false;
   }
 
+  @Deprecated('使用新实现方案，已弃用')
   Future<void> setBackupApi(bool state) async {
     await initDataBase();
     var batch = _database.batch();
@@ -548,6 +579,7 @@ class DataBase {
     await batch.commit();
   }
 
+  @Deprecated('使用新实现方案，已弃用')
   Future<int> getUpdateChannel()async{
     await initDataBase();
     var batch = _database.batch();
@@ -561,6 +593,7 @@ class DataBase {
     return 0;
   }
 
+  @Deprecated('使用新实现方案，已弃用')
   setUpdateChannel(int channel) async {
     await initDataBase();
     var batch = _database.batch();
@@ -569,6 +602,7 @@ class DataBase {
     await batch.commit();
   }
 
+  @Deprecated('使用新实现方案，已弃用')
   setAnimation(bool state) async {
     await initDataBase();
     var batch = _database.batch();
@@ -578,6 +612,7 @@ class DataBase {
     await batch.commit();
   }
 
+  @Deprecated('使用新实现方案，已弃用')
   getAnimation() async {
     await initDataBase();
     var batch = _database.batch();
@@ -593,6 +628,7 @@ class DataBase {
     return true;
   }
 
+  @Deprecated('使用新实现方案，已弃用')
   setAutoDark(bool state) async {
     await initDataBase();
     var batch = _database.batch();
@@ -602,6 +638,7 @@ class DataBase {
     await batch.commit();
   }
 
+  @Deprecated('使用新实现方案，已弃用')
   getAutoDark() async {
     await initDataBase();
     var batch = _database.batch();

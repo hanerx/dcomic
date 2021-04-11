@@ -14,6 +14,7 @@ import 'package:flutterdmzj/model/comic_source/ManHuaGuiSourceModel.dart';
 import 'package:flutterdmzj/model/comic_source/MangabzSourceModel.dart';
 import 'package:flutterdmzj/model/comic_source/baseSourceModel.dart';
 import 'package:flutterdmzj/model/comic_source/sourceProvider.dart';
+import 'package:flutterdmzj/utils/ProxyCacheManager.dart';
 import 'package:flutterdmzj/utils/tool_methods.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -39,7 +40,7 @@ class _DebugTestPage extends State<DebugTestPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    startPeer();
+    // startPeer();
   }
 
   startPeer()async{
@@ -50,18 +51,22 @@ class _DebugTestPage extends State<DebugTestPage> {
     }
   }
 
+  stopPeer()async{
+    channel.invokeMethod('stopPeer');
+  }
+
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    channel.invokeMethod('stopPeer');
+    stopPeer();
   }
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return DefaultTabController(
-      length: 6,
+      length: 7,
       child: Scaffold(
         appBar: AppBar(
           title: Text(S.of(context).SettingPageDebugTestTitle),
@@ -83,6 +88,9 @@ class _DebugTestPage extends State<DebugTestPage> {
             ),
             Tab(
               text: 'IPFS测试',
+            ),
+            Tab(
+              text: '代理图片测试',
             )
           ]),
         ),
@@ -190,6 +198,12 @@ class _DebugTestPage extends State<DebugTestPage> {
               child: Column(
                 children: [
                   OutlineButton(
+                    child: Text('启动IPFS本地服务器'),
+                    onPressed: ()async{
+                      startPeer();
+                    },
+                  ),
+                  OutlineButton(
                     child: Text('Test'),
                     onPressed: () async {
                       // Ipfs ipfs = Ipfs(baseUrl: 'hanerx.top',port: 5001);
@@ -214,6 +228,13 @@ class _DebugTestPage extends State<DebugTestPage> {
               ),
             ),
           ),
+          Center(
+            child: CachedNetworkImage(
+              imageUrl: 'https://i.pximg.net/img-original/img/2019/08/04/00/12/45/76062188_p0.jpg',
+              cacheManager: ProxyCacheManager('192.168.123.47', 7890),
+              httpHeaders: {'referer':'https://www.pixiv.net/'},
+            ),
+          )
         ]),
       ),
     );

@@ -5,8 +5,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/http/http.dart';
+import 'package:flutterdmzj/model/systemSettingModel.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 import 'package:share/share.dart';
 
@@ -72,8 +74,9 @@ class _ComicPage extends State<ComicPage> {
                         // var result = await ImageGallerySaver.saveImage(
                         //     Uint8List.fromList(response.data));
                         // print(result);
-                        DataBase dataBase = DataBase();
-                        String path = await dataBase.getDownloadPath();
+                        String path = Provider.of<SystemSettingModel>(context,
+                                listen: false)
+                            .savePath;
                         String save =
                             "$path/${DateTime.now().millisecondsSinceEpoch}${widget.url.substring(widget.url.lastIndexOf('.'))}";
                         try {
@@ -102,8 +105,7 @@ class _ComicPage extends State<ComicPage> {
                         // var result = await ImageGallerySaver.saveImage(
                         //     Uint8List.fromList(response.data));
                         // print(result);
-                        Directory path =
-                            (await getExternalCacheDirectories())[0];
+                        Directory path = await getTemporaryDirectory();
                         String save =
                             "${path.path}/${DateTime.now().millisecondsSinceEpoch}${widget.url.substring(widget.url.lastIndexOf('.'))}";
                         await http.downloadFile(widget.url, save);

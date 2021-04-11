@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutterdmzj/database/configDatabaseProvider.dart';
 import 'package:flutterdmzj/database/database.dart';
 import 'package:flutterdmzj/model/baseModel.dart';
 
-class ComicViewerSettingModel extends BaseModel{
-  bool _webApi=false;
+class ComicViewerSettingModel extends BaseModel {
   bool _direction = false;
   bool _debug = false;
   double _hitBox = 100;
   double _range = 500;
   bool _reverse = false;
   int _backgroundColor = 0;
-  bool _animation=true;
-  bool _autoDark=false;
-  DataBase _dataBase=DataBase();
+  bool _animation = true;
+  bool _autoDark = false;
+  ViewerConfigDatabaseProvider _databaseProvider =
+      ViewerConfigDatabaseProvider();
   static const List backgroundColors = [
     Colors.white,
     Colors.black,
@@ -23,34 +24,25 @@ class ComicViewerSettingModel extends BaseModel{
     Color.fromRGBO(255, 240, 205, 1)
   ];
 
-  ComicViewerSettingModel(){
+  ComicViewerSettingModel() {
     init();
   }
 
-  init()async{
-    _webApi=await _dataBase.getWebApi();
-    _direction=await _dataBase.getReadDirection();
-    _hitBox=await _dataBase.getControlSize();
-    _range=await _dataBase.getRange();
-    _reverse=await _dataBase.getHorizontalDirection();
-    _backgroundColor=await _dataBase.getBackground();
-    _animation=await _dataBase.getAnimation();
-    _autoDark=await _dataBase.getAutoDark();
-    notifyListeners();
-  }
-
-  bool get webApi=>_webApi;
-
-  set webApi(bool state){
-    _dataBase.setWebApi(state);
-    _webApi=state;
+  init() async {
+    _direction = await _databaseProvider.readDirection;
+    _hitBox = await _databaseProvider.hitBox;
+    _range = await _databaseProvider.range;
+    _reverse = await _databaseProvider.readHorizontalDirection;
+    _backgroundColor = await _databaseProvider.backgroundColor;
+    _animation = await _databaseProvider.enableAnimation;
+    _autoDark = await _databaseProvider.autoDark;
     notifyListeners();
   }
 
   int get backgroundColor => _backgroundColor;
 
   set backgroundColor(int value) {
-    _dataBase.setBackground(value);
+    _databaseProvider.backgroundColor = Future.value(value);
     _backgroundColor = value;
     notifyListeners();
   }
@@ -58,7 +50,7 @@ class ComicViewerSettingModel extends BaseModel{
   bool get reverse => _reverse;
 
   set reverse(bool value) {
-    _dataBase.setHorizontalDirection(value);
+    _databaseProvider.readHorizontalDirection = Future.value(value);
     _reverse = value;
     notifyListeners();
   }
@@ -66,7 +58,7 @@ class ComicViewerSettingModel extends BaseModel{
   double get range => _range;
 
   set range(double value) {
-    _dataBase.setRange(value);
+    _databaseProvider.range = Future.value(value);
     _range = value;
     notifyListeners();
   }
@@ -74,7 +66,7 @@ class ComicViewerSettingModel extends BaseModel{
   double get hitBox => _hitBox;
 
   set hitBox(double value) {
-    _dataBase.setControlSize(value);
+    _databaseProvider.hitBox = Future.value(value);
     _hitBox = value;
     notifyListeners();
   }
@@ -89,24 +81,24 @@ class ComicViewerSettingModel extends BaseModel{
   bool get direction => _direction;
 
   set direction(bool value) {
-    _dataBase.setReadDirection(value);
+    _databaseProvider.readDirection = Future.value(value);
     _direction = value;
     notifyListeners();
   }
 
-  bool get animation=>_animation;
+  bool get animation => _animation;
 
-  set animation(bool value){
-    _dataBase.setAnimation(value);
-    _animation=value;
+  set animation(bool value) {
+    _databaseProvider.enableAnimation = Future.value(value);
+    _animation = value;
     notifyListeners();
   }
 
-  bool get autoDark=>_autoDark;
+  bool get autoDark => _autoDark;
 
-  set autoDark(bool value){
-    _dataBase.setAutoDark(value);
-    _autoDark=value;
+  set autoDark(bool value) {
+    _databaseProvider.autoDark = Future.value(value);
+    _autoDark = value;
     notifyListeners();
   }
 }

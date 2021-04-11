@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterdmzj/database/database.dart';
+import 'package:flutterdmzj/database/databaseCommon.dart';
 import 'package:flutterdmzj/generated/l10n.dart';
 import 'package:flutterdmzj/http/http.dart';
 import 'package:flutterdmzj/view/database_detail_page.dart';
@@ -67,8 +68,7 @@ class _DebugSettingPage extends State<DebugSettingPage>{
                         FlatButton(
                           child: Text(S.of(context).Confirm),
                           onPressed: () {
-                            DataBase dataBase = DataBase();
-                            dataBase.resetDataBase();
+                            DatabaseCommon.resetDataBase();
                             Navigator.of(context).pop();
                             Navigator.of(context).pop();
                           },
