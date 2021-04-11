@@ -251,46 +251,10 @@ class _IPFSSettingPage extends State<IPFSSettingPage> {
                     _image = null;
                   });
                 }
-                Dio dio = Dio();
-                if (Provider.of<IPFSSettingProvider>(context, listen: false)
-                    .enableProxy) {
-                  dio
-                    ..httpClientAdapter = HttpProxyAdapter(
-                        ipAddr: Provider.of<IPFSSettingProvider>(context,
-                                listen: false)
-                            .proxyServer,
-                        port: Provider.of<IPFSSettingProvider>(context,
-                                listen: false)
-                            .proxyPort);
-                }
-                switch (Provider.of<IPFSSettingProvider>(context, listen: false)
-                    .mode) {
-                  case 0:
-                    Ipfs ipfs = Ipfs.dio(
-                        baseUrl: Provider.of<IPFSSettingProvider>(context,
-                                listen: false)
-                            .server,
-                        port: Provider.of<IPFSSettingProvider>(context,
-                                listen: false)
-                            .port,
-                        dio: dio);
-                    ipfs.getPeers();
-                    String cid =
-                        'QmSY5BqPor7aQD8EsSJvXdixkgLoAdQHP3uq5yX28jGwsT';
-                    var item = await ipfs.catObject(cid);
-                    setState(() {
-                      _image = Uint8List.fromList(item);
-                    });
-                    break;
-                  case 1:
-                    var response = await dio.get(
-                        'https://ipfs.io/ipfs/QmSY5BqPor7aQD8EsSJvXdixkgLoAdQHP3uq5yX28jGwsT',
-                        options: Options(responseType: ResponseType.bytes));
-                    setState(() {
-                      _image = Uint8List.fromList(response.data);
-                    });
-                    break;
-                }
+                Uint8List data=await Provider.of<IPFSSettingProvider>(context,listen: false).catBytes('QmSY5BqPor7aQD8EsSJvXdixkgLoAdQHP3uq5yX28jGwsT');
+                setState(() {
+                  _image=data;
+                });
               },
             ),
             subtitle:
