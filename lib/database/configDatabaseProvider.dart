@@ -1,6 +1,6 @@
-import 'package:flutterdmzj/database/database.dart';
-import 'package:flutterdmzj/database/databaseCommon.dart';
-import 'package:flutterdmzj/utils/log_output.dart';
+import 'package:dcomic/database/database.dart';
+import 'package:dcomic/database/databaseCommon.dart';
+import 'package:dcomic/utils/log_output.dart';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -41,7 +41,7 @@ abstract class ConfigDatabaseProvider {
     await batch.commit();
   }
 
-  Future get<T>(String configName, {dynamic defaultValue}) async {
+  Future get<T>(String configName, {T defaultValue}) async {
     var batch = (await db).batch();
     batch.query("configures", where: "key='$name.$configName'");
     var result = await batch.commit();
@@ -146,7 +146,7 @@ class ViewerConfigDatabaseProvider extends ConfigDatabaseProvider {
   }
 
   Future<bool> get readHorizontalDirection async =>
-      await get('horizontal_direction', defaultValue: false);
+      await get<bool>('horizontal_direction', defaultValue: false);
 
   set readHorizontalDirection(Future<bool> readHorizontalDirection) {
     readHorizontalDirection
@@ -198,7 +198,7 @@ class SystemConfigDatabaseProvider extends ConfigDatabaseProvider {
       await get<bool>('black_box', defaultValue: false);
 
   set blackBox(Future<bool> blackBox) {
-    blackBox.then((value) => insert('black_box', value));
+    blackBox.then((value) => insert<bool>('black_box', value));
   }
 
   Future<int> get darkMode async =>
@@ -218,7 +218,7 @@ class SystemConfigDatabaseProvider extends ConfigDatabaseProvider {
       await get<String>('latest_version', defaultValue: '');
 
   set latestVersion(Future<String> latestVersion) {
-    latestVersion.then((value) => insert('latest_version', value));
+    latestVersion.then((value) => insert<String>('latest_version', value));
   }
 
   Future<bool> get backupApi async=> await get<bool>('backup_api',defaultValue: false);

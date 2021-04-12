@@ -1,6 +1,6 @@
 
 import 'package:dio/dio.dart';
-import 'package:flutterdmzj/http/UniversalRequestModel.dart';
+import 'package:dcomic/http/UniversalRequestModel.dart';
 import 'package:gbk_codec/gbk_codec.dart';
 
 class KuKuRequestHandler extends KKKKRequestHandler {

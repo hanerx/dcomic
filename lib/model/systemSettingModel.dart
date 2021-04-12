@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/database/configDatabaseProvider.dart';
-import 'package:flutterdmzj/database/database.dart';
-import 'package:flutterdmzj/model/baseModel.dart';
+import 'package:dcomic/database/configDatabaseProvider.dart';
+import 'package:dcomic/database/database.dart';
+import 'package:dcomic/model/baseModel.dart';
 
 class SystemSettingModel extends BaseModel {
   static const List darkMode = [

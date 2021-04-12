@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/model/baseModel.dart';
+import 'package:dcomic/model/baseModel.dart';
 
 abstract class BaseSourceModel extends BaseModel {
   Future<List<SearchResult>> search(String keyword, {int page: 0});
@@ -234,7 +234,13 @@ class ComicIdNotBoundError implements Exception {}
 
 class ComicSearchError implements Exception {}
 
-class InactiveUserConfig extends UserConfig{
+class LoginUsernameOrPasswordError implements Exception {}
+
+class InactiveUserConfig extends UserConfig {
+  final SourceDetail type;
+  final String message;
+
+  InactiveUserConfig(this.type,{this.message:'该源不存在用户设置'});
   @override
   // TODO: implement avatar
   String get avatar => '';
@@ -242,11 +248,12 @@ class InactiveUserConfig extends UserConfig{
   @override
   Widget getLoginWidget(context) {
     // TODO: implement getLoginWidget
-    return Card(
-      child: Container(
-        child: Center(
-          child: Text('该源不支持用户设置'),
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('登录'),
+      ),
+      body: Center(
+        child: Text('该源不支持登录'),
       ),
     );
   }
@@ -255,12 +262,17 @@ class InactiveUserConfig extends UserConfig{
   Widget getSettingWidget(context) {
     // TODO: implement getSettingWidget
     return Card(
-      child: Container(
-        child: Center(
-          child: Text('该源不支持用户设置'),
+        child:ListView(
+          shrinkWrap: true,
+          children: [
+            ListTile(
+              leading: Icon(Icons.cloud_off),
+              title: Text('${type.title}用户设置'),
+              subtitle: Text('$message'),
+            )
+          ],
         ),
-      ),
-    );
+      );
   }
 
   @override
@@ -286,5 +298,18 @@ class InactiveUserConfig extends UserConfig{
   @override
   // TODO: implement userId
   String get userId => '';
+}
 
+abstract class FavoriteComic {
+  String get cover;
+
+  String get title;
+
+  String get latestChapter;
+
+  String get comicId;
+
+  BaseSourceModel get model;
+
+  bool get update;
 }

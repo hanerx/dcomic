@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/model/downloadChapters.dart';
+import 'package:dcomic/model/downloadChapters.dart';
 import 'package:provider/provider.dart';
 
 class DownloadComicPage extends StatefulWidget {

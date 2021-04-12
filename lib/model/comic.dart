@@ -1,11 +1,11 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/component/ViewPointChip.dart';
-import 'package:flutterdmzj/component/comic_viewer/ComicPage.dart';
-import 'package:flutterdmzj/model/baseModel.dart';
-import 'package:flutterdmzj/model/comic_source/baseSourceModel.dart';
-import 'package:flutterdmzj/utils/tool_methods.dart';
+import 'package:dcomic/component/ViewPointChip.dart';
+import 'package:dcomic/component/comic_viewer/ComicPage.dart';
+import 'package:dcomic/model/baseModel.dart';
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
+import 'package:dcomic/utils/tool_methods.dart';
 
 class ComicModel extends BaseModel {
   final Comic comic;

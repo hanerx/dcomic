@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
-import 'package:flutterdmzj/http/UniversalRequestModel.dart';
+import 'package:dcomic/http/UniversalRequestModel.dart';
 
 class MangabzRequestHandler extends SingleDomainRequestHandler {
   MangabzRequestHandler() : super('http://www.mangabz.com');

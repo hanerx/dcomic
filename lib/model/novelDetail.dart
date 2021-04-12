@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/database/database.dart';
-import 'package:flutterdmzj/http/http.dart';
-import 'package:flutterdmzj/model/baseModel.dart';
-import 'package:flutterdmzj/utils/tool_methods.dart';
-import 'package:flutterdmzj/view/novel_pages/novel_viewer_page.dart';
+import 'package:dcomic/database/database.dart';
+import 'package:dcomic/http/http.dart';
+import 'package:dcomic/model/baseModel.dart';
+import 'package:dcomic/utils/tool_methods.dart';
+import 'package:dcomic/view/novel_pages/novel_viewer_page.dart';
 
 class NovelDetailModel extends BaseModel {
   final int novelID;

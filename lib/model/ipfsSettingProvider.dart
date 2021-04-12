@@ -2,8 +2,8 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:dio_proxy/dio_proxy.dart';
-import 'package:flutterdmzj/database/configDatabaseProvider.dart';
-import 'package:flutterdmzj/model/baseModel.dart';
+import 'package:dcomic/database/configDatabaseProvider.dart';
+import 'package:dcomic/model/baseModel.dart';
 import 'package:ipfs/ipfs.dart';
 
 class IPFSSettingProvider extends BaseModel {

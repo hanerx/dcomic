@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutterdmzj/component/LoadingCube.dart';
-import 'package:flutterdmzj/component/comic_viewer/EndPage.dart';
+import 'package:dcomic/component/LoadingCube.dart';
+import 'package:dcomic/component/comic_viewer/EndPage.dart';
 
 typedef BoolCallback = Future<bool> Function();
 typedef OnPageChangeCallback = void Function(int index);

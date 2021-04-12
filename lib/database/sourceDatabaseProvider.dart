@@ -18,6 +18,27 @@ class SourceDatabaseProvider {
     return data;
   }
 
+  static Future getSourceOption<T>(String name, String key,{T defaultValue}) async {
+    Database database = await initDataBase();
+    try {
+      List<Map> maps = await database.query('source_options',
+          where: 'source_name = ? AND key = ?', whereArgs: [name, key]);
+      switch (T) {
+        case String:
+          return maps.first['value'];
+        case int:
+          return int.parse(maps.first['value']);
+        case bool:
+          return maps.first['value'] == '1';
+        case double:
+          return double.parse(maps.first['value']);
+        default:
+          return maps.first['value'];
+      }
+    } catch (e) {}
+    return defaultValue;
+  }
+
   static Future<void> insertSourceOption(
       String name, String key, dynamic value) async {
     Database database = await initDataBase();
@@ -29,7 +50,7 @@ class SourceDatabaseProvider {
 
   static Future<void> boundComic(
       String name, String comicId, String boundId) async {
-    if(comicId!=null&&boundId!=null){
+    if (comicId != null && boundId != null) {
       Database database = await initDataBase();
       await database.delete('comic_bounding',
           where: 'source_name = ? and comic_id= ?', whereArgs: [name, comicId]);

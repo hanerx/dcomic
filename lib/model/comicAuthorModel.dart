@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutterdmzj/component/AuthorCard.dart';
-import 'package:flutterdmzj/http/http.dart';
-import 'package:flutterdmzj/model/baseModel.dart';
+import 'package:dcomic/component/AuthorCard.dart';
+import 'package:dcomic/http/http.dart';
+import 'package:dcomic/model/baseModel.dart';
 
 class ComicAuthorModel extends BaseModel{
   final int authorId;

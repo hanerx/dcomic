@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
-import 'package:flutterdmzj/database/database.dart';
+import 'package:dcomic/database/database.dart';
 
 class CustomHttp {
   Dio dio;
@@ -151,6 +151,7 @@ class CustomHttp {
             subKey: 'uid=$uid&page=$page&type=$type'));
   }
 
+  @Deprecated('使用新实现方案')
   Future<Response<T>> login<T>(String username, String password) {
     print(
         "class: http, action: login, url: '$iUrl/api/login?callback=&nickname=$username&password=$password&type=1'");
@@ -158,6 +159,7 @@ class CustomHttp {
         '$iUrl/api/login?callback=&nickname=$username&password=$password&type=1');
   }
 
+  @Deprecated('使用新实现方案')
   Future<Response<T>> getUserInfo<T>(String uid) {
     return dio.get("$baseUrl/UCenter/comics/$uid.json?$queryOptions",
         options: buildCacheOptions(Duration(days: 7)));
@@ -168,12 +170,14 @@ class CustomHttp {
     return unCachedDio.get("https://m.dmzj.com/mysubscribe", options: options);
   }
 
+  @Deprecated('使用新实现方案')
   Future<Response<T>> getIfSubscribe<T>(String comicId, String uid,
       {int type: 0}) async {
     return unCachedDio
         .get('$baseUrl/subscribe/$type/$uid/$comicId?$queryOptions');
   }
 
+  @Deprecated('使用新实现方案')
   Future<Response<T>> cancelSubscribe<T>(String comicId, String uid,
       {int type: 0}) async {
     _cacheManager.delete("$baseUrl/UCenter/subscribe");
@@ -181,6 +185,7 @@ class CustomHttp {
         '$baseUrl/subscribe/cancel?obj_ids=$comicId&uid=$uid&type=${type == 0 ? 'mh' : 'xs'}&$queryOptions');
   }
 
+  @Deprecated('使用新实现方案')
   Future<Response<T>> addSubscribe<T>(String comicId, String uid,
       {int type: 0}) async {
     _cacheManager.delete("$baseUrl/UCenter/subscribe");
@@ -324,6 +329,6 @@ class CustomHttp {
 
   Future<Response> getSubscribeWeb() async {
     Options options = await setHeader();
-    return dio.get('$mUrl/mysubscribe',options: options);
+    return dio.get('$mUrl/mysubscribe', options: options);
   }
 }

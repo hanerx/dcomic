@@ -1,15 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/database/database.dart';
-import 'package:flutterdmzj/generated/l10n.dart';
-import 'package:flutterdmzj/http/http.dart';
-import 'package:flutterdmzj/model/systemSettingModel.dart';
-import 'package:flutterdmzj/view/dark_side_page.dart';
-import 'package:flutterdmzj/view/favorite_page.dart';
-import 'package:flutterdmzj/view/login_page.dart';
-import 'package:flutterdmzj/view/mag_maker/mag_make_page.dart';
-import 'package:flutterdmzj/view/novel_pages/novel_main_page.dart';
+import 'package:dcomic/database/database.dart';
+import 'package:dcomic/generated/l10n.dart';
+import 'package:dcomic/http/http.dart';
+import 'package:dcomic/model/systemSettingModel.dart';
+import 'package:dcomic/view/dark_side_page.dart';
+import 'package:dcomic/view/favorite_page.dart';
+import 'package:dcomic/view/login_page.dart';
+import 'package:dcomic/view/mag_maker/mag_make_page.dart';
+import 'package:dcomic/view/novel_pages/novel_main_page.dart';
 import 'package:provider/provider.dart';
 
 class CustomDrawer extends StatefulWidget {
@@ -21,10 +21,6 @@ class CustomDrawer extends StatefulWidget {
 }
 
 class CustomDrawerState extends State<CustomDrawer> {
-  bool login = false;
-  String avatar = 'https://avatar.dmzj.com/default.png';
-  String nickname = '请先登录';
-  String uid = '';
 
   static const List darkMode = [
     Icons.brightness_4,
@@ -32,49 +28,15 @@ class CustomDrawerState extends State<CustomDrawer> {
     Icons.brightness_2
   ];
 
-  getAccountInfo() async {
-    if (login) {
-      DataBase dataBase = DataBase();
-      uid = await dataBase.getUid();
-      CustomHttp http = CustomHttp();
-      var response = await http.getUserInfo(uid);
-      if (response.statusCode == 200 && mounted) {
-        setState(() {
-          nickname = response.data['nickname'];
-          avatar = response.data['cover'];
-        });
-      }
-    }
-  }
-
-  getLoginState() async {
-    DataBase dataBase = DataBase();
-    var state = await dataBase.getLoginState();
-    if (mounted) {
-      setState(() {
-        login = state;
-        nickname = state ? '加载中' : '请先登录';
-      });
-      getAccountInfo();
-    }
-  }
-
   @override
   void deactivate() {
     super.deactivate();
-    var bool = ModalRoute.of(context).isCurrent;
-    if (bool) {
-      Future.delayed(Duration(milliseconds: 200)).then((e) {
-        getLoginState();
-      });
-    }
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getLoginState();
   }
 
   @override
@@ -95,26 +57,12 @@ class CustomDrawerState extends State<CustomDrawer> {
   List<Widget> buildList(BuildContext context) {
     List<Widget> list = <Widget>[
       UserAccountsDrawerHeader(
-        accountName: Text('$nickname'),
+        accountName: Text(S.of(context).AppName),
         accountEmail: Text(
           S.of(context).DrawerEmail,
           style: TextStyle(color: Colors.white60),
         ),
-        currentAccountPicture: CachedNetworkImage(
-          imageUrl: '$avatar',
-          httpHeaders: {'referer': 'http://images.dmzj.com'},
-          progressIndicatorBuilder: (context, url, downloadProgress) =>
-              CircularProgressIndicator(value: downloadProgress.progress),
-          errorWidget: (context, url, error) => CachedNetworkImage(
-            imageUrl: 'https://avatar.dmzj.com/default.png',
-            httpHeaders: {'referer': 'http://images.dmzj.com'},
-            progressIndicatorBuilder: (context, url, downloadProgress) =>
-                CircularProgressIndicator(value: downloadProgress.progress),
-            errorWidget: (context, url, error) => Center(
-              child: Icon(Icons.warning),
-            ),
-          ),
-        ),
+        currentAccountPicture: FlutterLogo(),
         otherAccountsPictures: <Widget>[
           FlatButton(
             child: Icon(
@@ -137,21 +85,12 @@ class CustomDrawerState extends State<CustomDrawer> {
           ),
           FlatButton(
             child: Icon(
-              login ? Icons.exit_to_app : Icons.group_add,
+              Icons.group,
               color: Colors.white,
             ),
             onPressed: () {
-              if (login) {
-                setState(() {
-                  login = false;
-                  nickname = S.of(context).DrawerPlsLogin;
-                  avatar = S.of(context).DefaultAvatar;
-                });
-                DataBase dataBase = DataBase();
-                dataBase.setLoginState(false);
-              } else {
-                Navigator.pushNamed(context, 'login');
-              }
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (context) => LoginPage()));
             },
             shape: CircleBorder(),
             padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
@@ -163,15 +102,9 @@ class CustomDrawerState extends State<CustomDrawer> {
         leading: Icon(Icons.favorite),
         onTap: () {
           Navigator.of(context).pop();
-          if (login && uid != '') {
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return FavoritePage(uid);
-            }));
-          } else if (!login) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return LoginPage();
-            }));
-          }
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return FavoritePage('');
+          }));
         },
       ),
       ListTile(

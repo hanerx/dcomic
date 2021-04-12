@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutterdmzj/view/mag_maker/mag_guide_page.dart';
+import 'package:dcomic/view/mag_maker/mag_guide_page.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
 
 class NewMagPage extends StatefulWidget {

@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/view/category_detail_page.dart';
-import 'package:flutterdmzj/view/novel_pages/novel_category_detail_page.dart';
+import 'package:dcomic/view/category_detail_page.dart';
+import 'package:dcomic/view/novel_pages/novel_category_detail_page.dart';
 
 class CategoryCard extends StatelessWidget {
   final String cover;

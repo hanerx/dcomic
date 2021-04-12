@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutterdmzj/component/CategoryCard.dart';
-import 'package:flutterdmzj/http/http.dart';
-import 'package:flutterdmzj/model/baseModel.dart';
+import 'package:dcomic/component/CategoryCard.dart';
+import 'package:dcomic/http/http.dart';
+import 'package:dcomic/model/baseModel.dart';
 
 class ComicCategoryModel extends BaseModel{
   final int type;

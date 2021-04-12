@@ -2,12 +2,12 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/database/sourceDatabaseProvider.dart';
-import 'package:flutterdmzj/generated/l10n.dart';
-import 'package:flutterdmzj/http/UniversalRequestModel.dart';
-import 'package:flutterdmzj/model/comic_source/baseSourceModel.dart';
-import 'package:flutterdmzj/utils/soup.dart';
-import 'package:flutterdmzj/utils/tool_methods.dart';
+import 'package:dcomic/database/sourceDatabaseProvider.dart';
+import 'package:dcomic/generated/l10n.dart';
+import 'package:dcomic/http/UniversalRequestModel.dart';
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
+import 'package:dcomic/utils/soup.dart';
+import 'package:dcomic/utils/tool_methods.dart';
 import 'package:lpinyin/lpinyin.dart';
 import 'package:provider/provider.dart';
 
@@ -246,7 +246,7 @@ class MangabzSourceModel extends BaseSourceModel {
 
   @override
   // TODO: implement userConfig
-  UserConfig get userConfig => InactiveUserConfig();
+  UserConfig get userConfig => InactiveUserConfig(this.type,message: '暂未实现登录');
 }
 
 class MangabzOptionProvider extends SourceOptionsProvider {

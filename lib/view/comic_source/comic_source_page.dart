@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:flutterdmzj/generated/l10n.dart';
-import 'package:flutterdmzj/model/comic_source/sourceProvider.dart';
+import 'package:dcomic/generated/l10n.dart';
+import 'package:dcomic/model/comic_source/sourceProvider.dart';
 import 'package:provider/provider.dart';
 
 class ComicSourcePage extends StatefulWidget {

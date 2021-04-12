@@ -2,13 +2,14 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/database/database.dart';
-import 'package:flutterdmzj/database/downloader.dart';
-import 'package:flutterdmzj/database/tracker.dart';
-import 'package:flutterdmzj/http/http.dart';
-import 'package:flutterdmzj/model/baseModel.dart';
-import 'package:flutterdmzj/model/comic_source/baseSourceModel.dart';
-import 'package:flutterdmzj/view/comic_viewer.dart';
+import 'package:dcomic/database/configDatabaseProvider.dart';
+import 'package:dcomic/database/database.dart';
+import 'package:dcomic/database/downloader.dart';
+import 'package:dcomic/database/tracker.dart';
+import 'package:dcomic/http/http.dart';
+import 'package:dcomic/model/baseModel.dart';
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
+import 'package:dcomic/view/comic_viewer.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
@@ -220,8 +221,7 @@ class ComicDetailModel extends BaseModel {
     if (state) {
       CustomHttp http = CustomHttp();
       var response = await http.getComic(comicId, chapterId);
-      DataBase dataBase = DataBase();
-      var path = await dataBase.getDownloadPath();
+      var path=await SystemConfigDatabaseProvider().downloadPath;
 
       List data = <String>[];
       if (response.statusCode == 200) {

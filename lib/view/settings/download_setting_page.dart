@@ -3,8 +3,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:flutterdmzj/generated/l10n.dart';
-import 'package:flutterdmzj/model/systemSettingModel.dart';
+import 'package:dcomic/generated/l10n.dart';
+import 'package:dcomic/model/systemSettingModel.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 

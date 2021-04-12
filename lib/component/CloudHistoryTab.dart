@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:flutterdmzj/component/EmptyView.dart';
-import 'package:flutterdmzj/database/database.dart';
-import 'package:flutterdmzj/http/http.dart';
-import 'package:flutterdmzj/view/login_page.dart';
+import 'package:dcomic/component/EmptyView.dart';
+import 'package:dcomic/database/database.dart';
+import 'package:dcomic/http/http.dart';
+import 'package:dcomic/view/login_page.dart';
 
 import 'HistoryListTile.dart';
 

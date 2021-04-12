@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutterdmzj/database/sourceDatabaseProvider.dart';
-import 'package:flutterdmzj/model/comic_source/baseSourceModel.dart';
+import 'package:dcomic/database/sourceDatabaseProvider.dart';
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 
 class IKanManSourceModel extends BaseSourceModel {
   IKanManSourceOptions _options = IKanManSourceOptions.fromMap({});
@@ -49,7 +49,7 @@ class IKanManSourceModel extends BaseSourceModel {
 
   @override
   // TODO: implement userConfig
-  UserConfig get userConfig => InactiveUserConfig();
+  UserConfig get userConfig => InactiveUserConfig(this.type);
 }
 
 class IKanManSourceOptions extends SourceOptions {

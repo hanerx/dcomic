@@ -1,6 +1,6 @@
 {
   "@@locale" : "en",
-  "AppName": "DMZJ",
+  "AppName": "DComic",
   "AppNameUltimate":"Super DMZJ-Ultimate",
   "Setting": "Settings",
   "MainPageTabHome": "Home",
@@ -94,7 +94,7 @@
       "author": {}
     }
   },
-  "DrawerEmail": "Flutter DMZJ",
+  "DrawerEmail": "A simple comic viewer application",
   "DrawerPlsLogin": "Please login",
   "Favorite": "Favorite",
   "History": "History",

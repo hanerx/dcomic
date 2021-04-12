@@ -39,7 +39,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function> {
-    "AppName" : MessageLookupByLibrary.simpleMessage("DMZJ"),
+    "AppName" : MessageLookupByLibrary.simpleMessage("DComic"),
     "AppNameUltimate" : MessageLookupByLibrary.simpleMessage("Super DMZJ-Ultimate"),
     "AuthorPageTitle" : m0,
     "Cancel" : MessageLookupByLibrary.simpleMessage("cancel"),
@@ -50,7 +50,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "DarkSide" : MessageLookupByLibrary.simpleMessage("DarkSide"),
     "DefaultAvatar" : MessageLookupByLibrary.simpleMessage("https://avatar.dmzj.com/default.png"),
     "Download" : MessageLookupByLibrary.simpleMessage("Download"),
-    "DrawerEmail" : MessageLookupByLibrary.simpleMessage("Flutter DMZJ"),
+    "DrawerEmail" : MessageLookupByLibrary.simpleMessage("A simple comic viewer application"),
     "DrawerPlsLogin" : MessageLookupByLibrary.simpleMessage("Please login"),
     "Favorite" : MessageLookupByLibrary.simpleMessage("Favorite"),
     "History" : MessageLookupByLibrary.simpleMessage("History"),

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/generated/l10n.dart';
-import 'package:flutterdmzj/view/comic_source/comic_source_page.dart';
+import 'package:dcomic/generated/l10n.dart';
+import 'package:dcomic/view/comic_source/comic_source_page.dart';
 
 class SourceSettingPage extends StatefulWidget{
   @override

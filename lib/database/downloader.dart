@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:flutterdmzj/database/databaseCommon.dart';
+import 'package:dcomic/database/databaseCommon.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DownloadChapter {

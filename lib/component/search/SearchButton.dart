@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/database/database.dart';
-import 'package:flutterdmzj/view/search_page.dart';
+import 'package:dcomic/database/configDatabaseProvider.dart';
+import 'package:dcomic/database/database.dart';
+import 'package:dcomic/model/systemSettingModel.dart';
+import 'package:dcomic/view/search_page.dart';
+import 'package:provider/provider.dart';
 
 class SearchButton extends StatefulWidget {
   @override
@@ -38,8 +41,7 @@ class _SearchButton extends State<SearchButton> {
                     onPressed: () {
                       if (_count > 10) {
                         Navigator.of(context).pop();
-                        DataBase dataBase = DataBase();
-                        dataBase.setLabState(true);
+                        Provider.of<SystemSettingModel>(context,listen: false).labState=true;
                       } else {
                         setState(() {
                           _count++;

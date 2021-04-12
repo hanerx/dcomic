@@ -1,6 +1,6 @@
 {
   "@@locale": "zh",
-  "AppName": "大妈之家",
+  "AppName": "DComic",
   "AppNameUltimate": "真·不撸埃斯Ultimate外拓大妈之家",
   "Setting": "设置",
   "MainPageTabHome": "首页",
@@ -94,7 +94,7 @@
       "author": {}
     }
   },
-  "DrawerEmail": "大妈之家第三方APP",
+  "DrawerEmail": "一个简单的漫画阅读器",
   "DrawerPlsLogin": "请先登录",
   "Favorite": "我的订阅",
   "History": "历史记录",

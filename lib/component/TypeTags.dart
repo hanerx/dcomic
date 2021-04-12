@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/view/category_detail_page.dart';
+import 'package:dcomic/view/category_detail_page.dart';
 
 class TypeTags extends StatelessWidget{
   final List tags;

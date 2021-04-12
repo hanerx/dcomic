@@ -1,5 +1,5 @@
-import 'package:flutterdmzj/database/databaseCommon.dart';
-import 'package:flutterdmzj/utils/log_output.dart';
+import 'package:dcomic/database/databaseCommon.dart';
+import 'package:dcomic/utils/log_output.dart';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -21,6 +21,7 @@ class DataBase {
     await deleteDatabase("dmzj_2.db");
   }
 
+  @Deprecated('用新实现方案')
   insertCookies(String key, String value) async {
     await initDataBase();
     var batch = _database.batch();
@@ -29,6 +30,7 @@ class DataBase {
     await batch.commit();
   }
 
+  @Deprecated('用新实现方案')
   getCookies() async {
     await initDataBase();
     var batch = _database.batch();

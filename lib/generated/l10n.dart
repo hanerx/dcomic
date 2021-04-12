@@ -35,10 +35,10 @@ class S {
     return Localizations.of<S>(context, S);
   }
 
-  /// `DMZJ`
+  /// `DComic`
   String get AppName {
     return Intl.message(
-      'DMZJ',
+      'DComic',
       name: 'AppName',
       desc: '',
       args: [],
@@ -716,10 +716,10 @@ class S {
     );
   }
 
-  /// `Flutter DMZJ`
+  /// `A simple comic viewer application`
   String get DrawerEmail {
     return Intl.message(
-      'Flutter DMZJ',
+      'A simple comic viewer application',
       name: 'DrawerEmail',
       desc: '',
       args: [],

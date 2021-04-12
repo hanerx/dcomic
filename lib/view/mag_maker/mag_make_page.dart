@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutterdmzj/utils/tool_methods.dart';
-import 'package:flutterdmzj/view/mag_maker/mag_example_page.dart';
-import 'package:flutterdmzj/view/mag_maker/new_mag_page.dart';
+import 'package:dcomic/utils/tool_methods.dart';
+import 'package:dcomic/view/mag_maker/mag_example_page.dart';
+import 'package:dcomic/view/mag_maker/new_mag_page.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
 
 class MagMakePage extends StatefulWidget {

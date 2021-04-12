@@ -4,8 +4,8 @@ import 'package:dio/dio.dart';
 import 'package:dio_proxy/dio_proxy.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/generated/l10n.dart';
-import 'package:flutterdmzj/model/ipfsSettingProvider.dart';
+import 'package:dcomic/generated/l10n.dart';
+import 'package:dcomic/model/ipfsSettingProvider.dart';
 import 'package:ipfs/ipfs.dart';
 import 'package:provider/provider.dart';
 

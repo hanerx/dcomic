@@ -1,5 +1,5 @@
-import 'package:flutterdmzj/http/http.dart';
-import 'package:flutterdmzj/model/baseModel.dart';
+import 'package:dcomic/http/http.dart';
+import 'package:dcomic/model/baseModel.dart';
 
 class ComicRankingListModel extends BaseModel {
   int filterDate = 0;

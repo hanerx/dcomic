@@ -1,6 +1,6 @@
 
 import 'package:dio/dio.dart';
-import 'package:flutterdmzj/http/UniversalRequestModel.dart';
+import 'package:dcomic/http/UniversalRequestModel.dart';
 
 class ManHuaGuiRequestHandler extends SingleDomainRequestHandler{
   ManHuaGuiRequestHandler() : super('https://m.manhuagui.com');

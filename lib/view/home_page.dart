@@ -1,11 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:flutterdmzj/component/CardView.dart';
-import 'package:flutterdmzj/component/LoadingCube.dart';
-import 'package:flutterdmzj/database/database.dart';
-import 'package:flutterdmzj/http/http.dart';
-import 'package:flutterdmzj/view/favorite_page.dart';
+import 'package:dcomic/component/CardView.dart';
+import 'package:dcomic/component/LoadingCube.dart';
+import 'package:dcomic/database/database.dart';
+import 'package:dcomic/database/sourceDatabaseProvider.dart';
+import 'package:dcomic/http/http.dart';
+import 'package:dcomic/view/favorite_page.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -27,11 +28,10 @@ class _HomePage extends State<HomePage> {
   }
 
   getSubscribe() async {
-    DataBase dataBase = DataBase();
-    var login = await dataBase.getLoginState();
+    bool login=await SourceDatabaseProvider.getSourceOption<bool>('dmzj', 'login');
     if (login) {
       CustomHttp http = CustomHttp();
-      var uid = await dataBase.getUid();
+      var uid = await SourceDatabaseProvider.getSourceOption('dmzj', 'uid');
       try{
         var response = await http.getRecommendBatchUpdate(uid);
         if (response.statusCode == 200 && mounted) {

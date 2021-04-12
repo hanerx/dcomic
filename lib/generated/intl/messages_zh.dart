@@ -39,7 +39,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function> {
-    "AppName" : MessageLookupByLibrary.simpleMessage("大妈之家"),
+    "AppName" : MessageLookupByLibrary.simpleMessage("DComic"),
     "AppNameUltimate" : MessageLookupByLibrary.simpleMessage("真·不撸埃斯Ultimate外拓大妈之家"),
     "AuthorPageTitle" : m0,
     "Cancel" : MessageLookupByLibrary.simpleMessage("取消"),
@@ -50,7 +50,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "DarkSide" : MessageLookupByLibrary.simpleMessage("黑暗面"),
     "DefaultAvatar" : MessageLookupByLibrary.simpleMessage("https://avatar.dmzj.com/default.png"),
     "Download" : MessageLookupByLibrary.simpleMessage("下载管理"),
-    "DrawerEmail" : MessageLookupByLibrary.simpleMessage("大妈之家第三方APP"),
+    "DrawerEmail" : MessageLookupByLibrary.simpleMessage("一个简单的漫画阅读器"),
     "DrawerPlsLogin" : MessageLookupByLibrary.simpleMessage("请先登录"),
     "Favorite" : MessageLookupByLibrary.simpleMessage("我的订阅"),
     "History" : MessageLookupByLibrary.simpleMessage("历史记录"),

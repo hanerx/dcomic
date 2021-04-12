@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/component/SubscribeCard.dart';
-import 'package:flutterdmzj/database/tracker.dart';
-import 'package:flutterdmzj/model/baseModel.dart';
-import 'package:flutterdmzj/model/comicDetail.dart';
-import 'package:flutterdmzj/view/comic_detail_page.dart';
+import 'package:dcomic/component/SubscribeCard.dart';
+import 'package:dcomic/database/tracker.dart';
+import 'package:dcomic/model/baseModel.dart';
+import 'package:dcomic/model/comicDetail.dart';
+import 'package:dcomic/view/comic_detail_page.dart';
 
 class TrackerModel extends BaseModel {
   List<TracingComic> tracingComic = [];

@@ -4,7 +4,7 @@ import 'package:code_editor/code_editor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_json_widget/flutter_json_widget.dart';
-import 'package:flutterdmzj/component/CustomDrawer.dart';
+import 'package:dcomic/component/CustomDrawer.dart';
 
 class MagExamplePage extends StatelessWidget {
   final String example;

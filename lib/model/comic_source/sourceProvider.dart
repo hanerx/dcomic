@@ -1,13 +1,13 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutterdmzj/component/ComicSourceCard.dart';
-import 'package:flutterdmzj/database/sourceDatabaseProvider.dart';
-import 'package:flutterdmzj/model/baseModel.dart';
-import 'package:flutterdmzj/model/comic_source/DMZJSourceModel.dart';
-import 'package:flutterdmzj/model/comic_source/IKanManSourceModel.dart';
-import 'package:flutterdmzj/model/comic_source/KuKuSourceModel.dart';
-import 'package:flutterdmzj/model/comic_source/ManHuaGuiSourceModel.dart';
-import 'package:flutterdmzj/model/comic_source/MangabzSourceModel.dart';
-import 'package:flutterdmzj/model/comic_source/baseSourceModel.dart';
+import 'package:dcomic/component/ComicSourceCard.dart';
+import 'package:dcomic/database/sourceDatabaseProvider.dart';
+import 'package:dcomic/model/baseModel.dart';
+import 'package:dcomic/model/comic_source/DMZJSourceModel.dart';
+import 'package:dcomic/model/comic_source/IKanManSourceModel.dart';
+import 'package:dcomic/model/comic_source/KuKuSourceModel.dart';
+import 'package:dcomic/model/comic_source/ManHuaGuiSourceModel.dart';
+import 'package:dcomic/model/comic_source/MangabzSourceModel.dart';
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 
 class SourceProvider extends BaseModel {
   List<BaseSourceModel> sources = [];

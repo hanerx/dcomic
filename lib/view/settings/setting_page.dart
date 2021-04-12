@@ -1,15 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/generated/l10n.dart';
-import 'package:flutterdmzj/model/systemSettingModel.dart';
-import 'package:flutterdmzj/view/settings/about_setting_page.dart';
-import 'package:flutterdmzj/view/settings/debug_setting_page.dart';
-import 'package:flutterdmzj/view/settings/download_setting_page.dart';
-import 'package:flutterdmzj/view/settings/ipfs_setting_page.dart';
-import 'package:flutterdmzj/view/settings/lab_setting_page.dart';
-import 'package:flutterdmzj/view/settings/reader_setting_page.dart';
-import 'package:flutterdmzj/view/settings/source_setting_page.dart';
-import 'package:flutterdmzj/view/settings/user_setting_page.dart';
+import 'package:dcomic/generated/l10n.dart';
+import 'package:dcomic/model/systemSettingModel.dart';
+import 'package:dcomic/view/settings/about_setting_page.dart';
+import 'package:dcomic/view/settings/debug_setting_page.dart';
+import 'package:dcomic/view/settings/download_setting_page.dart';
+import 'package:dcomic/view/settings/ipfs_setting_page.dart';
+import 'package:dcomic/view/settings/lab_setting_page.dart';
+import 'package:dcomic/view/settings/reader_setting_page.dart';
+import 'package:dcomic/view/settings/source_setting_page.dart';
+import 'package:dcomic/view/settings/user_setting_page.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:provider/provider.dart';
 

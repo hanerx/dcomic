@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/component/DataBaseDefineTile.dart';
-import 'package:flutterdmzj/component/DataBaseTable.dart';
-import 'package:flutterdmzj/database/databaseCommon.dart';
-import 'package:flutterdmzj/model/baseModel.dart';
+import 'package:dcomic/component/DataBaseDefineTile.dart';
+import 'package:dcomic/component/DataBaseTable.dart';
+import 'package:dcomic/database/databaseCommon.dart';
+import 'package:dcomic/model/baseModel.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseDetailModel extends BaseModel{

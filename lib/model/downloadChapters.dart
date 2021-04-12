@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/database/downloader.dart';
-import 'package:flutterdmzj/model/baseModel.dart';
-import 'package:flutterdmzj/model/comic_source/sourceProvider.dart';
-import 'package:flutterdmzj/view/comic_viewer.dart';
+import 'package:dcomic/database/downloader.dart';
+import 'package:dcomic/model/baseModel.dart';
+import 'package:dcomic/model/comic_source/sourceProvider.dart';
+import 'package:dcomic/view/comic_viewer.dart';
 import 'package:provider/provider.dart';
 
 import 'comic_source/baseSourceModel.dart';

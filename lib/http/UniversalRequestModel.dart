@@ -1,8 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:dio_proxy/dio_proxy.dart';
-import 'package:flutterdmzj/http/KuKuRequestHandler.dart';
-import 'package:flutterdmzj/http/ManHuaGuiRequestHandler.dart';
+import 'package:dcomic/http/DMZJRequestHandler.dart';
+import 'package:dcomic/http/KuKuRequestHandler.dart';
+import 'package:dcomic/http/ManHuaGuiRequestHandler.dart';
 import 'package:gbk_codec/gbk_codec.dart';
 
 import 'MangabzRequestHandler.dart';
@@ -24,6 +25,10 @@ class UniversalRequestModel {
 
   KKKKRequestHandler kkkkRequestHandler3 =
       KKKKRequestHandler('http://comic3.kkkkdm.com/');
+
+  DMZJRequestHandler dmzjRequestHandler = DMZJRequestHandler();
+
+  DMZJIRequestHandler dmzjiRequestHandler = DMZJIRequestHandler();
 }
 
 abstract class RequestHandler {
@@ -44,14 +49,12 @@ abstract class RequestHandler {
     return gbk_bytes.encode(requestString);
   }
 
-  Future<int> ping({String path:'/'}) async {
+  Future<int> ping({String path: '/'}) async {
     DateTime now = DateTime.now();
-    try{
+    try {
       await dio.get(path);
       return DateTime.now().millisecondsSinceEpoch - now.millisecondsSinceEpoch;
-    }catch(e){
-
-    }
+    } catch (e) {}
     return -1;
   }
 }

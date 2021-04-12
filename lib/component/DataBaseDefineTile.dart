@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/database/databaseCommon.dart';
+import 'package:dcomic/database/databaseCommon.dart';
 
 class DatabaseDefineTile extends StatelessWidget {
   final DatabaseStaticModel model;

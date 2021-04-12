@@ -2,8 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_parallax/flutter_parallax.dart';
-import 'package:flutterdmzj/http/http.dart';
-import 'package:flutterdmzj/view/comic_detail_page.dart';
+import 'package:dcomic/http/http.dart';
+import 'package:dcomic/view/comic_detail_page.dart';
 
 
 class SubjectDetailPage extends StatefulWidget {

@@ -3,75 +3,106 @@ import 'package:sqflite/sqflite.dart';
 class DatabaseCommon {
   static Map<String, DatabaseStaticModel> databases = {
     'cookies': DatabaseStaticModel(
-        1, {'id': 'INTEGER PRIMARY KEY', 'key': 'TEXT', 'value': 'TEXT'}),
+        1,
+        {
+          'id': 'INTEGER PRIMARY KEY',
+          'key': 'TEXT',
+          'value': 'TEXT',
+          'provider': "TEXT"
+        },
+        16),
     'configures': DatabaseStaticModel(
-        1, {'id': 'INTEGER PRIMARY KEY', 'key': 'TEXT', 'value': 'TEXT'}),
-    'history': DatabaseStaticModel(
-        1, {'id': 'INTEGER PRIMARY KEY', 'name': 'TEXT', 'value': 'TEXT'}),
-    'unread': DatabaseStaticModel(1, {
-      'id': 'INTEGER PRIMARY KEY',
-      'comicId': 'TEXT',
-      'timestamp': 'INTEGER'
-    }),
-    'local_history': DatabaseStaticModel(1, {
-      'id': 'INTEGER PRIMARY KEY',
-      'comicId': 'TEXT',
-      'timestamp': 'INTEGER',
-      'cover': 'TEXT',
-      'title': 'TEXT',
-      'last_chapter': 'TEXT',
-      'last_chapter_id': 'TEXT'
-    }),
-    'download_comic_info': DatabaseStaticModel(10, {
-      'id': 'INTEGER PRIMARY KEY',
-      'comicId': 'TEXT',
-      'cover': 'TEXT',
-      'title': 'TEXT'
-    }),
-    'download_chapter_info': DatabaseStaticModel(10, {
-      'id': 'INTEGER PRIMARY KEY',
-      'comicId': 'TEXT',
-      'chapterId': 'TEXT',
-      'tasks': 'TEXT',
-      'title': 'TEXT',
-      'data': 'TEXT'
-    }),
-    'tracking_comic_info': DatabaseStaticModel(12, {
-      'id': 'INTEGER PRIMARY KEY',
-      'comicId': 'TEXT',
-      'title': 'TEXT',
-      'cover': 'TEXT',
-      'data': 'TEXT'
-    }),
-    'source_options': DatabaseStaticModel(13, {
-      'id': 'INTEGER PRIMARY KEY',
-      'source_name': 'TEXT',
-      'key': 'TEXT',
-      'value': 'TEXT'
-    }),
-    'comic_bounding': DatabaseStaticModel(14, {
-      'id': 'INTEGER PRIMARY KEY',
-      'comic_id': 'TEXT',
-      'bound_id': 'TEXT',
-      'source_name': 'TEXT'
-    }),
-    'comic_history': DatabaseStaticModel(15, {
-      'id': "INTEGER PRIMARY KEY",
-      'raw_comic_id': 'TEXT',
-      'comic_id': 'TEXT',
-      'source_name': 'TEXT',
-      'timestamp': 'INTEGER',
-      'cover': 'TEXT',
-      'title': 'TEXT',
-      'last_chapter': 'TEXT',
-      'last_chapter_id': 'TEXT'
-    })
+        1, {'id': 'INTEGER PRIMARY KEY', 'key': 'TEXT', 'value': 'TEXT'}, null),
+    'history': DatabaseStaticModel(1,
+        {'id': 'INTEGER PRIMARY KEY', 'name': 'TEXT', 'value': 'TEXT'}, null),
+    'unread': DatabaseStaticModel(
+        1,
+        {
+          'id': 'INTEGER PRIMARY KEY',
+          'comicId': 'TEXT',
+          'timestamp': 'INTEGER'
+        },
+        null),
+    'local_history': DatabaseStaticModel(
+        1,
+        {
+          'id': 'INTEGER PRIMARY KEY',
+          'comicId': 'TEXT',
+          'timestamp': 'INTEGER',
+          'cover': 'TEXT',
+          'title': 'TEXT',
+          'last_chapter': 'TEXT',
+          'last_chapter_id': 'TEXT'
+        },
+        null),
+    'download_comic_info': DatabaseStaticModel(
+        10,
+        {
+          'id': 'INTEGER PRIMARY KEY',
+          'comicId': 'TEXT',
+          'cover': 'TEXT',
+          'title': 'TEXT'
+        },
+        null),
+    'download_chapter_info': DatabaseStaticModel(
+        10,
+        {
+          'id': 'INTEGER PRIMARY KEY',
+          'comicId': 'TEXT',
+          'chapterId': 'TEXT',
+          'tasks': 'TEXT',
+          'title': 'TEXT',
+          'data': 'TEXT'
+        },
+        null),
+    'tracking_comic_info': DatabaseStaticModel(
+        12,
+        {
+          'id': 'INTEGER PRIMARY KEY',
+          'comicId': 'TEXT',
+          'title': 'TEXT',
+          'cover': 'TEXT',
+          'data': 'TEXT'
+        },
+        null),
+    'source_options': DatabaseStaticModel(
+        13,
+        {
+          'id': 'INTEGER PRIMARY KEY',
+          'source_name': 'TEXT',
+          'key': 'TEXT',
+          'value': 'TEXT'
+        },
+        null),
+    'comic_bounding': DatabaseStaticModel(
+        14,
+        {
+          'id': 'INTEGER PRIMARY KEY',
+          'comic_id': 'TEXT',
+          'bound_id': 'TEXT',
+          'source_name': 'TEXT'
+        },
+        null),
+    'comic_history': DatabaseStaticModel(
+        15,
+        {
+          'id': "INTEGER PRIMARY KEY",
+          'raw_comic_id': 'TEXT',
+          'comic_id': 'TEXT',
+          'source_name': 'TEXT',
+          'timestamp': 'INTEGER',
+          'cover': 'TEXT',
+          'title': 'TEXT',
+          'last_chapter': 'TEXT',
+          'last_chapter_id': 'TEXT'
+        },
+        null)
   };
 
-  static String databaseFileName='dmzj_2.db';
+  static String databaseFileName = 'dmzj_2.db';
 
   static Future<Database> initDatabase() async {
-    return await openDatabase(databaseFileName, version: 15,
+    return await openDatabase(databaseFileName, version: 16,
         onCreate: (Database db, int version) async {
       // await db.execute(
       //     "CREATE TABLE cookies (id INTEGER PRIMARY KEY, key TEXT, value TEXT)");
@@ -101,6 +132,13 @@ class DatabaseCommon {
         if (value.version > version && value.version <= newVersion) {
           db.execute('CREATE TABLE $key ($value)');
           print('CREATE TABLE $key ($value)');
+        } else if (value.rebuildVersion != null &&
+            value.rebuildVersion > version &&
+            value.rebuildVersion <= newVersion) {
+          db
+              .execute('DROP TABLE $key')
+              .then((_) => db.execute("CREATE TABLE $key ($value)"));
+          print('REBUILD TABLE $key ($value)');
         }
       });
     });
@@ -114,8 +152,9 @@ class DatabaseCommon {
 class DatabaseStaticModel {
   final int version;
   final Map<String, String> tables;
+  final int rebuildVersion;
 
-  DatabaseStaticModel(this.version, this.tables);
+  DatabaseStaticModel(this.version, this.tables, this.rebuildVersion);
 
   @override
   String toString() {

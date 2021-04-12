@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/database/database.dart';
-import 'package:flutterdmzj/model/systemSettingModel.dart';
-import 'package:flutterdmzj/view/favorite/comic_favorite_page.dart';
-import 'package:flutterdmzj/view/favorite/novel_favorite_page.dart';
-import 'package:flutterdmzj/view/favorite/tracker_favorite_page.dart';
+import 'package:dcomic/database/database.dart';
+import 'package:dcomic/model/systemSettingModel.dart';
+import 'package:dcomic/view/favorite/comic_favorite_page.dart';
+import 'package:dcomic/view/favorite/novel_favorite_page.dart';
+import 'package:dcomic/view/favorite/tracker_favorite_page.dart';
 import 'package:provider/provider.dart';
 
 class FavoritePage extends StatefulWidget {

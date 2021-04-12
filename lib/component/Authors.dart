@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/view/author_page.dart';
+import 'package:dcomic/view/author_page.dart';
 
 class Authors extends StatelessWidget{
   final List tags;

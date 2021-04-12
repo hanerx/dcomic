@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/database/configDatabaseProvider.dart';
-import 'package:flutterdmzj/database/database.dart';
-import 'package:flutterdmzj/model/baseModel.dart';
+import 'package:dcomic/database/configDatabaseProvider.dart';
+import 'package:dcomic/database/database.dart';
+import 'package:dcomic/model/baseModel.dart';
 
 class ComicViewerSettingModel extends BaseModel {
   bool _direction = false;
