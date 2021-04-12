@@ -21,7 +21,14 @@ class DatabaseDefineTile extends StatelessWidget {
             style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.normal,
-                color: ListTileTheme.of(context).textColor))
+                color: ListTileTheme.of(context).textColor)),
+        TextSpan(text: ' '),
+        TextSpan(
+            text: '重构版本：${model.rebuildVersion} 弃用版本：${model.dropVersion}',
+            style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.normal,
+                color: ListTileTheme.of(context).textColor)),
       ])),
       subtitle: ListView(
         shrinkWrap: true,
@@ -29,7 +36,11 @@ class DatabaseDefineTile extends StatelessWidget {
         children: model.tables.keys
                 .map<Widget>((e) => ListTile(
                       dense: true,
-                      title: Text('$e',style: TextStyle(color: Theme.of(context).textSelectionColor),),
+                      title: Text(
+                        '$e',
+                        style: TextStyle(
+                            color: Theme.of(context).textSelectionColor),
+                      ),
                       subtitle: Text('${model.tables[e]}'),
                     ))
                 .toList() +

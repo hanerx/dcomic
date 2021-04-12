@@ -20,22 +20,13 @@ class FavoritePage extends StatefulWidget {
 }
 
 class _FavoritePage extends State<FavoritePage> {
-  bool novel = false;
 
   _FavoritePage();
 
-  getNovel() async {
-    DataBase dataBase = DataBase();
-    bool state = await dataBase.getNovelState();
-    setState(() {
-      novel = state;
-    });
-  }
 
   @override
   initState() {
     super.initState();
-    getNovel();
   }
 
 //  @override
@@ -72,7 +63,7 @@ class _FavoritePage extends State<FavoritePage> {
       tabs.add(Tab(text: '黑匣子',));
       list.add(TrackerFavoritePage());
     }
-    if (novel) {
+    if (Provider.of<SystemSettingModel>(context,listen: false).novel) {
       tabs.add(Tab(
         text: '轻小说',
       ));

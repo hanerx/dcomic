@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dcomic/component/EmptyView.dart';
 import 'package:flutter/material.dart';
 import 'package:dcomic/component/DataBaseDefineTile.dart';
 import 'package:dcomic/component/DataBaseTable.dart';
@@ -60,7 +61,7 @@ class DatabaseDetailModel extends BaseModel{
   }
 
   List<Widget> getTabViews(context){
-    return tabs.map<Widget>((e) => DataBaseTable(headers:DatabaseCommon.databases[e].tables.keys.toList(),data: data[e],table: e,)).toList();
+    return tabs.map<Widget>((e) =>DatabaseCommon.databases[e].dropVersion==null||DatabaseCommon.databases[e].dropVersion>version?DataBaseTable(headers:DatabaseCommon.databases[e].tables.keys.toList(),data: data[e],table: e,):EmptyView()).toList();
   }
 
   Widget getDatabaseDefine(context,index){

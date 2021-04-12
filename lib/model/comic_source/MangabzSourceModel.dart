@@ -100,7 +100,7 @@ class MangabzSourceModel extends BaseSourceModel {
             <Map<String, dynamic>>[
               {'data': chapters, 'title': 'Mangabz连载'}
             ],
-            _options);
+            _options,type);
       }
     } catch (e) {
       throw ComicLoadingError();
@@ -329,6 +329,7 @@ class MangabzComicDetail extends ComicDetail {
   final List _tags;
   final List _chapters;
   final MangabzSourceOptions options;
+  final SourceDetail sourceDetail;
 
   MangabzComicDetail(
       this._title,
@@ -340,7 +341,7 @@ class MangabzComicDetail extends ComicDetail {
       this._updateTime,
       this._tags,
       this._chapters,
-      this.options);
+      this.options, this.sourceDetail);
 
   @override
   String toString() {

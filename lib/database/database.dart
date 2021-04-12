@@ -38,6 +38,7 @@ class DataBase {
     return await batch.commit();
   }
 
+  @Deprecated('和local_history冲突，应该废弃')
   insertHistory(String comicId, String chapterId) async {
     await initDataBase();
     var batch = _database.batch();
@@ -46,6 +47,7 @@ class DataBase {
     await batch.commit();
   }
 
+  @Deprecated('改为新模式')
   addReadHistory(String comicId, String title, String cover, String lastChapter,
       String lastChapterId, int timestamp) async {
     await initDataBase();
@@ -62,6 +64,7 @@ class DataBase {
     await batch.commit();
   }
 
+  @Deprecated('改为新模式')
   getReadHistory() async {
     await initDataBase();
     var batch = _database.batch();
@@ -69,6 +72,7 @@ class DataBase {
     return batch.commit();
   }
 
+  @Deprecated('和local_history冲突，应该废弃')
   getHistory(String comicId) async {
     await initDataBase();
     var batch = _database.batch();
@@ -81,6 +85,7 @@ class DataBase {
     }
   }
 
+  @Deprecated('改为新模式')
   insertUnread(String comicId, int timestamp) async {
     await initDataBase();
     var batch = _database.batch();
@@ -89,6 +94,7 @@ class DataBase {
     await batch.commit();
   }
 
+  @Deprecated('改为新模式')
   getUnread(String comicId) async {
     await initDataBase();
     var batch = _database.batch();
@@ -97,6 +103,7 @@ class DataBase {
     return data.first;
   }
 
+  @Deprecated('改为新模式')
   getAllUnread() async {
     await initDataBase();
     var batch = _database.batch();
@@ -109,6 +116,7 @@ class DataBase {
     return map;
   }
 
+  @Deprecated('没用的接口')
   getMy() async {
     await initDataBase();
     var batch = _database.batch();
@@ -117,6 +125,7 @@ class DataBase {
     return result.first;
   }
 
+  @Deprecated('改用其他设计')
   setLoginState(bool state) async {
     await initDataBase();
     var batch = _database.batch();
@@ -125,6 +134,7 @@ class DataBase {
     await batch.commit();
   }
 
+  @Deprecated('改用其他设计')
   setUid(String uid) async {
     await initDataBase();
     var batch = _database.batch();
@@ -133,6 +143,7 @@ class DataBase {
     await batch.commit();
   }
 
+  @Deprecated('改用其他设计')
   getUid() async {
     await initDataBase();
     var batch = _database.batch();
@@ -146,6 +157,7 @@ class DataBase {
     return '';
   }
 
+  @Deprecated('改用其他设计')
   getLoginState() async {
     await initDataBase();
     var batch = _database.batch();

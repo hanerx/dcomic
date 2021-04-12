@@ -99,7 +99,8 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
             tags,
             title,
             updateTime,
-            _options);
+            _options,
+            type);
       }
     } catch (e) {
       throw ComicLoadingError(exception: e);
@@ -427,6 +428,7 @@ class ManHuaGuiComicDetail extends ComicDetail {
   final String _title;
   final String _updateTime;
   final ManHuaGuiSourceOptions options;
+  final SourceDetail sourceDetail;
 
   ManHuaGuiComicDetail(
       this._authors,
@@ -438,7 +440,8 @@ class ManHuaGuiComicDetail extends ComicDetail {
       this._tags,
       this._title,
       this._updateTime,
-      this.options);
+      this.options,
+      this.sourceDetail);
 
   @override
   // TODO: implement authors

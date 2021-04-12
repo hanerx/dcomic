@@ -1,3 +1,4 @@
+import 'package:dcomic/database/historyDatabaseProvider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dcomic/model/baseModel.dart';
@@ -113,6 +114,12 @@ abstract class ComicDetail extends BaseModel {
   String get historyChapter;
 
   Map<String, String> get headers;
+
+  Future<void> updateUnreadState()async{
+    await HistoryDatabaseProvider(sourceDetail.name).addUnread(comicId, DateTime.now().millisecondsSinceEpoch);
+  }
+
+  SourceDetail get sourceDetail;
 
   @override
   String toString() {

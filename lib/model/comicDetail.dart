@@ -96,12 +96,8 @@ class ComicDetailModel extends BaseModel {
 
   Future<void> addReadHistory(comicId) async {
     // 添加历史记录
-    DataBase dataBase = DataBase();
-    dataBase.insertUnread(comicId, DateTime.now().millisecondsSinceEpoch);
-    bool loginState = await dataBase.getLoginState();
-    if (loginState) {
-      CustomHttp http = CustomHttp();
-      http.setUpRead(comicId);
+    if (detail != null) {
+      await detail.updateUnreadState();
     }
   }
 
@@ -221,7 +217,7 @@ class ComicDetailModel extends BaseModel {
     if (state) {
       CustomHttp http = CustomHttp();
       var response = await http.getComic(comicId, chapterId);
-      var path=await SystemConfigDatabaseProvider().downloadPath;
+      var path = await SystemConfigDatabaseProvider().downloadPath;
 
       List data = <String>[];
       if (response.statusCode == 200) {

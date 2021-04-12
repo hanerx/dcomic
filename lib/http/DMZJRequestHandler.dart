@@ -1,6 +1,25 @@
+import 'package:dcomic/database/cookieDatabaseProvider.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:dcomic/http/UniversalRequestModel.dart';
+
+class CookiesRequestHandler extends SingleDomainRequestHandler {
+  final String name;
+
+  CookiesRequestHandler(this.name, String baseUrl) : super(baseUrl);
+
+  Future<Options> setHeader() async {
+    var cookies = await CookieDatabaseProvider(name).getAll();
+    var cookie = '';
+    for (var item in cookies.first) {
+      cookie += item['key'] + '=' + item['value'].split(';')[0] + ';';
+    }
+    Map<String, dynamic> headers = new Map();
+    headers['Cookie'] = cookie;
+    Options options = new Options(headers: headers);
+    return options;
+  }
+}
 
 class DMZJRequestHandler extends SingleDomainRequestHandler {
   DMZJRequestHandler() : super('https://v3api.dmzj1.com');
@@ -40,4 +59,13 @@ class DMZJIRequestHandler extends SingleDomainRequestHandler {
 
 class DMZJMobileRequestHandler extends SingleDomainRequestHandler {
   DMZJMobileRequestHandler() : super('https://m.dmzj.com');
+}
+
+class DMZJInterfaceRequestHandler extends CookiesRequestHandler {
+  DMZJInterfaceRequestHandler() : super('dmzj', 'https://interface.dmzj.com');
+
+  Future<Response> updateUnread(String comicId) async {
+    return dio.get('/api/subscribe/upread?sub_id=$comicId',
+        options: await setHeader());
+  }
 }

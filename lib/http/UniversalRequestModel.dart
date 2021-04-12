@@ -29,6 +29,8 @@ class UniversalRequestModel {
   DMZJRequestHandler dmzjRequestHandler = DMZJRequestHandler();
 
   DMZJIRequestHandler dmzjiRequestHandler = DMZJIRequestHandler();
+
+  DMZJInterfaceRequestHandler dmzjInterfaceRequestHandler =DMZJInterfaceRequestHandler();
 }
 
 abstract class RequestHandler {

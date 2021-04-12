@@ -1,3 +1,4 @@
+import 'package:dcomic/database/sourceDatabaseProvider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dcomic/database/database.dart';
@@ -39,12 +40,11 @@ class NovelDetailModel extends BaseModel {
 
   Future<void> getIfSubscribe(novelID) async {
     //获取登录状态
-    DataBase dataBase = DataBase();
-    login = await dataBase.getLoginState();
+    login=await SourceDatabaseProvider.getSourceOption<bool>('dmzj', 'login');
     //确认登录状态
     if (login) {
       //获取UID
-      uid = await dataBase.getUid();
+      uid = await SourceDatabaseProvider.getSourceOption('dmzj', 'uid');
       //获取订阅信息
       CustomHttp http = CustomHttp();
       var response = await http.getIfSubscribe(novelID.toString(), uid,type: 1);

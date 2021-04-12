@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dcomic/database/sourceDatabaseProvider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -37,10 +38,9 @@ class _CloudHistoryTab extends State<CloudHistoryTab> {
   }
 
   initLoginState() async {
-    DataBase dataBase = DataBase();
-    var login = await dataBase.getLoginState();
+    bool login=await SourceDatabaseProvider.getSourceOption<bool>('dmzj', 'login');
     if (login) {
-      uid = await dataBase.getUid();
+      uid = await SourceDatabaseProvider.getSourceOption('dmzj', 'uid');
       getHistory();
       if(mounted){
         setState(() {

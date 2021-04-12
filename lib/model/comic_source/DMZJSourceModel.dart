@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dcomic/database/historyDatabaseProvider.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:dcomic/database/cookieDatabaseProvider.dart';
@@ -59,8 +60,8 @@ class DMZJSourceModel extends BaseSourceModel {
         var chapters = response.data['chapters']
             .map<Map<String, dynamic>>((e) => e as Map<String, dynamic>)
             .toList();
-        DataBase dataBase = DataBase();
-        var lastChapterId = await dataBase.getHistory(comicId);
+        var lastChapterId = (await HistoryDatabaseProvider(this.type.name)
+            .getReadHistory(comicId))['lastChapterId'];
         return DMZJComicDetail(
             comicId,
             description,
@@ -74,7 +75,8 @@ class DMZJSourceModel extends BaseSourceModel {
             status,
             updateDate,
             options,
-            lastChapterId);
+            lastChapterId,
+            type);
       }
     } catch (e) {
       if (_options.backupApi) {
@@ -117,10 +119,10 @@ class DMZJSourceModel extends BaseSourceModel {
             'title': '备用API'
           }
         ];
-        DataBase dataBase = DataBase();
-        var lastChapterId = await dataBase.getHistory(comicId);
+        var lastChapterId = (await HistoryDatabaseProvider(this.type.name)
+            .getReadHistory(comicId))['lastChapterId'];
         return DMZJComicDetail(comicId, description, 0, 0, title, cover, author,
-            types, chapters, status, updateDate, options, lastChapterId);
+            types, chapters, status, updateDate, options, lastChapterId,type);
       }
     } catch (e) {
       logger.w(
@@ -221,10 +223,11 @@ class DMZJUserConfig extends UserConfig {
   }
 
   Future<void> init() async {
-    _status =
-        await SourceDatabaseProvider.getSourceOption<bool>('dmzj', 'login',defaultValue: false)
-            ? UserStatus.login
-            : UserStatus.logout;
+    _status = await SourceDatabaseProvider.getSourceOption<bool>(
+            'dmzj', 'login',
+            defaultValue: false)
+        ? UserStatus.login
+        : UserStatus.logout;
     if (_status == UserStatus.login) {
       _uid =
           await SourceDatabaseProvider.getSourceOption<String>('dmzj', 'uid');
@@ -471,8 +474,9 @@ class DMZJUserConfig extends UserConfig {
                   _uid = list[0];
                   _status = UserStatus.login;
                   try {
-                    var response =
-                    await UniversalRequestModel().dmzjRequestHandler.getUserInfo(_uid);
+                    var response = await UniversalRequestModel()
+                        .dmzjRequestHandler
+                        .getUserInfo(_uid);
                     if (response.statusCode == 200) {
                       _avatar = response.data['cover'];
                       _nickname = response.data['nickname'];
@@ -523,8 +527,9 @@ class DMZJUserConfig extends UserConfig {
             _uid = list[0];
             _status = UserStatus.login;
             try {
-              var response =
-              await UniversalRequestModel().dmzjRequestHandler.getUserInfo(_uid);
+              var response = await UniversalRequestModel()
+                  .dmzjRequestHandler
+                  .getUserInfo(_uid);
               if (response.statusCode == 200) {
                 _avatar = response.data['cover'];
                 _nickname = response.data['nickname'];
@@ -634,8 +639,8 @@ class DMZJWebSourceModel extends DMZJSourceModel {
           }
           chapters.add({"data": chapterList, 'title': item['title']});
         }
-        DataBase dataBase = DataBase();
-        var lastChapterId = await dataBase.getHistory(comicId);
+        var lastChapterId = (await HistoryDatabaseProvider(this.type.name)
+            .getReadHistory(comicId))['lastChapterId'];
         return DMZJComicDetail(
             comicId,
             description,
@@ -649,7 +654,8 @@ class DMZJWebSourceModel extends DMZJSourceModel {
             status,
             updateDate,
             options,
-            lastChapterId);
+            lastChapterId,
+            type);
       }
     } catch (e) {
       if (_options.backupApi) {
@@ -678,9 +684,9 @@ class DMZJWebSourceModel extends DMZJSourceModel {
 
   @override
   // TODO: implement userConfig
-  UserConfig get userConfig => InactiveUserConfig(this.type,message: '请使用动漫之家默认用户管理，网页端与默认端同步');
+  UserConfig get userConfig =>
+      InactiveUserConfig(this.type, message: '请使用动漫之家默认用户管理，网页端与默认端同步');
 }
-
 
 class DMZJConfigProvider extends SourceOptionsProvider {
   final DMZJSourceOptions options;
@@ -822,6 +828,7 @@ class DMZJComicDetail extends ComicDetail {
   final String _updateTime;
   final DMZJSourceOptions options;
   final String _historyChapter;
+  final SourceDetail sourceDetail;
 
   DMZJComicDetail(
       this._comicId,
@@ -836,7 +843,8 @@ class DMZJComicDetail extends ComicDetail {
       this._status,
       this._updateTime,
       this.options,
-      this._historyChapter);
+      this._historyChapter,
+      this.sourceDetail);
 
   @override
   // TODO: implement comicId
@@ -855,7 +863,7 @@ class DMZJComicDetail extends ComicDetail {
     for (var item in _chapters) {
       for (var chapter in item['data']) {
         if (chapter['chapter_id'].toString() == chapterId) {
-          return DMZJComic(_comicId, chapterId, item['data'], options);
+          return DMZJComic(_comicId, chapterId, item['data'], options, this);
         }
       }
     }
@@ -907,6 +915,16 @@ class DMZJComicDetail extends ComicDetail {
   @override
   // TODO: implement headers
   Map<String, String> get headers => {'referer': 'http://images.dmzj.com'};
+
+  @override
+  Future<void> updateUnreadState() async{
+    // TODO: implement updateUnreadState
+    bool login=await SourceDatabaseProvider.getSourceOption(sourceDetail.name, 'login');
+    if(login){
+        UniversalRequestModel().dmzjInterfaceRequestHandler.updateUnread(comicId);
+    }
+    return super.updateUnreadState();
+  }
 }
 
 class DMZJComic extends Comic {
@@ -914,6 +932,7 @@ class DMZJComic extends Comic {
   final String _chapterId;
   final List _chapters;
   final DMZJSourceOptions options;
+  final DMZJComicDetail _detail;
   List<String> _pages = [];
   String _title;
   List<String> _chapterIdList;
@@ -924,7 +943,8 @@ class DMZJComic extends Comic {
   String _next;
   String _pageAt;
 
-  DMZJComic(this._comicId, this._chapterId, this._chapters, this.options) {
+  DMZJComic(this._comicId, this._chapterId, this._chapters, this.options,
+      this._detail) {
     _chapterIdList = _chapters
         .map<String>((value) => value['chapter_id'].toString())
         .toList();
@@ -1132,13 +1152,14 @@ class DMZJComic extends Comic {
     if (comicId == null || chapterId == null) {
       throw IDInvalidError();
     }
-    DataBase dataBase = DataBase();
-    await dataBase.insertHistory(comicId, chapterId);
-    var login = await dataBase.getLoginState();
+    HistoryDatabaseProvider('dmzj').addReadHistory(comicId, _detail.title,
+        _detail.cover, title, pageAt, DateTime.now().millisecondsSinceEpoch);
+    bool login =
+        await SourceDatabaseProvider.getSourceOption<bool>('dmzj', 'login');
     //确认登录状态
     if (login) {
       //获取UID
-      var uid = await dataBase.getUid();
+      var uid = await SourceDatabaseProvider.getSourceOption('dmzj', 'uid');
       CustomHttp http = CustomHttp();
       http.addHistoryNew(int.parse(comicId), uid, int.parse(chapterId),
           page: page);
