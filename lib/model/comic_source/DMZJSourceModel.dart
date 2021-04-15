@@ -60,8 +60,9 @@ class DMZJSourceModel extends BaseSourceModel {
         var chapters = response.data['chapters']
             .map<Map<String, dynamic>>((e) => e as Map<String, dynamic>)
             .toList();
-        var lastChapterId = (await HistoryDatabaseProvider(this.type.name)
-            .getReadHistory(comicId))['lastChapterId'];
+        var history = (await HistoryDatabaseProvider(this.type.name)
+            .getReadHistory(comicId));
+        var lastChapterId = history == null ? null : history['lastChapterId'];
         return DMZJComicDetail(
             comicId,
             description,
@@ -119,10 +120,11 @@ class DMZJSourceModel extends BaseSourceModel {
             'title': '备用API'
           }
         ];
-        var lastChapterId = (await HistoryDatabaseProvider(this.type.name)
-            .getReadHistory(comicId))['lastChapterId'];
+        var history = (await HistoryDatabaseProvider(this.type.name)
+            .getReadHistory(comicId));
+        var lastChapterId = history == null ? null : history['lastChapterId'];
         return DMZJComicDetail(comicId, description, 0, 0, title, cover, author,
-            types, chapters, status, updateDate, options, lastChapterId,type);
+            types, chapters, status, updateDate, options, lastChapterId, type);
       }
     } catch (e) {
       logger.w(
@@ -159,7 +161,7 @@ class DMZJSourceModel extends BaseSourceModel {
   @override
   // TODO: implement type
   SourceDetail get type => SourceDetail('dmzj', '默认-动漫之家', '默认数据提供商，不可关闭',
-      false, SourceType.LocalDecoderSource, false);
+      false, SourceType.LocalDecoderSource, false,true);
 
   @override
   Widget getSettingWidget(context) {
@@ -210,6 +212,45 @@ class DMZJSourceModel extends BaseSourceModel {
   @override
   // TODO: implement userConfig
   UserConfig get userConfig => _userConfig;
+
+  @override
+  Future<List<FavoriteComic>> getFavoriteComics(int page) async {
+    // TODO: implement getFavoriteComics
+    if (_userConfig.status == UserStatus.login) {
+      try {
+        var response = await UniversalRequestModel()
+            .dmzjRequestHandler
+            .getSubscribe(
+                await SourceDatabaseProvider.getSourceOption<int>(type.name, 'uid'),
+                page);
+        if (response.statusCode == 200) {
+          var data = await HistoryDatabaseProvider('dmzj').getAllUnread();
+          var unreadList = <String, int>{};
+          for (var item in data.first) {
+            unreadList[item['comicId']] = item['timestamp'];
+          }
+          for (var item in response.data) {
+            bool unread = item['sub_readed'] == 0;
+            if (unreadList[item['id'].toString()] != null &&
+                unreadList[item['id'].toString()] >=
+                    item['sub_uptime'] * 1000) {
+              unread = false;
+            }
+            item['unread'] = unread;
+          }
+          return response.data
+              .map<FavoriteComic>((e) => FavoriteComic(e['sub_img'], e['name'],
+                  e['sub_update'], e['id'].toString(), this, e['unread']))
+              .toList();
+        }
+      } catch (e) {
+        logger.e(
+            'class: ${this.runtimeType}, action: loadingFavoriteError, exception: $e');
+        throw e;
+      }
+    }
+    throw LoginRequiredError();
+  }
 }
 
 class DMZJUserConfig extends UserConfig {
@@ -639,8 +680,9 @@ class DMZJWebSourceModel extends DMZJSourceModel {
           }
           chapters.add({"data": chapterList, 'title': item['title']});
         }
-        var lastChapterId = (await HistoryDatabaseProvider(this.type.name)
-            .getReadHistory(comicId))['lastChapterId'];
+        var history = (await HistoryDatabaseProvider(this.type.name)
+            .getReadHistory(comicId));
+        var lastChapterId = history == null ? null : history['lastChapterId'];
         return DMZJComicDetail(
             comicId,
             description,
@@ -670,7 +712,7 @@ class DMZJWebSourceModel extends DMZJSourceModel {
   @override
   // TODO: implement type
   SourceDetail get type => SourceDetail('dmzj-web', '动漫之家网页',
-      '使用大妈之家移动网页版的接口，让漫画重新可以看了', true, SourceType.LocalDecoderSource, false);
+      '使用大妈之家移动网页版的接口，让漫画重新可以看了', true, SourceType.LocalDecoderSource, false,false);
 
   @override
   // TODO: implement options
@@ -829,6 +871,7 @@ class DMZJComicDetail extends ComicDetail {
   final DMZJSourceOptions options;
   final String _historyChapter;
   final SourceDetail sourceDetail;
+  bool _isSubscribed;
 
   DMZJComicDetail(
       this._comicId,
@@ -845,6 +888,23 @@ class DMZJComicDetail extends ComicDetail {
       this.options,
       this._historyChapter,
       this.sourceDetail);
+
+  Future<void> getIfSubscribed() async {
+    try {
+      var response = await UniversalRequestModel()
+          .dmzjRequestHandler
+          .getIfSubscribe(
+              comicId,
+              await SourceDatabaseProvider.getSourceOption(
+                  sourceDetail.name, 'uid'));
+      if (response.statusCode == 200) {
+        _isSubscribed = response.data['code'] == 0;
+      }
+    } catch (e) {
+      logger.e(
+          'class: ${this.runtimeType}, action: getSubscribeFailed, excception: $e');
+    }
+  }
 
   @override
   // TODO: implement comicId
@@ -917,13 +977,41 @@ class DMZJComicDetail extends ComicDetail {
   Map<String, String> get headers => {'referer': 'http://images.dmzj.com'};
 
   @override
-  Future<void> updateUnreadState() async{
+  Future<void> updateUnreadState() async {
     // TODO: implement updateUnreadState
-    bool login=await SourceDatabaseProvider.getSourceOption(sourceDetail.name, 'login');
-    if(login){
-        UniversalRequestModel().dmzjInterfaceRequestHandler.updateUnread(comicId);
+    bool login = await SourceDatabaseProvider.getSourceOption<bool>(
+        sourceDetail.name, 'login');
+    if (login) {
+      UniversalRequestModel().dmzjInterfaceRequestHandler.updateUnread(comicId);
     }
     return super.updateUnreadState();
+  }
+
+  @override
+  // TODO: implement isSubscribed
+  bool get isSubscribed => _isSubscribed;
+
+  @override
+  set isSubscribed(bool isSubscribed) {
+    // TODO: implement isSubscribed
+    if (isSubscribed) {
+      SourceDatabaseProvider.getSourceOption(sourceDetail.name, 'uid').then(
+          (value) => UniversalRequestModel()
+              .dmzjRequestHandler
+              .addSubscribe(comicId, value));
+    } else {
+      SourceDatabaseProvider.getSourceOption(sourceDetail.name, 'uid').then(
+          (value) => UniversalRequestModel()
+              .dmzjRequestHandler
+              .cancelSubscribe(comicId, value));
+    }
+    _isSubscribed = isSubscribed;
+  }
+
+  @override
+  String share() {
+    // TODO: implement share
+    return '【$title】 https://m.dmzj.com/info/$comicId.html';
   }
 }
 
@@ -936,7 +1024,7 @@ class DMZJComic extends Comic {
   List<String> _pages = [];
   String _title;
   List<String> _chapterIdList;
-  int _type = 0;
+  PageType _type=PageType.url;
   List _viewPoints = [];
 
   String _previous;
@@ -963,7 +1051,7 @@ class DMZJComic extends Comic {
     if (localData != null) {
       logger.i(
           'action: loadLocalData, chapter: $chapterId, tasks: ${localData.tasks}');
-      _type = 1;
+      _type = PageType.local;
       _title = localData.title;
       List<String> paths = await localData.paths;
       logger.i('action: loadLocalPath, paths: $paths');
@@ -1014,7 +1102,7 @@ class DMZJComic extends Comic {
     }
     await getViewPoint();
     addReadHistory(
-        comicId: comicId, page: 0, chapterTitle: title, chapterId: chapterId);
+        comicId: comicId, page: 0, chapterTitle: _title, chapterId: chapterId);
     notifyListeners();
   }
 
@@ -1046,7 +1134,7 @@ class DMZJComic extends Comic {
     }
     await getViewPoint();
     addReadHistory(
-        comicId: comicId, page: 0, chapterTitle: title, chapterId: chapterId);
+        comicId: comicId, page: 0, chapterTitle: _title, chapterId: chapterId);
     notifyListeners();
   }
 
@@ -1095,7 +1183,7 @@ class DMZJComic extends Comic {
         addReadHistory(
             comicId: comicId,
             page: 0,
-            chapterTitle: title,
+            chapterTitle: _title,
             chapterId: chapterId);
         notifyListeners();
       }
@@ -1152,8 +1240,13 @@ class DMZJComic extends Comic {
     if (comicId == null || chapterId == null) {
       throw IDInvalidError();
     }
-    HistoryDatabaseProvider('dmzj').addReadHistory(comicId, _detail.title,
-        _detail.cover, title, pageAt, DateTime.now().millisecondsSinceEpoch);
+    HistoryDatabaseProvider('dmzj').addReadHistory(
+        comicId,
+        _detail.title,
+        _detail.cover,
+        chapterTitle,
+        pageAt,
+        DateTime.now().millisecondsSinceEpoch ~/ 1000);
     bool login =
         await SourceDatabaseProvider.getSourceOption<bool>('dmzj', 'login');
     //确认登录状态
@@ -1189,7 +1282,7 @@ class DMZJComic extends Comic {
   // TODO: implement chapters
   List get chapters => _chapters;
 
-  int get type => _type;
+  PageType get type => _type;
 
   @override
   // TODO: implement canPrevious

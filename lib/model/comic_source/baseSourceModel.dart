@@ -13,6 +13,15 @@ abstract class BaseSourceModel extends BaseModel {
 
   Widget getSettingWidget(context);
 
+  Future<List<FavoriteComic>> getFavoriteComics(int page);
+
+  Future<List<HistoryComic>> getLocalHistoryComics() async {
+    List item = await HistoryDatabaseProvider(type.name).getReadHistories();
+    return item.first
+        .map<HistoryComic>((e) => HistoryComic.fromMap(e, this, e['timestamp']))
+        .toList();
+  }
+
   SourceDetail get type;
 
   @override
@@ -115,8 +124,15 @@ abstract class ComicDetail extends BaseModel {
 
   Map<String, String> get headers;
 
-  Future<void> updateUnreadState()async{
-    await HistoryDatabaseProvider(sourceDetail.name).addUnread(comicId, DateTime.now().millisecondsSinceEpoch);
+  Future<void> getIfSubscribed();
+
+  bool get isSubscribed;
+
+  set isSubscribed(bool isSubscribed);
+
+  Future<void> updateUnreadState() async {
+    await HistoryDatabaseProvider(sourceDetail.name)
+        .addUnread(comicId, DateTime.now().millisecondsSinceEpoch);
   }
 
   SourceDetail get sourceDetail;
@@ -125,6 +141,8 @@ abstract class ComicDetail extends BaseModel {
   String toString() {
     return 'ComicDetail{title: $title, comicId: $comicId}';
   }
+
+  String share();
 }
 
 abstract class Comic extends BaseModel {
@@ -164,10 +182,12 @@ abstract class Comic extends BaseModel {
 
   Future<void> init();
 
-  int get type;
+  PageType get type;
 
   Future<void> getViewPoint();
 }
+
+enum PageType { local, url, ipfs }
 
 enum SourceType {
   LocalSource,
@@ -183,9 +203,10 @@ class SourceDetail {
   final bool canDisable;
   final SourceType sourceType;
   final bool deprecated;
+  final bool canSubscribe;
 
   SourceDetail(this.name, this.title, this.description, this.canDisable,
-      this.sourceType, this.deprecated);
+      this.sourceType, this.deprecated, this.canSubscribe);
 
   @override
   // TODO: implement hashCode
@@ -243,11 +264,16 @@ class ComicSearchError implements Exception {}
 
 class LoginUsernameOrPasswordError implements Exception {}
 
+class LoginRequiredError implements Exception{}
+
+class FavoriteUnavailableError implements Exception{}
+
 class InactiveUserConfig extends UserConfig {
   final SourceDetail type;
   final String message;
 
-  InactiveUserConfig(this.type,{this.message:'该源不存在用户设置'});
+  InactiveUserConfig(this.type, {this.message: '该源不存在用户设置'});
+
   @override
   // TODO: implement avatar
   String get avatar => '';
@@ -269,17 +295,17 @@ class InactiveUserConfig extends UserConfig {
   Widget getSettingWidget(context) {
     // TODO: implement getSettingWidget
     return Card(
-        child:ListView(
-          shrinkWrap: true,
-          children: [
-            ListTile(
-              leading: Icon(Icons.cloud_off),
-              title: Text('${type.title}用户设置'),
-              subtitle: Text('$message'),
-            )
-          ],
-        ),
-      );
+      child: ListView(
+        shrinkWrap: true,
+        children: [
+          ListTile(
+            leading: Icon(Icons.cloud_off),
+            title: Text('${type.title}用户设置'),
+            subtitle: Text('$message'),
+          )
+        ],
+      ),
+    );
   }
 
   @override
@@ -307,16 +333,32 @@ class InactiveUserConfig extends UserConfig {
   String get userId => '';
 }
 
-abstract class FavoriteComic {
-  String get cover;
+class FavoriteComic {
+  final String cover;
 
-  String get title;
+  final String title;
 
-  String get latestChapter;
+  final String latestChapter;
 
-  String get comicId;
+  final String comicId;
 
-  BaseSourceModel get model;
+  final BaseSourceModel model;
 
-  bool get update;
+  final bool update;
+
+  FavoriteComic(this.cover, this.title, this.latestChapter, this.comicId,
+      this.model, this.update);
+}
+
+class HistoryComic extends FavoriteComic {
+  final int timestamp;
+
+  HistoryComic(String cover, String title, String latestChapter, String comicId,
+      BaseSourceModel model, bool update, this.timestamp)
+      : super(cover, title, latestChapter, comicId, model, update);
+
+  HistoryComic.fromMap(
+      Map<String, dynamic> map, BaseSourceModel model, this.timestamp)
+      : super(map['cover'], map['title'], map['last_chapter'], map['comicId'],
+            model, false);
 }

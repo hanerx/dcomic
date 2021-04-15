@@ -45,10 +45,16 @@ class HistoryDatabaseProvider {
   }
 
   Future<Map> getReadHistory(String comicId) async {
-    var batch = (await db).batch();
-    batch.query("local_history",
-        where: 'comicId = ? AND provider = ?', whereArgs: [comicId, name]);
-    return (await batch.commit()).first;
+    try{
+      var batch = (await db).batch();
+      batch.query("local_history",
+          where: 'comicId = ? AND provider = ?', whereArgs: [comicId, name]);
+      var data=(await batch.commit()).first;
+      return data[0];
+    }catch(e){
+
+    }
+    return null;
   }
 
   Future<void> addUnread(String comicId, int timestamp) async {
@@ -62,14 +68,14 @@ class HistoryDatabaseProvider {
 
   Future<Map> getUnread(String comicId) async {
     var batch = (await db).batch();
-    batch.query('local_history',
+    batch.query('unread',
         where: 'comicId = ? AND provider = ?', whereArgs: [comicId, name]);
     return (await batch.commit()).first;
   }
 
   Future<List> getAllUnread() async {
     var batch = (await db).batch();
-    batch.query('local_history', where: 'provider = ?', whereArgs: [name]);
+    batch.query('unread', where: 'provider = ?', whereArgs: [name]);
     return await batch.commit();
   }
 }

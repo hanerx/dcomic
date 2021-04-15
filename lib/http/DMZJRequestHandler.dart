@@ -3,23 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:dcomic/http/UniversalRequestModel.dart';
 
-class CookiesRequestHandler extends SingleDomainRequestHandler {
-  final String name;
 
-  CookiesRequestHandler(this.name, String baseUrl) : super(baseUrl);
-
-  Future<Options> setHeader() async {
-    var cookies = await CookieDatabaseProvider(name).getAll();
-    var cookie = '';
-    for (var item in cookies.first) {
-      cookie += item['key'] + '=' + item['value'].split(';')[0] + ';';
-    }
-    Map<String, dynamic> headers = new Map();
-    headers['Cookie'] = cookie;
-    Options options = new Options(headers: headers);
-    return options;
-  }
-}
 
 class DMZJRequestHandler extends SingleDomainRequestHandler {
   DMZJRequestHandler() : super('https://v3api.dmzj1.com');
@@ -45,6 +29,13 @@ class DMZJRequestHandler extends SingleDomainRequestHandler {
     FormData formData = FormData.fromMap(
         {"obj_ids": comicId, "uid": uid, 'type': type == 0 ? 'mh' : 'xs'});
     return dio.post('/subscribe/add', data: formData);
+  }
+
+  Future<Response<T>> getSubscribe<T>(int uid, int page, {int type: 0}) {
+    return dio.get(
+        '/UCenter/subscribe?uid=$uid&sub_type=1&letter=all&page=$page&type=$type',
+        options: buildCacheOptions(Duration(minutes: 5),
+            subKey: 'uid=$uid&page=$page&type=$type'));
   }
 }
 

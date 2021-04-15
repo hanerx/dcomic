@@ -47,7 +47,7 @@ class _HomePage extends State<HomePage> {
                       onPressed: () {
                         Navigator.of(context)
                             .push(MaterialPageRoute(builder: (context) {
-                          return FavoritePage(uid);
+                          return FavoritePage();
                         }));
                       },
                       icon: Icon(Icons.arrow_forward_ios),

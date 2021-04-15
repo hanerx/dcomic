@@ -1,3 +1,4 @@
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -7,9 +8,9 @@ import 'package:dcomic/model/comicFavoriteModel.dart';
 import 'package:provider/provider.dart';
 
 class ComicFavoritePage extends StatefulWidget {
-  final String uid;
+  final BaseSourceModel model;
 
-  const ComicFavoritePage({Key key, this.uid}) : super(key: key);
+  const ComicFavoritePage({Key key, this.model}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -29,7 +30,7 @@ class _ComicFavoritePage extends State<ComicFavoritePage> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return ChangeNotifierProvider(
-      create: (_) => ComicFavoriteModel(widget.uid),
+      create: (_) => ComicFavoriteModel(widget.model),
       builder: (context, child) {
         return EasyRefresh(
           firstRefresh: true,
@@ -44,7 +45,7 @@ class _ComicFavoritePage extends State<ComicFavoritePage> {
                 .nextPage();
           },
           emptyWidget: Provider.of<ComicFavoriteModel>(context).empty
-              ? EmptyView()
+              ? EmptyView(message: Provider.of<ComicFavoriteModel>(context).error,)
               : null,
           child: Container(
             padding: EdgeInsets.fromLTRB(2, 7, 2, 0),

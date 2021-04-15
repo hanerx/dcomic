@@ -82,6 +82,7 @@ class _Card extends StatelessWidget {
           child: AspectRatio(
             aspectRatio: 0.75,
             child:CachedNetworkImage(
+              fit: BoxFit.fill,
             imageUrl: '$cover',
             httpHeaders: {'referer': 'http://images.dmzj.com'},
             progressIndicatorBuilder: (context, url, downloadProgress) =>

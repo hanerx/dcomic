@@ -11,6 +11,10 @@ import 'package:fluttericon/font_awesome_icons.dart';
 import 'package:provider/provider.dart';
 
 class EmptyView extends StatelessWidget {
+  final String message;
+
+  const EmptyView({Key key, this.message}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -34,7 +38,7 @@ class EmptyView extends StatelessWidget {
             ),
           ),
           Text(
-            S.of(context).NoData,
+            message == null ? S.of(context).NoData : message,
             style: TextStyle(
                 fontSize: 16.0, color: Theme.of(context).disabledColor),
           ),
@@ -66,7 +70,7 @@ class ComicDetailEmptyView extends StatelessWidget {
       return _buildComicIdNotBoundError(context);
     } on ComicSearchError {
       return _buildComicIdNotBoundError(context);
-    }catch (e) {}
+    } catch (e) {}
     return _buildComicLoadingError(context);
   }
 
@@ -268,7 +272,7 @@ class ComicDetailEmptyView extends StatelessWidget {
                         );
                       }));
               if (flag != null && flag) {
-                Provider.of<ComicDetailModel>(context,listen: false).init();
+                Provider.of<ComicDetailModel>(context, listen: false).init();
               }
             },
           ),

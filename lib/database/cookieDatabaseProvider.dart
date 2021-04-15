@@ -67,8 +67,9 @@ class CookieDatabaseProvider {
     return defaultValue;
   }
 
-  Future getAll()async{
+  Future<List> getAll()async{
     var batch = (await db).batch();
     batch.query("cookies",where: "provider='$name'");
+    return await batch.commit();
   }
 }

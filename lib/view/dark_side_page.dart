@@ -245,7 +245,7 @@ class DarkCustomListTile extends StatelessWidget {
                     null,
                     lastChapterId,
                     SourceDetail('dmzj', '动漫之家-dark', '', false,
-                        SourceType.LocalDecoderSource, false)));
+                        SourceType.LocalDecoderSource, false,false)));
             Navigator.push(context, MaterialPageRoute(builder: (context) {
               return ComicViewPage(
                 comic: comic,

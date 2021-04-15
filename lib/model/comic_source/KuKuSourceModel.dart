@@ -235,11 +235,18 @@ class KuKuSourceModel extends BaseSourceModel {
       'KuKu动漫源，存在四个节点，请根据延迟自行选择。由于采用多线程脚本，可能会导致你被服务器ban掉，所以请轻拿轻放。',
       true,
       SourceType.LocalDecoderSource,
-      false);
+      false,false);
 
   @override
   // TODO: implement userConfig
   UserConfig get userConfig => InactiveUserConfig(this.type);
+
+  @override
+  Future<List<FavoriteComic>> getFavoriteComics(int page) {
+    // TODO: implement getFavoriteComics
+    throw UnimplementedError();
+  }
+
 }
 
 class KuKuOptionsProvider extends SourceOptionsProvider {
@@ -424,6 +431,21 @@ class KuKuComicDetail extends ComicDetail {
   @override
   // TODO: implement updateTime
   String get updateTime => _updateTime;
+
+  @override
+  bool isSubscribed=false;
+
+  @override
+  Future<void> getIfSubscribed() async{
+    // TODO: implement getIfSubscribed
+
+  }
+
+  @override
+  String share() {
+    // TODO: implement share
+    return '【$title】https://manhua.kukudm.com/comiclist/$comicId/';
+  }
 }
 
 class KuKuComic extends Comic {
@@ -434,7 +456,7 @@ class KuKuComic extends Comic {
   List<String> _pages = [];
   String _title;
   List<String> _chapterIdList;
-  int _type = 0;
+  PageType _type=PageType.url;
 
   String _previous;
   String _next;
@@ -627,7 +649,7 @@ class KuKuComic extends Comic {
 
   @override
   // TODO: implement type
-  int get type => _type;
+  PageType get type => _type;
 
   @override
   // TODO: implement viewpoints

@@ -24,7 +24,9 @@ class DatabaseDetailModel extends BaseModel{
     path=_database.path;
     version=await _database.getVersion();
     for(var element in tabs){
-      data[element]=await _database.query(element);
+      if(DatabaseCommon.databases[element].dropVersion==null||DatabaseCommon.databases[element].dropVersion>version){
+        data[element]=await _database.query(element);
+      }
     }
     notifyListeners();
   }
@@ -61,7 +63,7 @@ class DatabaseDetailModel extends BaseModel{
   }
 
   List<Widget> getTabViews(context){
-    return tabs.map<Widget>((e) =>DatabaseCommon.databases[e].dropVersion==null||DatabaseCommon.databases[e].dropVersion>version?DataBaseTable(headers:DatabaseCommon.databases[e].tables.keys.toList(),data: data[e],table: e,):EmptyView()).toList();
+    return tabs.map<Widget>((e) =>DatabaseCommon.databases[e].dropVersion==null||DatabaseCommon.databases[e].dropVersion>version?DataBaseTable(headers:DatabaseCommon.databases[e].tables.keys.toList(),data: data[e],table: e,):EmptyView(message: '该表已弃用，不做显示',)).toList();
   }
 
   Widget getDatabaseDefine(context,index){

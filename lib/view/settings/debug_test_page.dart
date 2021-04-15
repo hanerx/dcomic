@@ -41,6 +41,7 @@ class _DebugTestPage extends State<DebugTestPage> {
     // TODO: implement initState
     super.initState();
     // startPeer();
+    print(DateTime.now().millisecondsSinceEpoch);
   }
 
   startPeer()async{

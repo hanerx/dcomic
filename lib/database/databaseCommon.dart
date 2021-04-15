@@ -81,13 +81,19 @@ class DatabaseCommon {
       'title': 'TEXT',
       'last_chapter': 'TEXT',
       'last_chapter_id': 'TEXT'
+    }),
+    "local_manga": DatabaseStaticModel(18, {
+      'id': "INTEGER PRIMARY KEY",
+      'name': 'TEXT',
+      'title': 'TEXT',
+      'path': 'TEXT'
     })
   };
 
   static String databaseFileName = 'dmzj_2.db';
 
   static Future<Database> initDatabase() async {
-    return await openDatabase(databaseFileName, version: 17,
+    return await openDatabase(databaseFileName, version: 18,
         onCreate: (Database db, int version) async {
       // await db.execute(
       //     "CREATE TABLE cookies (id INTEGER PRIMARY KEY, key TEXT, value TEXT)");

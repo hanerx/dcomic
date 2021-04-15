@@ -291,11 +291,17 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
   @override
   // TODO: implement type
   SourceDetail get type => SourceDetail('manhuagui', '漫画柜', '漫画柜漫画源，需要代理', true,
-      SourceType.LocalDecoderSource, false);
+      SourceType.LocalDecoderSource, false, false);
 
   @override
   // TODO: implement userConfig
   UserConfig get userConfig => InactiveUserConfig(this.type);
+
+  @override
+  Future<List<FavoriteComic>> getFavoriteComics(int page) {
+    // TODO: implement getFavoriteComics
+    throw UnimplementedError();
+  }
 }
 
 class ManHuaGuiSearchResult extends SearchResult {
@@ -512,6 +518,20 @@ class ManHuaGuiComicDetail extends ComicDetail {
   @override
   // TODO: implement updateTime
   String get updateTime => _updateTime;
+
+  @override
+  bool isSubscribed = false;
+
+  @override
+  Future<void> getIfSubscribed() async {
+    // TODO: implement getIfSubscribed
+  }
+
+  @override
+  String share() {
+    // TODO: implement share
+    return '【$title】https://www.manhuagui.com/comic/$comicId/';
+  }
 }
 
 class ManHuaGuiComic extends Comic {
@@ -649,7 +669,7 @@ class ManHuaGuiComic extends Comic {
 
   @override
   // TODO: implement type
-  int get type => 0;
+  PageType get type => PageType.url;
 
   @override
   // TODO: implement viewpoints

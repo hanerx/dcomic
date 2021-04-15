@@ -1,3 +1,4 @@
+import 'package:dcomic/view/mag_maker/import_mag_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -50,6 +51,21 @@ class _MagMakePage extends State<MagMakePage> {
               ),
             ),
             onPressed: () {},
+          ),
+          FlatButton(
+            padding: EdgeInsets.all(5),
+            child: Card(
+              child: ListTile(
+                title: Text('导入.manga文件'),
+                subtitle: Text('导入manga文件到书架中'),
+                leading: Icon(Icons.archive),
+                trailing: Icon(Icons.chevron_right),
+              ),
+            ),
+            onPressed: () {
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => ImportMagPage()));
+            },
           ),
           FlatButton(
             padding: EdgeInsets.all(5),

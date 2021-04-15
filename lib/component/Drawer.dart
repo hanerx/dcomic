@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dcomic/model/comic_source/sourceProvider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dcomic/database/database.dart';
@@ -103,7 +104,7 @@ class CustomDrawerState extends State<CustomDrawer> {
         onTap: () {
           Navigator.of(context).pop();
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return FavoritePage('');
+            return FavoritePage();
           }));
         },
       ),
@@ -155,16 +156,20 @@ class CustomDrawerState extends State<CustomDrawer> {
       ];
     }
 
+    if (Provider.of<SourceProvider>(context, listen: false).localSourceModel.options.active) {
+      list+=<Widget>[
+        Divider(),
+        ListTile(
+          title: Text('.manga制作器'),
+          leading: Icon(Icons.edit),
+          onTap: () {
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (context) => MagMakePage()));
+          },
+        ),
+      ];
+    }
     list += <Widget>[
-      Divider(),
-      ListTile(
-        title: Text('.manga制作器'),
-        leading: Icon(Icons.edit),
-        onTap: () {
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => MagMakePage()));
-        },
-      ),
       Divider(),
       ListTile(
         title: Text(S.of(context).Setting),

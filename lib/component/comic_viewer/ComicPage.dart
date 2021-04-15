@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dcomic/database/database.dart';
@@ -18,8 +19,8 @@ class ComicPage extends StatefulWidget {
   final String title;
   final int index;
   final bool cover;
-  final bool local;
   final Map headers;
+  final PageType type;
 
   const ComicPage(
       {Key key,
@@ -28,7 +29,7 @@ class ComicPage extends StatefulWidget {
       this.title,
       this.index,
       this.cover,
-      this.local: false,
+      this.type: PageType.url,
       this.headers})
       : super(key: key);
 
@@ -44,7 +45,7 @@ class _ComicPage extends State<ComicPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.local) {
+    if (widget.type==PageType.local) {
       return Image.file(
         File(widget.url),
         fit: widget.cover ? BoxFit.cover : BoxFit.contain,

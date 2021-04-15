@@ -1,3 +1,4 @@
+import 'package:dcomic/database/cookieDatabaseProvider.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:dio_proxy/dio_proxy.dart';
@@ -30,7 +31,8 @@ class UniversalRequestModel {
 
   DMZJIRequestHandler dmzjiRequestHandler = DMZJIRequestHandler();
 
-  DMZJInterfaceRequestHandler dmzjInterfaceRequestHandler =DMZJInterfaceRequestHandler();
+  DMZJInterfaceRequestHandler dmzjInterfaceRequestHandler =
+      DMZJInterfaceRequestHandler();
 }
 
 abstract class RequestHandler {
@@ -93,4 +95,24 @@ abstract class SingleDomainRequestHandler extends RequestHandler {
 abstract class MultiDomainRequestHandler extends RequestHandler {
   List<String> baseUrl;
   List<DioCacheManager> cacheManagers;
+}
+
+class CookiesRequestHandler extends SingleDomainRequestHandler {
+  final String name;
+
+  CookiesRequestHandler(this.name, String baseUrl) : super(baseUrl);
+
+  Future<Options> setHeader({Map<String, dynamic> headers}) async {
+    var cookies = await CookieDatabaseProvider(name).getAll();
+    var cookie = '';
+    for (var item in cookies.first) {
+      cookie += item['key'] + '=' + item['value'].split(';')[0] + ';';
+    }
+    if (headers == null) {
+      headers = {};
+    }
+    headers['Cookie'] = cookie;
+    Options options = new Options(headers: headers);
+    return options;
+  }
 }
