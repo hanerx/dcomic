@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:flutterdmzj/component/EmptyView.dart';
-import 'package:flutterdmzj/component/LoadingCube.dart';
-import 'package:flutterdmzj/generated/l10n.dart';
-import 'package:flutterdmzj/model/comicAuthorModel.dart';
+import 'package:dcomic/component/EmptyView.dart';
+import 'package:dcomic/component/LoadingCube.dart';
+import 'package:dcomic/generated/l10n.dart';
+import 'package:dcomic/model/comicAuthorModel.dart';
 import 'package:provider/provider.dart';
 
 class AuthorPage extends StatefulWidget {

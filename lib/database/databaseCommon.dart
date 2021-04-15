@@ -3,25 +3,41 @@ import 'package:sqflite/sqflite.dart';
 class DatabaseCommon {
   static Map<String, DatabaseStaticModel> databases = {
     'cookies': DatabaseStaticModel(
-        1, {'id': 'INTEGER PRIMARY KEY', 'key': 'TEXT', 'value': 'TEXT'}),
+        1,
+        {
+          'id': 'INTEGER PRIMARY KEY',
+          'key': 'TEXT',
+          'value': 'TEXT',
+          'provider': "TEXT"
+        },
+        rebuildVersion: 16),
     'configures': DatabaseStaticModel(
         1, {'id': 'INTEGER PRIMARY KEY', 'key': 'TEXT', 'value': 'TEXT'}),
     'history': DatabaseStaticModel(
-        1, {'id': 'INTEGER PRIMARY KEY', 'name': 'TEXT', 'value': 'TEXT'}),
-    'unread': DatabaseStaticModel(1, {
-      'id': 'INTEGER PRIMARY KEY',
-      'comicId': 'TEXT',
-      'timestamp': 'INTEGER'
-    }),
-    'local_history': DatabaseStaticModel(1, {
-      'id': 'INTEGER PRIMARY KEY',
-      'comicId': 'TEXT',
-      'timestamp': 'INTEGER',
-      'cover': 'TEXT',
-      'title': 'TEXT',
-      'last_chapter': 'TEXT',
-      'last_chapter_id': 'TEXT'
-    }),
+        1, {'id': 'INTEGER PRIMARY KEY', 'name': 'TEXT', 'value': 'TEXT'},
+        dropVersion: 17),
+    'unread': DatabaseStaticModel(
+        1,
+        {
+          'id': 'INTEGER PRIMARY KEY',
+          'comicId': 'TEXT',
+          'timestamp': 'INTEGER',
+          'provider': 'TEXT'
+        },
+        rebuildVersion: 17),
+    'local_history': DatabaseStaticModel(
+        1,
+        {
+          'id': 'INTEGER PRIMARY KEY',
+          'comicId': 'TEXT',
+          'timestamp': 'INTEGER',
+          'cover': 'TEXT',
+          'title': 'TEXT',
+          'last_chapter': 'TEXT',
+          'last_chapter_id': 'TEXT',
+          'provider': 'TEXT'
+        },
+        rebuildVersion: 17),
     'download_comic_info': DatabaseStaticModel(10, {
       'id': 'INTEGER PRIMARY KEY',
       'comicId': 'TEXT',
@@ -65,11 +81,19 @@ class DatabaseCommon {
       'title': 'TEXT',
       'last_chapter': 'TEXT',
       'last_chapter_id': 'TEXT'
+    }),
+    "local_manga": DatabaseStaticModel(18, {
+      'id': "INTEGER PRIMARY KEY",
+      'name': 'TEXT',
+      'title': 'TEXT',
+      'path': 'TEXT'
     })
   };
 
+  static String databaseFileName = 'dmzj_2.db';
+
   static Future<Database> initDatabase() async {
-    return await openDatabase("dmzj_2.db", version: 15,
+    return await openDatabase(databaseFileName, version: 18,
         onCreate: (Database db, int version) async {
       // await db.execute(
       //     "CREATE TABLE cookies (id INTEGER PRIMARY KEY, key TEXT, value TEXT)");
@@ -88,7 +112,9 @@ class DatabaseCommon {
       // await db.execute(
       //     'CREATE TABLE tracking_comic_info (id INTEGER PRIMARY KEY, comicId TEXT, title TEXT, cover TEXT)');
       databases.forEach((key, value) {
-        db.execute('CREATE TABLE $key ($value)');
+        if (value.dropVersion == null || value.dropVersion > version) {
+          db.execute('CREATE TABLE $key ($value)');
+        }
         print('CREATE TABLE $key ($value)');
       });
     }, onUpgrade: (Database db, int version, int newVersion) async {
@@ -99,17 +125,35 @@ class DatabaseCommon {
         if (value.version > version && value.version <= newVersion) {
           db.execute('CREATE TABLE $key ($value)');
           print('CREATE TABLE $key ($value)');
+        } else if (value.rebuildVersion != null &&
+            value.rebuildVersion > version &&
+            value.rebuildVersion <= newVersion) {
+          db
+              .execute('DROP TABLE $key')
+              .then((_) => db.execute("CREATE TABLE $key ($value)"));
+          print('REBUILD TABLE $key ($value)');
+        } else if (value.dropVersion != null &&
+            value.dropVersion > version &&
+            value.dropVersion <= newVersion) {
+          db.execute('DROP TABLE $key');
         }
       });
     });
+  }
+
+  static Future<void> resetDataBase() async {
+    await deleteDatabase(databaseFileName);
   }
 }
 
 class DatabaseStaticModel {
   final int version;
   final Map<String, String> tables;
+  final int rebuildVersion;
+  final int dropVersion;
 
-  DatabaseStaticModel(this.version, this.tables);
+  DatabaseStaticModel(this.version, this.tables,
+      {this.rebuildVersion, this.dropVersion});
 
   @override
   String toString() {

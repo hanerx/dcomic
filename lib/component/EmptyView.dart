@@ -2,15 +2,19 @@ import 'package:direct_select_flutter/direct_select_item.dart';
 import 'package:direct_select_flutter/direct_select_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/component/SearchDialog.dart';
-import 'package:flutterdmzj/generated/l10n.dart';
-import 'package:flutterdmzj/model/comicDetail.dart';
-import 'package:flutterdmzj/model/comic_source/baseSourceModel.dart';
-import 'package:flutterdmzj/model/comic_source/sourceProvider.dart';
+import 'package:dcomic/component/SearchDialog.dart';
+import 'package:dcomic/generated/l10n.dart';
+import 'package:dcomic/model/comicDetail.dart';
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
+import 'package:dcomic/model/comic_source/sourceProvider.dart';
 import 'package:fluttericon/font_awesome_icons.dart';
 import 'package:provider/provider.dart';
 
 class EmptyView extends StatelessWidget {
+  final String message;
+
+  const EmptyView({Key key, this.message}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -34,7 +38,7 @@ class EmptyView extends StatelessWidget {
             ),
           ),
           Text(
-            S.of(context).NoData,
+            message == null ? S.of(context).NoData : message,
             style: TextStyle(
                 fontSize: 16.0, color: Theme.of(context).disabledColor),
           ),
@@ -66,7 +70,7 @@ class ComicDetailEmptyView extends StatelessWidget {
       return _buildComicIdNotBoundError(context);
     } on ComicSearchError {
       return _buildComicIdNotBoundError(context);
-    }catch (e) {}
+    } catch (e) {}
     return _buildComicLoadingError(context);
   }
 
@@ -268,7 +272,7 @@ class ComicDetailEmptyView extends StatelessWidget {
                         );
                       }));
               if (flag != null && flag) {
-                Provider.of<ComicDetailModel>(context,listen: false).init();
+                Provider.of<ComicDetailModel>(context, listen: false).init();
               }
             },
           ),

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/model/systemSettingModel.dart';
-import 'package:flutterdmzj/utils/tool_methods.dart';
+import 'package:dcomic/model/systemSettingModel.dart';
+import 'package:dcomic/utils/tool_methods.dart';
 import 'package:provider/provider.dart';
 
 class LabSettingPage extends StatefulWidget {

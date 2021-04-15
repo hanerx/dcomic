@@ -4,7 +4,7 @@ import 'package:battery/battery.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:connectivity/connectivity.dart';
-import 'package:flutterdmzj/component/Battery.dart';
+import 'package:dcomic/component/Battery.dart';
 
 class Tips extends StatefulWidget{
   final String title;

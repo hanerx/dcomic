@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/view/comic_detail_page.dart';
-import 'package:flutterdmzj/view/novel_pages/novel_detail_page.dart';
+import 'package:dcomic/view/comic_detail_page.dart';
+import 'package:dcomic/view/novel_pages/novel_detail_page.dart';
 
 class SearchListTile extends StatelessWidget {
   final String cover;

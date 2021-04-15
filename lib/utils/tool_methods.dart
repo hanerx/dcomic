@@ -5,8 +5,8 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
-import 'package:flutterdmzj/generated/l10n.dart';
-import 'package:flutterdmzj/utils/log_output.dart';
+import 'package:dcomic/generated/l10n.dart';
+import 'package:dcomic/utils/log_output.dart';
 import 'package:logger/logger.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:version/version.dart';

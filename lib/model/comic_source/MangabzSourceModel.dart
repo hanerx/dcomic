@@ -1,18 +1,25 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dcomic/database/cookieDatabaseProvider.dart';
+import 'package:dcomic/database/historyDatabaseProvider.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/database/sourceDatabaseProvider.dart';
-import 'package:flutterdmzj/generated/l10n.dart';
-import 'package:flutterdmzj/http/UniversalRequestModel.dart';
-import 'package:flutterdmzj/model/comic_source/baseSourceModel.dart';
-import 'package:flutterdmzj/utils/soup.dart';
-import 'package:flutterdmzj/utils/tool_methods.dart';
+import 'package:dcomic/database/sourceDatabaseProvider.dart';
+import 'package:dcomic/generated/l10n.dart';
+import 'package:dcomic/http/UniversalRequestModel.dart';
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
+import 'package:dcomic/utils/soup.dart';
+import 'package:dcomic/utils/tool_methods.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:lpinyin/lpinyin.dart';
 import 'package:provider/provider.dart';
 
 class MangabzSourceModel extends BaseSourceModel {
   MangabzSourceOptions _options = MangabzSourceOptions.fromMap({});
+  MangabzUserConfig _userConfig = MangabzUserConfig();
 
   MangabzSourceModel() {
     init();
@@ -28,6 +35,8 @@ class MangabzSourceModel extends BaseSourceModel {
     // TODO: implement get
     if (comicId == null && title == null) {
       throw IDInvalidError();
+    } else if (comicId != null && comicId.contains('bz')) {
+      return await getMangabzComic(comicId);
     } else if (comicId != null &&
         await SourceDatabaseProvider.getBoundComic(type.name, comicId) !=
             null) {
@@ -73,6 +82,12 @@ class MangabzSourceModel extends BaseSourceModel {
             soup.find(id: '.detail-info-tip').children[1].children.first.text;
         var updateTime = RegExp('[0-9]{4}-[0-9]{2}-[0-9]{2}')
             .stringMatch(soup.find(id: '.detail-list-form-title').text);
+        if (updateTime == null) {
+          updateTime =
+              '${DateTime.now().year.toString()}-${RegExp('[0-9]{2}月[0-9]{2}号').stringMatch(soup.find(id: '.detail-list-form-title').text)}'
+                  .replaceAll('月', '-')
+                  .replaceAll('号', '');
+        }
         var tags = soup
             .find(id: '.detail-info-tip')
             .children[2]
@@ -100,7 +115,8 @@ class MangabzSourceModel extends BaseSourceModel {
             <Map<String, dynamic>>[
               {'data': chapters, 'title': 'Mangabz连载'}
             ],
-            _options);
+            _options,
+            type);
       }
     } catch (e) {
       throw ComicLoadingError();
@@ -131,9 +147,12 @@ class MangabzSourceModel extends BaseSourceModel {
           children: [
             ListTile(
               title: Text('当前Ping(点击测试)'),
-              subtitle: Text('${Provider.of<MangabzOptionProvider>(context).ping} ms'),
-              onTap: ()async{
-                Provider.of<MangabzOptionProvider>(context,listen: false).ping=await UniversalRequestModel().mangabzRequestHandler.ping();
+              subtitle: Text(
+                  '${Provider.of<MangabzOptionProvider>(context).ping} ms'),
+              onTap: () async {
+                Provider.of<MangabzOptionProvider>(context, listen: false)
+                        .ping =
+                    await UniversalRequestModel().mangabzRequestHandler.ping();
               },
             ),
             ListTile(
@@ -242,11 +261,278 @@ class MangabzSourceModel extends BaseSourceModel {
       'Mangabz的漫画源，嘿呀，你妈的好难实现的，为了这个功能我已经快燃尽自己了',
       true,
       SourceType.LocalDecoderSource,
-      false);
+      false,
+      true);
 
   @override
   // TODO: implement userConfig
-  UserConfig get userConfig => InactiveUserConfig();
+  UserConfig get userConfig => _userConfig;
+
+  @override
+  Future<List<FavoriteComic>> getFavoriteComics(int page) async {
+    // TODO: implement getFavoriteComics
+    if (page > 0) {
+      return [];
+    }
+    if (_userConfig.status == UserStatus.login) {
+      try {
+        var response =
+            await UniversalRequestModel().mangabzRequestHandler.getSubscribe();
+        if (response.statusCode == 200) {
+          var soup = BeautifulSoup(
+              ChineseHelper.convertToSimplifiedChinese(response.data));
+          var children = soup.find(id: '.shelf-manga-list').children;
+          var data = await HistoryDatabaseProvider(type.name).getAllUnread();
+          var unreadList = <String, int>{};
+          for (var item in data.first) {
+            unreadList[item['comicId']] = item['timestamp'];
+          }
+          return children.map<FavoriteComic>((e) {
+            String cover = e
+                .children.first.children.first.children.first.attributes['src'];
+            String title = e.children[1].children.first.innerHtml;
+            String latestChapter = e.children[3].children.first.innerHtml;
+            String comicId = e.children.first.children.first.attributes['href'];
+            comicId = comicId.substring(1, comicId.length - 1);
+            String updateTime =
+                e.children.first.children.first.children[1].innerHtml;
+            updateTime = updateTime
+                .replaceAll(' 更新', '')
+                .replaceAll('月', '-')
+                .replaceAll('号', '');
+            if (updateTime.indexOf('-') != 4) {
+              updateTime = '${DateTime.now().year}-$updateTime';
+            }
+            bool update = unreadList[comicId] == null ||
+                unreadList[comicId] < ToolMethods.formatTimeString(updateTime);
+            return FavoriteComic(
+                cover, title, latestChapter, comicId, this, update);
+          }).toList();
+        }
+      } catch (e) {
+        logger.e(
+            'class: ${this.runtimeType}, action: loadingFavoriteError, exception: $e');
+        throw e;
+      }
+    } else {
+      throw LoginRequiredError();
+    }
+    return [];
+  }
+}
+
+class MangabzUserConfig extends UserConfig {
+  UserStatus _status = UserStatus.logout;
+  String _nickname = '未登录';
+
+  @override
+  // TODO: implement avatar
+  String get avatar => null;
+
+  MangabzUserConfig() {
+    init();
+  }
+
+  Future<void> init() async {
+    _status =
+        await SourceDatabaseProvider.getSourceOption<bool>('mangabz', 'login')
+            ? UserStatus.login
+            : UserStatus.logout;
+    _nickname =
+        await SourceDatabaseProvider.getSourceOption('mangabz', 'nickname');
+  }
+
+  @override
+  Widget getLoginWidget(context) {
+    // TODO: implement getLoginWidget
+    TextEditingController usernameController = TextEditingController();
+    TextEditingController passwordController = TextEditingController();
+
+    return FlutterEasyLoading(
+        child: Scaffold(
+      appBar: AppBar(
+        title: Text('登录'),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            CachedNetworkImage(
+              imageUrl:
+                  'http://css.mangabz.com/v202012291638/mangabz/images/logo_mangabz.png',
+              progressIndicatorBuilder: (context, url, downloadProgress) =>
+                  CircularProgressIndicator(value: downloadProgress.progress),
+              errorWidget: (context, url, error) => Icon(Icons.error),
+            ),
+            Padding(
+              padding: EdgeInsets.all(5),
+              child: TextField(
+                controller: usernameController,
+                decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: '用户名',
+                    icon: Icon(Icons.account_circle),
+                    helperText: '邮箱'),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(5),
+              child: TextField(
+                controller: passwordController,
+                obscureText: true,
+                decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: '密码',
+                    icon: Icon(Icons.lock),
+                    helperText: 'Mangabz登录密码'),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(10),
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      '*本程序为第三方登录程序，存在登录风险',
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ),
+                  Builder(
+                    builder: (context) {
+                      return RaisedButton(
+                        child: Text(
+                          '登录',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        onPressed: () async {
+                          EasyLoading.instance
+                            ..indicatorType =
+                                EasyLoadingIndicatorType.fadingCube;
+                          EasyLoading.instance
+                            ..maskType = EasyLoadingMaskType.black;
+                          EasyLoading.show(status: "登录中");
+                          try {
+                            await login(usernameController.text,
+                                passwordController.text);
+                            EasyLoading.dismiss();
+                            Navigator.of(context).pop();
+                          } on LoginUsernameOrPasswordError catch (e) {
+                            EasyLoading.dismiss();
+                            Scaffold.of(context).showSnackBar(SnackBar(
+                              content: Text('用户名或密码错误！'),
+                            ));
+                          } catch (e) {
+                            EasyLoading.dismiss();
+                            Scaffold.of(context).showSnackBar(SnackBar(
+                              content: Text('俺也不知道的错误'),
+                            ));
+                          }
+                        },
+                      );
+                    },
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    ));
+  }
+
+  @override
+  Widget getSettingWidget(context) {
+    // TODO: implement getSettingWidget
+    return Card(
+      child: ListView(
+        shrinkWrap: true,
+        children: [
+          ListTile(
+            leading: Icon(Icons.account_circle),
+            title: Text('Mangabz用户设置'),
+            subtitle: Text('昵称：$nickname'),
+            trailing: Icon(status == UserStatus.login
+                ? Icons.cloud_done
+                : Icons.cloud_off),
+          ),
+          Divider(),
+          ListTile(
+            enabled: status == UserStatus.login,
+            title: Text('退出登录'),
+            subtitle: Text('退出登录，字面意思'),
+            onTap: () async {
+              await logout();
+              Navigator.pop(context);
+            },
+          )
+        ],
+      ),
+    );
+  }
+
+  @override
+  Future<bool> login(String username, String password) async {
+    // TODO: implement login
+    try {
+      await UniversalRequestModel()
+          .mangabzRequestHandler
+          .login(username, password);
+    } on DioError catch (e) {
+      if (e.response.statusCode == 302) {
+        String login = '';
+        for (var item in e.response.headers['set-cookie']) {
+          var key = item.substring(0, item.indexOf("="));
+          var value = item.substring(item.indexOf("=") + 1);
+          await CookieDatabaseProvider('mangabz').insert(key, value);
+          if (key == '_Mangabz_Mangamangabz') {
+            login = key + '=' + value.substring(0, value.indexOf(';'));
+          }
+        }
+        _status = UserStatus.login;
+        try {
+          var response = await UniversalRequestModel()
+              .mangabzRequestHandler
+              .home(headers: <String, dynamic>{
+            'Cookie': login,
+            'User-Agent':
+                'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.134 Safari/537.36'
+          });
+          if (response.statusCode == 200) {
+            var soup = BeautifulSoup(response.data);
+            _nickname = soup.find(id: '.user-form').children.first.innerHtml;
+          }
+        } catch (e) {
+          throw e;
+        }
+        SourceDatabaseProvider.insertSourceOption('mangabz', 'login', '1');
+        SourceDatabaseProvider.insertSourceOption(
+            'mangabz', 'nickname', _nickname);
+        return true;
+      } else {
+        throw LoginUsernameOrPasswordError();
+      }
+    }
+    return false;
+  }
+
+  @override
+  Future<bool> logout() async {
+    // TODO: implement logout
+    SourceDatabaseProvider.insertSourceOption('mangabz', 'login', '0');
+    _status = UserStatus.logout;
+    return true;
+  }
+
+  @override
+  // TODO: implement nickname
+  String get nickname => _nickname;
+
+  @override
+  // TODO: implement status
+  UserStatus get status => _status;
+
+  @override
+  // TODO: implement userId
+  String get userId => null;
 }
 
 class MangabzOptionProvider extends SourceOptionsProvider {
@@ -329,6 +615,7 @@ class MangabzComicDetail extends ComicDetail {
   final List _tags;
   final List _chapters;
   final MangabzSourceOptions options;
+  final SourceDetail sourceDetail;
 
   MangabzComicDetail(
       this._title,
@@ -340,7 +627,8 @@ class MangabzComicDetail extends ComicDetail {
       this._updateTime,
       this._tags,
       this._chapters,
-      this.options);
+      this.options,
+      this.sourceDetail);
 
   @override
   String toString() {
@@ -413,6 +701,20 @@ class MangabzComicDetail extends ComicDetail {
   @override
   // TODO: implement headers
   Map<String, String> get headers => {'referer': 'http://images.dmzj.com'};
+
+  @override
+  bool isSubscribed = false;
+
+  @override
+  Future<void> getIfSubscribed() async {
+    // TODO: implement getIfSubscribed
+  }
+
+  @override
+  String share() {
+    // TODO: implement share
+    return '【$title】http://www.mangabz.com/$comicId/';
+  }
 }
 
 class MangabzSearchResult extends SearchResult {
@@ -451,7 +753,6 @@ class MangabzComic extends Comic {
   List<String> _pages = [];
   String _title;
   List<String> _chapterIdList;
-  int _type = 0;
   List _viewPoints = [];
 
   String _previous;
@@ -624,7 +925,7 @@ class MangabzComic extends Comic {
 
   @override
   // TODO: implement type
-  int get type => _type;
+  PageType get type => PageType.url;
 
   @override
   // TODO: implement viewpoints

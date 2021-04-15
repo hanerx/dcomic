@@ -4,11 +4,11 @@ import 'package:direct_select_flutter/direct_select_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:flutterdmzj/component/EmptyView.dart';
-import 'package:flutterdmzj/component/LoadingCube.dart';
-import 'package:flutterdmzj/component/comic/comicListTile.dart';
-import 'package:flutterdmzj/model/comicCategoryDetailModel.dart';
-import 'package:flutterdmzj/view/comic_detail_page.dart';
+import 'package:dcomic/component/EmptyView.dart';
+import 'package:dcomic/component/LoadingCube.dart';
+import 'package:dcomic/component/comic/comicListTile.dart';
+import 'package:dcomic/model/comicCategoryDetailModel.dart';
+import 'package:dcomic/view/comic_detail_page.dart';
 import 'package:provider/provider.dart';
 
 class CategoryDetailPage extends StatefulWidget {

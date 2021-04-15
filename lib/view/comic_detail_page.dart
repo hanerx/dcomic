@@ -6,20 +6,20 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_parallax/flutter_parallax.dart';
-import 'package:flutterdmzj/component/Authors.dart';
-import 'package:flutterdmzj/component/CustomDrawer.dart';
-import 'package:flutterdmzj/component/EmptyView.dart';
-import 'package:flutterdmzj/component/FancyFab.dart';
-import 'package:flutterdmzj/component/LoadingCube.dart';
-import 'package:flutterdmzj/component/SearchDialog.dart';
-import 'package:flutterdmzj/component/TypeTags.dart';
-import 'package:flutterdmzj/model/comicDetail.dart';
-import 'package:flutterdmzj/model/comic_source/baseSourceModel.dart';
-import 'package:flutterdmzj/model/comic_source/sourceProvider.dart';
-import 'package:flutterdmzj/model/systemSettingModel.dart';
-import 'package:flutterdmzj/model/trackerModel.dart';
-import 'package:flutterdmzj/view/comment_page.dart';
-import 'package:flutterdmzj/view/login_page.dart';
+import 'package:dcomic/component/Authors.dart';
+import 'package:dcomic/component/CustomDrawer.dart';
+import 'package:dcomic/component/EmptyView.dart';
+import 'package:dcomic/component/FancyFab.dart';
+import 'package:dcomic/component/LoadingCube.dart';
+import 'package:dcomic/component/SearchDialog.dart';
+import 'package:dcomic/component/TypeTags.dart';
+import 'package:dcomic/model/comicDetail.dart';
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
+import 'package:dcomic/model/comic_source/sourceProvider.dart';
+import 'package:dcomic/model/systemSettingModel.dart';
+import 'package:dcomic/model/trackerModel.dart';
+import 'package:dcomic/view/comment_page.dart';
+import 'package:dcomic/view/login_page.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 
@@ -28,8 +28,9 @@ import 'comic_viewer.dart';
 class ComicDetailPage extends StatefulWidget {
   final String id;
   final String title;
+  final BaseSourceModel model;
 
-  ComicDetailPage({this.id, this.title});
+  ComicDetailPage({this.id, this.title, this.model});
 
   @override
   State<StatefulWidget> createState() {
@@ -39,6 +40,8 @@ class ComicDetailPage extends StatefulWidget {
 }
 
 class _ComicDetailPage extends State<ComicDetailPage> {
+  bool _lock = true;
+
   _ComicDetailPage();
 
   @override
@@ -73,6 +76,12 @@ class _ComicDetailPage extends State<ComicDetailPage> {
 //       );
 //     }
 //     // TODO: implement build
+    if (widget.model != null && _lock) {
+      // 初始化默认的model，解决后面多model的问题
+      Provider.of<SourceProvider>(context, listen: false)
+          .setActiveWithoutNotify(widget.model);
+      _lock = false;
+    }
     return ChangeNotifierProvider(
       create: (_) => ComicDetailModel(
           Provider.of<SourceProvider>(context).active, widget.title, widget.id),
@@ -85,14 +94,17 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                   icon: Icon(Icons.share),
                   onPressed: () {
                     Share.share(
-                        '【${Provider.of<ComicDetailModel>(context, listen: false).title}】 https://m.dmzj.com/info/${Provider.of<ComicDetailModel>(context, listen: false).rawComicId}.html');
+                        Provider.of<ComicDetailModel>(context, listen: false)
+                            .detail
+                            .share());
                   },
                 ),
                 Builder(
                   builder: (context) {
                     return IconButton(
                       icon: Icon(
-                        Provider.of<ComicDetailModel>(context).sub
+                        !Provider.of<ComicDetailModel>(context).loading &&
+                                Provider.of<ComicDetailModel>(context).sub
                             ? Icons.favorite
                             : Icons.favorite_border,
                         color: Colors.white,
@@ -132,8 +144,7 @@ class _ComicDetailPage extends State<ComicDetailPage> {
             ),
             endDrawer: CustomDrawer(
               child: CommentPage(
-                  Provider.of<ComicDetailModel>(context).rawComicId,
-                  0),
+                  Provider.of<ComicDetailModel>(context).rawComicId, 0),
               widthPercent: 0.9,
             ),
             floatingActionButton: Provider.of<ComicDetailModel>(context)
@@ -222,15 +233,26 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                                   );
                                 });
                           } else {
-                            int flag = await Provider.of<TrackerModel>(context,
-                                    listen: false)
-                                .subscribe(Provider.of<ComicDetailModel>(
-                                    context,
-                                    listen: false));
-                            Scaffold.of(context).showSnackBar(SnackBar(
-                              content:
-                                  Text('${flag == 1 ? '加入' : '取消加入'}黑匣子成功'),
-                            ));
+                            if (Provider.of<SourceProvider>(context,listen: false)
+                                    .active
+                                    .type
+                                    .name ==
+                                'dmzj') {
+                              int flag = await Provider.of<TrackerModel>(
+                                      context,
+                                      listen: false)
+                                  .subscribe(Provider.of<ComicDetailModel>(
+                                      context,
+                                      listen: false));
+                              Scaffold.of(context).showSnackBar(SnackBar(
+                                content:
+                                    Text('${flag == 1 ? '加入' : '取消加入'}黑匣子成功'),
+                              ));
+                            } else {
+                              Scaffold.of(context).showSnackBar(SnackBar(
+                                content: Text('该漫画源不支持黑匣子功能，请将当前漫画源调整为动漫之家漫画源'),
+                              ));
+                            }
                           }
                         },
                         onDownload: () async {
@@ -332,19 +354,24 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                               IconButton(
                                 tooltip: '重新绑定漫画ID',
                                 icon: Icon(Icons.refresh),
-                                onPressed: ()async {
+                                onPressed: () async {
                                   var flag = await showDialog(
                                       context: context,
-                                      builder: (context) =>
-                                          StatefulBuilder(builder: (context, state) {
+                                      builder: (context) => StatefulBuilder(
+                                              builder: (context, state) {
                                             return SearchDialog(
-                                              model: Provider.of<SourceProvider>(context).active,
+                                              model:
+                                                  Provider.of<SourceProvider>(
+                                                          context)
+                                                      .active,
                                               keyword: widget.title,
                                               comicId: widget.id,
                                             );
                                           }));
                                   if (flag != null && flag) {
-                                    Provider.of<ComicDetailModel>(context,listen: false).init();
+                                    Provider.of<ComicDetailModel>(context,
+                                            listen: false)
+                                        .init();
                                   }
                                 },
                               ),

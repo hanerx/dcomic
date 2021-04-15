@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/database/database.dart';
-import 'package:flutterdmzj/generated/l10n.dart';
+import 'package:dcomic/database/database.dart';
+import 'package:dcomic/generated/l10n.dart';
+import 'package:dcomic/model/comic_source/sourceProvider.dart';
+import 'package:provider/provider.dart';
 
 class UserSettingPage extends StatefulWidget {
   @override
@@ -19,19 +21,14 @@ class _UserSettingPage extends State<UserSettingPage> {
       appBar: AppBar(
         title: Text(S.of(context).SettingPageMainUserTitle),
       ),
-      body: ListView(
-        children: [
-          ListTile(
-            title: Text(S.of(context).SettingPageLogoutTitle),
-            subtitle: Text(S.of(context).SettingPageLogoutSubtitle),
-            onTap: () {
-              DataBase dataBase = DataBase();
-              dataBase.setLoginState(false).then(() {
-                Navigator.of(context).pop();
-              });
-            },
-          )
-        ],
+      body: ListView.builder(
+        itemBuilder: (context, index) {
+          return Provider.of<SourceProvider>(context, listen: false)
+              .activeSources[index]
+              .userConfig
+              .getSettingWidget(context);
+        },
+        itemCount: Provider.of<SourceProvider>(context).activeSources.length,
       ),
     );
   }

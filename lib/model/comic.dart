@@ -1,11 +1,11 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/component/ViewPointChip.dart';
-import 'package:flutterdmzj/component/comic_viewer/ComicPage.dart';
-import 'package:flutterdmzj/model/baseModel.dart';
-import 'package:flutterdmzj/model/comic_source/baseSourceModel.dart';
-import 'package:flutterdmzj/utils/tool_methods.dart';
+import 'package:dcomic/component/ViewPointChip.dart';
+import 'package:dcomic/component/comic_viewer/ComicPage.dart';
+import 'package:dcomic/model/baseModel.dart';
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
+import 'package:dcomic/utils/tool_methods.dart';
 
 class ComicModel extends BaseModel {
   final Comic comic;
@@ -25,11 +25,6 @@ class ComicModel extends BaseModel {
   Future<void> init()async {
     await comic.init();
     notifyListeners();
-    await setReadHistory(chapterId, comicId);
-  }
-
-  Future<void> setReadHistory(String chapterId, String comicId) async {
-    await comic.addReadHistory(comicId: comicId,chapterId: chapterId);
   }
 
   Future<void> getComic(chapterId, comicId) async {
@@ -55,8 +50,8 @@ class ComicModel extends BaseModel {
     if(!right&&!refreshState){
       refreshState=true;
       notifyListeners();
-      bool flag=await comic.next();
       index=0;
+      bool flag=await comic.next();
       refreshState=false;
       notifyListeners();
       return flag;
@@ -94,7 +89,7 @@ class ComicModel extends BaseModel {
         url: comic.comicPages[index],
         title: comic.title,
         chapterId: comic.pageAt,
-        local: comic.type == 1,
+        type: comic.type,
         index: index,
         cover: false,
         headers: comic.headers,

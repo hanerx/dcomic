@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/component/SubscribeCard.dart';
-import 'package:flutterdmzj/http/http.dart';
-import 'package:flutterdmzj/model/baseModel.dart';
-import 'package:flutterdmzj/view/novel_pages/novel_detail_page.dart';
+import 'package:dcomic/component/SubscribeCard.dart';
+import 'package:dcomic/http/http.dart';
+import 'package:dcomic/model/baseModel.dart';
+import 'package:dcomic/view/novel_pages/novel_detail_page.dart';
 
 class NovelFavoriteModel extends BaseModel{
   final String uid;

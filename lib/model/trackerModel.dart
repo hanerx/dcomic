@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/component/SubscribeCard.dart';
-import 'package:flutterdmzj/database/tracker.dart';
-import 'package:flutterdmzj/model/baseModel.dart';
-import 'package:flutterdmzj/model/comicDetail.dart';
-import 'package:flutterdmzj/view/comic_detail_page.dart';
+import 'package:dcomic/component/SubscribeCard.dart';
+import 'package:dcomic/database/tracker.dart';
+import 'package:dcomic/model/baseModel.dart';
+import 'package:dcomic/model/comicDetail.dart';
+import 'package:dcomic/view/comic_detail_page.dart';
 
 class TrackerModel extends BaseModel {
   List<TracingComic> tracingComic = [];
@@ -47,7 +47,7 @@ class TrackerModel extends BaseModel {
   }
 
   Future<int> subscribe(ComicDetailModel model) async {
-    if (await _provider.getComic(model.rawComicId) == null) {
+    if (await _provider.getComic(model.comicId) == null) {
       await add(model);
       notifyListeners();
       return 1;
@@ -60,7 +60,7 @@ class TrackerModel extends BaseModel {
 
   bool ifSubscribe(ComicDetailModel model) {
     for (var item in tracingComic) {
-      if (item.comicId == model.rawComicId) {
+      if (item.comicId == model.comicId) {
         return true;
       }
     }

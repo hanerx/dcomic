@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/component/search/DeepSearchTab.dart';
-import 'package:flutterdmzj/component/search/NovelSearchTab.dart';
-import 'package:flutterdmzj/component/search/SearchTab.dart';
-import 'package:flutterdmzj/generated/l10n.dart';
-import 'package:flutterdmzj/model/systemSettingModel.dart';
-import 'package:flutterdmzj/view/comic_detail_page.dart';
+import 'package:dcomic/component/search/DeepSearchTab.dart';
+import 'package:dcomic/component/search/NovelSearchTab.dart';
+import 'package:dcomic/component/search/SearchTab.dart';
+import 'package:dcomic/generated/l10n.dart';
+import 'package:dcomic/model/systemSettingModel.dart';
+import 'package:dcomic/view/comic_detail_page.dart';
 import 'package:provider/provider.dart';
 
 

@@ -1,10 +1,11 @@
+import 'package:dcomic/database/sourceDatabaseProvider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/database/database.dart';
-import 'package:flutterdmzj/http/http.dart';
-import 'package:flutterdmzj/model/baseModel.dart';
-import 'package:flutterdmzj/utils/tool_methods.dart';
-import 'package:flutterdmzj/view/novel_pages/novel_viewer_page.dart';
+import 'package:dcomic/database/database.dart';
+import 'package:dcomic/http/http.dart';
+import 'package:dcomic/model/baseModel.dart';
+import 'package:dcomic/utils/tool_methods.dart';
+import 'package:dcomic/view/novel_pages/novel_viewer_page.dart';
 
 class NovelDetailModel extends BaseModel {
   final int novelID;
@@ -39,12 +40,11 @@ class NovelDetailModel extends BaseModel {
 
   Future<void> getIfSubscribe(novelID) async {
     //获取登录状态
-    DataBase dataBase = DataBase();
-    login = await dataBase.getLoginState();
+    login=await SourceDatabaseProvider.getSourceOption<bool>('dmzj', 'login');
     //确认登录状态
     if (login) {
       //获取UID
-      uid = await dataBase.getUid();
+      uid = await SourceDatabaseProvider.getSourceOption('dmzj', 'uid');
       //获取订阅信息
       CustomHttp http = CustomHttp();
       var response = await http.getIfSubscribe(novelID.toString(), uid,type: 1);

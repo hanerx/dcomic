@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/utils/tool_methods.dart';
+import 'package:dcomic/utils/tool_methods.dart';
 
 class ComicListTile extends StatelessWidget {
   final String cover;

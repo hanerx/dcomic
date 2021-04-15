@@ -4,15 +4,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:flutterdmzj/component/EmptyView.dart';
-import 'package:flutterdmzj/component/LoadingCube.dart';
-import 'package:flutterdmzj/http/http.dart';
-import 'package:flutterdmzj/model/comic_source/DMZJSourceModel.dart';
-import 'package:flutterdmzj/model/comic_source/baseSourceModel.dart';
-import 'package:flutterdmzj/model/comic_source/sourceProvider.dart';
-import 'package:flutterdmzj/model/systemSettingModel.dart';
-import 'package:flutterdmzj/utils/tool_methods.dart';
-import 'package:flutterdmzj/view/comic_viewer.dart';
+import 'package:dcomic/component/EmptyView.dart';
+import 'package:dcomic/component/LoadingCube.dart';
+import 'package:dcomic/http/http.dart';
+import 'package:dcomic/model/comic_source/DMZJSourceModel.dart';
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
+import 'package:dcomic/model/comic_source/sourceProvider.dart';
+import 'package:dcomic/model/systemSettingModel.dart';
+import 'package:dcomic/utils/tool_methods.dart';
+import 'package:dcomic/view/comic_viewer.dart';
 import 'package:provider/provider.dart';
 
 import 'comic_detail_page.dart';
@@ -229,7 +229,23 @@ class DarkCustomListTile extends StatelessWidget {
                 Provider.of<SourceProvider>(context, listen: false)
                     .sources
                     .first
-                    .options);
+                    .options,
+                DMZJComicDetail(
+                    comicId,
+                    '',
+                    0,
+                    0,
+                    title,
+                    cover,
+                    [],
+                    [],
+                    [],
+                    '',
+                    formatDate,
+                    null,
+                    lastChapterId,
+                    SourceDetail('dmzj', '动漫之家-dark', '', false,
+                        SourceType.LocalDecoderSource, false,false)));
             Navigator.push(context, MaterialPageRoute(builder: (context) {
               return ComicViewPage(
                 comic: comic,

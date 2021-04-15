@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/generated/l10n.dart';
-import 'package:flutterdmzj/model/comicViewerSettingModel.dart';
+import 'package:dcomic/generated/l10n.dart';
+import 'package:dcomic/model/comicViewerSettingModel.dart';
 import 'package:provider/provider.dart';
 
 class ReaderSettingPage extends StatefulWidget {

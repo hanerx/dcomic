@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
-import 'package:flutterdmzj/model/novel.dart';
+import 'package:dcomic/model/novel.dart';
 import 'package:provider/provider.dart';
 
 class NovelViewerPage extends StatefulWidget {

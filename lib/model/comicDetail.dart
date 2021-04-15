@@ -2,13 +2,14 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/database/database.dart';
-import 'package:flutterdmzj/database/downloader.dart';
-import 'package:flutterdmzj/database/tracker.dart';
-import 'package:flutterdmzj/http/http.dart';
-import 'package:flutterdmzj/model/baseModel.dart';
-import 'package:flutterdmzj/model/comic_source/baseSourceModel.dart';
-import 'package:flutterdmzj/view/comic_viewer.dart';
+import 'package:dcomic/database/configDatabaseProvider.dart';
+import 'package:dcomic/database/database.dart';
+import 'package:dcomic/database/downloader.dart';
+import 'package:dcomic/database/tracker.dart';
+import 'package:dcomic/http/http.dart';
+import 'package:dcomic/model/baseModel.dart';
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
+import 'package:dcomic/view/comic_viewer.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
@@ -34,7 +35,6 @@ class ComicDetailModel extends BaseModel {
 
   //漫画加载状态
   Exception error;
-  bool loading = true;
 
   //基础信息
   String get title => detail == null ? "" : detail.title;
@@ -70,20 +70,19 @@ class ComicDetailModel extends BaseModel {
   List lastChapterList = [];
 
   //用户信息
-  bool login = false;
-  bool _sub = false;
   String uid = '';
 
   Map data;
 
   ComicDetailModel(this._model, this._title, this._comicId) {
-    init().then((value) => getIfSubscribe(_comicId).then((value) =>
-        getHistory(_comicId).then((value) => addReadHistory(_comicId))));
+    init().then((value) =>
+        getHistory(_comicId).then((value) => addReadHistory(_comicId)));
   }
 
   Future<void> init() async {
     try {
       detail = await _model.get(title: this._title, comicId: this._comicId);
+      await detail.getIfSubscribed();
       error = null;
       notifyListeners();
     } catch (e) {
@@ -95,12 +94,8 @@ class ComicDetailModel extends BaseModel {
 
   Future<void> addReadHistory(comicId) async {
     // 添加历史记录
-    DataBase dataBase = DataBase();
-    dataBase.insertUnread(comicId, DateTime.now().millisecondsSinceEpoch);
-    bool loginState = await dataBase.getLoginState();
-    if (loginState) {
-      CustomHttp http = CustomHttp();
-      http.setUpRead(comicId);
+    if (detail != null) {
+      await detail.updateUnreadState();
     }
   }
 
@@ -136,34 +131,6 @@ class ComicDetailModel extends BaseModel {
     notifyListeners();
   }
 
-  Future<void> getIfSubscribe(comicId) async {
-    //获取登录状态
-    DataBase dataBase = DataBase();
-    login = await dataBase.getLoginState();
-    //确认登录状态
-    if (login) {
-      //获取UID
-      uid = await dataBase.getUid();
-      //获取订阅信息
-      CustomHttp http = CustomHttp();
-      try {
-        var response = await http.getIfSubscribe(comicId, uid);
-        if (response.statusCode == 200 && response.data['code'] == 0) {
-          _sub = true;
-        }
-      } catch (e) {
-        logger.e(
-            'class: ComicDetailModel, action: subscribeLoadingFailed, login: $login, exception: $e');
-      }
-    }
-    //解锁
-    loading = false;
-    print(
-        'class: ComicDetailModel, action: subscribeLoading, login: $login, uid: $uid, sub: $sub');
-    //唤醒UI
-    notifyListeners();
-  }
-
   Widget _buildBasicButton(context, String title, style, VoidCallback onPress,
       {double width: 120}) {
     return Container(
@@ -192,14 +159,6 @@ class ComicDetailModel extends BaseModel {
                 Provider.of<ComicDetailModel>(context).lastChapterId
             ? TextStyle(color: Colors.blue)
             : null, () async {
-      DataBase dataBase = DataBase();
-      dataBase.addReadHistory(
-          comicId,
-          title,
-          cover,
-          chapter['chapter_title'],
-          chapter['chapter_id'].toString(),
-          DateTime.now().millisecondsSinceEpoch ~/ 1000);
       Comic comic = await detail.getChapter(
           title: chapter['chapter_title'],
           chapterId: chapter['chapter_id'].toString());
@@ -220,8 +179,7 @@ class ComicDetailModel extends BaseModel {
     if (state) {
       CustomHttp http = CustomHttp();
       var response = await http.getComic(comicId, chapterId);
-      DataBase dataBase = DataBase();
-      var path = await dataBase.getDownloadPath();
+      var path = await SystemConfigDatabaseProvider().downloadPath;
 
       List data = <String>[];
       if (response.statusCode == 200) {
@@ -353,27 +311,15 @@ class ComicDetailModel extends BaseModel {
   bool get reverse => this._reverse;
 
   set sub(bool sub) {
-    CustomHttp http = CustomHttp();
-    if (sub) {
-      http.addSubscribe(comicId, uid).then((response) {
-        if (response.statusCode == 200 && response.data['code'] == 0) {
-          this._sub = true;
-          print(
-              'class: ComicDetailModel, action: AddSubscribe, status: ${this._sub}');
-          notifyListeners();
-        }
-      });
-    } else {
-      http.cancelSubscribe(comicId, uid).then((response) {
-        if (response.statusCode == 200 && response.data['code'] == 0) {
-          this._sub = false;
-          print(
-              'class: ComicDetailModel, action: CancelSubscribe, status: ${this._sub}');
-          notifyListeners();
-        }
-      });
+    if (detail != null&&detail.isSubscribed!=null) {
+      this.detail.isSubscribed = sub;
     }
+    notifyListeners();
   }
 
-  bool get sub => this._sub;
+  bool get sub => this.detail == null ? false : this.detail.isSubscribed;
+
+  bool get login=>_model.userConfig.status!=UserStatus.logout;
+
+  bool get loading=>this.detail==null||this.detail.isSubscribed==null;
 }

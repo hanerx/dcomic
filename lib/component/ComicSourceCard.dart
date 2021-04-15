@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/model/comic_source/baseSourceModel.dart';
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:provider/provider.dart';
 
 class ComicSourceCard extends StatefulWidget {

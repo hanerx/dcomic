@@ -2,7 +2,7 @@ import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/generated/l10n.dart';
+import 'package:dcomic/generated/l10n.dart';
 
 class SubscribeCard extends StatefulWidget {
   final String cover;
@@ -82,6 +82,7 @@ class _Card extends StatelessWidget {
           child: AspectRatio(
             aspectRatio: 0.75,
             child:CachedNetworkImage(
+              fit: BoxFit.fill,
             imageUrl: '$cover',
             httpHeaders: {'referer': 'http://images.dmzj.com'},
             progressIndicatorBuilder: (context, url, downloadProgress) =>

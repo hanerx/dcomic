@@ -1,16 +1,15 @@
+import 'package:dcomic/component/EmptyView.dart';
+import 'package:dcomic/model/comic_source/sourceProvider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/database/database.dart';
-import 'package:flutterdmzj/model/systemSettingModel.dart';
-import 'package:flutterdmzj/view/favorite/comic_favorite_page.dart';
-import 'package:flutterdmzj/view/favorite/novel_favorite_page.dart';
-import 'package:flutterdmzj/view/favorite/tracker_favorite_page.dart';
+import 'package:dcomic/model/systemSettingModel.dart';
+import 'package:dcomic/view/favorite/comic_favorite_page.dart';
+import 'package:dcomic/view/favorite/novel_favorite_page.dart';
+import 'package:dcomic/view/favorite/tracker_favorite_page.dart';
 import 'package:provider/provider.dart';
 
 class FavoritePage extends StatefulWidget {
-  final String uid;
-
-  FavoritePage(this.uid);
+  FavoritePage();
 
   @override
   State<StatefulWidget> createState() {
@@ -20,22 +19,11 @@ class FavoritePage extends StatefulWidget {
 }
 
 class _FavoritePage extends State<FavoritePage> {
-  bool novel = false;
-
   _FavoritePage();
-
-  getNovel() async {
-    DataBase dataBase = DataBase();
-    bool state = await dataBase.getNovelState();
-    setState(() {
-      novel = state;
-    });
-  }
 
   @override
   initState() {
     super.initState();
-    getNovel();
   }
 
 //  @override
@@ -57,28 +45,35 @@ class _FavoritePage extends State<FavoritePage> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> tabs = [
-      Tab(
-        text: '漫画',
-      )
-    ];
-    List<Widget> list = [
-      ComicFavoritePage(
-        uid: widget.uid,
-      )
-    ];
+    List<Widget> tabs = Provider.of<SourceProvider>(context, listen: false)
+        .favoriteSources
+        .map<Widget>((e) => Tab(
+              text: e.type.title,
+            ))
+        .toList();
+    List<Widget> list = Provider.of<SourceProvider>(context, listen: false)
+        .favoriteSources
+        .map<Widget>((e) => ComicFavoritePage(
+              model: e,
+            ))
+        .toList();
 
-    if(Provider.of<SystemSettingModel>(context,listen: false).blackBox){
-      tabs.add(Tab(text: '黑匣子',));
+    if (Provider.of<SystemSettingModel>(context, listen: false).blackBox) {
+      tabs.add(Tab(
+        text: '黑匣子',
+      ));
       list.add(TrackerFavoritePage());
     }
-    if (novel) {
+    if (Provider.of<SystemSettingModel>(context, listen: false).novel) {
       tabs.add(Tab(
         text: '轻小说',
       ));
       list.add(NovelFavoritePage(
-        uid: widget.uid,
-      ));
+          uid: Provider.of<SourceProvider>(context)
+              .activeSources
+              .first
+              .userConfig
+              .userId));
     }
 
     // TODO: implement build
@@ -88,6 +83,7 @@ class _FavoritePage extends State<FavoritePage> {
         appBar: AppBar(
           title: Text('我的订阅'),
           bottom: TabBar(
+            isScrollable: true,
             tabs: tabs,
           ),
         ),

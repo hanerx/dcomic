@@ -8,7 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_json_widget/flutter_json_widget.dart';
-import 'package:flutterdmzj/component/CustomDrawer.dart';
+import 'package:dcomic/component/CustomDrawer.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 import 'package:pretty_json/pretty_json.dart';

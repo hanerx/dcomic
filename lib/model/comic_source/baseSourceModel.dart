@@ -1,6 +1,7 @@
+import 'package:dcomic/database/historyDatabaseProvider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/model/baseModel.dart';
+import 'package:dcomic/model/baseModel.dart';
 
 abstract class BaseSourceModel extends BaseModel {
   Future<List<SearchResult>> search(String keyword, {int page: 0});
@@ -11,6 +12,15 @@ abstract class BaseSourceModel extends BaseModel {
       {String comicId, String title, String chapterId, String chapterTitle});
 
   Widget getSettingWidget(context);
+
+  Future<List<FavoriteComic>> getFavoriteComics(int page);
+
+  Future<List<HistoryComic>> getLocalHistoryComics() async {
+    List item = await HistoryDatabaseProvider(type.name).getReadHistories();
+    return item.first
+        .map<HistoryComic>((e) => HistoryComic.fromMap(e, this, e['timestamp']))
+        .toList();
+  }
 
   SourceDetail get type;
 
@@ -114,10 +124,25 @@ abstract class ComicDetail extends BaseModel {
 
   Map<String, String> get headers;
 
+  Future<void> getIfSubscribed();
+
+  bool get isSubscribed;
+
+  set isSubscribed(bool isSubscribed);
+
+  Future<void> updateUnreadState() async {
+    await HistoryDatabaseProvider(sourceDetail.name)
+        .addUnread(comicId, DateTime.now().millisecondsSinceEpoch);
+  }
+
+  SourceDetail get sourceDetail;
+
   @override
   String toString() {
     return 'ComicDetail{title: $title, comicId: $comicId}';
   }
+
+  String share();
 }
 
 abstract class Comic extends BaseModel {
@@ -157,10 +182,12 @@ abstract class Comic extends BaseModel {
 
   Future<void> init();
 
-  int get type;
+  PageType get type;
 
   Future<void> getViewPoint();
 }
+
+enum PageType { local, url, ipfs }
 
 enum SourceType {
   LocalSource,
@@ -176,9 +203,10 @@ class SourceDetail {
   final bool canDisable;
   final SourceType sourceType;
   final bool deprecated;
+  final bool canSubscribe;
 
   SourceDetail(this.name, this.title, this.description, this.canDisable,
-      this.sourceType, this.deprecated);
+      this.sourceType, this.deprecated, this.canSubscribe);
 
   @override
   // TODO: implement hashCode
@@ -234,7 +262,18 @@ class ComicIdNotBoundError implements Exception {}
 
 class ComicSearchError implements Exception {}
 
-class InactiveUserConfig extends UserConfig{
+class LoginUsernameOrPasswordError implements Exception {}
+
+class LoginRequiredError implements Exception{}
+
+class FavoriteUnavailableError implements Exception{}
+
+class InactiveUserConfig extends UserConfig {
+  final SourceDetail type;
+  final String message;
+
+  InactiveUserConfig(this.type, {this.message: '该源不存在用户设置'});
+
   @override
   // TODO: implement avatar
   String get avatar => '';
@@ -242,11 +281,12 @@ class InactiveUserConfig extends UserConfig{
   @override
   Widget getLoginWidget(context) {
     // TODO: implement getLoginWidget
-    return Card(
-      child: Container(
-        child: Center(
-          child: Text('该源不支持用户设置'),
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('登录'),
+      ),
+      body: Center(
+        child: Text('该源不支持登录'),
       ),
     );
   }
@@ -255,10 +295,15 @@ class InactiveUserConfig extends UserConfig{
   Widget getSettingWidget(context) {
     // TODO: implement getSettingWidget
     return Card(
-      child: Container(
-        child: Center(
-          child: Text('该源不支持用户设置'),
-        ),
+      child: ListView(
+        shrinkWrap: true,
+        children: [
+          ListTile(
+            leading: Icon(Icons.cloud_off),
+            title: Text('${type.title}用户设置'),
+            subtitle: Text('$message'),
+          )
+        ],
       ),
     );
   }
@@ -286,5 +331,34 @@ class InactiveUserConfig extends UserConfig{
   @override
   // TODO: implement userId
   String get userId => '';
+}
 
+class FavoriteComic {
+  final String cover;
+
+  final String title;
+
+  final String latestChapter;
+
+  final String comicId;
+
+  final BaseSourceModel model;
+
+  final bool update;
+
+  FavoriteComic(this.cover, this.title, this.latestChapter, this.comicId,
+      this.model, this.update);
+}
+
+class HistoryComic extends FavoriteComic {
+  final int timestamp;
+
+  HistoryComic(String cover, String title, String latestChapter, String comicId,
+      BaseSourceModel model, bool update, this.timestamp)
+      : super(cover, title, latestChapter, comicId, model, update);
+
+  HistoryComic.fromMap(
+      Map<String, dynamic> map, BaseSourceModel model, this.timestamp)
+      : super(map['cover'], map['title'], map['last_chapter'], map['comicId'],
+            model, false);
 }

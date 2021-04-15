@@ -1,4 +1,4 @@
-import 'package:flutterdmzj/model/baseModel.dart';
+import 'package:dcomic/model/baseModel.dart';
 
 class LocalTrackerModel extends BaseModel{
 

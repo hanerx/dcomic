@@ -1,8 +1,10 @@
+import 'package:dcomic/database/cookieDatabaseProvider.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:dio_proxy/dio_proxy.dart';
-import 'package:flutterdmzj/http/KuKuRequestHandler.dart';
-import 'package:flutterdmzj/http/ManHuaGuiRequestHandler.dart';
+import 'package:dcomic/http/DMZJRequestHandler.dart';
+import 'package:dcomic/http/KuKuRequestHandler.dart';
+import 'package:dcomic/http/ManHuaGuiRequestHandler.dart';
 import 'package:gbk_codec/gbk_codec.dart';
 
 import 'MangabzRequestHandler.dart';
@@ -24,6 +26,13 @@ class UniversalRequestModel {
 
   KKKKRequestHandler kkkkRequestHandler3 =
       KKKKRequestHandler('http://comic3.kkkkdm.com/');
+
+  DMZJRequestHandler dmzjRequestHandler = DMZJRequestHandler();
+
+  DMZJIRequestHandler dmzjiRequestHandler = DMZJIRequestHandler();
+
+  DMZJInterfaceRequestHandler dmzjInterfaceRequestHandler =
+      DMZJInterfaceRequestHandler();
 }
 
 abstract class RequestHandler {
@@ -44,14 +53,12 @@ abstract class RequestHandler {
     return gbk_bytes.encode(requestString);
   }
 
-  Future<int> ping({String path:'/'}) async {
+  Future<int> ping({String path: '/'}) async {
     DateTime now = DateTime.now();
-    try{
+    try {
       await dio.get(path);
       return DateTime.now().millisecondsSinceEpoch - now.millisecondsSinceEpoch;
-    }catch(e){
-
-    }
+    } catch (e) {}
     return -1;
   }
 }
@@ -88,4 +95,24 @@ abstract class SingleDomainRequestHandler extends RequestHandler {
 abstract class MultiDomainRequestHandler extends RequestHandler {
   List<String> baseUrl;
   List<DioCacheManager> cacheManagers;
+}
+
+class CookiesRequestHandler extends SingleDomainRequestHandler {
+  final String name;
+
+  CookiesRequestHandler(this.name, String baseUrl) : super(baseUrl);
+
+  Future<Options> setHeader({Map<String, dynamic> headers}) async {
+    var cookies = await CookieDatabaseProvider(name).getAll();
+    var cookie = '';
+    for (var item in cookies.first) {
+      cookie += item['key'] + '=' + item['value'].split(';')[0] + ';';
+    }
+    if (headers == null) {
+      headers = {};
+    }
+    headers['Cookie'] = cookie;
+    Options options = new Options(headers: headers);
+    return options;
+  }
 }

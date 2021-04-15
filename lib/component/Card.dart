@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/view/comic_detail_page.dart';
-import 'package:flutterdmzj/view/subject_detail_page.dart';
+import 'package:dcomic/view/comic_detail_page.dart';
+import 'package:dcomic/view/subject_detail_page.dart';
 
 class CustomCard extends StatelessWidget {
   final String imageUrl;

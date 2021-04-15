@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutterdmzj/database/databaseCommon.dart';
+import 'package:dcomic/database/databaseCommon.dart';
 import 'package:sqflite/sqflite.dart';
 
 class TracingComic {

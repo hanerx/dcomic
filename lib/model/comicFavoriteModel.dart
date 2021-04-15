@@ -1,39 +1,34 @@
+import 'package:dcomic/database/historyDatabaseProvider.dart';
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/component/SubscribeCard.dart';
-import 'package:flutterdmzj/database/database.dart';
-import 'package:flutterdmzj/http/http.dart';
-import 'package:flutterdmzj/model/baseModel.dart';
-import 'package:flutterdmzj/view/comic_detail_page.dart';
+import 'package:dcomic/component/SubscribeCard.dart';
+import 'package:dcomic/database/database.dart';
+import 'package:dcomic/http/http.dart';
+import 'package:dcomic/model/baseModel.dart';
+import 'package:dcomic/view/comic_detail_page.dart';
 
 class ComicFavoriteModel extends BaseModel {
-  final String uid;
-  List comics = [];
-  Map unreadList = {};
+  final BaseSourceModel model;
+  List<FavoriteComic> comics = [];
   int page = 0;
+  String error = '没有更多数据了';
 
-  ComicFavoriteModel(this.uid);
+  ComicFavoriteModel(this.model);
 
   Future<void> getSubscribe() async {
-    CustomHttp http = CustomHttp();
     try {
-      var response = await http.getSubscribe(int.parse(uid), page);
-      if (response.statusCode == 200) {
-        for (var item in response.data) {
-          bool unread = item['sub_readed'] == 0;
-          if (unreadList[item['id'].toString()] != null &&
-              unreadList[item['id'].toString()] >= item['sub_uptime'] * 1000) {
-            unread = false;
-          }
-          item['unread'] = unread;
-        }
-        comics += response.data;
-      }
-      notifyListeners();
+      comics += await model.getFavoriteComics(page);
+    } on UnimplementedError catch (e) {
+      error = '该订阅模块尚未实现';
+    } on FavoriteUnavailableError catch (e) {
+      error = '该解析源不支持订阅';
+    } on LoginRequiredError catch (e) {
+      error = '该解析源需要登录，请先登录';
     } catch (e) {
-      logger.e(
-          'class: ComicFavoriteModel, action: getSubscribeFailed, expection: $e');
+      error = '未知错误: $e';
     }
+    notifyListeners();
   }
 
   Future<void> nextPage() async {
@@ -45,8 +40,6 @@ class ComicFavoriteModel extends BaseModel {
   Future<void> refresh() async {
     page = 0;
     comics.clear();
-    DataBase dataBase = DataBase();
-    unreadList = await dataBase.getAllUnread();
     await getSubscribe();
     notifyListeners();
   }
@@ -54,18 +47,21 @@ class ComicFavoriteModel extends BaseModel {
   List<Widget> getFavoriteWidget(context) {
     return comics
         .map<Widget>((e) => SubscribeCard(
-              cover: e['sub_img'],
-              title: e['name'],
-              subTitle: e['sub_update'],
-              isUnread: e['unread'],
+              cover: e.cover,
+              title: e.title,
+              subTitle: e.latestChapter,
+              isUnread: e.update,
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => ComicDetailPage(id:e['id'].toString(),title: e['name'],)));
+                    builder: (context) => ComicDetailPage(
+                          id: e.comicId,
+                          title: e.title,
+                          model: e.model,
+                        )));
               },
             ))
         .toList();
   }
 
-  bool get empty=>comics.length==0;
-
+  bool get empty => comics.length == 0;
 }

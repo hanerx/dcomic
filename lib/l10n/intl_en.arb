@@ -1,6 +1,6 @@
 {
   "@@locale" : "en",
-  "AppName": "DMZJ",
+  "AppName": "DComic",
   "AppNameUltimate":"Super DMZJ-Ultimate",
   "Setting": "Settings",
   "MainPageTabHome": "Home",
@@ -94,7 +94,7 @@
       "author": {}
     }
   },
-  "DrawerEmail": "Flutter DMZJ",
+  "DrawerEmail": "A simple comic viewer application",
   "DrawerPlsLogin": "Please login",
   "Favorite": "Favorite",
   "History": "History",
@@ -131,5 +131,18 @@
   "SettingPageMainLabTitle": "Experiment Setting",
   "SettingPageMainLabSubtitle": "Oh! you found easter egg.",
   "SettingPageDebugTestTitle": "API Test Page",
-  "SettingPageDebugTestSubtitle": "Provide a test page to test API"
+  "SettingPageDebugTestSubtitle": "Provide a test page to test API",
+  "SettingPageIPFSTitle": "IPFS Setting",
+  "SettingPageIPFSSubtitle": "Server Setting for IPFS",
+  "SettingPageIPFSSettingPageModesTitle": "Select IPFS working mode",
+  "SettingPageIPFSSettingPageModes": "{mode, select, server {IPFS Server} ipfsio {HTTP direct} ipfslite{IPFS local server(test version)} other {Unknown}}",
+  "SettingPageIPFSSettingPageServerTitle": "IPFS Server Address",
+  "SettingPageIPFSSettingPagePortTitle": "IPFS Server Port",
+  "SettingPageIPFSSettingPageProxyTitle": "Enable Proxy",
+  "SettingPageIPFSSettingPageProxySubtitle": "Proxy Server Setting",
+  "SettingPageIPFSSettingPageProxyServerTitle": "Proxy Server Address",
+  "SettingPageIPFSSettingPageProxyPortTitle": "Proxy Server Port",
+  "SettingPageIPFSSettingPageTestTitle": "Test IPFS network connection",
+  "SettingPageIPFSSettingPageTestSubtitle": "Test the connection between IPFS network, the result will show below if test succeed.",
+  "NoImage": "No Image to show."
 }

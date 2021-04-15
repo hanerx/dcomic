@@ -1,11 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/database/sourceDatabaseProvider.dart';
-import 'package:flutterdmzj/http/KuKuRequestHandler.dart';
-import 'package:flutterdmzj/http/UniversalRequestModel.dart';
-import 'package:flutterdmzj/model/comic_source/baseSourceModel.dart';
-import 'package:flutterdmzj/utils/soup.dart';
+import 'package:dcomic/database/sourceDatabaseProvider.dart';
+import 'package:dcomic/http/KuKuRequestHandler.dart';
+import 'package:dcomic/http/UniversalRequestModel.dart';
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
+import 'package:dcomic/utils/soup.dart';
 import 'package:provider/provider.dart';
 import 'package:html/dom.dart' as DomElement show Element;
 
@@ -122,7 +122,8 @@ class KuKuSourceModel extends BaseSourceModel {
             status,
             title,
             updateTime,
-            options);
+            options,
+            type);
       }
     } catch (e) {
       throw ComicLoadingError(exception: e);
@@ -162,23 +163,33 @@ class KuKuSourceModel extends BaseSourceModel {
             ),
             ListTile(
               title: Text('当前Ping(点击测试)'),
-              subtitle: Text('${Provider.of<KuKuOptionsProvider>(context).ping} ms'),
-              onTap: ()async{
-                int ping=-1;
-                switch(Provider.of<KuKuOptionsProvider>(context,listen: false).server){
+              subtitle:
+                  Text('${Provider.of<KuKuOptionsProvider>(context).ping} ms'),
+              onTap: () async {
+                int ping = -1;
+                switch (Provider.of<KuKuOptionsProvider>(context, listen: false)
+                    .server) {
                   case 1:
-                    ping=await UniversalRequestModel().kkkkRequestHandler1.ping();
+                    ping = await UniversalRequestModel()
+                        .kkkkRequestHandler1
+                        .ping();
                     break;
                   case 2:
-                    ping=await UniversalRequestModel().kkkkRequestHandler2.ping();
+                    ping = await UniversalRequestModel()
+                        .kkkkRequestHandler2
+                        .ping();
                     break;
                   case 3:
-                    ping=await UniversalRequestModel().kkkkRequestHandler3.ping();
+                    ping = await UniversalRequestModel()
+                        .kkkkRequestHandler3
+                        .ping();
                     break;
                   default:
-                    ping=await UniversalRequestModel().kuKuRequestHandler.ping();
+                    ping =
+                        await UniversalRequestModel().kuKuRequestHandler.ping();
                 }
-                Provider.of<KuKuOptionsProvider>(context,listen: false).ping=ping;
+                Provider.of<KuKuOptionsProvider>(context, listen: false).ping =
+                    ping;
               },
             )
           ],
@@ -219,16 +230,27 @@ class KuKuSourceModel extends BaseSourceModel {
   @override
   // TODO: implement type
   SourceDetail get type => SourceDetail(
-      'kuku', 'KuKu动漫', 'KuKu动漫源，存在四个节点，请根据延迟自行选择。由于采用多线程脚本，可能会导致你被服务器ban掉，所以请轻拿轻放。', true, SourceType.LocalDecoderSource, false);
+      'kuku',
+      'KuKu动漫',
+      'KuKu动漫源，存在四个节点，请根据延迟自行选择。由于采用多线程脚本，可能会导致你被服务器ban掉，所以请轻拿轻放。',
+      true,
+      SourceType.LocalDecoderSource,
+      false,false);
 
   @override
   // TODO: implement userConfig
-  UserConfig get userConfig => InactiveUserConfig();
+  UserConfig get userConfig => InactiveUserConfig(this.type);
+
+  @override
+  Future<List<FavoriteComic>> getFavoriteComics(int page) {
+    // TODO: implement getFavoriteComics
+    throw UnimplementedError();
+  }
+
 }
 
 class KuKuOptionsProvider extends SourceOptionsProvider {
   KuKuSourceOptions options;
-
 
   KuKuOptionsProvider(this.options) : super(options);
 
@@ -238,8 +260,6 @@ class KuKuOptionsProvider extends SourceOptionsProvider {
     options.server = value;
     notifyListeners();
   }
-
-
 }
 
 class KuKuSourceOptions extends SourceOptions {
@@ -327,6 +347,7 @@ class KuKuComicDetail extends ComicDetail {
   final String _title;
   final String _updateTime;
   final KuKuSourceOptions options;
+  final SourceDetail sourceDetail;
 
   KuKuComicDetail(
       this._authors,
@@ -337,7 +358,8 @@ class KuKuComicDetail extends ComicDetail {
       this._status,
       this._title,
       this._updateTime,
-      this.options);
+      this.options,
+      this.sourceDetail);
 
   @override
   // TODO: implement authors
@@ -409,6 +431,21 @@ class KuKuComicDetail extends ComicDetail {
   @override
   // TODO: implement updateTime
   String get updateTime => _updateTime;
+
+  @override
+  bool isSubscribed=false;
+
+  @override
+  Future<void> getIfSubscribed() async{
+    // TODO: implement getIfSubscribed
+
+  }
+
+  @override
+  String share() {
+    // TODO: implement share
+    return '【$title】https://manhua.kukudm.com/comiclist/$comicId/';
+  }
 }
 
 class KuKuComic extends Comic {
@@ -419,7 +456,7 @@ class KuKuComic extends Comic {
   List<String> _pages = [];
   String _title;
   List<String> _chapterIdList;
-  int _type = 0;
+  PageType _type=PageType.url;
 
   String _previous;
   String _next;
@@ -510,7 +547,7 @@ class KuKuComic extends Comic {
               .replaceAll('+', '')
               .replaceAll(' ', '');
         }
-        pages[0]=image;
+        pages[0] = image;
         while (page <= length) {
           // var item = await handler.getChapter(comicId, chapterId, page);
           // if (item.statusCode == 200) {
@@ -612,7 +649,7 @@ class KuKuComic extends Comic {
 
   @override
   // TODO: implement type
-  int get type => _type;
+  PageType get type => _type;
 
   @override
   // TODO: implement viewpoints

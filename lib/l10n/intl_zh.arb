@@ -1,6 +1,6 @@
 {
   "@@locale": "zh",
-  "AppName": "大妈之家",
+  "AppName": "DComic",
   "AppNameUltimate": "真·不撸埃斯Ultimate外拓大妈之家",
   "Setting": "设置",
   "MainPageTabHome": "首页",
@@ -94,7 +94,7 @@
       "author": {}
     }
   },
-  "DrawerEmail": "大妈之家第三方APP",
+  "DrawerEmail": "一个简单的漫画阅读器",
   "DrawerPlsLogin": "请先登录",
   "Favorite": "我的订阅",
   "History": "历史记录",
@@ -131,5 +131,18 @@
   "SettingPageMainLabTitle": "实验设置",
   "SettingPageMainLabSubtitle": "实验性功能（彩蛋）",
   "SettingPageDebugTestTitle": "调试测试接口功能",
-  "SettingPageDebugTestSubtitle": "提供一个测试页面测试各种平时外面看不到的接口"
+  "SettingPageDebugTestSubtitle": "提供一个测试页面测试各种平时外面看不到的接口",
+  "SettingPageIPFSTitle": "IPFS设置",
+  "SettingPageIPFSSubtitle": "IPFS服务器设置",
+  "SettingPageIPFSSettingPageModesTitle": "IPFS网络工作模式",
+  "SettingPageIPFSSettingPageModes": "{mode, select, server {IPFS节点服务器} ipfsio {ipfs.io直接访问} ipfslite{IPFS本地服务器（因为安卓的平台限制应该是不能用的）} other {Unknown}}",
+  "SettingPageIPFSSettingPageServerTitle": "IPFS服务器IP地址",
+  "SettingPageIPFSSettingPagePortTitle": "IPFS服务器端口",
+  "SettingPageIPFSSettingPageProxyTitle": "代理服务器",
+  "SettingPageIPFSSettingPageProxySubtitle": "代理服务器设置",
+  "SettingPageIPFSSettingPageProxyServerTitle": "代理服务器地址",
+  "SettingPageIPFSSettingPageProxyPortTitle": "代理服务器端口",
+  "SettingPageIPFSSettingPageTestTitle": "检查IPFS网络连接情况",
+  "SettingPageIPFSSettingPageTestSubtitle": "检查IPFS网络的连接情况，成功后将会在下方显示图片",
+  "NoImage": "无图片数据"
 }

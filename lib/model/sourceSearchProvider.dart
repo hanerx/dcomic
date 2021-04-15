@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/component/SearchDialog.dart';
-import 'package:flutterdmzj/database/sourceDatabaseProvider.dart';
-import 'package:flutterdmzj/model/baseModel.dart';
-import 'package:flutterdmzj/model/comic_source/baseSourceModel.dart';
+import 'package:dcomic/component/SearchDialog.dart';
+import 'package:dcomic/database/sourceDatabaseProvider.dart';
+import 'package:dcomic/model/baseModel.dart';
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 
 class SourceSearchProvider extends BaseModel {
   final BaseSourceModel model;

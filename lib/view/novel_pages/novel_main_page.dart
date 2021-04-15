@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/component/search/SearchButton.dart';
+import 'package:dcomic/component/search/SearchButton.dart';
 
-import 'package:flutterdmzj/view/category_page.dart';
-import 'package:flutterdmzj/view/novel_pages/novel_home_page.dart';
-import 'package:flutterdmzj/view/novel_pages/novel_latest_update_page.dart';
-import 'package:flutterdmzj/view/novel_pages/novel_ranking_page.dart';
+import 'package:dcomic/view/category_page.dart';
+import 'package:dcomic/view/novel_pages/novel_home_page.dart';
+import 'package:dcomic/view/novel_pages/novel_latest_update_page.dart';
+import 'package:dcomic/view/novel_pages/novel_ranking_page.dart';
 
 class NovelMainPage extends StatefulWidget {
   @override

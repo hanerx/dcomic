@@ -29,15 +29,17 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static m4(mode) => "Current Setting: ${mode}";
 
-  static m5(channel) => "Current channel：${channel}";
+  static m5(mode) => "${Intl.select(mode, {'server': 'IPFS Server', 'ipfsio': 'HTTP direct', 'ipfslite': 'IPFS local server(test version)', 'other': 'Unknown', })}";
 
-  static m6(mode) => "${Intl.select(mode, {'release': 'Release', 'beta': 'Beta', 'other': 'Unknown', })}";
+  static m6(channel) => "Current channel：${channel}";
 
-  static m7(title) => "Latest：${title}";
+  static m7(mode) => "${Intl.select(mode, {'release': 'Release', 'beta': 'Beta', 'other': 'Unknown', })}";
+
+  static m8(title) => "Latest：${title}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function> {
-    "AppName" : MessageLookupByLibrary.simpleMessage("DMZJ"),
+    "AppName" : MessageLookupByLibrary.simpleMessage("DComic"),
     "AppNameUltimate" : MessageLookupByLibrary.simpleMessage("Super DMZJ-Ultimate"),
     "AuthorPageTitle" : m0,
     "Cancel" : MessageLookupByLibrary.simpleMessage("cancel"),
@@ -48,7 +50,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "DarkSide" : MessageLookupByLibrary.simpleMessage("DarkSide"),
     "DefaultAvatar" : MessageLookupByLibrary.simpleMessage("https://avatar.dmzj.com/default.png"),
     "Download" : MessageLookupByLibrary.simpleMessage("Download"),
-    "DrawerEmail" : MessageLookupByLibrary.simpleMessage("Flutter DMZJ"),
+    "DrawerEmail" : MessageLookupByLibrary.simpleMessage("A simple comic viewer application"),
     "DrawerPlsLogin" : MessageLookupByLibrary.simpleMessage("Please login"),
     "Favorite" : MessageLookupByLibrary.simpleMessage("Favorite"),
     "History" : MessageLookupByLibrary.simpleMessage("History"),
@@ -58,6 +60,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "MainPageTabRanking" : MessageLookupByLibrary.simpleMessage("Ranking"),
     "NoComicData" : MessageLookupByLibrary.simpleMessage("Cannot load comic, change provider to fix it"),
     "NoData" : MessageLookupByLibrary.simpleMessage("No more data"),
+    "NoImage" : MessageLookupByLibrary.simpleMessage("No Image to show."),
     "Novel" : MessageLookupByLibrary.simpleMessage("Novel"),
     "Setting" : MessageLookupByLibrary.simpleMessage("Settings"),
     "SettingPageAboutDescription" : MessageLookupByLibrary.simpleMessage("A 3rd-party flutter dmzj application"),
@@ -90,6 +93,18 @@ class MessageLookup extends MessageLookupByLibrary {
     "SettingPageDownloadTaskListTitle" : MessageLookupByLibrary.simpleMessage("Check download tasks"),
     "SettingPageFAQSubtitle" : MessageLookupByLibrary.simpleMessage("?"),
     "SettingPageFAQTitle" : MessageLookupByLibrary.simpleMessage("FAQ"),
+    "SettingPageIPFSSettingPageModes" : m5,
+    "SettingPageIPFSSettingPageModesTitle" : MessageLookupByLibrary.simpleMessage("Select IPFS working mode"),
+    "SettingPageIPFSSettingPagePortTitle" : MessageLookupByLibrary.simpleMessage("IPFS Server Port"),
+    "SettingPageIPFSSettingPageProxyPortTitle" : MessageLookupByLibrary.simpleMessage("Proxy Server Port"),
+    "SettingPageIPFSSettingPageProxyServerTitle" : MessageLookupByLibrary.simpleMessage("Proxy Server Address"),
+    "SettingPageIPFSSettingPageProxySubtitle" : MessageLookupByLibrary.simpleMessage("Proxy Server Setting"),
+    "SettingPageIPFSSettingPageProxyTitle" : MessageLookupByLibrary.simpleMessage("Enable Proxy"),
+    "SettingPageIPFSSettingPageServerTitle" : MessageLookupByLibrary.simpleMessage("IPFS Server Address"),
+    "SettingPageIPFSSettingPageTestSubtitle" : MessageLookupByLibrary.simpleMessage("Test the connection between IPFS network, the result will show below if test succeed."),
+    "SettingPageIPFSSettingPageTestTitle" : MessageLookupByLibrary.simpleMessage("Test IPFS network connection"),
+    "SettingPageIPFSSubtitle" : MessageLookupByLibrary.simpleMessage("Server Setting for IPFS"),
+    "SettingPageIPFSTitle" : MessageLookupByLibrary.simpleMessage("IPFS Setting"),
     "SettingPageLabSettingSubtitle" : MessageLookupByLibrary.simpleMessage("Congratulations, the easter eggs!"),
     "SettingPageLabSettingTitle" : MessageLookupByLibrary.simpleMessage("Experimental function"),
     "SettingPageLogConsoleSubtitle" : MessageLookupByLibrary.simpleMessage("Show logs provide by logger"),
@@ -132,10 +147,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "SettingPageSourcePageSourceProviderTitle" : MessageLookupByLibrary.simpleMessage("Comic Source Provider"),
     "SettingPageSourcePageSourceSubtitle" : MessageLookupByLibrary.simpleMessage("Config Comic Source"),
     "SettingPageSourcePageSourceTitle" : MessageLookupByLibrary.simpleMessage("Comic Source"),
-    "SettingPageUpdateChannelSubtitle" : m5,
+    "SettingPageUpdateChannelSubtitle" : m6,
     "SettingPageUpdateChannelTitle" : MessageLookupByLibrary.simpleMessage("Update channel"),
-    "SettingPageUpdateChannels" : m6,
-    "SubscribeLatestUpdate" : m7,
+    "SettingPageUpdateChannels" : m7,
+    "SubscribeLatestUpdate" : m8,
     "TipsNew" : MessageLookupByLibrary.simpleMessage("new")
   };
 }

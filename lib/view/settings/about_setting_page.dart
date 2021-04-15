@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:flutterdmzj/generated/l10n.dart';
-import 'package:flutterdmzj/http/http.dart';
-import 'package:flutterdmzj/model/systemSettingModel.dart';
-import 'package:flutterdmzj/model/versionModel.dart';
-import 'package:flutterdmzj/utils/tool_methods.dart';
+import 'package:dcomic/generated/l10n.dart';
+import 'package:dcomic/http/http.dart';
+import 'package:dcomic/model/systemSettingModel.dart';
+import 'package:dcomic/model/versionModel.dart';
+import 'package:dcomic/utils/tool_methods.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:version/version.dart';

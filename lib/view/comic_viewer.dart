@@ -2,14 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:flutterdmzj/component/CustomDrawer.dart';
-import 'package:flutterdmzj/component/EmptyView.dart';
-import 'package:flutterdmzj/component/comic_viewer/HorizontalPageView.dart';
-import 'package:flutterdmzj/component/comic_viewer/Tips.dart';
-import 'package:flutterdmzj/component/comic_viewer/VerticalPageView.dart';
-import 'package:flutterdmzj/model/comic.dart';
-import 'package:flutterdmzj/model/comicViewerSettingModel.dart';
-import 'package:flutterdmzj/model/comic_source/baseSourceModel.dart';
+import 'package:dcomic/component/CustomDrawer.dart';
+import 'package:dcomic/component/EmptyView.dart';
+import 'package:dcomic/component/comic_viewer/HorizontalPageView.dart';
+import 'package:dcomic/component/comic_viewer/Tips.dart';
+import 'package:dcomic/component/comic_viewer/VerticalPageView.dart';
+import 'package:dcomic/model/comic.dart';
+import 'package:dcomic/model/comicViewerSettingModel.dart';
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:provider/provider.dart';
 
 class ComicViewPage extends StatefulWidget {

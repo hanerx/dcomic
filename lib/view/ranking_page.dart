@@ -1,17 +1,15 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:direct_select_flutter/direct_select_container.dart';
 import 'package:direct_select_flutter/direct_select_item.dart';
 import 'package:direct_select_flutter/direct_select_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:flutterdmzj/component/EmptyView.dart';
-import 'package:flutterdmzj/component/LoadingCube.dart';
-import 'package:flutterdmzj/component/comic/comicListTile.dart';
-import 'package:flutterdmzj/http/http.dart';
-import 'package:flutterdmzj/model/comicRankingListModel.dart';
-import 'package:flutterdmzj/utils/tool_methods.dart';
-import 'package:flutterdmzj/view/comic_detail_page.dart';
+import 'package:dcomic/component/EmptyView.dart';
+import 'package:dcomic/component/LoadingCube.dart';
+import 'package:dcomic/component/comic/comicListTile.dart';
+import 'package:dcomic/model/comicRankingListModel.dart';
+import 'package:dcomic/model/comic_source/sourceProvider.dart';
+import 'package:dcomic/view/comic_detail_page.dart';
 import 'package:provider/provider.dart';
 
 class RankingPage extends StatefulWidget {
@@ -67,6 +65,9 @@ class _RankingPage extends State<RankingPage> {
                           builder: (context) => ComicDetailPage(
                                 id: item['comic_id'].toString(),
                                 title: item['title'],
+                                model: Provider.of<SourceProvider>(context)
+                                    .activeSources
+                                    .first,
                               )));
                     },
                   );
@@ -88,9 +89,10 @@ class _RankingPage extends State<RankingPage> {
             flex: 2,
             child: Padding(
               child: DirectSelectList<String>(
-                values: Provider.of<ComicRankingListModel>(context).dateTypeList,
+                values:
+                    Provider.of<ComicRankingListModel>(context).dateTypeList,
                 defaultItemIndex:
-                Provider.of<ComicRankingListModel>(context).filterDate,
+                    Provider.of<ComicRankingListModel>(context).filterDate,
                 itemBuilder: (String value) => DirectSelectItem<String>(
                     itemHeight: 56,
                     value: value,
@@ -136,8 +138,8 @@ class _RankingPage extends State<RankingPage> {
                       .tagTypeList
                       .keys
                       .toList()
-                      .indexOf(
-                      Provider.of<ComicRankingListModel>(context).filterTag),
+                      .indexOf(Provider.of<ComicRankingListModel>(context)
+                          .filterTag),
                   itemBuilder: (int value) => DirectSelectItem<int>(
                       itemHeight: 56,
                       value: value,
@@ -145,7 +147,7 @@ class _RankingPage extends State<RankingPage> {
                         return Container(
                           child: Text(
                             Provider.of<ComicRankingListModel>(context,
-                                listen: false)
+                                    listen: false)
                                 .tagTypeList[value],
                             textAlign: TextAlign.center,
                           ),
@@ -177,9 +179,9 @@ class _RankingPage extends State<RankingPage> {
               child: Padding(
                 child: DirectSelectList<String>(
                   values:
-                  Provider.of<ComicRankingListModel>(context).typeTypeList,
+                      Provider.of<ComicRankingListModel>(context).typeTypeList,
                   defaultItemIndex:
-                  Provider.of<ComicRankingListModel>(context).filterType,
+                      Provider.of<ComicRankingListModel>(context).filterType,
                   itemBuilder: (String value) => DirectSelectItem<String>(
                       itemHeight: 56,
                       value: value,

@@ -29,15 +29,17 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static m4(mode) => "当前设定：${mode}";
 
-  static m5(channel) => "当前通道：${channel}";
+  static m5(mode) => "${Intl.select(mode, {'server': 'IPFS节点服务器', 'ipfsio': 'ipfs.io直接访问', 'ipfslite': 'IPFS本地服务器（因为安卓的平台限制应该是不能用的）', 'other': 'Unknown', })}";
 
-  static m6(mode) => "${Intl.select(mode, {'release': '发行通道', 'beta': '开发通道', 'other': '未知通道', })}";
+  static m6(channel) => "当前通道：${channel}";
 
-  static m7(title) => "最近更新：${title}";
+  static m7(mode) => "${Intl.select(mode, {'release': '发行通道', 'beta': '开发通道', 'other': '未知通道', })}";
+
+  static m8(title) => "最近更新：${title}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function> {
-    "AppName" : MessageLookupByLibrary.simpleMessage("大妈之家"),
+    "AppName" : MessageLookupByLibrary.simpleMessage("DComic"),
     "AppNameUltimate" : MessageLookupByLibrary.simpleMessage("真·不撸埃斯Ultimate外拓大妈之家"),
     "AuthorPageTitle" : m0,
     "Cancel" : MessageLookupByLibrary.simpleMessage("取消"),
@@ -48,7 +50,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "DarkSide" : MessageLookupByLibrary.simpleMessage("黑暗面"),
     "DefaultAvatar" : MessageLookupByLibrary.simpleMessage("https://avatar.dmzj.com/default.png"),
     "Download" : MessageLookupByLibrary.simpleMessage("下载管理"),
-    "DrawerEmail" : MessageLookupByLibrary.simpleMessage("大妈之家第三方APP"),
+    "DrawerEmail" : MessageLookupByLibrary.simpleMessage("一个简单的漫画阅读器"),
     "DrawerPlsLogin" : MessageLookupByLibrary.simpleMessage("请先登录"),
     "Favorite" : MessageLookupByLibrary.simpleMessage("我的订阅"),
     "History" : MessageLookupByLibrary.simpleMessage("历史记录"),
@@ -58,6 +60,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "MainPageTabRanking" : MessageLookupByLibrary.simpleMessage("排行"),
     "NoComicData" : MessageLookupByLibrary.simpleMessage("无法加载数据，你可以尝试修改漫画源"),
     "NoData" : MessageLookupByLibrary.simpleMessage("没有更多数据了"),
+    "NoImage" : MessageLookupByLibrary.simpleMessage("无图片数据"),
     "Novel" : MessageLookupByLibrary.simpleMessage("轻小说"),
     "Setting" : MessageLookupByLibrary.simpleMessage("设置"),
     "SettingPageAboutDescription" : MessageLookupByLibrary.simpleMessage("基于flutter的第三方动漫之家简单app"),
@@ -90,6 +93,18 @@ class MessageLookup extends MessageLookupByLibrary {
     "SettingPageDownloadTaskListTitle" : MessageLookupByLibrary.simpleMessage("查看所有下载数据"),
     "SettingPageFAQSubtitle" : MessageLookupByLibrary.simpleMessage("?"),
     "SettingPageFAQTitle" : MessageLookupByLibrary.simpleMessage("常见问题"),
+    "SettingPageIPFSSettingPageModes" : m5,
+    "SettingPageIPFSSettingPageModesTitle" : MessageLookupByLibrary.simpleMessage("IPFS网络工作模式"),
+    "SettingPageIPFSSettingPagePortTitle" : MessageLookupByLibrary.simpleMessage("IPFS服务器端口"),
+    "SettingPageIPFSSettingPageProxyPortTitle" : MessageLookupByLibrary.simpleMessage("代理服务器端口"),
+    "SettingPageIPFSSettingPageProxyServerTitle" : MessageLookupByLibrary.simpleMessage("代理服务器地址"),
+    "SettingPageIPFSSettingPageProxySubtitle" : MessageLookupByLibrary.simpleMessage("代理服务器设置"),
+    "SettingPageIPFSSettingPageProxyTitle" : MessageLookupByLibrary.simpleMessage("代理服务器"),
+    "SettingPageIPFSSettingPageServerTitle" : MessageLookupByLibrary.simpleMessage("IPFS服务器IP地址"),
+    "SettingPageIPFSSettingPageTestSubtitle" : MessageLookupByLibrary.simpleMessage("检查IPFS网络的连接情况，成功后将会在下方显示图片"),
+    "SettingPageIPFSSettingPageTestTitle" : MessageLookupByLibrary.simpleMessage("检查IPFS网络连接情况"),
+    "SettingPageIPFSSubtitle" : MessageLookupByLibrary.simpleMessage("IPFS服务器设置"),
+    "SettingPageIPFSTitle" : MessageLookupByLibrary.simpleMessage("IPFS设置"),
     "SettingPageLabSettingSubtitle" : MessageLookupByLibrary.simpleMessage("恭喜你发现了彩蛋，这里是平时不会放在外面的彩蛋功能开关的地方"),
     "SettingPageLabSettingTitle" : MessageLookupByLibrary.simpleMessage("实验功能"),
     "SettingPageLogConsoleSubtitle" : MessageLookupByLibrary.simpleMessage("打开工作日志，会显示各种后台日志，但是当前有一定的兼容性问题"),
@@ -132,10 +147,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "SettingPageSourcePageSourceProviderTitle" : MessageLookupByLibrary.simpleMessage("漫画源提供源管理"),
     "SettingPageSourcePageSourceSubtitle" : MessageLookupByLibrary.simpleMessage("管理所有漫画源的启用与关闭，同时配置设置"),
     "SettingPageSourcePageSourceTitle" : MessageLookupByLibrary.simpleMessage("漫画源管理"),
-    "SettingPageUpdateChannelSubtitle" : m5,
+    "SettingPageUpdateChannelSubtitle" : m6,
     "SettingPageUpdateChannelTitle" : MessageLookupByLibrary.simpleMessage("更新通道"),
-    "SettingPageUpdateChannels" : m6,
-    "SubscribeLatestUpdate" : m7,
+    "SettingPageUpdateChannels" : m7,
+    "SubscribeLatestUpdate" : m8,
     "TipsNew" : MessageLookupByLibrary.simpleMessage("new")
   };
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutterdmzj/database/sourceDatabaseProvider.dart';
-import 'package:flutterdmzj/model/comic_source/baseSourceModel.dart';
+import 'package:dcomic/database/sourceDatabaseProvider.dart';
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 
 class IKanManSourceModel extends BaseSourceModel {
   IKanManSourceOptions _options = IKanManSourceOptions.fromMap({});
@@ -45,11 +45,18 @@ class IKanManSourceModel extends BaseSourceModel {
 
   @override
   // TODO: implement type
-  SourceDetail get type => SourceDetail('ikanman', '看漫画', '一个毫无卵用的漫画源，写出来是因为cimoc的原版有这个，甚至没有实现', true, SourceType.DeprecatedSource,true);
+  SourceDetail get type => SourceDetail('ikanman', '看漫画', '一个毫无卵用的漫画源，写出来是因为cimoc的原版有这个，甚至没有实现', true, SourceType.DeprecatedSource,true,false);
 
   @override
   // TODO: implement userConfig
-  UserConfig get userConfig => InactiveUserConfig();
+  UserConfig get userConfig => InactiveUserConfig(this.type);
+
+  @override
+  Future<List<FavoriteComic>> getFavoriteComics(int page) {
+    // TODO: implement getFavoriteComics
+    throw UnimplementedError();
+  }
+
 }
 
 class IKanManSourceOptions extends SourceOptions {

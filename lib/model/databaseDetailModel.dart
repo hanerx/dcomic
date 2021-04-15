@@ -1,10 +1,11 @@
 import 'dart:io';
 
+import 'package:dcomic/component/EmptyView.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterdmzj/component/DataBaseDefineTile.dart';
-import 'package:flutterdmzj/component/DataBaseTable.dart';
-import 'package:flutterdmzj/database/databaseCommon.dart';
-import 'package:flutterdmzj/model/baseModel.dart';
+import 'package:dcomic/component/DataBaseDefineTile.dart';
+import 'package:dcomic/component/DataBaseTable.dart';
+import 'package:dcomic/database/databaseCommon.dart';
+import 'package:dcomic/model/baseModel.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseDetailModel extends BaseModel{
@@ -23,7 +24,9 @@ class DatabaseDetailModel extends BaseModel{
     path=_database.path;
     version=await _database.getVersion();
     for(var element in tabs){
-      data[element]=await _database.query(element);
+      if(DatabaseCommon.databases[element].dropVersion==null||DatabaseCommon.databases[element].dropVersion>version){
+        data[element]=await _database.query(element);
+      }
     }
     notifyListeners();
   }
@@ -60,7 +63,7 @@ class DatabaseDetailModel extends BaseModel{
   }
 
   List<Widget> getTabViews(context){
-    return tabs.map<Widget>((e) => DataBaseTable(headers:DatabaseCommon.databases[e].tables.keys.toList(),data: data[e],table: e,)).toList();
+    return tabs.map<Widget>((e) =>DatabaseCommon.databases[e].dropVersion==null||DatabaseCommon.databases[e].dropVersion>version?DataBaseTable(headers:DatabaseCommon.databases[e].tables.keys.toList(),data: data[e],table: e,):EmptyView(message: '该表已弃用，不做显示',)).toList();
   }
 
   Widget getDatabaseDefine(context,index){

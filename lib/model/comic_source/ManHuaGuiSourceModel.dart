@@ -3,12 +3,12 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutterdmzj/database/sourceDatabaseProvider.dart';
-import 'package:flutterdmzj/generated/l10n.dart';
-import 'package:flutterdmzj/http/UniversalRequestModel.dart';
-import 'package:flutterdmzj/model/comic_source/baseSourceModel.dart';
-import 'package:flutterdmzj/utils/soup.dart';
-import 'package:flutterdmzj/utils/tool_methods.dart';
+import 'package:dcomic/database/sourceDatabaseProvider.dart';
+import 'package:dcomic/generated/l10n.dart';
+import 'package:dcomic/http/UniversalRequestModel.dart';
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
+import 'package:dcomic/utils/soup.dart';
+import 'package:dcomic/utils/tool_methods.dart';
 import 'package:provider/provider.dart';
 
 class ManHuaGuiSourceModel extends BaseSourceModel {
@@ -99,7 +99,8 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
             tags,
             title,
             updateTime,
-            _options);
+            _options,
+            type);
       }
     } catch (e) {
       throw ComicLoadingError(exception: e);
@@ -290,11 +291,17 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
   @override
   // TODO: implement type
   SourceDetail get type => SourceDetail('manhuagui', '漫画柜', '漫画柜漫画源，需要代理', true,
-      SourceType.LocalDecoderSource, false);
+      SourceType.LocalDecoderSource, false, false);
 
   @override
   // TODO: implement userConfig
-  UserConfig get userConfig => InactiveUserConfig();
+  UserConfig get userConfig => InactiveUserConfig(this.type);
+
+  @override
+  Future<List<FavoriteComic>> getFavoriteComics(int page) {
+    // TODO: implement getFavoriteComics
+    throw UnimplementedError();
+  }
 }
 
 class ManHuaGuiSearchResult extends SearchResult {
@@ -427,6 +434,7 @@ class ManHuaGuiComicDetail extends ComicDetail {
   final String _title;
   final String _updateTime;
   final ManHuaGuiSourceOptions options;
+  final SourceDetail sourceDetail;
 
   ManHuaGuiComicDetail(
       this._authors,
@@ -438,7 +446,8 @@ class ManHuaGuiComicDetail extends ComicDetail {
       this._tags,
       this._title,
       this._updateTime,
-      this.options);
+      this.options,
+      this.sourceDetail);
 
   @override
   // TODO: implement authors
@@ -509,6 +518,20 @@ class ManHuaGuiComicDetail extends ComicDetail {
   @override
   // TODO: implement updateTime
   String get updateTime => _updateTime;
+
+  @override
+  bool isSubscribed = false;
+
+  @override
+  Future<void> getIfSubscribed() async {
+    // TODO: implement getIfSubscribed
+  }
+
+  @override
+  String share() {
+    // TODO: implement share
+    return '【$title】https://www.manhuagui.com/comic/$comicId/';
+  }
 }
 
 class ManHuaGuiComic extends Comic {
@@ -646,7 +669,7 @@ class ManHuaGuiComic extends Comic {
 
   @override
   // TODO: implement type
-  int get type => 0;
+  PageType get type => PageType.url;
 
   @override
   // TODO: implement viewpoints

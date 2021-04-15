@@ -2,10 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:flutterdmzj/component/EmptyView.dart';
-import 'package:flutterdmzj/component/LoadingCube.dart';
-import 'package:flutterdmzj/http/http.dart';
-import 'package:flutterdmzj/utils/tool_methods.dart';
+import 'package:dcomic/component/EmptyView.dart';
+import 'package:dcomic/component/LoadingCube.dart';
+import 'package:dcomic/http/http.dart';
+import 'package:dcomic/utils/tool_methods.dart';
 
 import 'novel_detail_page.dart';
 

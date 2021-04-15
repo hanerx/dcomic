@@ -35,10 +35,10 @@ class S {
     return Localizations.of<S>(context, S);
   }
 
-  /// `DMZJ`
+  /// `DComic`
   String get AppName {
     return Intl.message(
-      'DMZJ',
+      'DComic',
       name: 'AppName',
       desc: '',
       args: [],
@@ -716,10 +716,10 @@ class S {
     );
   }
 
-  /// `Flutter DMZJ`
+  /// `A simple comic viewer application`
   String get DrawerEmail {
     return Intl.message(
-      'Flutter DMZJ',
+      'A simple comic viewer application',
       name: 'DrawerEmail',
       desc: '',
       args: [],
@@ -1041,6 +1041,142 @@ class S {
     return Intl.message(
       'Provide a test page to test API',
       name: 'SettingPageDebugTestSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `IPFS Setting`
+  String get SettingPageIPFSTitle {
+    return Intl.message(
+      'IPFS Setting',
+      name: 'SettingPageIPFSTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Server Setting for IPFS`
+  String get SettingPageIPFSSubtitle {
+    return Intl.message(
+      'Server Setting for IPFS',
+      name: 'SettingPageIPFSSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select IPFS working mode`
+  String get SettingPageIPFSSettingPageModesTitle {
+    return Intl.message(
+      'Select IPFS working mode',
+      name: 'SettingPageIPFSSettingPageModesTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{mode, select, server {IPFS Server} ipfsio {HTTP direct} ipfslite{IPFS local server(test version)} other {Unknown}}`
+  String SettingPageIPFSSettingPageModes(Object mode) {
+    return Intl.select(
+      mode,
+      {
+        'server': 'IPFS Server',
+        'ipfsio': 'HTTP direct',
+        'ipfslite': 'IPFS local server(test version)',
+        'other': 'Unknown',
+      },
+      name: 'SettingPageIPFSSettingPageModes',
+      desc: '',
+      args: [mode],
+    );
+  }
+
+  /// `IPFS Server Address`
+  String get SettingPageIPFSSettingPageServerTitle {
+    return Intl.message(
+      'IPFS Server Address',
+      name: 'SettingPageIPFSSettingPageServerTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `IPFS Server Port`
+  String get SettingPageIPFSSettingPagePortTitle {
+    return Intl.message(
+      'IPFS Server Port',
+      name: 'SettingPageIPFSSettingPagePortTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enable Proxy`
+  String get SettingPageIPFSSettingPageProxyTitle {
+    return Intl.message(
+      'Enable Proxy',
+      name: 'SettingPageIPFSSettingPageProxyTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Proxy Server Setting`
+  String get SettingPageIPFSSettingPageProxySubtitle {
+    return Intl.message(
+      'Proxy Server Setting',
+      name: 'SettingPageIPFSSettingPageProxySubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Proxy Server Address`
+  String get SettingPageIPFSSettingPageProxyServerTitle {
+    return Intl.message(
+      'Proxy Server Address',
+      name: 'SettingPageIPFSSettingPageProxyServerTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Proxy Server Port`
+  String get SettingPageIPFSSettingPageProxyPortTitle {
+    return Intl.message(
+      'Proxy Server Port',
+      name: 'SettingPageIPFSSettingPageProxyPortTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Test IPFS network connection`
+  String get SettingPageIPFSSettingPageTestTitle {
+    return Intl.message(
+      'Test IPFS network connection',
+      name: 'SettingPageIPFSSettingPageTestTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Test the connection between IPFS network, the result will show below if test succeed.`
+  String get SettingPageIPFSSettingPageTestSubtitle {
+    return Intl.message(
+      'Test the connection between IPFS network, the result will show below if test succeed.',
+      name: 'SettingPageIPFSSettingPageTestSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No Image to show.`
+  String get NoImage {
+    return Intl.message(
+      'No Image to show.',
+      name: 'NoImage',
       desc: '',
       args: [],
     );

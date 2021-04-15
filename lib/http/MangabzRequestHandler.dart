@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
-import 'package:flutterdmzj/http/UniversalRequestModel.dart';
+import 'package:dcomic/http/UniversalRequestModel.dart';
 
-class MangabzRequestHandler extends SingleDomainRequestHandler {
-  MangabzRequestHandler() : super('http://www.mangabz.com');
+class MangabzRequestHandler extends CookiesRequestHandler {
+  MangabzRequestHandler() : super('mangabz','http://mangabz.com');
 
   Future<Map<String, dynamic>> getOptions(String url) async {
     try {
@@ -52,5 +52,22 @@ class MangabzRequestHandler extends SingleDomainRequestHandler {
 
   Future<Response> getComic(String comicId){
     return dio.get('/$comicId');
+  }
+  
+  Future<Response> login(String username,String password){
+    var data=FormData.fromMap({
+      'txt_username':username,
+      "txt_password":password
+    });
+    return dio.post('/login',data: data);
+  }
+
+  Future<Response> home({Map headers})async{
+    return dio.get('/',options: Options(headers: headers));
+  }
+
+  Future<Response> getSubscribe()async{
+    Options options= await setHeader(headers: {'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.134 Safari/537.36'});
+    return dio.get('/bookmarker',options: options);
   }
 }

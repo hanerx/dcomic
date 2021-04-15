@@ -5,25 +5,26 @@ import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutterdmzj/component/Drawer.dart';
-import 'package:flutterdmzj/component/search/SearchButton.dart';
-import 'package:flutterdmzj/generated/l10n.dart';
-import 'package:flutterdmzj/model/comicViewerSettingModel.dart';
-import 'package:flutterdmzj/model/comic_source/sourceProvider.dart';
-import 'package:flutterdmzj/model/systemSettingModel.dart';
-import 'package:flutterdmzj/model/trackerModel.dart';
-import 'package:flutterdmzj/model/versionModel.dart';
-import 'package:flutterdmzj/utils/ChineseCupertinoLocalizations.dart';
-import 'package:flutterdmzj/utils/tool_methods.dart';
-import 'package:flutterdmzj/view/category_page.dart';
-import 'package:flutterdmzj/view/comic_detail_page.dart';
-import 'package:flutterdmzj/view/download_page.dart';
-import 'package:flutterdmzj/view/history_page.dart';
-import 'package:flutterdmzj/view/home_page.dart';
-import 'package:flutterdmzj/view/latest_update_page.dart';
-import 'package:flutterdmzj/view/login_page.dart';
-import 'package:flutterdmzj/view/ranking_page.dart';
-import 'package:flutterdmzj/view/settings/setting_page.dart';
+import 'package:dcomic/component/Drawer.dart';
+import 'package:dcomic/component/search/SearchButton.dart';
+import 'package:dcomic/generated/l10n.dart';
+import 'package:dcomic/model/comicViewerSettingModel.dart';
+import 'package:dcomic/model/comic_source/sourceProvider.dart';
+import 'package:dcomic/model/ipfsSettingProvider.dart';
+import 'package:dcomic/model/systemSettingModel.dart';
+import 'package:dcomic/model/trackerModel.dart';
+import 'package:dcomic/model/versionModel.dart';
+import 'package:dcomic/utils/ChineseCupertinoLocalizations.dart';
+import 'package:dcomic/utils/tool_methods.dart';
+import 'package:dcomic/view/category_page.dart';
+import 'package:dcomic/view/comic_detail_page.dart';
+import 'package:dcomic/view/download_page.dart';
+import 'package:dcomic/view/history_page.dart';
+import 'package:dcomic/view/home_page.dart';
+import 'package:dcomic/view/latest_update_page.dart';
+import 'package:dcomic/view/login_page.dart';
+import 'package:dcomic/view/ranking_page.dart';
+import 'package:dcomic/view/settings/setting_page.dart';
 import 'package:provider/provider.dart';
 import 'package:uni_links/uni_links.dart';
 
@@ -53,6 +54,9 @@ class App extends StatelessWidget {
       ChangeNotifierProvider<SourceProvider>(
         lazy: false,
         create: (_) => SourceProvider(),
+      ),
+      ChangeNotifierProvider<IPFSSettingProvider>(
+        create: (_)=>IPFSSettingProvider(),
       )
     ], child: MainFrame());
   }
