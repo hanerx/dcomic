@@ -64,7 +64,7 @@ class LocalSourceModel extends BaseSourceModel {
       var comic = await LocalMangaDatabaseProvider().get(name);
       var history =
           (await HistoryDatabaseProvider(this.type.name).getReadHistory(name));
-      var lastChapterId = history == null ? null : history['lastChapterId'];
+      var lastChapterId = history == null ? null : history['last_chapter_id'];
       return LocalComicDetail(comic, type, lastChapterId, _sourceOptions);
     } catch (e) {
       logger.e(

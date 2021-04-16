@@ -49,7 +49,7 @@ class HistoryDatabaseProvider {
       var batch = (await db).batch();
       batch.query("local_history",
           where: 'comicId = ? AND provider = ?', whereArgs: [comicId, name]);
-      var data=(await batch.commit()).first;
+      var data=(await batch.commit() as List<dynamic>).first;
       return data[0];
     }catch(e){
 

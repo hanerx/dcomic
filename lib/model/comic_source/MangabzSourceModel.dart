@@ -63,7 +63,7 @@ class MangabzSourceModel extends BaseSourceModel {
   Future<MangabzComicDetail> getMangabzComic(String comicId) async {
     try {
       var response =
-          await UniversalRequestModel().mangabzRequestHandler.getComic(comicId);
+          await UniversalRequestModel.mangabzRequestHandler.getComic(comicId);
       if (response.statusCode == 200) {
         var soup = BeautifulSoup(
             ChineseHelper.convertToSimplifiedChinese(response.data.toString()));
@@ -152,7 +152,7 @@ class MangabzSourceModel extends BaseSourceModel {
               onTap: () async {
                 Provider.of<MangabzOptionProvider>(context, listen: false)
                         .ping =
-                    await UniversalRequestModel().mangabzRequestHandler.ping();
+                    await UniversalRequestModel.mangabzRequestHandler.ping();
               },
             ),
             ListTile(
@@ -222,7 +222,7 @@ class MangabzSourceModel extends BaseSourceModel {
     // TODO: implement search
     try {
       var response =
-          await UniversalRequestModel().mangabzRequestHandler.search(keyword);
+          await UniversalRequestModel.mangabzRequestHandler.search(keyword);
       if (response.statusCode == 200) {
         var soup = BeautifulSoup(ChineseHelper.convertCharToSimplifiedChinese(
             response.data.toString()));
@@ -277,7 +277,7 @@ class MangabzSourceModel extends BaseSourceModel {
     if (_userConfig.status == UserStatus.login) {
       try {
         var response =
-            await UniversalRequestModel().mangabzRequestHandler.getSubscribe();
+            await UniversalRequestModel.mangabzRequestHandler.getSubscribe();
         if (response.statusCode == 200) {
           var soup = BeautifulSoup(
               ChineseHelper.convertToSimplifiedChinese(response.data));
@@ -473,7 +473,7 @@ class MangabzUserConfig extends UserConfig {
   Future<bool> login(String username, String password) async {
     // TODO: implement login
     try {
-      await UniversalRequestModel()
+      await UniversalRequestModel
           .mangabzRequestHandler
           .login(username, password);
     } on DioError catch (e) {
@@ -489,7 +489,7 @@ class MangabzUserConfig extends UserConfig {
         }
         _status = UserStatus.login;
         try {
-          var response = await UniversalRequestModel()
+          var response = await UniversalRequestModel
               .mangabzRequestHandler
               .home(headers: <String, dynamic>{
             'Cookie': login,
@@ -813,7 +813,7 @@ class MangabzComic extends Comic {
       throw IDInvalidError();
     }
     try {
-      var response = await UniversalRequestModel()
+      var response = await UniversalRequestModel
           .mangabzRequestHandler
           .getChapter(chapterId);
       if (response.statusCode == 200) {
@@ -824,7 +824,7 @@ class MangabzComic extends Comic {
         _pageAt = chapterId;
         switch (options.mode) {
           case 0:
-            UniversalRequestModel().mangabzRequestHandler.clearCache();
+            UniversalRequestModel.mangabzRequestHandler.clearCache();
             var eval =
                 RegExp('eval(.*);?').stringMatch(response.data.toString());
             this._pages = jsonDecode(await ToolMethods.eval('$eval;newImgs',
@@ -835,7 +835,7 @@ class MangabzComic extends Comic {
           case 1:
             this._pages = jsonDecode(await ToolMethods.eval('newImgs',
                     url:
-                        '${UniversalRequestModel().mangabzRequestHandler.baseUrl}/$chapterId'))
+                        '${UniversalRequestModel.mangabzRequestHandler.baseUrl}/$chapterId'))
                 .map<String>((e) => e.toString())
                 .toList();
             break;
@@ -847,7 +847,7 @@ class MangabzComic extends Comic {
             var codes = <String>[];
             while (page < int.parse(length)) {
               try {
-                var data = await UniversalRequestModel()
+                var data = await UniversalRequestModel
                     .mangabzRequestHandler
                     .getChapterImage(chapterId, page);
                 if (data.statusCode == 200) {

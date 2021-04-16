@@ -53,11 +53,10 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
 
   Future<ComicDetail> getManHuaGuiComic(String comicId) async {
     try {
-      var model = UniversalRequestModel();
       if (_options.enableProxy) {
-        model.manHuaGuiRequestHandler.setProxy(_options.proxy, _options.port);
+        UniversalRequestModel.manHuaGuiRequestHandler.setProxy(_options.proxy, _options.port);
       }
-      var response = await model.manHuaGuiRequestHandler.getComic(comicId);
+      var response = await UniversalRequestModel.manHuaGuiRequestHandler.getComic(comicId);
       if (response.statusCode == 200) {
         var soup = BeautifulSoup(response.data);
         var contList = soup.find(id: '.cont-list');
@@ -133,10 +132,10 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
             subtitle: Text(
                 '${Provider.of<ManHuaGuiOptionsProvider>(context).ping} ms'),
             onTap: () async {
-              var model = UniversalRequestModel();
+
               if (Provider.of<ManHuaGuiOptionsProvider>(context, listen: false)
                   .enableProxy) {
-                model.manHuaGuiRequestHandler.setProxy(
+                UniversalRequestModel.manHuaGuiRequestHandler.setProxy(
                     Provider.of<ManHuaGuiOptionsProvider>(context,
                             listen: false)
                         .proxy,
@@ -145,7 +144,7 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
                         .port);
               }
               Provider.of<ManHuaGuiOptionsProvider>(context, listen: false)
-                  .ping = await model.manHuaGuiRequestHandler.ping();
+                  .ping = await UniversalRequestModel.manHuaGuiRequestHandler.ping();
             },
           ),
           ListTile(
@@ -260,11 +259,10 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
   Future<List<SearchResult>> search(String keyword, {int page: 0}) async {
     // TODO: implement search
     try {
-      var model = UniversalRequestModel();
       if (_options.enableProxy) {
-        model.manHuaGuiRequestHandler.setProxy(_options.proxy, _options.port);
+        UniversalRequestModel.manHuaGuiRequestHandler.setProxy(_options.proxy, _options.port);
       }
-      var response = await model.manHuaGuiRequestHandler.search(keyword);
+      var response = await UniversalRequestModel.manHuaGuiRequestHandler.search(keyword);
       if (response.statusCode == 200) {
         var soup = BeautifulSoup(response.data);
         List<SearchResult> list = [];
@@ -594,12 +592,11 @@ class ManHuaGuiComic extends Comic {
       throw IDInvalidError();
     }
     try {
-      var model = UniversalRequestModel();
       if (options.enableProxy) {
-        model.manHuaGuiRequestHandler.setProxy(options.proxy, options.port);
+        UniversalRequestModel.manHuaGuiRequestHandler.setProxy(options.proxy, options.port);
       }
       var response =
-          await model.manHuaGuiRequestHandler.getChapter(comicId, chapterId);
+          await UniversalRequestModel.manHuaGuiRequestHandler.getChapter(comicId, chapterId);
       if (response.statusCode == 200) {
         var soup = BeautifulSoup(response.data);
         var scripts = soup.findAll('script');

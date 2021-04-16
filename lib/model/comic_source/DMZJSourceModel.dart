@@ -62,7 +62,7 @@ class DMZJSourceModel extends BaseSourceModel {
             .toList();
         var history = (await HistoryDatabaseProvider(this.type.name)
             .getReadHistory(comicId));
-        var lastChapterId = history == null ? null : history['lastChapterId'];
+        var lastChapterId = history == null ? null : history['last_chapter_id'];
         return DMZJComicDetail(
             comicId,
             description,
@@ -122,7 +122,7 @@ class DMZJSourceModel extends BaseSourceModel {
         ];
         var history = (await HistoryDatabaseProvider(this.type.name)
             .getReadHistory(comicId));
-        var lastChapterId = history == null ? null : history['lastChapterId'];
+        var lastChapterId = history == null ? null : history['last_chapter_id'];
         return DMZJComicDetail(comicId, description, 0, 0, title, cover, author,
             types, chapters, status, updateDate, options, lastChapterId, type);
       }
@@ -218,7 +218,7 @@ class DMZJSourceModel extends BaseSourceModel {
     // TODO: implement getFavoriteComics
     if (_userConfig.status == UserStatus.login) {
       try {
-        var response = await UniversalRequestModel()
+        var response = await UniversalRequestModel
             .dmzjRequestHandler
             .getSubscribe(
                 await SourceDatabaseProvider.getSourceOption<int>(type.name, 'uid'),
@@ -274,7 +274,7 @@ class DMZJUserConfig extends UserConfig {
           await SourceDatabaseProvider.getSourceOption<String>('dmzj', 'uid');
       try {
         var response =
-            await UniversalRequestModel().dmzjRequestHandler.getUserInfo(_uid);
+            await UniversalRequestModel.dmzjRequestHandler.getUserInfo(_uid);
         if (response.statusCode == 200) {
           _avatar = response.data['cover'];
           _nickname = response.data['nickname'];
@@ -515,7 +515,7 @@ class DMZJUserConfig extends UserConfig {
                   _uid = list[0];
                   _status = UserStatus.login;
                   try {
-                    var response = await UniversalRequestModel()
+                    var response = await UniversalRequestModel
                         .dmzjRequestHandler
                         .getUserInfo(_uid);
                     if (response.statusCode == 200) {
@@ -549,7 +549,7 @@ class DMZJUserConfig extends UserConfig {
   Future<bool> login(String username, String password) async {
     // TODO: implement login
     try {
-      var response = await UniversalRequestModel()
+      var response = await UniversalRequestModel
           .dmzjiRequestHandler
           .login(username, password);
       var responseData = response.data.toString();
@@ -568,7 +568,7 @@ class DMZJUserConfig extends UserConfig {
             _uid = list[0];
             _status = UserStatus.login;
             try {
-              var response = await UniversalRequestModel()
+              var response = await UniversalRequestModel
                   .dmzjRequestHandler
                   .getUserInfo(_uid);
               if (response.statusCode == 200) {
@@ -682,7 +682,7 @@ class DMZJWebSourceModel extends DMZJSourceModel {
         }
         var history = (await HistoryDatabaseProvider(this.type.name)
             .getReadHistory(comicId));
-        var lastChapterId = history == null ? null : history['lastChapterId'];
+        var lastChapterId = history == null ? null : history['last_chapter_id'];
         return DMZJComicDetail(
             comicId,
             description,
@@ -891,7 +891,7 @@ class DMZJComicDetail extends ComicDetail {
 
   Future<void> getIfSubscribed() async {
     try {
-      var response = await UniversalRequestModel()
+      var response = await UniversalRequestModel
           .dmzjRequestHandler
           .getIfSubscribe(
               comicId,
@@ -980,9 +980,9 @@ class DMZJComicDetail extends ComicDetail {
   Future<void> updateUnreadState() async {
     // TODO: implement updateUnreadState
     bool login = await SourceDatabaseProvider.getSourceOption<bool>(
-        sourceDetail.name, 'login');
+        sourceDetail.name, 'login',defaultValue: false);
     if (login) {
-      UniversalRequestModel().dmzjInterfaceRequestHandler.updateUnread(comicId);
+      UniversalRequestModel.dmzjInterfaceRequestHandler.updateUnread(comicId);
     }
     return super.updateUnreadState();
   }
@@ -996,12 +996,12 @@ class DMZJComicDetail extends ComicDetail {
     // TODO: implement isSubscribed
     if (isSubscribed) {
       SourceDatabaseProvider.getSourceOption(sourceDetail.name, 'uid').then(
-          (value) => UniversalRequestModel()
+          (value) => UniversalRequestModel
               .dmzjRequestHandler
               .addSubscribe(comicId, value));
     } else {
       SourceDatabaseProvider.getSourceOption(sourceDetail.name, 'uid').then(
-          (value) => UniversalRequestModel()
+          (value) => UniversalRequestModel
               .dmzjRequestHandler
               .cancelSubscribe(comicId, value));
     }

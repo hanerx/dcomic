@@ -4,31 +4,78 @@ import 'dart:io';
 import 'package:archive/archive.dart';
 import 'package:dcomic/model/baseModel.dart';
 import 'package:dcomic/model/comic_source/baseSourceModel.dart';
+import 'package:flutter_archive/flutter_archive.dart' as FlutterArchive;
 import 'package:path_provider/path_provider.dart';
 
+typedef ProcessCallBack = void Function(double value, String message);
+
 class BaseMangaModel extends BaseModel {
-  Future<MangaObject> decodeFromPath(String path, {String outputPath}) {
-    return decodeFromFile(File(path), outputPath: outputPath);
+  Future<MangaObject> decodeFromPath(String path,
+      {String outputPath, ProcessCallBack callBack}) {
+    if (callBack == null) {
+      callBack = (value, message) {};
+    }
+    return decodeFromFile(File(path),
+        outputPath: outputPath, callBack: callBack);
   }
 
-  Future<MangaObject> decodeFromFile(File file, {String outputPath}) async {
+  Future<MangaObject> decodeFromFile(File file,
+      {String outputPath, ProcessCallBack callBack}) async {
+    if (callBack == null) {
+      callBack = (value, message) {};
+    }
+    callBack(0.1, '检查文件是否存在');
     if (await file.exists()) {
-      return decodeFromBytes(file.readAsBytesSync(), outputPath: outputPath);
+      // return decodeFromBytes(file.readAsBytesSync(),
+      //     outputPath: outputPath, callBack: callBack);
+      // return decodeFromStream(InputStream(file.readAsBytesSync()),outputPath: outputPath,callBack: callBack);
+      return decodeFromZip(file, outputPath: outputPath, callBack: callBack);
     } else {
       throw FileInvalidError();
     }
   }
 
-  Future<MangaObject> decodeFromBytes(List<int> bytes,
-      {String outputPath}) async {
+  Future<MangaObject> decodeFromZip(File file,
+      {String outputPath, ProcessCallBack callBack}) async {
+    if (callBack == null) {
+      callBack = (value, message) {};
+    }
     if (outputPath == null) {
+      callBack(0.15, '设置默认解压目录');
       outputPath = (await getTemporaryDirectory()).path + '/TempManga';
       if (await Directory(outputPath).exists()) {
         await Directory(outputPath).delete();
       }
     }
+    callBack(0.2, '开始解压');
+    await FlutterArchive.ZipFile.extractToDirectory(
+        zipFile: file,
+        destinationDir: Directory(outputPath),
+        onExtracting: (zipEntry, progress) {
+          callBack(0.2 + progress / 1000 * 4, '解压内容：${zipEntry.name}');
+          return FlutterArchive.ExtractOperation.extract;
+        });
+    return decodeFromDirectory(outputPath, callBack: callBack);
+  }
+
+  Future<MangaObject> decodeFromBytes(List<int> bytes,
+      {String outputPath, ProcessCallBack callBack}) async {
+    if (callBack == null) {
+      callBack = (value, message) {};
+    }
+    if (outputPath == null) {
+      callBack(0.2, '设置默认解压目录');
+      outputPath = (await getTemporaryDirectory()).path + '/TempManga';
+      if (await Directory(outputPath).exists()) {
+        await Directory(outputPath).delete();
+      }
+    }
+    callBack(0.2, '开始解压');
     var zip = ZipDecoder().decodeBytes(bytes);
+    int i = 0;
     for (final item in zip) {
+      i++;
+      callBack(0.2 + (i / zip.length) / 10 * 4, '解压内容：${item.name}');
       if (item.isFile) {
         final data = item.content as List<int>;
         File(outputPath + '/' + item.name)
@@ -38,13 +85,18 @@ class BaseMangaModel extends BaseModel {
         Directory(outputPath + '/' + item.name)..create(recursive: true);
       }
     }
-    return decodeFromDirectory(outputPath);
+    return decodeFromDirectory(outputPath, callBack: callBack);
   }
 
-  Future<MangaObject> decodeFromDirectory(String outputPath) async {
+  Future<MangaObject> decodeFromDirectory(String outputPath,
+      {ProcessCallBack callBack}) async {
+    if (callBack == null) {
+      callBack = (value, message) {};
+    }
     if (await File(outputPath + '/meta.json').exists()) {
+      callBack(0.6, '进行解压后验证');
       Map json = jsonDecode(File(outputPath + '/meta.json').readAsStringSync());
-      return MangaObject.fromMap(json, outputPath);
+      return MangaObject.fromMap(json, outputPath, callBack: callBack);
     } else {
       throw FileInvalidError();
     }
@@ -76,17 +128,23 @@ class MangaObject {
 
   String basePath;
 
-  MangaObject.fromMap(Map map, String filepath) {
+  MangaObject.fromMap(Map map, String filepath, {ProcessCallBack callBack}) {
+    if (callBack == null) {
+      callBack = (value, message) {};
+    }
     if (map.containsKey('name') && map.containsKey('title')) {
+      callBack(0.7, '解析基础');
       name = autoDecode(map['name'], filepath);
       title = autoDecode(map['title'], filepath);
 
+      callBack(0.8, '解析详情');
       description = autoDecode<String>(map['description'], filepath);
       authors = autoDecode<TagObject>(map['authors'], filepath,
           defaultDecoder: DefaultTagDecoder());
       tags = autoDecode<TagObject>(map['tags'], filepath,
           defaultDecoder: DefaultTagDecoder());
 
+      callBack(0.9, '解析章节');
       data = autoDecode<VolumeObject>(map['data'], filepath,
           defaultDecoder: DefaultVolumeDecoder());
       cover = autoDecode(map['cover'], filepath,
@@ -94,6 +152,7 @@ class MangaObject {
       status = autoDecode(map['status'], filepath);
       lastUpdateTimeStamp = autoDecode(map['last_update_timestamp'], filepath);
       basePath = filepath;
+      callBack(1.0, '解析完成');
     } else {
       throw MetaDecodeError(message: '必要解析内容不存在');
     }
@@ -207,7 +266,7 @@ class TagObject {
   }
 }
 
-class ImageObject{
+class ImageObject {
   final String url;
   final PageType pageType;
 

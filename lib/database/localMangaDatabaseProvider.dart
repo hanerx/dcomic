@@ -23,7 +23,7 @@ class LocalMangaDatabaseProvider {
     try {
       var batch = (await db).batch();
       batch.query('local_manga', where: 'name = ?', whereArgs: [name]);
-      var data = await batch.commit();
+      var data = await batch.commit() as List<dynamic>;
       return await BaseMangaModel().decodeFromDirectory(data.first[0]['path']);
     } catch (e) {
       logger.e(

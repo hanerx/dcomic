@@ -1,37 +1,52 @@
+
 import 'package:dcomic/database/cookieDatabaseProvider.dart';
+import 'package:dcomic/utils/HttpProxyAdapter.dart';
 import 'package:dio/dio.dart';
-import 'package:dio_http_cache/dio_http_cache.dart';
-import 'package:dio_proxy/dio_proxy.dart';
+import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'package:dcomic/http/DMZJRequestHandler.dart';
 import 'package:dcomic/http/KuKuRequestHandler.dart';
 import 'package:dcomic/http/ManHuaGuiRequestHandler.dart';
-import 'package:gbk_codec/gbk_codec.dart';
+import 'package:gbk2utf8/gbk2utf8.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'MangabzRequestHandler.dart';
 
+class CacheDatabase {
+  static DbCacheStore _store;
+
+  static Future<DbCacheStore> get store async {
+    if (_store == null) {
+      var value = await getExternalStorageDirectory();
+      _store = DbCacheStore(databasePath: value.path + '/cache/dio');
+    }
+    return _store;
+  }
+}
+
 class UniversalRequestModel {
-  MangabzRequestHandler mangabzRequestHandler = MangabzRequestHandler();
+  static MangabzRequestHandler mangabzRequestHandler = MangabzRequestHandler();
 
-  ManHuaGuiRequestHandler manHuaGuiRequestHandler = ManHuaGuiRequestHandler();
+  static ManHuaGuiRequestHandler manHuaGuiRequestHandler =
+      ManHuaGuiRequestHandler();
 
-  KuKuRequestHandler kuKuRequestHandler = KuKuRequestHandler();
+  static KuKuRequestHandler kuKuRequestHandler = KuKuRequestHandler();
 
-  SoKuKuRequestHandler soKuKuRequestHandler = SoKuKuRequestHandler();
+  static SoKuKuRequestHandler soKuKuRequestHandler = SoKuKuRequestHandler();
 
-  KKKKRequestHandler kkkkRequestHandler1 =
+  static KKKKRequestHandler kkkkRequestHandler1 =
       KKKKRequestHandler('http://comic.kkkkdm.com/');
 
-  KKKKRequestHandler kkkkRequestHandler2 =
+  static KKKKRequestHandler kkkkRequestHandler2 =
       KKKKRequestHandler('http://comic2.kkkkdm.com/');
 
-  KKKKRequestHandler kkkkRequestHandler3 =
+  static KKKKRequestHandler kkkkRequestHandler3 =
       KKKKRequestHandler('http://comic3.kkkkdm.com/');
 
-  DMZJRequestHandler dmzjRequestHandler = DMZJRequestHandler();
+  static DMZJRequestHandler dmzjRequestHandler = DMZJRequestHandler();
 
-  DMZJIRequestHandler dmzjiRequestHandler = DMZJIRequestHandler();
+  static DMZJIRequestHandler dmzjiRequestHandler = DMZJIRequestHandler();
 
-  DMZJInterfaceRequestHandler dmzjInterfaceRequestHandler =
+  static DMZJInterfaceRequestHandler dmzjInterfaceRequestHandler =
       DMZJInterfaceRequestHandler();
 }
 
@@ -46,11 +61,11 @@ abstract class RequestHandler {
 
   String gbkDecoder(List<int> responseBytes, RequestOptions options,
       ResponseBody responseBody) {
-    return gbk_bytes.decode(responseBytes);
+    return gbk.decode(responseBytes);
   }
 
   List<int> gbkEncoder(String requestString, RequestOptions options) {
-    return gbk_bytes.encode(requestString);
+    return gbk.encode(requestString);
   }
 
   Future<int> ping({String path: '/'}) async {
@@ -65,36 +80,60 @@ abstract class RequestHandler {
 
 abstract class SingleDomainRequestHandler extends RequestHandler {
   Dio dio;
-  DioCacheManager cacheManager;
+  CacheOptions options;
   final String baseUrl;
 
   SingleDomainRequestHandler(this.baseUrl) {
     dio = Dio()..options.baseUrl = baseUrl;
-    cacheManager = DioCacheManager(CacheConfig(baseUrl: baseUrl));
-    dio.interceptors.add(cacheManager.interceptor);
+    CacheDatabase.store.then((value) {
+      options = CacheOptions(
+        store: value,
+        // Required.
+        policy: CachePolicy.request,
+        // Default. Checks cache freshness, requests otherwise and caches response.
+        hitCacheOnErrorExcept: [401, 403],
+        // Optional. Returns a cached response on error if available but for statuses 401 & 403.
+        priority: CachePriority.normal,
+        // Optional. Default. Allows 3 cache sets and ease cleanup.
+        maxStale: const Duration(
+            days:
+                7), // Very optional. Overrides any HTTP directive to delete entry past this duration.
+      );
+      dio.interceptors.add(DioCacheInterceptor(options: options));
+    });
   }
 
-  Future<bool> clearCache() {
-    return cacheManager.clearAll();
+  Future<bool> clearCache() async {
+    await (await CacheDatabase.store).clean();
+    return true;
   }
 
-  Future<bool> clearExpired() {
-    return cacheManager.clearExpired();
+  Future<bool> clearExpired() async {
+    await (await CacheDatabase.store).clean();
+    return true;
   }
 
   void setProxy(String ip, int port) {
     dio = Dio()
       ..options.baseUrl = baseUrl
       ..httpClientAdapter = HttpProxyAdapter(ipAddr: ip, port: port);
-    cacheManager = DioCacheManager(CacheConfig(baseUrl: baseUrl));
-    dio.interceptors.add(cacheManager.interceptor);
+    CacheDatabase.store.then((value) {
+      options = CacheOptions(
+        store: value,
+        // Required.
+        policy: CachePolicy.request,
+        // Default. Checks cache freshness, requests otherwise and caches response.
+        hitCacheOnErrorExcept: [401, 403],
+        // Optional. Returns a cached response on error if available but for statuses 401 & 403.
+        priority: CachePriority.normal,
+        // Optional. Default. Allows 3 cache sets and ease cleanup.
+        maxStale: const Duration(
+            days:
+            7), // Very optional. Overrides any HTTP directive to delete entry past this duration.
+      );
+      dio.interceptors.add(DioCacheInterceptor(options: options));
+    });
   }
-}
-
-@Deprecated('没意义')
-abstract class MultiDomainRequestHandler extends RequestHandler {
-  List<String> baseUrl;
-  List<DioCacheManager> cacheManagers;
 }
 
 class CookiesRequestHandler extends SingleDomainRequestHandler {

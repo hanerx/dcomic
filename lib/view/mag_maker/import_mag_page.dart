@@ -7,6 +7,7 @@ import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 
 class ImportMagPage extends StatefulWidget {
@@ -21,12 +22,13 @@ class _ImportMagPage extends State<ImportMagPage> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return Scaffold(
+    return FlutterEasyLoading(
+        child: Scaffold(
       appBar: AppBar(
         title: Text('导入漫画'),
       ),
       body: Builder(
-        builder: (context)=>ListView(
+        builder: (context) => ListView(
           children: [
             FlatButton(
               padding: EdgeInsets.all(5),
@@ -40,18 +42,34 @@ class _ImportMagPage extends State<ImportMagPage> {
               ),
               onPressed: () async {
                 try {
+                  EasyLoading.instance
+                    ..indicatorType = EasyLoadingIndicatorType.pouringHourGlass;
+                  EasyLoading.instance..maskType = EasyLoadingMaskType.black;
+                  EasyLoading.showProgress(0, status: '开始导入');
                   var result =
-                  await FilePicker.platform.pickFiles(type: FileType.any);
+                      await FilePicker.platform.pickFiles(type: FileType.any);
                   String savePath =
                       Provider.of<SystemSettingModel>(context, listen: false)
-                          .savePath +
+                              .savePath +
                           "/manga/" +
                           result.files.first.name.split('.')[0];
-                  MangaObject data = await BaseMangaModel().decodeFromPath(result.files.first.path,outputPath: savePath);
+                  MangaObject data = await BaseMangaModel().decodeFromPath(
+                      result.files.first.path,
+                      outputPath: savePath, callBack: (value, message) {
+                    print(value);
+                    print(message);
+                    EasyLoading.showProgress(value, status: message);
+                  });
                   await LocalMangaDatabaseProvider().insert(data);
-                  Scaffold.of(context).showSnackBar(SnackBar(content: Text('导入成功'),));
+                  EasyLoading.dismiss();
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                    content: Text('导入成功'),
+                  ));
                 } catch (e) {
-                  Scaffold.of(context).showSnackBar(SnackBar(content: Text('导入失败，错误：$e'),));
+                  EasyLoading.dismiss();
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                    content: Text('导入失败，错误：$e'),
+                  ));
                 }
               },
             ),
@@ -66,10 +84,9 @@ class _ImportMagPage extends State<ImportMagPage> {
                 ),
               ),
               onPressed: () async {
-                TextEditingController controller = TextEditingController(
-                    text: 'https://hanerx.top/test/kyuso379_fanbox.manga');
+                TextEditingController controller = TextEditingController();
                 TextEditingController filenameController =
-                TextEditingController(text: 'kyuso379_fanbox');
+                    TextEditingController();
                 var data = await showDialog<bool>(
                     context: context,
                     builder: (context) {
@@ -113,21 +130,25 @@ class _ImportMagPage extends State<ImportMagPage> {
                     var response = await Dio().get(controller.text,
                         options: Options(responseType: ResponseType.bytes),
                         onReceiveProgress: (value, value2) {
-                          print('${value/value2*100}%');
-                        });
+                      print('${value / value2 * 100}%');
+                    });
                     if (response.statusCode == 200) {
-                      String savePath =
-                          Provider.of<SystemSettingModel>(context, listen: false)
+                      String savePath = Provider.of<SystemSettingModel>(context,
+                                  listen: false)
                               .savePath +
-                              "/manga/" +
-                              filenameController.text;
+                          "/manga/" +
+                          filenameController.text;
                       MangaObject data = await BaseMangaModel()
                           .decodeFromBytes(response.data, outputPath: savePath);
                       await LocalMangaDatabaseProvider().insert(data);
-                      Scaffold.of(context).showSnackBar(SnackBar(content: Text('导入成功'),));
+                      Scaffold.of(context).showSnackBar(SnackBar(
+                        content: Text('导入成功'),
+                      ));
                     }
                   } catch (e) {
-                    Scaffold.of(context).showSnackBar(SnackBar(content: Text('导入失败，错误：$e'),));
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                      content: Text('导入失败，错误：$e'),
+                    ));
                   }
                 }
               },
@@ -142,11 +163,11 @@ class _ImportMagPage extends State<ImportMagPage> {
                   trailing: Icon(Icons.chevron_right),
                 ),
               ),
-              onPressed: ()async {
+              onPressed: () async {
                 TextEditingController controller = TextEditingController(
                     text: 'https://hanerx.top/test/kyuso379_fanbox.manga');
                 TextEditingController filenameController =
-                TextEditingController(text: 'kyuso379_fanbox');
+                    TextEditingController(text: 'kyuso379_fanbox');
                 var data = await showDialog<bool>(
                     context: context,
                     builder: (context) {
@@ -187,17 +208,24 @@ class _ImportMagPage extends State<ImportMagPage> {
                     });
                 if (data != null && data) {
                   try {
-                      String savePath =
-                          Provider.of<SystemSettingModel>(context, listen: false)
-                              .savePath +
-                              "/manga/" +
-                              filenameController.text;
-                      MangaObject data = await BaseMangaModel()
-                          .decodeFromBytes(await Provider.of<IPFSSettingProvider>(context,listen: false).catBytes(controller.text), outputPath: savePath);
-                      await LocalMangaDatabaseProvider().insert(data);
-                      Scaffold.of(context).showSnackBar(SnackBar(content: Text('导入成功'),));
+                    String savePath =
+                        Provider.of<SystemSettingModel>(context, listen: false)
+                                .savePath +
+                            "/manga/" +
+                            filenameController.text;
+                    MangaObject data = await BaseMangaModel().decodeFromBytes(
+                        await Provider.of<IPFSSettingProvider>(context,
+                                listen: false)
+                            .catBytes(controller.text),
+                        outputPath: savePath);
+                    await LocalMangaDatabaseProvider().insert(data);
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                      content: Text('导入成功'),
+                    ));
                   } catch (e) {
-                    Scaffold.of(context).showSnackBar(SnackBar(content: Text('导入失败，错误：$e'),));
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                      content: Text('导入失败，错误：$e'),
+                    ));
                   }
                 }
               },
@@ -205,6 +233,6 @@ class _ImportMagPage extends State<ImportMagPage> {
           ],
         ),
       ),
-    );
+    ));
   }
 }

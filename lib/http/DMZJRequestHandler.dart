@@ -1,6 +1,5 @@
 import 'package:dcomic/database/cookieDatabaseProvider.dart';
 import 'package:dio/dio.dart';
-import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:dcomic/http/UniversalRequestModel.dart';
 
 
@@ -9,8 +8,7 @@ class DMZJRequestHandler extends SingleDomainRequestHandler {
   DMZJRequestHandler() : super('https://v3api.dmzj1.com');
 
   Future<Response> getUserInfo(String uid) async {
-    return dio.get('/UCenter/comics/$uid.json',
-        options: buildCacheOptions(Duration(days: 7)));
+    return dio.get('/UCenter/comics/$uid.json');
   }
 
   Future<Response> getIfSubscribe(String comicId, String uid,
@@ -33,9 +31,7 @@ class DMZJRequestHandler extends SingleDomainRequestHandler {
 
   Future<Response<T>> getSubscribe<T>(int uid, int page, {int type: 0}) {
     return dio.get(
-        '/UCenter/subscribe?uid=$uid&sub_type=1&letter=all&page=$page&type=$type',
-        options: buildCacheOptions(Duration(minutes: 5),
-            subKey: 'uid=$uid&page=$page&type=$type'));
+        '/UCenter/subscribe?uid=$uid&sub_type=1&letter=all&page=$page&type=$type');
   }
 }
 

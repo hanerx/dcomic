@@ -46,7 +46,7 @@ class CookieDatabaseProvider {
   Future get<T>(String configName, {T defaultValue}) async {
     var batch = (await db).batch();
     batch.query("cookies", where: "key='$configName' AND provider='$name'");
-    var result = await batch.commit();
+    var result = await batch.commit()as List<dynamic>;
     try {
       switch (T) {
         case String:
