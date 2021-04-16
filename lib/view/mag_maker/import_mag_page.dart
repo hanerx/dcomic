@@ -30,8 +30,9 @@ class _ImportMagPage extends State<ImportMagPage> {
       body: Builder(
         builder: (context) => ListView(
           children: [
-            FlatButton(
-              padding: EdgeInsets.all(5),
+            TextButton(
+              style: ButtonStyle(
+                  padding: MaterialStateProperty.all(EdgeInsets.all(5))),
               child: Card(
                 child: ListTile(
                   title: Text('本地导入'),
@@ -42,19 +43,17 @@ class _ImportMagPage extends State<ImportMagPage> {
               ),
               onPressed: () async {
                 try {
-                  EasyLoading.instance
-                    ..indicatorType = EasyLoadingIndicatorType.pouringHourGlass;
                   EasyLoading.instance..maskType = EasyLoadingMaskType.black;
                   EasyLoading.showProgress(0, status: '开始导入');
-                  var result =
-                      await FilePicker.platform.pickFiles(type: FileType.any);
+                  var result = await FilePicker.platform
+                      .pickFiles(type: FileType.any, withData: false);
                   String savePath =
                       Provider.of<SystemSettingModel>(context, listen: false)
                               .savePath +
                           "/manga/" +
-                          result.files.first.name.split('.')[0];
+                          result.files.single.name.split('.')[0];
                   MangaObject data = await BaseMangaModel().decodeFromPath(
-                      result.files.first.path,
+                      result.files.single.path,
                       outputPath: savePath, callBack: (value, message) {
                     print(value);
                     print(message);
@@ -62,19 +61,20 @@ class _ImportMagPage extends State<ImportMagPage> {
                   });
                   await LocalMangaDatabaseProvider().insert(data);
                   EasyLoading.dismiss();
-                  Scaffold.of(context).showSnackBar(SnackBar(
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text('导入成功'),
                   ));
                 } catch (e) {
                   EasyLoading.dismiss();
-                  Scaffold.of(context).showSnackBar(SnackBar(
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text('导入失败，错误：$e'),
                   ));
                 }
               },
             ),
-            FlatButton(
-              padding: EdgeInsets.all(5),
+            TextButton(
+              style: ButtonStyle(
+                  padding: MaterialStateProperty.all(EdgeInsets.all(5))),
               child: Card(
                 child: ListTile(
                   title: Text('网址下载'),
@@ -110,13 +110,13 @@ class _ImportMagPage extends State<ImportMagPage> {
                           ],
                         ),
                         actions: [
-                          FlatButton(
+                          TextButton(
                             child: Text(S.of(context).Cancel),
                             onPressed: () {
                               Navigator.of(context).pop(false);
                             },
                           ),
-                          FlatButton(
+                          TextButton(
                             child: Text(S.of(context).Confirm),
                             onPressed: () {
                               Navigator.of(context).pop(true);
@@ -126,11 +126,14 @@ class _ImportMagPage extends State<ImportMagPage> {
                       );
                     });
                 if (data != null && data) {
+                  EasyLoading.instance..maskType = EasyLoadingMaskType.black;
+                  EasyLoading.showProgress(0, status: '开始导入');
                   try {
                     var response = await Dio().get(controller.text,
                         options: Options(responseType: ResponseType.bytes),
                         onReceiveProgress: (value, value2) {
-                      print('${value / value2 * 100}%');
+                      EasyLoading.showProgress(value / value2 / 10,
+                          status: '正在下载');
                     });
                     if (response.statusCode == 200) {
                       String savePath = Provider.of<SystemSettingModel>(context,
@@ -139,22 +142,30 @@ class _ImportMagPage extends State<ImportMagPage> {
                           "/manga/" +
                           filenameController.text;
                       MangaObject data = await BaseMangaModel()
-                          .decodeFromBytes(response.data, outputPath: savePath);
+                          .decodeFromBytes(response.data, outputPath: savePath,
+                              callBack: (value, message) {
+                        print(value);
+                        print(message);
+                        EasyLoading.showProgress(value, status: message);
+                      });
                       await LocalMangaDatabaseProvider().insert(data);
-                      Scaffold.of(context).showSnackBar(SnackBar(
+                      EasyLoading.dismiss();
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                         content: Text('导入成功'),
                       ));
                     }
                   } catch (e) {
-                    Scaffold.of(context).showSnackBar(SnackBar(
+                    EasyLoading.dismiss();
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Text('导入失败，错误：$e'),
                     ));
                   }
                 }
               },
             ),
-            FlatButton(
-              padding: EdgeInsets.all(5),
+            TextButton(
+              style: ButtonStyle(
+                  padding: MaterialStateProperty.all(EdgeInsets.all(5))),
               child: Card(
                 child: ListTile(
                   title: Text('IPFS导入'),
@@ -191,13 +202,13 @@ class _ImportMagPage extends State<ImportMagPage> {
                           ],
                         ),
                         actions: [
-                          FlatButton(
+                          TextButton(
                             child: Text(S.of(context).Cancel),
                             onPressed: () {
                               Navigator.of(context).pop(false);
                             },
                           ),
-                          FlatButton(
+                          TextButton(
                             child: Text(S.of(context).Confirm),
                             onPressed: () {
                               Navigator.of(context).pop(true);
@@ -207,6 +218,8 @@ class _ImportMagPage extends State<ImportMagPage> {
                       );
                     });
                 if (data != null && data) {
+                  EasyLoading.instance..maskType = EasyLoadingMaskType.black;
+                  EasyLoading.showProgress(0, status: '开始导入');
                   try {
                     String savePath =
                         Provider.of<SystemSettingModel>(context, listen: false)
@@ -217,16 +230,58 @@ class _ImportMagPage extends State<ImportMagPage> {
                         await Provider.of<IPFSSettingProvider>(context,
                                 listen: false)
                             .catBytes(controller.text),
-                        outputPath: savePath);
+                        outputPath: savePath, callBack: (value, message) {
+                      print(value);
+                      print(message);
+                      EasyLoading.showProgress(value, status: message);
+                    });
                     await LocalMangaDatabaseProvider().insert(data);
-                    Scaffold.of(context).showSnackBar(SnackBar(
+                    EasyLoading.dismiss();
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Text('导入成功'),
                     ));
                   } catch (e) {
-                    Scaffold.of(context).showSnackBar(SnackBar(
+                    EasyLoading.dismiss();
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Text('导入失败，错误：$e'),
                     ));
                   }
+                }
+              },
+            ),
+            TextButton(
+              style: ButtonStyle(
+                  padding: MaterialStateProperty.all(EdgeInsets.all(5))),
+              child: Card(
+                child: ListTile(
+                  title: Text('文件夹导入'),
+                  subtitle: Text('导入一个文件夹实现解析操作，主要是用来针对过大的文件没法解析的bug'),
+                  leading: Icon(Icons.file_copy),
+                  trailing: Icon(Icons.chevron_right),
+                ),
+              ),
+              onPressed: () async {
+                try {
+                  EasyLoading.instance..maskType = EasyLoadingMaskType.black;
+                  EasyLoading.showProgress(0, status: '开始导入');
+                  var result = await FilePicker.platform
+                      .getDirectoryPath();
+                  MangaObject data = await BaseMangaModel().decodeFromDirectory(
+                      result, callBack: (value, message) {
+                    print(value);
+                    print(message);
+                    EasyLoading.showProgress(value, status: message);
+                  });
+                  await LocalMangaDatabaseProvider().insert(data);
+                  EasyLoading.dismiss();
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text('导入成功'),
+                  ));
+                } catch (e) {
+                  EasyLoading.dismiss();
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text('导入失败，错误：$e'),
+                  ));
                 }
               },
             ),
