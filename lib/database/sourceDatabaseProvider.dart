@@ -1,3 +1,4 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:sqflite/sqflite.dart';
 
 import 'databaseCommon.dart';
@@ -35,7 +36,9 @@ class SourceDatabaseProvider {
         default:
           return maps.first['value'];
       }
-    } catch (e) {}
+    } catch (e,s) {
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'getSourceOptionFailed: $name, key: $key');
+    }
     return defaultValue;
   }
 

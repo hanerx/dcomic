@@ -1,5 +1,6 @@
 import 'package:dcomic/database/databaseCommon.dart';
 import 'package:dcomic/utils/log_output.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:logger/logger.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -49,10 +50,10 @@ class HistoryDatabaseProvider {
       var batch = (await db).batch();
       batch.query("local_history",
           where: 'comicId = ? AND provider = ?', whereArgs: [comicId, name]);
-      var data=(await batch.commit()).first;
+      var data=(await batch.commit() as List<dynamic>).first;
       return data[0];
-    }catch(e){
-
+    }catch(e,s){
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'readHistoryGetFailed: $comicId, provider: $name');
     }
     return null;
   }

@@ -1,7 +1,8 @@
 
+
 import 'package:dio/dio.dart';
 import 'package:dcomic/http/UniversalRequestModel.dart';
-import 'package:gbk_codec/gbk_codec.dart';
+import 'package:gbk2utf8/gbk2utf8.dart';
 
 class KuKuRequestHandler extends KKKKRequestHandler {
   KuKuRequestHandler() : super('https://manhua.kukudm.com/');
@@ -12,7 +13,7 @@ class SoKuKuRequestHandler extends SingleDomainRequestHandler {
 
   Future<Response> search(String keyword, {int page: 0}) async {
     return dio.get(
-      '/search.asp?kw=${gbk_bytes.encode(keyword).map((e) => '%${e.toRadixString(16)}'.toUpperCase()).toList().join('')}&page=$page',
+      '/search.asp?kw=${(gbk.encode(keyword)).map((e) => '%${e.toRadixString(16)}'.toUpperCase()).toList().join('')}&page=$page',
       options: Options(responseDecoder: gbkDecoder),
     );
   }

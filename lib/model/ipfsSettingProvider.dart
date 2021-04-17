@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:dcomic/utils/HttpProxyAdapter.dart';
 import 'package:dio/dio.dart';
-import 'package:dio_proxy/dio_proxy.dart';
 import 'package:dcomic/database/configDatabaseProvider.dart';
 import 'package:dcomic/model/baseModel.dart';
 import 'package:ipfs/ipfs.dart';
@@ -97,7 +97,7 @@ class IPFSSettingProvider extends BaseModel {
             baseUrl: server,
             port: port,
             dio: dio);
-        var item = await ipfs.catObject(cid);
+        var item = await ipfs.catBytes(cid);
         return Uint8List.fromList(item);
         break;
       case 1:

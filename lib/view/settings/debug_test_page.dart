@@ -34,7 +34,7 @@ class _DebugTestPage extends State<DebugTestPage> {
   String _data;
   List<ComicDetail> _subs = [];
   var image;
-  var channel=MethodChannel('top.hanerx/ipfs-lite');
+  var channel = MethodChannel('top.hanerx/ipfs-lite');
 
   @override
   void initState() {
@@ -44,15 +44,18 @@ class _DebugTestPage extends State<DebugTestPage> {
     print(DateTime.now().millisecondsSinceEpoch);
   }
 
-  startPeer()async{
-    try{
-      channel.invokeMethod('startPeer',{'debug':false,'path':(await getTemporaryDirectory()).path+'/ipfs/'});
-    }catch(e){
+  startPeer() async {
+    try {
+      channel.invokeMethod('startPeer', {
+        'debug': false,
+        'path': (await getTemporaryDirectory()).path + '/ipfs/'
+      });
+    } catch (e) {
       print('started');
     }
   }
 
-  stopPeer()async{
+  stopPeer() async {
     channel.invokeMethod('stopPeer');
   }
 
@@ -103,7 +106,7 @@ class _DebugTestPage extends State<DebugTestPage> {
                   OutlineButton(
                     child: Text('Test'),
                     onPressed: () async {
-                      var response = await UniversalRequestModel()
+                      var response = await UniversalRequestModel
                           .mangabzRequestHandler
                           .getChapterImage('m161157', 0);
                       var data =
@@ -126,7 +129,8 @@ class _DebugTestPage extends State<DebugTestPage> {
                   OutlineButton(
                     child: Text('Test'),
                     onPressed: () async {
-                      print((await KuKuSourceModel().get(title: '哥布林杀手')).getChapters());
+                      print((await KuKuSourceModel().get(title: '哥布林杀手'))
+                          .getChapters());
                     },
                   )
                 ],
@@ -200,7 +204,7 @@ class _DebugTestPage extends State<DebugTestPage> {
                 children: [
                   OutlineButton(
                     child: Text('启动IPFS本地服务器'),
-                    onPressed: ()async{
+                    onPressed: () async {
                       startPeer();
                     },
                   ),
@@ -215,25 +219,27 @@ class _DebugTestPage extends State<DebugTestPage> {
                       //   image=Uint8List.fromList(item);
                       // });
 
-
                       print('start cat peer');
-                      Uint8List data=await channel.invokeMethod('cat',{'cid':'QmSY5BqPor7aQD8EsSJvXdixkgLoAdQHP3uq5yX28jGwsT'});
+                      Uint8List data = await channel.invokeMethod('cat', {
+                        'cid': 'QmSY5BqPor7aQD8EsSJvXdixkgLoAdQHP3uq5yX28jGwsT'
+                      });
                       print(data);
                       setState(() {
-                        image=data;
+                        image = data;
                       });
                     },
                   ),
-                  image==null?Text('还没返回值'):Image.memory(image)
+                  image == null ? Text('还没返回值') : Image.memory(image)
                 ],
               ),
             ),
           ),
           Center(
             child: CachedNetworkImage(
-              imageUrl: 'https://i.pximg.net/img-original/img/2019/08/04/00/12/45/76062188_p0.jpg',
-              cacheManager: ProxyCacheManager('192.168.123.47', 7890),
-              httpHeaders: {'referer':'https://www.pixiv.net/'},
+              imageUrl:
+                  'https://i.pximg.net/img-original/img/2019/08/04/00/12/45/76062188_p0.jpg',
+              // cacheManager: ProxyCacheManager('192.168.123.47', 7890),
+              httpHeaders: {'referer': 'https://www.pixiv.net/'},
             ),
           )
         ]),
@@ -265,7 +271,7 @@ class _CustomListTile extends StatelessWidget {
             id: comicId,
             title: title,
           );
-        }));
+        },settings: RouteSettings(name: 'comic_detail_page')));
       },
       child: Card(
         child: Row(

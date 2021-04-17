@@ -27,12 +27,12 @@ class SearchListTile extends StatelessWidget {
           case 0:
             Navigator.push(context, MaterialPageRoute(builder: (context) {
               return ComicDetailPage(id:comicId,title: this.title,);
-            }));
+            },settings: RouteSettings(name: 'comic_detail_page')));
             break;
           case 1:
             Navigator.push(context, MaterialPageRoute(builder: (context) {
               return NovelDetailPage(id: int.parse(comicId));
-            }));
+            },settings: RouteSettings(name: 'novel_detail_page')));
             break;
         }
       },

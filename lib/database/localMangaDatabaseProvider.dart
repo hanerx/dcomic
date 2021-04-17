@@ -1,5 +1,6 @@
 import 'package:dcomic/model/mag_model/baseMangaModel.dart';
 import 'package:dcomic/utils/log_output.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:logger/logger.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -23,9 +24,10 @@ class LocalMangaDatabaseProvider {
     try {
       var batch = (await db).batch();
       batch.query('local_manga', where: 'name = ?', whereArgs: [name]);
-      var data = await batch.commit();
+      var data = await batch.commit() as List<dynamic>;
       return await BaseMangaModel().decodeFromDirectory(data.first[0]['path']);
-    } catch (e) {
+    } catch (e,s) {
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'getMangaFailed');
       logger.e(
           'class: ${this.runtimeType} action: getMangaFailed, exception: $e');
       throw e;
@@ -43,7 +45,8 @@ class LocalMangaDatabaseProvider {
         list.add(await model.decodeFromDirectory(e['path']));
       }
       return list;
-    } catch (e) {
+    } catch (e,s) {
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'getMangaFailed');
       logger.e(
           'class: ${this.runtimeType} action: getMangaFailed, exception: $e');
       throw e;

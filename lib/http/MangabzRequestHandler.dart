@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:dcomic/http/UniversalRequestModel.dart';
 
 class MangabzRequestHandler extends CookiesRequestHandler {
@@ -30,7 +29,6 @@ class MangabzRequestHandler extends CookiesRequestHandler {
   Future<Response> getChapterImage(String chapterId, int page) async {
     var param = await getOptions('$chapterId');
     return dio.get('/$chapterId/chapterimage.ashx',
-        options: buildCacheOptions(Duration(days: 1), subKey: 'page=$page',options: Options(headers: {'referer': '$baseUrl'}),),
         queryParameters: {
           'cid': param['cid'],
           '_cid': param['cid'],

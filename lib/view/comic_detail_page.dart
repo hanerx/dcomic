@@ -126,7 +126,7 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                                 Navigator.push(context,
                                     MaterialPageRoute(builder: (context) {
                                   return LoginPage();
-                                }));
+                                },settings: RouteSettings(name: 'login_page')));
                               },
                             ),
                           ));
@@ -184,7 +184,7 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                               return ComicViewPage(
                                 comic: comic,
                               );
-                            }));
+                            },settings: RouteSettings(name: 'comic_view_page')));
                           } else if (Provider.of<ComicDetailModel>(context,
                                       listen: false)
                                   .lastChapterId ==
@@ -210,7 +210,7 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                               return ComicViewPage(
                                 comic: comic,
                               );
-                            }));
+                            },settings: RouteSettings(name: 'comic_view_page')));
                           } else {
                             Scaffold.of(context).showSnackBar(SnackBar(
                               content: Text('好像没得记录，没法继续阅读'),

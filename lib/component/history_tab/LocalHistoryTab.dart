@@ -1,6 +1,7 @@
 import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:dcomic/model/comic_source/sourceProvider.dart';
 import 'package:dcomic/model/localHistoryModel.dart';
+import 'package:dcomic/view/comic_detail_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -9,7 +10,7 @@ import 'package:dcomic/component/LoadingCube.dart';
 import 'package:dcomic/database/database.dart';
 import 'package:provider/provider.dart';
 
-import 'HistoryListTile.dart';
+import '../comic/HistoryListTile.dart';
 
 class LocalHistoryTab extends StatefulWidget {
   @override
@@ -45,8 +46,20 @@ class _LocalHistoryTab extends State<LocalHistoryTab> {
               itemBuilder: (context, index) {
                 HistoryComic comic =
                     Provider.of<LocalHistoryModel>(context).list[index];
-                return HistoryListTile(comic.cover, comic.title,
-                    comic.latestChapter, comic.timestamp, comic.comicId);
+                return HistoryListTile(
+                  cover: comic.cover,
+                  chapterName: comic.latestChapter,
+                  date: comic.timestamp,
+                  title: comic.title,
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => ComicDetailPage(
+                              id: comic.comicId,
+                              title: comic.title,
+                              model: comic.model,
+                            ),settings: RouteSettings(name: 'comic_detail_page')));
+                  },
+                );
               }),
           onRefresh: () async {
             await Provider.of<LocalHistoryModel>(context, listen: false)

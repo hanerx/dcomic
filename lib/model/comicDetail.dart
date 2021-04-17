@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dcomic/database/configDatabaseProvider.dart';
@@ -85,7 +86,8 @@ class ComicDetailModel extends BaseModel {
       await detail.getIfSubscribed();
       error = null;
       notifyListeners();
-    } catch (e) {
+    } catch (e,s) {
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'comicDetailLoadingFail: $_comicId');
       error = e;
       notifyListeners();
       logger.w('class: ComicDetail, action: loadingFailed, exception: $e');
@@ -166,7 +168,7 @@ class ComicDetailModel extends BaseModel {
         return ComicViewPage(
           comic: comic,
         );
-      }));
+      },settings: RouteSettings(name: 'comic_view_page')));
     });
   }
 

@@ -39,8 +39,8 @@ class _SubscribeCard extends State<SubscribeCard> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return FlatButton(
-      padding: EdgeInsets.zero,
+    return TextButton(
+      style: ButtonStyle(padding: MaterialStateProperty.all(EdgeInsets.zero)),
       child: Card(
           elevation: 0,
           child: Badge(
@@ -82,7 +82,7 @@ class _Card extends StatelessWidget {
           child: AspectRatio(
             aspectRatio: 0.75,
             child:CachedNetworkImage(
-              fit: BoxFit.fill,
+              fit: BoxFit.cover,
             imageUrl: '$cover',
             httpHeaders: {'referer': 'http://images.dmzj.com'},
             progressIndicatorBuilder: (context, url, downloadProgress) =>

@@ -59,7 +59,7 @@ class _NovelDetailPage extends State<NovelDetailPage> {
                                 Navigator.push(context,
                                     MaterialPageRoute(builder: (context) {
                                   return LoginPage();
-                                }));
+                                },settings: RouteSettings(name:'login_page')));
                               },
                             ),
                           ));

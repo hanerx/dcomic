@@ -1,4 +1,5 @@
 
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:dcomic/http/http.dart';
 import 'package:dcomic/model/baseModel.dart';
@@ -46,7 +47,8 @@ class NovelModel extends BaseModel {
         data = response.data;
         notifyListeners();
       }
-    } catch (e) {
+    } catch (e,s) {
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'getNovelFailed: $novelID, volumeID: $volumeID, chapterID: $chapterID');
       error = true;
       logger.e(
           'class: NovelModel, action: getNovel, novelID: $novelID, volumeID: $volumeID, chapterID: $chapterID');

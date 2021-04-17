@@ -37,7 +37,7 @@ class _MagMakePage extends State<MagMakePage> {
             ),
             onPressed: () {
               Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (context) => NewMagPage()));
+                  .push(MaterialPageRoute(builder: (context) => NewMagPage(),settings: RouteSettings(name: 'new_mag_page')));
             },
           ),
           FlatButton(
@@ -64,7 +64,7 @@ class _MagMakePage extends State<MagMakePage> {
             ),
             onPressed: () {
               Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => ImportMagPage()));
+                  MaterialPageRoute(builder: (context) => ImportMagPage(),settings: RouteSettings(name: 'import_mag_page')));
             },
           ),
           FlatButton(
@@ -95,7 +95,7 @@ class _MagMakePage extends State<MagMakePage> {
               Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => MagExamplePage(
                         example: example,
-                      )));
+                      ),settings: RouteSettings(name: 'mag_example_page')));
             },
           ),
           FlatButton(

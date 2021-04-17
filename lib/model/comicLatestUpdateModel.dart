@@ -1,5 +1,6 @@
 import 'package:dcomic/http/http.dart';
 import 'package:dcomic/model/baseModel.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 class ComicLatestUpdateModel extends BaseModel {
   int filterTag = 100;
@@ -17,7 +18,8 @@ class ComicLatestUpdateModel extends BaseModel {
       notifyListeners();
       logger.i(
           'class: ComicLatestUpdateModel,action: getLatestList, page: $page');
-    } catch (e) {
+    } catch (e,s) {
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'getLatestListFailed');
       logger.e(
           'class: ComicLatestUpdateModel, action: getLatestListFailed, exception: $e');
     }

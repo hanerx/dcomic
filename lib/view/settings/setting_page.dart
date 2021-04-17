@@ -31,7 +31,7 @@ class _SettingPage extends State<SettingPage> {
         subtitle: Text(S.of(context).SettingPageMainReadingSubtitle),
         onTap: () {
           Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => ReaderSettingPage()));
+              MaterialPageRoute(builder: (context) => ReaderSettingPage(),settings: RouteSettings(name: 'read_setting_page')));
         },
       ),
       ListTile(
@@ -40,7 +40,7 @@ class _SettingPage extends State<SettingPage> {
         subtitle: Text(S.of(context).SettingPageMainSourceSubtitle),
         onTap: () {
           Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => SourceSettingPage()));
+              MaterialPageRoute(builder: (context) => SourceSettingPage(),settings: RouteSettings(name: 'source_setting_page')));
         },
       ),
       ListTile(
@@ -49,7 +49,7 @@ class _SettingPage extends State<SettingPage> {
         subtitle: Text(S.of(context).SettingPageMainDownloadSubtitle),
         onTap: () {
           Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => DownloadSettingPage()));
+              MaterialPageRoute(builder: (context) => DownloadSettingPage(),settings: RouteSettings(name: 'download_setting_page')));
         },
       ),
       ListTile(
@@ -58,7 +58,7 @@ class _SettingPage extends State<SettingPage> {
         subtitle: Text(S.of(context).SettingPageIPFSSubtitle),
         onTap: () {
           Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => IPFSSettingPage()));
+              .push(MaterialPageRoute(builder: (context) => IPFSSettingPage(),settings: RouteSettings(name: 'ipfs_setting_page')));
         },
       ),
       ListTile(
@@ -67,7 +67,7 @@ class _SettingPage extends State<SettingPage> {
         subtitle: Text(S.of(context).SettingPageMainUserSubtitle),
         onTap: () {
           Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => UserSettingPage()));
+              .push(MaterialPageRoute(builder: (context) => UserSettingPage(),settings: RouteSettings(name: 'user_setting_page')));
         },
       ),
       ListTile(
@@ -76,7 +76,7 @@ class _SettingPage extends State<SettingPage> {
         subtitle: Text(S.of(context).SettingPageMainDebugSubtitle),
         onTap: () {
           Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => DebugSettingPage()));
+              MaterialPageRoute(builder: (context) => DebugSettingPage(),settings: RouteSettings(name: 'debug_setting_page')));
         },
       ),
       ListTile(
@@ -85,7 +85,7 @@ class _SettingPage extends State<SettingPage> {
         subtitle: Text(S.of(context).SettingPageMainAboutSubtitle),
         onTap: () {
           Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => AboutSettingPage()));
+              MaterialPageRoute(builder: (context) => AboutSettingPage(),settings: RouteSettings(name: 'about_setting_page')));
         },
       ),
     ];
@@ -96,7 +96,7 @@ class _SettingPage extends State<SettingPage> {
         subtitle: Text(S.of(context).SettingPageMainLabSubtitle),
         onTap: () {
           Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => LabSettingPage()));
+              .push(MaterialPageRoute(builder: (context) => LabSettingPage(),settings: RouteSettings(name: 'lab_setting_page')));
         },
       ));
     }

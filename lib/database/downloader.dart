@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:dcomic/database/databaseCommon.dart';
 import 'package:sqflite/sqflite.dart';
@@ -42,8 +43,8 @@ class DownloadChapter {
           file.delete();
         }
       }
-    }catch(e){
-
+    }catch(e,s){
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'downloadDeleteFailed');
     }
   }
 

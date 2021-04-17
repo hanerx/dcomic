@@ -26,7 +26,7 @@ class _SourceSettingPage extends State<SourceSettingPage>{
             title: Text(S.of(context).SettingPageSourcePageSourceTitle),
             subtitle: Text(S.of(context).SettingPageSourcePageSourceSubtitle),
             onTap: (){
-              Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ComicSourcePage()));
+              Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ComicSourcePage(),settings: RouteSettings(name: 'comic_source_page')));
             },
           ),
           ListTile(

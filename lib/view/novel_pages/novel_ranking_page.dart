@@ -219,7 +219,7 @@ class _CustomListTile extends StatelessWidget {
           onPressed: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
               return NovelDetailPage(id: novelID,);
-            }));
+            },settings: RouteSettings(name:'novel_detail_page')));
           },
           child: Card(
             child: Row(

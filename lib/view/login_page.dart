@@ -47,7 +47,7 @@ class _LoginPage extends State<LoginPage> {
               onTap: () async {
                 await Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) =>
-                        model.userConfig.getLoginWidget(context)));
+                        model.userConfig.getLoginWidget(context),settings: RouteSettings(name: '${model.type.name}_login_page')));
                 Navigator.of(context).pop();
               },
             ),

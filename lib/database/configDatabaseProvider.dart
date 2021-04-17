@@ -1,6 +1,7 @@
 import 'package:dcomic/database/database.dart';
 import 'package:dcomic/database/databaseCommon.dart';
 import 'package:dcomic/utils/log_output.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -44,7 +45,7 @@ abstract class ConfigDatabaseProvider {
   Future get<T>(String configName, {T defaultValue}) async {
     var batch = (await db).batch();
     batch.query("configures", where: "key='$name.$configName'");
-    var result = await batch.commit();
+    var result = await batch.commit()as List<dynamic>;
     try {
       switch (T) {
         case String:
@@ -58,7 +59,8 @@ abstract class ConfigDatabaseProvider {
         default:
           return result.first[0]['value'];
       }
-    } catch (e) {
+    } catch (e,s) {
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'configGetFailed: $configName, provider: $name');
       logger.w(
           'action: configGetFailed, name: $name, configName: $configName, exception: $e');
     }

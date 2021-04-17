@@ -123,7 +123,7 @@ class CustomListTile extends StatelessWidget {
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return ComicDetailPage(id:comicId,title: title,);
-        }));
+        },settings: RouteSettings(name: 'comic_detail_page')));
       },
       child: Card(
         child: Row(

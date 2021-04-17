@@ -41,7 +41,7 @@ class KuKuSourceModel extends BaseSourceModel {
           return await getKuKuComic(item.comicId);
         }
       }
-      throw ComicIdNotBoundError();
+      throw ComicIdNotBoundError(comicId);
     } else if (title == null) {
       throw IDInvalidError();
     } else {
@@ -54,22 +54,22 @@ class KuKuSourceModel extends BaseSourceModel {
       Response response;
       switch (_options.server) {
         case 1:
-          response = await UniversalRequestModel()
+          response = await UniversalRequestModel
               .kkkkRequestHandler1
               .getComic(comicId);
           break;
         case 2:
-          response = await UniversalRequestModel()
+          response = await UniversalRequestModel
               .kkkkRequestHandler2
               .getComic(comicId);
           break;
         case 3:
-          response = await UniversalRequestModel()
+          response = await UniversalRequestModel
               .kkkkRequestHandler3
               .getComic(comicId);
           break;
         default:
-          response = await UniversalRequestModel()
+          response = await UniversalRequestModel
               .kuKuRequestHandler
               .getComic(comicId);
       }
@@ -170,23 +170,23 @@ class KuKuSourceModel extends BaseSourceModel {
                 switch (Provider.of<KuKuOptionsProvider>(context, listen: false)
                     .server) {
                   case 1:
-                    ping = await UniversalRequestModel()
+                    ping = await UniversalRequestModel
                         .kkkkRequestHandler1
                         .ping();
                     break;
                   case 2:
-                    ping = await UniversalRequestModel()
+                    ping = await UniversalRequestModel
                         .kkkkRequestHandler2
                         .ping();
                     break;
                   case 3:
-                    ping = await UniversalRequestModel()
+                    ping = await UniversalRequestModel
                         .kkkkRequestHandler3
                         .ping();
                     break;
                   default:
                     ping =
-                        await UniversalRequestModel().kuKuRequestHandler.ping();
+                        await UniversalRequestModel.kuKuRequestHandler.ping();
                 }
                 Provider.of<KuKuOptionsProvider>(context, listen: false).ping =
                     ping;
@@ -207,7 +207,7 @@ class KuKuSourceModel extends BaseSourceModel {
     // TODO: implement search
     try {
       var response =
-          await UniversalRequestModel().soKuKuRequestHandler.search(keyword);
+          await UniversalRequestModel.soKuKuRequestHandler.search(keyword);
       if (response.statusCode == 200) {
         var soup = BeautifulSoup(response.data);
         List<KuKuSearchResult> data = [];
@@ -513,16 +513,16 @@ class KuKuComic extends Comic {
       String chapterTitle}) async {
     // TODO: implement getComic
     try {
-      KKKKRequestHandler handler = UniversalRequestModel().kuKuRequestHandler;
+      KKKKRequestHandler handler = UniversalRequestModel.kuKuRequestHandler;
       switch (options.server) {
         case 1:
-          handler = UniversalRequestModel().kkkkRequestHandler1;
+          handler = UniversalRequestModel.kkkkRequestHandler1;
           break;
         case 2:
-          handler = UniversalRequestModel().kkkkRequestHandler2;
+          handler = UniversalRequestModel.kkkkRequestHandler2;
           break;
         case 3:
-          handler = UniversalRequestModel().kkkkRequestHandler3;
+          handler = UniversalRequestModel.kkkkRequestHandler3;
           break;
       }
       var response = await handler.getChapter(comicId, chapterId, 1);

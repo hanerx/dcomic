@@ -66,6 +66,7 @@ class _ComicViewPage extends State<ComicViewPage>
                     height: 80,
                     duration: Duration(milliseconds: 200),
                     child: AppBar(
+                      leading: BackButton(),
                       backgroundColor: Colors.black54,
                       title: Text('${Provider.of<ComicModel>(context).title}'),
                     ),
