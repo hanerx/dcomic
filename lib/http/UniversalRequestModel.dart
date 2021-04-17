@@ -1,5 +1,5 @@
-
 import 'package:dcomic/database/cookieDatabaseProvider.dart';
+import 'package:dcomic/http/GithubRequestHandler.dart';
 import 'package:dcomic/utils/HttpProxyAdapter.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
@@ -48,6 +48,14 @@ class UniversalRequestModel {
 
   static DMZJInterfaceRequestHandler dmzjInterfaceRequestHandler =
       DMZJInterfaceRequestHandler();
+
+  static DMZJAPIRequestHandler dmzjapiRequestHandler = DMZJAPIRequestHandler();
+
+  static DMZJImageRequestHandler dmzjImageRequestHandler =
+      DMZJImageRequestHandler();
+  static DMZJMobileRequestHandler dmzjMobileRequestHandler=DMZJMobileRequestHandler();
+
+  static GithubRequestHandler githubRequestHandler = GithubRequestHandler();
 }
 
 abstract class RequestHandler {
@@ -129,7 +137,7 @@ abstract class SingleDomainRequestHandler extends RequestHandler {
         // Optional. Default. Allows 3 cache sets and ease cleanup.
         maxStale: const Duration(
             days:
-            7), // Very optional. Overrides any HTTP directive to delete entry past this duration.
+                7), // Very optional. Overrides any HTTP directive to delete entry past this duration.
       );
       dio.interceptors.add(DioCacheInterceptor(options: options));
     });

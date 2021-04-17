@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:dcomic/component/EmptyView.dart';
 import 'package:dcomic/component/LoadingCube.dart';
-import 'package:dcomic/component/comic/comicListTile.dart';
+import 'package:dcomic/component/comic/ComicListTile.dart';
 import 'package:dcomic/model/comicRankingListModel.dart';
 import 'package:dcomic/model/comic_source/sourceProvider.dart';
 import 'package:dcomic/view/comic_detail_page.dart';

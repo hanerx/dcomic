@@ -79,30 +79,36 @@ class CustomHttp {
     return dio.get(baseUrl + '/novel/rank/$type/$tag/$page.json?$queryOptions');
   }
 
+  @Deprecated('使用新实现')
   Future<Response<T>> getComicDetail<T>(String comicId) async {
     Options options = await this.setHeader();
     return dio.get(baseUrl + '/comic/comic_$comicId.json?$queryOptions');
   }
 
+  @Deprecated('使用新实现')
   Future<Response<T>> getComicDetailWeb<T>(String comicId) async {
     return dio.get('$mUrl/info/$comicId.html');
   }
 
+  @Deprecated('使用新实现')
   Future<Response<T>> getComicDetailDark<T>(String comicId) async {
     Options options = await this.setHeader();
     return dio.get('$apiUrl/dynamic/comicinfo/$comicId.json');
   }
 
+  @Deprecated('使用新实现')
   Future<Response<T>> getComic<T>(String comicId, String chapterId) async {
     Options options = await this.setHeader();
     return dio.get(baseUrl + '/chapter/$comicId/$chapterId.json?$queryOptions');
   }
 
+  @Deprecated('使用新实现')
   Future<Response<T>> getComicWeb<T>(String comicId, String chapterId) async {
     Options options = await this.setHeader();
     return dio.get('https://m.dmzj.com/chapinfo/$comicId/$chapterId.html');
   }
 
+  @Deprecated('使用新实现方案')
   Future<Response<T>> getViewPoint<T>(String comicId, String chapterId) async {
     return dio.get(
         baseUrl + '/viewPoint/0/$comicId/$chapterId.json?$queryOptions');
@@ -174,6 +180,7 @@ class CustomHttp {
     return unCachedDio.post('$baseUrl/subscribe/add', data: formData);
   }
 
+  @Deprecated('没用的接口')
   Future<Response<T>> addReadHistory<T>(String comicId, String uid) async {
     Options options = await this.setHeader();
     return unCachedDio.get(
@@ -181,12 +188,14 @@ class CustomHttp {
         options: options);
   }
 
+  @Deprecated('没用的接口')
   Future<Response<T>> addReadHistory0<T>(String comicId, String uid) async {
     Options options = await this.setHeader();
     return unCachedDio.get('$baseUrl/subscribe/0/$uid/$comicId?$queryOptions',
         options: options);
   }
 
+  @Deprecated('没用的接口')
   Future<Response<T>> addReadHistory1<T>(String subId) async {
     Options options = await this.setHeader();
     FormData formData = FormData.fromMap({'subid': int.parse(subId)});
@@ -194,6 +203,7 @@ class CustomHttp {
         options: options, data: formData);
   }
 
+  @Deprecated('使用新模式')
   Future<Response<T>> addHistoryNew<T>(int comicId, String uid, int chapterId,
       {int page: 1}) async {
     Map map = {
@@ -248,15 +258,18 @@ class CustomHttp {
         '$baseUrl/old/comment/$novel/$type/$comicId/$page.json?$queryOptions');
   }
 
+  @Deprecated('使用新实现')
   Future<Response<T>> checkUpdate<T>() {
     return dio.get(
         'https://api.github.com/repos/hanerx/flutter_dmzj/releases/latest');
   }
 
+  @Deprecated('重复的')
   Future<Response<T>> getAllUpdateList<T>() {
     return dio.get('https://api.github.com/repos/hanerx/flutter_dmzj/releases');
   }
 
+  @Deprecated('使用新实现')
   Future<Response<T>> getReleases<T>() {
     return dio.get('https://api.github.com/repos/hanerx/flutter_dmzj/releases');
   }
@@ -294,6 +307,7 @@ class CustomHttp {
         '$baseUrl/novel/download/${novelID}_${volumeID}_$chapterID.txt?$queryOptions');
   }
 
+  @Deprecated('已用新实现')
   Future<Response<T>> getComicPage<T>(
       String firstLetter, String comicId, String chapterId, int page) {
     return dio.get('$imgUrl/$firstLetter/$comicId/$chapterId/$page.jpg',

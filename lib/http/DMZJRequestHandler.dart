@@ -1,8 +1,8 @@
+import 'dart:convert';
+
 import 'package:dcomic/database/cookieDatabaseProvider.dart';
 import 'package:dio/dio.dart';
 import 'package:dcomic/http/UniversalRequestModel.dart';
-
-
 
 class DMZJRequestHandler extends SingleDomainRequestHandler {
   DMZJRequestHandler() : super('https://v3api.dmzj1.com');
@@ -29,9 +29,21 @@ class DMZJRequestHandler extends SingleDomainRequestHandler {
     return dio.post('/subscribe/add', data: formData);
   }
 
-  Future<Response<T>> getSubscribe<T>(int uid, int page, {int type: 0}) {
+  Future<Response> getSubscribe(int uid, int page, {int type: 0}) {
     return dio.get(
         '/UCenter/subscribe?uid=$uid&sub_type=1&letter=all&page=$page&type=$type');
+  }
+
+  Future<Response> getViewpoint(String comicId, String chapterId) {
+    return dio.get('/viewPoint/0/$comicId/$chapterId.json');
+  }
+
+  Future<Response> getComicDetail(String comicId) {
+    return dio.get('/comic/comic_$comicId.json');
+  }
+
+  Future<Response> getComic(String comicId, String chapterId) {
+    return dio.get('/chapter/$comicId/$chapterId.json');
   }
 }
 
@@ -46,6 +58,14 @@ class DMZJIRequestHandler extends SingleDomainRequestHandler {
 
 class DMZJMobileRequestHandler extends SingleDomainRequestHandler {
   DMZJMobileRequestHandler() : super('https://m.dmzj.com');
+
+  Future<Response> getComicWeb(String comicId, String chapterId) {
+    return dio.get('/chapinfo/$comicId/$chapterId.html');
+  }
+
+  Future<Response> getComicDetailWeb(String comicId) {
+    return dio.get('/info/$comicId.html');
+  }
 }
 
 class DMZJInterfaceRequestHandler extends CookiesRequestHandler {
@@ -54,5 +74,43 @@ class DMZJInterfaceRequestHandler extends CookiesRequestHandler {
   Future<Response> updateUnread(String comicId) async {
     return dio.get('/api/subscribe/upread?sub_id=$comicId',
         options: await setHeader());
+  }
+
+  Future<Response> getHistory(String uid, int page) {
+    return dio.get('/api/getReInfo/comic/$uid/$page');
+  }
+
+  Future<Response<T>> addHistory<T>(int comicId, String uid, int chapterId,
+      {int page: 1}) async {
+    Map map = {
+      comicId.toString(): chapterId.toString(),
+      "comicId": comicId.toString(),
+      "chapterId": chapterId.toString(),
+      "page": page,
+      "time": DateTime.now().millisecondsSinceEpoch / 1000
+    };
+    var json = Uri.encodeComponent(jsonEncode(map));
+    return dio.get(
+        "/api/record/getRe?st=comic&uid=$uid&callback=record_jsonpCallback&json=[$json]&type=3");
+  }
+}
+
+class DMZJAPIRequestHandler extends SingleDomainRequestHandler {
+  DMZJAPIRequestHandler() : super('https://api.dmzj1.com');
+
+  Future<Response> getComicDetailWithBackupApi(String comicId) {
+    return dio.get('/dynamic/comicinfo/$comicId.json');
+  }
+}
+
+class DMZJImageRequestHandler extends SingleDomainRequestHandler {
+  DMZJImageRequestHandler() : super('http://imgsmall.dmzj1.com');
+
+  Future<Response> getImage(
+      String firstLetter, String comicId, String chapterId, int page) {
+    return dio.get('/$firstLetter/$comicId/$chapterId/$page.jpg',
+        options: Options(
+            headers: {'referer': 'http://images.dmzj.com'},
+            responseType: ResponseType.bytes));
   }
 }

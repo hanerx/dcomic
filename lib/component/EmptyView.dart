@@ -12,8 +12,9 @@ import 'package:provider/provider.dart';
 
 class EmptyView extends StatelessWidget {
   final String message;
+  final Widget child;
 
-  const EmptyView({Key key, this.message}) : super(key: key);
+  const EmptyView({Key key, this.message,this.child}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +42,9 @@ class EmptyView extends StatelessWidget {
             message == null ? S.of(context).NoData : message,
             style: TextStyle(
                 fontSize: 16.0, color: Theme.of(context).disabledColor),
+          ),
+          Container(
+            child: child,
           ),
           Expanded(
             child: SizedBox(),
@@ -134,7 +138,7 @@ class ComicDetailEmptyView extends StatelessWidget {
                                 );
                               }),
                       onItemSelectedListener: (item, index, context) {
-                        Scaffold.of(context).showSnackBar(
+                        ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text(item.type.title)));
                         Provider.of<SourceProvider>(context, listen: false)
                             .active = item;
@@ -230,7 +234,7 @@ class ComicDetailEmptyView extends StatelessWidget {
                                 );
                               }),
                       onItemSelectedListener: (item, index, context) {
-                        Scaffold.of(context).showSnackBar(
+                        ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text(item.type.title)));
                         Provider.of<SourceProvider>(context, listen: false)
                             .active = item;

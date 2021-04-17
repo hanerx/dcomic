@@ -39,9 +39,8 @@ class DMZJSourceModel extends BaseSourceModel {
     if (comicId == null) {
       throw IDInvalidError();
     }
-    CustomHttp http = CustomHttp();
     try {
-      var response = await http.getComicDetail(comicId);
+      var response = await UniversalRequestModel.dmzjRequestHandler.getComicDetail(comicId);
       if (response.statusCode == 200) {
         var title = response.data['title'];
         var cover = response.data['cover'];
@@ -91,8 +90,7 @@ class DMZJSourceModel extends BaseSourceModel {
 
   Future<ComicDetail> getComicDetailBackup(String comicId) async {
     try {
-      CustomHttp http = CustomHttp();
-      var response = await http.getComicDetailDark(comicId);
+      var response = await UniversalRequestModel.dmzjapiRequestHandler.getComicDetailWithBackupApi(comicId);
       if (response.statusCode == 200) {
         var data = jsonDecode(response.data)['data'];
         var title = data['info']['title'];
@@ -161,7 +159,7 @@ class DMZJSourceModel extends BaseSourceModel {
   @override
   // TODO: implement type
   SourceDetail get type => SourceDetail('dmzj', '默认-动漫之家', '默认数据提供商，不可关闭',
-      false, SourceType.LocalDecoderSource, false,true);
+      false, SourceType.LocalDecoderSource, false, true);
 
   @override
   Widget getSettingWidget(context) {
@@ -218,10 +216,10 @@ class DMZJSourceModel extends BaseSourceModel {
     // TODO: implement getFavoriteComics
     if (_userConfig.status == UserStatus.login) {
       try {
-        var response = await UniversalRequestModel
-            .dmzjRequestHandler
+        var response = await UniversalRequestModel.dmzjRequestHandler
             .getSubscribe(
-                await SourceDatabaseProvider.getSourceOption<int>(type.name, 'uid'),
+                await SourceDatabaseProvider.getSourceOption<int>(
+                    type.name, 'uid'),
                 page);
         if (response.statusCode == 200) {
           var data = await HistoryDatabaseProvider('dmzj').getAllUnread();
@@ -549,8 +547,7 @@ class DMZJUserConfig extends UserConfig {
   Future<bool> login(String username, String password) async {
     // TODO: implement login
     try {
-      var response = await UniversalRequestModel
-          .dmzjiRequestHandler
+      var response = await UniversalRequestModel.dmzjiRequestHandler
           .login(username, password);
       var responseData = response.data.toString();
       var data = jsonDecode(responseData.substring(1, responseData.length - 1));
@@ -568,8 +565,7 @@ class DMZJUserConfig extends UserConfig {
             _uid = list[0];
             _status = UserStatus.login;
             try {
-              var response = await UniversalRequestModel
-                  .dmzjRequestHandler
+              var response = await UniversalRequestModel.dmzjRequestHandler
                   .getUserInfo(_uid);
               if (response.statusCode == 200) {
                 _avatar = response.data['cover'];
@@ -634,9 +630,8 @@ class DMZJWebSourceModel extends DMZJSourceModel {
     if (comicId == null) {
       throw IDInvalidError();
     }
-    CustomHttp http = CustomHttp();
     try {
-      var response = await http.getComicDetailWeb(comicId);
+      var response = await UniversalRequestModel.dmzjMobileRequestHandler.getComicDetailWeb(comicId);
       if (response.statusCode == 200) {
         var jsonString =
             RegExp('initIntroData(.*);').stringMatch(response.data);
@@ -711,8 +706,14 @@ class DMZJWebSourceModel extends DMZJSourceModel {
 
   @override
   // TODO: implement type
-  SourceDetail get type => SourceDetail('dmzj-web', '动漫之家网页',
-      '使用大妈之家移动网页版的接口，让漫画重新可以看了', true, SourceType.LocalDecoderSource, false,false);
+  SourceDetail get type => SourceDetail(
+      'dmzj-web',
+      '动漫之家网页',
+      '使用大妈之家移动网页版的接口，让漫画重新可以看了',
+      true,
+      SourceType.LocalDecoderSource,
+      false,
+      false);
 
   @override
   // TODO: implement options
@@ -891,8 +892,7 @@ class DMZJComicDetail extends ComicDetail {
 
   Future<void> getIfSubscribed() async {
     try {
-      var response = await UniversalRequestModel
-          .dmzjRequestHandler
+      var response = await UniversalRequestModel.dmzjRequestHandler
           .getIfSubscribe(
               comicId,
               await SourceDatabaseProvider.getSourceOption(
@@ -980,7 +980,8 @@ class DMZJComicDetail extends ComicDetail {
   Future<void> updateUnreadState() async {
     // TODO: implement updateUnreadState
     bool login = await SourceDatabaseProvider.getSourceOption<bool>(
-        sourceDetail.name, 'login',defaultValue: false);
+        sourceDetail.name, 'login',
+        defaultValue: false);
     if (login) {
       UniversalRequestModel.dmzjInterfaceRequestHandler.updateUnread(comicId);
     }
@@ -996,13 +997,11 @@ class DMZJComicDetail extends ComicDetail {
     // TODO: implement isSubscribed
     if (isSubscribed) {
       SourceDatabaseProvider.getSourceOption(sourceDetail.name, 'uid').then(
-          (value) => UniversalRequestModel
-              .dmzjRequestHandler
+          (value) => UniversalRequestModel.dmzjRequestHandler
               .addSubscribe(comicId, value));
     } else {
       SourceDatabaseProvider.getSourceOption(sourceDetail.name, 'uid').then(
-          (value) => UniversalRequestModel
-              .dmzjRequestHandler
+          (value) => UniversalRequestModel.dmzjRequestHandler
               .cancelSubscribe(comicId, value));
     }
     _isSubscribed = isSubscribed;
@@ -1024,7 +1023,7 @@ class DMZJComic extends Comic {
   List<String> _pages = [];
   String _title;
   List<String> _chapterIdList;
-  PageType _type=PageType.url;
+  PageType _type = PageType.url;
   List _viewPoints = [];
 
   String _previous;
@@ -1074,9 +1073,8 @@ class DMZJComic extends Comic {
       await getComicWeb(comicId, chapterId);
       return;
     }
-    CustomHttp http = CustomHttp();
     try {
-      var response = await http.getComic(comicId, chapterId);
+      var response = await UniversalRequestModel.dmzjRequestHandler.getComic(comicId, chapterId);
       if (response.statusCode == 200) {
         _pageAt = chapterId;
         _pages =
@@ -1107,9 +1105,8 @@ class DMZJComic extends Comic {
   }
 
   Future<void> getComicWeb(String comicId, String chapterId) async {
-    CustomHttp http = CustomHttp();
     try {
-      var response = await http.getComicWeb(comicId, chapterId);
+      var response = await UniversalRequestModel.dmzjMobileRequestHandler.getComicWeb(comicId, chapterId);
       if (response.statusCode == 200) {
         var data = jsonDecode(response.data);
         _title = data['chapter_name'];
@@ -1140,8 +1137,7 @@ class DMZJComic extends Comic {
 
   Future<void> getComicBackup(String comicId, String chapterId) async {
     try {
-      CustomHttp http = CustomHttp();
-      var response = await http.getComicDetailDark(comicId);
+      var response = await UniversalRequestModel.dmzjapiRequestHandler.getComicDetailWithBackupApi(comicId);
       if (response.statusCode == 200) {
         var data = jsonDecode(response.data)['data'];
         var firstLetter = data['info']['first_letter'];
@@ -1155,7 +1151,7 @@ class DMZJComic extends Comic {
         while (true) {
           try {
             var item =
-                await http.getComicPage(firstLetter, comicId, chapterId, page);
+                await UniversalRequestModel.dmzjImageRequestHandler.getImage(firstLetter, comicId, chapterId, page);
             if (item.headers.value('Content-Type') == 'image/jpeg') {
               pages.add(
                   'http://imgsmall.dmzj.com/$firstLetter/$comicId/$chapterId/$page.jpg');
@@ -1253,17 +1249,17 @@ class DMZJComic extends Comic {
     if (login) {
       //获取UID
       var uid = await SourceDatabaseProvider.getSourceOption('dmzj', 'uid');
-      CustomHttp http = CustomHttp();
-      http.addHistoryNew(int.parse(comicId), uid, int.parse(chapterId),
+      UniversalRequestModel.dmzjInterfaceRequestHandler.addHistory(
+          int.parse(comicId), uid, int.parse(chapterId),
           page: page);
     }
     notifyListeners();
   }
 
   Future<void> getViewPoint() async {
-    CustomHttp http = CustomHttp();
     try {
-      var response = await http.getViewPoint(_comicId, _pageAt);
+      var response = await UniversalRequestModel.dmzjRequestHandler
+          .getViewpoint(_comicId, _pageAt);
       if (response.statusCode == 200) {
         print(
             "class: ComicModel, action: getViewPoint, responseCode: ${response.statusCode} chapterId:$_chapterId comicId:$_comicId responseData: ${response.data}");

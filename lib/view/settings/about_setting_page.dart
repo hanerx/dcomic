@@ -1,3 +1,4 @@
+import 'package:dcomic/http/UniversalRequestModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -124,7 +125,16 @@ class _AboutSettingPage extends State<AboutSettingPage> {
                                 TextSpan(
                                     text:
                                         ' ${Version.parse(Provider.of<VersionModel>(context).currentVersion).preRelease.length > 0 ? 'beta' : 'release'}',
-                                    style: TextStyle(color: Version.parse(Provider.of<VersionModel>(context).currentVersion).preRelease.length > 0?Colors.deepOrange:Colors.lightGreen))
+                                    style: TextStyle(
+                                        color: Version.parse(Provider.of<
+                                                                VersionModel>(
+                                                            context)
+                                                        .currentVersion)
+                                                    .preRelease
+                                                    .length >
+                                                0
+                                            ? Colors.deepOrange
+                                            : Colors.lightGreen))
                               ]),
                               style: TextStyle(color: Colors.white),
                             ),
@@ -143,7 +153,8 @@ class _AboutSettingPage extends State<AboutSettingPage> {
                         children: [
                           Builder(
                             builder: (context) {
-                              return InkWell(child:ListTile(
+                              return InkWell(
+                                  child: ListTile(
                                 title: Text(
                                     S.of(context).SettingPageCheckUpdateTitle),
                                 subtitle: Text(S
@@ -182,12 +193,13 @@ class _AboutSettingPage extends State<AboutSettingPage> {
                               subtitle: Text(S
                                   .of(context)
                                   .SettingPageUpdateChannelSubtitle(S
-                                  .of(context)
-                                  .SettingPageUpdateChannels(
-                                  Provider.of<VersionModel>(context)
-                                      .updateChannelName))),
+                                      .of(context)
+                                      .SettingPageUpdateChannels(
+                                          Provider.of<VersionModel>(context)
+                                              .updateChannelName))),
                               onTap: () {
-                                Provider.of<VersionModel>(context, listen: false)
+                                Provider.of<VersionModel>(context,
+                                        listen: false)
                                     .updateChannel++;
                               },
                             ),
@@ -195,12 +207,14 @@ class _AboutSettingPage extends State<AboutSettingPage> {
                           Divider(),
                           InkWell(
                             child: ListTile(
-                              title:
-                              Text(S.of(context).SettingPageProjectURLTitle),
-                              subtitle: Text(S.of(context).SettingPageProjectURL),
+                              title: Text(
+                                  S.of(context).SettingPageProjectURLTitle),
+                              subtitle:
+                                  Text(S.of(context).SettingPageProjectURL),
                               onTap: () {
                                 ToolMethods.callWeb(
-                                    S.of(context).SettingPageProjectURL, context);
+                                    S.of(context).SettingPageProjectURL,
+                                    context);
                               },
                             ),
                           ),
@@ -208,16 +222,16 @@ class _AboutSettingPage extends State<AboutSettingPage> {
                             child: ListTile(
                               title: Text(S.of(context).SettingPageAboutTitle),
                               subtitle:
-                              Text(S.of(context).SettingPageAboutSubtitle),
+                                  Text(S.of(context).SettingPageAboutSubtitle),
                               onTap: () {
                                 showDialog(
                                     context: context,
                                     builder: (context) {
                                       return AboutDialog(
                                         applicationName:
-                                        '${Provider.of<SystemSettingModel>(context).backupApi ? S.of(context).AppNameUltimate : S.of(context).AppName}',
+                                            '${Provider.of<SystemSettingModel>(context).backupApi ? S.of(context).AppNameUltimate : S.of(context).AppName}',
                                         applicationVersion:
-                                        '${Provider.of<VersionModel>(context).currentVersion}',
+                                            '${Provider.of<VersionModel>(context).currentVersion}',
                                         applicationIcon: FlutterLogo(),
                                         children: <Widget>[
                                           Text(S
@@ -232,19 +246,22 @@ class _AboutSettingPage extends State<AboutSettingPage> {
                           InkWell(
                             child: ListTile(
                               title:
-                              Text(S.of(context).SettingPageChangeLogTitle),
+                                  Text(S.of(context).SettingPageChangeLogTitle),
                               subtitle: Text(
                                   S.of(context).SettingPageChangeLogSubtitle),
                               onTap: () async {
-                                CustomHttp http = CustomHttp();
-                                var response = await http.getReleases();
+                                var response = await UniversalRequestModel
+                                    .githubRequestHandler
+                                    .getReleases();
                                 if (response.statusCode == 200) {
                                   var data = "";
                                   for (var item in response.data) {
                                     data += S
                                         .of(context)
-                                        .SettingPageChangeLogContent(item['name'],
-                                        item['published_at'], item['body']);
+                                        .SettingPageChangeLogContent(
+                                            item['name'],
+                                            item['published_at'],
+                                            item['body']);
                                   }
                                   showDialog(
                                       context: context,
@@ -259,8 +276,9 @@ class _AboutSettingPage extends State<AboutSettingPage> {
                                             child: MarkdownWidget(
                                               data: data,
                                               styleConfig: StyleConfig(pConfig:
-                                              PConfig(onLinkTap: (url) {
-                                                ToolMethods.callWeb(url, context);
+                                                  PConfig(onLinkTap: (url) {
+                                                ToolMethods.callWeb(
+                                                    url, context);
                                               })),
                                             ),
                                           ),
@@ -279,7 +297,6 @@ class _AboutSettingPage extends State<AboutSettingPage> {
             ),
           ],
         ));
-
   }
 }
 

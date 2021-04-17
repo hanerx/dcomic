@@ -1,3 +1,4 @@
+import 'package:dcomic/http/UniversalRequestModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:dcomic/database/configDatabaseProvider.dart';
@@ -41,17 +42,15 @@ class VersionModel extends BaseModel {
 
   Future<void> checkUpdate() async {
     try {
-      CustomHttp http = CustomHttp();
-
       switch (_updateChannel) {
         case 0:
-          var response = await http.checkUpdate();
+          var response = await UniversalRequestModel.githubRequestHandler.getLatestRelease();
           if (response.statusCode == 200) {
             _latestVersion = response.data['tag_name'].substring(1);
           }
           break;
         case 1:
-          var response = await http.getAllUpdateList();
+          var response = await UniversalRequestModel.githubRequestHandler.getReleases();
           _latestVersion = response.data.first['tag_name'].substring(1);
           break;
       }
@@ -62,14 +61,13 @@ class VersionModel extends BaseModel {
   }
 
   void showUpdateDialog(context) async {
-    CustomHttp http = CustomHttp();
     String tagName;
     String body;
     String htmlUrl;
     String downloadUrl;
     switch (_updateChannel) {
       case 0:
-        var response = await http.checkUpdate();
+        var response = await UniversalRequestModel.githubRequestHandler.getLatestRelease();
         tagName = response.data['tag_name'];
         body = response.data['body'];
         htmlUrl = response.data['html_url'];
@@ -78,7 +76,7 @@ class VersionModel extends BaseModel {
         }
         break;
       case 1:
-        var response = await http.getAllUpdateList();
+        var response = await UniversalRequestModel.githubRequestHandler.getReleases();
         tagName = response.data.first['tag_name'];
         body = response.data.first['body'];
         htmlUrl = response.data.first['html_url'];

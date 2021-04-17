@@ -1,9 +1,8 @@
+import 'package:dcomic/http/UniversalRequestModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:dcomic/database/database.dart';
 import 'package:dcomic/database/databaseCommon.dart';
 import 'package:dcomic/generated/l10n.dart';
-import 'package:dcomic/http/http.dart';
 import 'package:dcomic/view/database_detail_page.dart';
 import 'package:dcomic/view/settings/debug_test_page.dart';
 import 'package:logger_flutter/logger_flutter.dart';
@@ -59,13 +58,13 @@ class _DebugSettingPage extends State<DebugSettingPage>{
                           .of(context)
                           .SettingPageResetDatabaseConfirmDescription),
                       actions: [
-                        FlatButton(
+                        TextButton(
                           child: Text(S.of(context).Cancel),
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
                         ),
-                        FlatButton(
+                        TextButton(
                           child: Text(S.of(context).Confirm),
                           onPressed: () {
                             DatabaseCommon.resetDataBase();
@@ -93,16 +92,16 @@ class _DebugSettingPage extends State<DebugSettingPage>{
                           .of(context)
                           .SettingPageResetDioCacheConfirmDescription),
                       actions: [
-                        FlatButton(
+                        TextButton(
                           child: Text(S.of(context).Cancel),
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
                         ),
-                        FlatButton(
+                        TextButton(
                           child: Text(S.of(context).Confirm),
-                          onPressed: () {
-                            CustomHttp().clearCache();
+                          onPressed: ()async {
+                            (await CacheDatabase.store).clean();
                             Navigator.of(context).pop();
                           },
                         )
