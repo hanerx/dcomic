@@ -28,22 +28,24 @@ class _HomePage extends State<HomePage> {
   }
 
   getSubscribe() async {
-    bool login=await SourceDatabaseProvider.getSourceOption<bool>('dmzj', 'login');
+    bool login =
+        await SourceDatabaseProvider.getSourceOption<bool>('dmzj', 'login');
     if (login) {
       CustomHttp http = CustomHttp();
       var uid = await SourceDatabaseProvider.getSourceOption('dmzj', 'uid');
-      try{
+      try {
         var response = await http.getRecommendBatchUpdate(uid);
         if (response.statusCode == 200 && mounted) {
           setState(() {
             list.insert(
                 0,
-                CardView.action(
-                    response.data['data']['title'],
-                    response.data['data']['data'],
-                    3,
-                    49,
-                    IconButton(
+                CardView(
+                    title: response.data['data']['title'],
+                    list: response.data['data']['data'],
+                    row: 3,
+                    ratio: 0.7,
+                    categoryId: 49,
+                    action: IconButton(
                       onPressed: () {
                         Navigator.of(context)
                             .push(MaterialPageRoute(builder: (context) {
@@ -55,15 +57,13 @@ class _HomePage extends State<HomePage> {
             refreshState = false;
           });
         }
-      }catch(e){
-
-      }
+      } catch (e) {}
     }
   }
 
   getMainPage() async {
     CustomHttp http = CustomHttp();
-    try{
+    try {
       var response = await http.getMainPageRecommend();
       if (response.statusCode == 200) {
         List data = response.data;
@@ -73,10 +73,17 @@ class _HomePage extends State<HomePage> {
               if (allowedCategory.indexOf(item['category_id']) >= 0) {
                 if (item['data'].length % 3 == 0) {
                   list.add(new CardView(
-                      item['title'], item['data'], 3, item['category_id']));
+                      title: item['title'],
+                      list: item['data'],
+                      row: 3,
+                      categoryId: item['category_id']));
                 } else {
                   list.add(new CardView(
-                      item['title'], item['data'], 2, item['category_id']));
+                      title: item['title'],
+                      list: item['data'],
+                      row: 2,
+                      ratio: 1.4,
+                      categoryId: item['category_id']));
                 }
               }
             });
@@ -84,9 +91,7 @@ class _HomePage extends State<HomePage> {
           await getSubscribe();
         }
       }
-    }catch(e){
-
-    }
+    } catch (e) {}
   }
 
   @override
@@ -95,9 +100,9 @@ class _HomePage extends State<HomePage> {
     return EasyRefresh(
       firstRefreshWidget: LoadingCube(),
       firstRefresh: true,
-      onRefresh: ()async{
+      onRefresh: () async {
         setState(() {
-          refreshState=true;
+          refreshState = true;
           list.clear();
         });
         await getMainPage();
