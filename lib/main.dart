@@ -141,7 +141,9 @@ class _MainFrame extends State<MainFrame> {
         showPerformanceOverlay: false,
         theme: ThemeData(
             platform: TargetPlatform.iOS,
-            buttonTheme: ButtonThemeData(buttonColor: Colors.blue)),
+            buttonTheme: ButtonThemeData(buttonColor: Colors.blue),
+          appBarTheme: AppBarTheme(brightness: Brightness.dark)
+        ),
         home: MainPage());
   }
 }

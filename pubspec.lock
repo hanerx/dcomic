@@ -170,7 +170,7 @@ packages:
       name: dio_cache_interceptor
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "2.1.0"
+    version: "2.1.1"
   direct_select_flutter:
     dependency: "direct main"
     description:
@@ -178,13 +178,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.1.0"
-  event_bus:
-    dependency: "direct main"
-    description:
-      name: event_bus
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.1.1"
   fake_async:
     dependency: transitive
     description:
@@ -252,7 +245,7 @@ packages:
       name: flutter_easyloading
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.3.0"
+    version: "3.0.0"
   flutter_easyrefresh:
     dependency: "direct main"
     description:
@@ -306,7 +299,7 @@ packages:
       name: flutter_spinkit
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "4.1.2+1"
+    version: "5.0.0"
   flutter_svg:
     dependency: transitive
     description:
@@ -358,7 +351,7 @@ packages:
       name: fluttericon
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.0.7"
+    version: "2.0.0"
   font_awesome_flutter:
     dependency: transitive
     description:
@@ -495,7 +488,7 @@ packages:
       name: lpinyin
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.1.1"
+    version: "2.0.1"
   markdown:
     dependency: transitive
     description:
@@ -532,7 +525,7 @@ packages:
       name: mime
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.9.7"
+    version: "1.0.0"
   moor:
     dependency: transitive
     description:
@@ -560,7 +553,7 @@ packages:
       name: package_info
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.4.3+4"
+    version: "2.0.0"
   path:
     dependency: transitive
     description:
@@ -609,7 +602,7 @@ packages:
       name: path_provider_platform_interface
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "2.0.0"
+    version: "2.0.1"
   path_provider_windows:
     dependency: transitive
     description:
@@ -665,7 +658,7 @@ packages:
       name: pretty_json
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.1.0"
+    version: "2.0.0"
   process:
     dependency: transitive
     description:
@@ -679,7 +672,7 @@ packages:
       name: provider
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "4.3.3"
+    version: "5.0.0"
   rect_getter:
     dependency: transitive
     description:
@@ -714,7 +707,7 @@ packages:
       name: share
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.6.5+4"
+    version: "2.0.1"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -852,7 +845,7 @@ packages:
       name: url_launcher_platform_interface
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "2.0.1"
+    version: "2.0.2"
   url_launcher_web:
     dependency: transitive
     description:
@@ -887,7 +880,7 @@ packages:
       name: version
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.3.1"
+    version: "2.0.0"
   video_player:
     dependency: transitive
     description:
