@@ -209,7 +209,7 @@ class DarkCustomListTile extends StatelessWidget {
               id: comicId,
               title: title,
             );
-          }));
+          },settings: RouteSettings(name:'comic_detail_page')));
         } else {
           CustomHttp http = CustomHttp();
           var response = await http.getComicDetail(comicId);
@@ -220,7 +220,7 @@ class DarkCustomListTile extends StatelessWidget {
                 id: comicId,
                 title: title,
               );
-            }));
+            },settings: RouteSettings(name: 'comic_detail_page')));
           } else if (live) {
             Comic comic = DMZJComic(
                 comicId,
@@ -250,7 +250,7 @@ class DarkCustomListTile extends StatelessWidget {
               return ComicViewPage(
                 comic: comic,
               );
-            }));
+            },settings: RouteSettings(name: 'comic_view_page')));
           } else {
             Scaffold.of(context).showSnackBar(SnackBar(
                 content: Text(

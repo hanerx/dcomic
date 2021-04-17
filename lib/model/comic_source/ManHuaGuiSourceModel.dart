@@ -43,7 +43,7 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
           return await getManHuaGuiComic(item.comicId);
         }
       }
-      throw ComicIdNotBoundError();
+      throw ComicIdNotBoundError(comicId);
     } else if (title == null) {
       throw IDInvalidError();
     } else {

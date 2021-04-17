@@ -76,7 +76,7 @@ class _NewMagPage extends State<NewMagPage> {
               Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => MagGuidePage(
                         guide: chapter
-                      )));
+                      ),settings: RouteSettings(name: 'mag_guide_page')));
             },
           ),
         ],

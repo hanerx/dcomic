@@ -76,7 +76,7 @@ class _CategoryDetailPage extends State<CategoryDetailPage> {
                                       builder: (context) => ComicDetailPage(
                                             id: item['id'].toString(),
                                             title: item['title'],
-                                          )));
+                                          ),settings: RouteSettings(name: 'comic_detail_page')));
                                 },
                                 headers: {'referer': 'https://m.dmzj.com'},
                               );

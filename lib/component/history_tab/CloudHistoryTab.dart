@@ -46,7 +46,7 @@ class _CloudHistoryTab extends State<CloudHistoryTab> {
                             model: Provider.of<SourceProvider>(context)
                                 .activeSources
                                 .first,
-                          )));
+                          ),settings: RouteSettings(name: 'comic_detail_page')));
                 },
               );
             }),

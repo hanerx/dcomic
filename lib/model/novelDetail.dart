@@ -1,4 +1,5 @@
 import 'package:dcomic/database/sourceDatabaseProvider.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dcomic/database/database.dart';
@@ -79,7 +80,8 @@ class NovelDetailModel extends BaseModel {
             'class: NovelDetailModel, action: getNovel, novelID: $novelID, title: $title, cover: $cover');
         notifyListeners();
       }
-    } catch (e) {
+    } catch (e,s) {
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'getNovelDetailFailed: $novelID');
       error = true;
       logger.e(
           'class: NovelDetailModel, action: getNovelFailed, novelID: $novelID, exception: $e');

@@ -258,7 +258,17 @@ class ComicLoadingError implements Exception {
   }
 }
 
-class ComicIdNotBoundError implements Exception {}
+class ComicIdNotBoundError implements Exception {
+  final String comicId;
+
+  ComicIdNotBoundError(this.comicId);
+
+  @override
+  String toString() {
+    // TODO: implement toString
+    return 'comicIdNotBoundError: $comicId';
+  }
+}
 
 class ComicSearchError implements Exception {}
 

@@ -5,6 +5,7 @@ import 'package:dcomic/model/mag_model/baseMangaModel.dart';
 import 'package:dcomic/model/systemSettingModel.dart';
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -64,7 +65,8 @@ class _ImportMagPage extends State<ImportMagPage> {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text('导入成功'),
                   ));
-                } catch (e) {
+                } catch (e,s) {
+                  FirebaseCrashlytics.instance.recordError(e, s, reason: 'importLocalZipFailed');
                   EasyLoading.dismiss();
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text('导入失败，错误：$e'),
@@ -154,7 +156,8 @@ class _ImportMagPage extends State<ImportMagPage> {
                         content: Text('导入成功'),
                       ));
                     }
-                  } catch (e) {
+                  } catch (e,s) {
+                    FirebaseCrashlytics.instance.recordError(e, s, reason: 'importNetworkZipFailed');
                     EasyLoading.dismiss();
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Text('导入失败，错误：$e'),
@@ -240,7 +243,8 @@ class _ImportMagPage extends State<ImportMagPage> {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Text('导入成功'),
                     ));
-                  } catch (e) {
+                  } catch (e,s) {
+                    FirebaseCrashlytics.instance.recordError(e, s, reason: 'importIPFSZipFailed');
                     EasyLoading.dismiss();
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Text('导入失败，错误：$e'),
@@ -277,7 +281,8 @@ class _ImportMagPage extends State<ImportMagPage> {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text('导入成功'),
                   ));
-                } catch (e) {
+                } catch (e,s) {
+                  FirebaseCrashlytics.instance.recordError(e, s, reason: 'importLocalDirectoryFailed');
                   EasyLoading.dismiss();
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text('导入失败，错误：$e'),

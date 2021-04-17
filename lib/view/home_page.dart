@@ -50,7 +50,7 @@ class _HomePage extends State<HomePage> {
                         Navigator.of(context)
                             .push(MaterialPageRoute(builder: (context) {
                           return FavoritePage();
-                        }));
+                        },settings: RouteSettings(name: 'favorite_page')));
                       },
                       icon: Icon(Icons.arrow_forward_ios),
                     )));

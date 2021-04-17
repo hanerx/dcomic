@@ -15,12 +15,12 @@ class DownloadComicListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
     return IntrinsicHeight(
-        child: FlatButton(
-          padding: EdgeInsets.fromLTRB(1, 0, 1, 0),
+        child: TextButton(
+          style: ButtonStyle(padding: MaterialStateProperty.all(EdgeInsets.fromLTRB(1, 0, 1, 0))),
           onPressed: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
               return DownloadComicPage(comicId: comicId,title: title,);
-            }));
+            },settings: RouteSettings(name: 'download_comic_page')));
           },
           child: Card(
             child: Row(

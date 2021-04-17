@@ -174,7 +174,7 @@ class _CustomCard extends StatelessWidget {
       padding: EdgeInsets.all(0),
       onPressed: () {
         Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => NovelDetailPage(id: id)));
+            MaterialPageRoute(builder: (context) => NovelDetailPage(id: id),settings: RouteSettings(name: 'novel_detail_page')));
       },
       child: Card(
         elevation: 0,
@@ -276,7 +276,7 @@ class _CustomPage extends StatelessWidget {
         ),
         onPressed: () {
           Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => NovelDetailPage(id: id)));
+              MaterialPageRoute(builder: (context) => NovelDetailPage(id: id),settings: RouteSettings(name: 'novel_detail_page')));
         },
       ),
       borderRadius: BorderRadius.circular(5),

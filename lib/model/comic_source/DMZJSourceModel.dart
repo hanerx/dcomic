@@ -4,7 +4,6 @@ import 'package:dcomic/database/historyDatabaseProvider.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:dcomic/database/cookieDatabaseProvider.dart';
-import 'package:dcomic/database/database.dart';
 import 'package:dcomic/database/downloader.dart';
 import 'package:dcomic/http/UniversalRequestModel.dart';
 import 'package:dcomic/utils/soup.dart';
@@ -13,7 +12,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:dcomic/database/sourceDatabaseProvider.dart';
-import 'package:dcomic/http/http.dart';
 import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:dcomic/model/systemSettingModel.dart';
 import 'package:dcomic/utils/tool_methods.dart';
@@ -82,7 +80,7 @@ class DMZJSourceModel extends BaseSourceModel {
       if (_options.backupApi) {
         return this.getComicDetailBackup(comicId);
       } else {
-        throw ComicLoadingError();
+        throw ComicLoadingError(exception: e);
       }
     }
     return null;

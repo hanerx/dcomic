@@ -201,7 +201,7 @@ class _CustomListTile extends StatelessWidget {
           return NovelDetailPage(
             id: id,
           );
-        }));
+        },settings: RouteSettings(name: 'novel_detail_page')));
       },
       child: Card(
         child: Row(

@@ -15,8 +15,8 @@ class AuthorCard extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return FlatButton(
-      padding: EdgeInsets.all(1),
+    return TextButton(
+      style: ButtonStyle(padding: MaterialStateProperty.all(EdgeInsets.all(1))),
       child: Card(
         elevation: 0,
         child: Container(
@@ -61,7 +61,7 @@ class AuthorCard extends StatelessWidget{
       onPressed: (){
         Navigator.push(context, MaterialPageRoute(builder: (context){
           return ComicDetailPage(id:id.toString(),title: title,);
-        }));
+        },settings: RouteSettings(name: 'comic_detail_page')));
       },
     );
   }

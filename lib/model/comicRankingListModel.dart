@@ -1,5 +1,6 @@
 import 'package:dcomic/http/http.dart';
 import 'package:dcomic/model/baseModel.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 class ComicRankingListModel extends BaseModel {
   int filterDate = 0;
@@ -34,7 +35,8 @@ class ComicRankingListModel extends BaseModel {
       notifyListeners();
       logger.i(
           'class: ComicRankingList, action: loadingRankingList, page: $page');
-    } catch (e) {
+    } catch (e,s) {
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'loadRankingListFailed');
       logger.e(
           'class: ComicRankingList, action: loadRankingListFailed, exception: $e');
     }

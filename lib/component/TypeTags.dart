@@ -12,9 +12,9 @@ class TypeTags extends StatelessWidget{
   Widget build(BuildContext context) {
 
     // TODO: implement build
-    return FlatButton(
-      padding: EdgeInsets.zero,
-      child: Text('${tags.map((value){return value['tag_name'];}).toList().join('/')}'),
+    return TextButton(
+      style: ButtonStyle(padding: MaterialStateProperty.all(EdgeInsets.zero)),
+      child: Text('${tags.map((value){return value['tag_name'];}).toList().join('/')}',style: Theme.of(context).textTheme.bodyText1),
       onPressed: (){
         showDialog(context: context, builder: (context){
           return SimpleDialog(

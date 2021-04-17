@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dcomic/component/EmptyView.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:dcomic/component/DataBaseDefineTile.dart';
 import 'package:dcomic/component/DataBaseTable.dart';
@@ -43,7 +44,8 @@ class DatabaseDetailModel extends BaseModel{
       String save='${directory.path}/dmzj.db';
       await file.copy(save);
       return save;
-    }catch(e){
+    }catch(e,s){
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'backupDatabaseFailed');
       logger.e('class: DatabaseDetailModel, action: moveFileFailed, exception: $e');
     }
     return null;
@@ -56,7 +58,8 @@ class DatabaseDetailModel extends BaseModel{
         await file.copy(this.path);
         return true;
       }
-    }catch(e){
+    }catch(e,s){
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'recoverDatabaseFailed');
       logger.e('class: DatabaseDetailModel, action: moveFileFailed, exception: $e');
     }
     return false;

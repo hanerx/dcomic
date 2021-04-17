@@ -23,14 +23,28 @@ class HomePageCard extends StatelessWidget {
       onPressed: () {
         switch (type) {
           case 1:
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return ComicDetailPage(id:id,title: title,model: Provider.of<SourceProvider>(context).activeSources.first,);
-            }));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) {
+                      return ComicDetailPage(
+                        id: id,
+                        title: title,
+                        model: Provider.of<SourceProvider>(context)
+                            .activeSources
+                            .first,
+                      );
+                    },
+                    settings: RouteSettings(name: 'comic_detail_page')));
             break;
           case 5:
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return SubjectDetailPage(id);
-            }));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) {
+                      return SubjectDetailPage(id);
+                    },
+                    settings: RouteSettings(name: 'subject_detail_page')));
             break;
           default:
         }

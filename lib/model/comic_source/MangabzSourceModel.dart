@@ -52,7 +52,7 @@ class MangabzSourceModel extends BaseSourceModel {
           return await getMangabzComic(item.comicId);
         }
       }
-      throw ComicIdNotBoundError();
+      throw ComicIdNotBoundError(comicId);
     } else if (title == null) {
       throw IDInvalidError();
     } else {

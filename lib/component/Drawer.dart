@@ -65,7 +65,7 @@ class CustomDrawerState extends State<CustomDrawer> {
         ),
         currentAccountPicture: FlutterLogo(),
         otherAccountsPictures: <Widget>[
-          FlatButton(
+          TextButton(
             child: Icon(
               darkMode[Provider.of<SystemSettingModel>(context).darkState],
               color: Colors.white,
@@ -81,20 +81,18 @@ class CustomDrawerState extends State<CustomDrawer> {
                     .darkState = 0;
               }
             },
-            shape: CircleBorder(),
-            padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+            style: ButtonStyle(shape: MaterialStateProperty.all(CircleBorder()),padding: MaterialStateProperty.all(EdgeInsets.zero)),
           ),
-          FlatButton(
+          TextButton(
             child: Icon(
               Icons.group,
               color: Colors.white,
             ),
             onPressed: () {
               Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (context) => LoginPage()));
+                  .push(MaterialPageRoute(builder: (context) => LoginPage(),settings: RouteSettings(name: 'login_page')));
             },
-            shape: CircleBorder(),
-            padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+            style: ButtonStyle(shape: MaterialStateProperty.all(CircleBorder()),padding: MaterialStateProperty.all(EdgeInsets.zero)),
           )
         ],
       ),
@@ -105,7 +103,7 @@ class CustomDrawerState extends State<CustomDrawer> {
           Navigator.of(context).pop();
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             return FavoritePage();
-          }));
+          },settings: RouteSettings(name: 'favorite_page')));
         },
       ),
       ListTile(
@@ -135,7 +133,7 @@ class CustomDrawerState extends State<CustomDrawer> {
             Navigator.of(context).pop();
             Navigator.push(context, MaterialPageRoute(builder: (context) {
               return DarkSidePage();
-            }));
+            },settings: RouteSettings(name: 'dark_side_page')));
           },
         )
       ];
@@ -150,7 +148,7 @@ class CustomDrawerState extends State<CustomDrawer> {
             Navigator.of(context).pop();
             Navigator.of(context).push(MaterialPageRoute(builder: (context) {
               return NovelMainPage();
-            }));
+            },settings: RouteSettings(name: 'novel_main_page')));
           },
         )
       ];
@@ -164,7 +162,7 @@ class CustomDrawerState extends State<CustomDrawer> {
           leading: Icon(Icons.edit),
           onTap: () {
             Navigator.of(context)
-                .push(MaterialPageRoute(builder: (context) => MagMakePage()));
+                .push(MaterialPageRoute(builder: (context) => MagMakePage(),settings: RouteSettings(name: 'mag_make_page')));
           },
         ),
       ];

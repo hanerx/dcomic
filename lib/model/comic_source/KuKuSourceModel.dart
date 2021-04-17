@@ -41,7 +41,7 @@ class KuKuSourceModel extends BaseSourceModel {
           return await getKuKuComic(item.comicId);
         }
       }
-      throw ComicIdNotBoundError();
+      throw ComicIdNotBoundError(comicId);
     } else if (title == null) {
       throw IDInvalidError();
     } else {

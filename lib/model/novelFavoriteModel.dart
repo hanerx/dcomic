@@ -1,3 +1,4 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dcomic/component/SubscribeCard.dart';
@@ -25,7 +26,8 @@ class NovelFavoriteModel extends BaseModel{
         novels+=response.data;
       }
       notifyListeners();
-    }catch(e){
+    }catch(e,s){
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'getSubscribeFailed');
       logger.e(
           'class: NovelFavoriteModel, action: getSubscribeFailed, expection: $e');
     }

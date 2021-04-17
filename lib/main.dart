@@ -1,3 +1,8 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -28,8 +33,10 @@ import 'package:dcomic/view/settings/setting_page.dart';
 import 'package:provider/provider.dart';
 import 'package:uni_links/uni_links.dart';
 
-
-void main() async {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
   runApp(App());
 }
 
@@ -56,7 +63,7 @@ class App extends StatelessWidget {
         create: (_) => SourceProvider(),
       ),
       ChangeNotifierProvider<IPFSSettingProvider>(
-        create: (_)=>IPFSSettingProvider(),
+        create: (_) => IPFSSettingProvider(),
       )
     ], child: MainFrame());
   }
@@ -71,6 +78,8 @@ class MainFrame extends StatefulWidget {
 }
 
 class _MainFrame extends State<MainFrame> {
+  FirebaseAnalytics analytics = FirebaseAnalytics();
+
   initDownloader() async {
     print("class: MainFrame, action: initDownloader");
     WidgetsFlutterBinding.ensureInitialized();
@@ -95,12 +104,19 @@ class _MainFrame extends State<MainFrame> {
         noMoreText: '没有更多内容了');
   }
 
+  initAnonymousUser() async {
+    UserCredential userCredential =
+        await FirebaseAuth.instance.signInAnonymously();
+    FirebaseCrashlytics.instance.setUserIdentifier(userCredential.user.uid);
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     initDownloader();
     initEasyRefresh();
+    initAnonymousUser();
   }
 
   @override
@@ -115,6 +131,9 @@ class _MainFrame extends State<MainFrame> {
     // TODO: implement build
     return new MaterialApp(
         themeMode: Provider.of<SystemSettingModel>(context).themeMode,
+        navigatorObservers: [
+          FirebaseAnalyticsObserver(analytics: analytics),
+        ],
         darkTheme: ThemeData(
             brightness: Brightness.dark,
             platform: TargetPlatform.iOS,
@@ -142,8 +161,7 @@ class _MainFrame extends State<MainFrame> {
         theme: ThemeData(
             platform: TargetPlatform.iOS,
             buttonTheme: ButtonThemeData(buttonColor: Colors.blue),
-          appBarTheme: AppBarTheme(brightness: Brightness.dark)
-        ),
+            appBarTheme: AppBarTheme(brightness: Brightness.dark)),
         home: MainPage());
   }
 }
@@ -164,9 +182,11 @@ class _MainPage extends State<MainPage> {
       switch (event.path) {
         case '/comic':
           var params = event.queryParameters;
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-            return ComicDetailPage(id:params['id']);
-          }));
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) {
+                return ComicDetailPage(id: params['id']);
+              },
+              settings: RouteSettings(name: 'comic_detail_page')));
           break;
       }
     });

@@ -71,7 +71,7 @@ class _LatestUpdatePage extends State<LatestUpdatePage> {
                                 builder: (context) => ComicDetailPage(
                                       id: item['id'].toString(),
                                       title: item['title'],
-                                    )));
+                                    ),settings: RouteSettings(name: 'comic_detail_page')));
                           },
                         );
                         // return list[index];

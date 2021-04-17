@@ -8,7 +8,6 @@ import 'package:dcomic/model/systemSettingModel.dart';
 import 'package:dcomic/view/comic_detail_page.dart';
 import 'package:provider/provider.dart';
 
-
 class SearchPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -28,39 +27,44 @@ class _SearchPage extends State<SearchPage> {
     super.initState();
   }
 
-  void _onSubmit(){
+  void _onSubmit() {
     _node.unfocus();
     setState(() {
       keyword = _controller.text;
     });
     if (keyword == '宝塔镇河妖') {
-      Provider.of<SystemSettingModel>(context, listen: false)
-          .backupApi = true;
+      Provider.of<SystemSettingModel>(context, listen: false).backupApi = true;
     } else if (keyword == '天王盖地虎') {
-      Provider.of<SystemSettingModel>(context, listen: false)
-          .backupApi = false;
+      Provider.of<SystemSettingModel>(context, listen: false).backupApi = false;
     }
-    var comicId=int.tryParse(keyword);
-    if(comicId!=null){
-      showDialog(context: context,builder: (context)=>AlertDialog(
-        title: Text('看起来你输入了一个漫画ID'),
-        content: Text('是否直接跳转至漫画'),
-        actions: [
-          FlatButton(
-            child: Text(S.of(context).Cancel),
-            onPressed: (){
-              Navigator.of(context).pop();
-            },
-          ),
-          FlatButton(
-            child: Text(S.of(context).Confirm),
-            onPressed: (){
-              Navigator.of(context).pop();
-              Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ComicDetailPage(id: comicId.toString(),title: '',)));
-            },
-          )
-        ],
-      ));
+    var comicId = int.tryParse(keyword);
+    if (comicId != null) {
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                title: Text('看起来你输入了一个漫画ID'),
+                content: Text('是否直接跳转至漫画'),
+                actions: [
+                  FlatButton(
+                    child: Text(S.of(context).Cancel),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  FlatButton(
+                    child: Text(S.of(context).Confirm),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => ComicDetailPage(
+                                id: comicId.toString(),
+                                title: '',
+                              ),
+                          settings: RouteSettings(name: 'comic_detail_page')));
+                    },
+                  )
+                ],
+              ));
     }
   }
 
@@ -74,7 +78,7 @@ class _SearchPage extends State<SearchPage> {
     List views = <Widget>[
       SearchTab(key: UniqueKey(), keyword: keyword),
     ];
-    if (Provider.of<SystemSettingModel>(context,listen: false).novel) {
+    if (Provider.of<SystemSettingModel>(context, listen: false).novel) {
       tabs.add(Tab(
         text: '轻小说搜索',
       ));
@@ -83,7 +87,7 @@ class _SearchPage extends State<SearchPage> {
         key: UniqueKey(),
       ));
     }
-    if (Provider.of<SystemSettingModel>(context,listen: false).deepSearch) {
+    if (Provider.of<SystemSettingModel>(context, listen: false).deepSearch) {
       tabs.add(Tab(
         text: '隐藏搜索',
       ));

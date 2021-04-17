@@ -13,7 +13,7 @@ class ViewPointChip extends StatelessWidget {
     // TODO: implement build
     return Container(
       margin: EdgeInsets.all(3),
-      child: FlatButton(
+      child: TextButton(
         child: Chip(
             label: Text('$content'),
             avatar: CircleAvatar(
@@ -22,7 +22,7 @@ class ViewPointChip extends StatelessWidget {
               num ~/ 100 * 100 + 400 > 800 ? 800 : num ~/ 100 * 100 + 400],
               foregroundColor: Colors.white,
             )),
-        padding: EdgeInsets.all(0),
+        style: ButtonStyle(padding: MaterialStateProperty.all(EdgeInsets.zero)),
         onPressed: () {},
       ),
     );

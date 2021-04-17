@@ -57,7 +57,7 @@ class _LocalHistoryTab extends State<LocalHistoryTab> {
                               id: comic.comicId,
                               title: comic.title,
                               model: comic.model,
-                            )));
+                            ),settings: RouteSettings(name: 'comic_detail_page')));
                   },
                 );
               }),

@@ -271,7 +271,7 @@ class _CustomListTile extends StatelessWidget {
             id: comicId,
             title: title,
           );
-        }));
+        },settings: RouteSettings(name: 'comic_detail_page')));
       },
       child: Card(
         child: Row(

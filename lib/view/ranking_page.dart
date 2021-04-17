@@ -68,7 +68,7 @@ class _RankingPage extends State<RankingPage> {
                                 model: Provider.of<SourceProvider>(context)
                                     .activeSources
                                     .first,
-                              )));
+                              ),settings: RouteSettings(name: 'comic_detail_page')));
                     },
                   );
                 },

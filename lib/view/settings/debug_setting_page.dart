@@ -32,7 +32,7 @@ class _DebugSettingPage extends State<DebugSettingPage>{
             subtitle: Text(S.of(context).SettingPageDebugTestSubtitle),
             onTap: (){
               Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => DebugTestPage()));
+                  builder: (context) => DebugTestPage(),settings: RouteSettings(name: 'debug_test_page')));
             },
           ),
           Divider(),
@@ -41,7 +41,7 @@ class _DebugSettingPage extends State<DebugSettingPage>{
             subtitle: Text(S.of(context).SettingPageDatabaseDetailSubtitle),
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => DatabaseDetailPage()));
+                  builder: (context) => DatabaseDetailPage(),settings: RouteSettings(name: 'database_detail_page')));
             },
           ),
           ListTile(

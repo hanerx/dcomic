@@ -54,7 +54,7 @@ class LocalSourceModel extends BaseSourceModel {
           return await getLocalComic(item.comicId);
         }
       }
-      throw ComicIdNotBoundError();
+      throw ComicIdNotBoundError(comicId);
     }
     throw IDInvalidError();
   }

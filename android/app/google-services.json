@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "522563222655",
+    "project_id": "dcomic-93209",
+    "storage_bucket": "dcomic-93209.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:522563222655:android:e14780753062c4cf43d34a",
+        "android_client_info": {
+          "package_name": "top.hanerx.flutterdmzj"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "522563222655-vtsp4k0o2ef9gua3rgf01jl4u4hm791s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8rCCOBN1x2sC5VBnAEE_EhOBiCaC518A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "522563222655-vtsp4k0o2ef9gua3rgf01jl4u4hm791s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

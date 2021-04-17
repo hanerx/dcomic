@@ -1,4 +1,5 @@
 import 'package:dcomic/http/UniversalRequestModel.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:dcomic/database/configDatabaseProvider.dart';
@@ -55,7 +56,8 @@ class VersionModel extends BaseModel {
           break;
       }
       notifyListeners();
-    } catch (e) {
+    } catch (e,s) {
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'checkUpdateFailed');
       logger.e('class: VersionModel, action: checkUpdateFailed, exception: $e');
     }
   }
