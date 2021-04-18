@@ -34,6 +34,42 @@ class DMZJSourceModel extends BaseSourceModel {
   @override
   Future<ComicDetail> get({String comicId, String title}) async {
     // TODO: implement get
+    if (comicId == null && title == null) {
+      throw IDInvalidError();
+    } else if (comicId != null) {
+      try {
+        if (comicId != null &&
+            await SourceDatabaseProvider.getBoundComic(type.name, comicId) !=
+                null) {
+          var map =
+              await SourceDatabaseProvider.getBoundComic(type.name, comicId);
+          return await getComicDetail(map['bound_id']);
+        }
+        return await getComicDetail(comicId);
+      } catch (e) {
+        if (title != null) {
+          var list = await search(title);
+          for (var item in list) {
+            if (item.title == title) {
+              if (comicId != null) {
+                SourceDatabaseProvider.boundComic(
+                    type.name, comicId, item.comicId);
+              }
+              return await getComicDetail(item.comicId);
+            }
+          }
+          throw ComicIdNotBoundError(comicId);
+        } else if (title == null) {
+          throw IDInvalidError();
+        } else {
+          throw ComicLoadingError();
+        }
+      }
+    }
+    throw ComicLoadingError();
+  }
+
+  Future<ComicDetail> getComicDetail(String comicId) async {
     if (comicId == null) {
       throw IDInvalidError();
     }
@@ -639,6 +675,43 @@ class DMZJWebSourceModel extends DMZJSourceModel {
   @override
   Future<ComicDetail> get({String comicId, String title}) async {
     // TODO: implement get
+    if (comicId == null && title == null) {
+      throw IDInvalidError();
+    } else if (comicId != null) {
+      try {
+        if (comicId != null &&
+            await SourceDatabaseProvider.getBoundComic(
+                    super.type.name, comicId) !=
+                null) {
+          var map = await SourceDatabaseProvider.getBoundComic(
+              super.type.name, comicId);
+          return await getComicDetail(map['bound_id']);
+        }
+        return await getComicDetail(comicId);
+      } catch (e) {
+        if (title != null) {
+          var list = await search(title);
+          for (var item in list) {
+            if (item.title == title) {
+              if (comicId != null) {
+                SourceDatabaseProvider.boundComic(
+                    super.type.name, comicId, item.comicId);
+              }
+              return await getComicDetail(item.comicId);
+            }
+          }
+          throw ComicIdNotBoundError(comicId);
+        } else if (title == null) {
+          throw IDInvalidError();
+        } else {
+          throw ComicLoadingError();
+        }
+      }
+    }
+    throw ComicLoadingError();
+  }
+
+  Future<ComicDetail> getComicDetail(String comicId) async {
     if (comicId == null) {
       throw IDInvalidError();
     }
@@ -688,7 +761,7 @@ class DMZJWebSourceModel extends DMZJSourceModel {
           }
           chapters.add({"data": chapterList, 'title': item['title']});
         }
-        var history = (await HistoryDatabaseProvider(this.type.name)
+        var history = (await HistoryDatabaseProvider(super.type.name)
             .getReadHistory(comicId));
         var lastChapterId = history == null ? null : history['last_chapter_id'];
         return DMZJComicDetail(
@@ -906,10 +979,8 @@ class DMZJComicDetail extends ComicDetail {
   Future<void> getIfSubscribed() async {
     try {
       var response = await UniversalRequestModel.dmzjRequestHandler
-          .getIfSubscribe(
-              comicId,
-              await SourceDatabaseProvider.getSourceOption(
-                  sourceDetail.name, 'uid'));
+          .getIfSubscribe(comicId,
+              await SourceDatabaseProvider.getSourceOption('dmzj', 'uid'));
       if (response.statusCode == 200) {
         _isSubscribed = response.data['code'] == 0;
       }

@@ -64,7 +64,7 @@ class MangabzSourceModel extends BaseSourceModel {
     try {
       var response =
           await UniversalRequestModel.mangabzRequestHandler.getComic(comicId);
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200||response.statusCode==304) {
         var soup = BeautifulSoup(
             ChineseHelper.convertToSimplifiedChinese(response.data.toString()));
         var title =

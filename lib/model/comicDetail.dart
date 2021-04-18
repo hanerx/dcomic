@@ -83,7 +83,9 @@ class ComicDetailModel extends BaseModel {
   Future<void> init() async {
     try {
       detail = await _model.get(title: this._title, comicId: this._comicId);
-      await detail.getIfSubscribed();
+      if(detail!=null){
+        await detail.getIfSubscribed();
+      }
       error = null;
       notifyListeners();
     } catch (e,s) {
