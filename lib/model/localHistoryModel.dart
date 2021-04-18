@@ -13,6 +13,7 @@ class LocalHistoryModel extends BaseModel {
     for (var item in provider.activeSources) {
       _list += await item.getLocalHistoryComics();
     }
+    _list.sort((left,right)=>right.timestamp.compareTo(left.timestamp));
     notifyListeners();
   }
 
