@@ -270,7 +270,12 @@ class ComicIdNotBoundError implements Exception {
   }
 }
 
-class ComicSearchError implements Exception {}
+class ComicSearchError implements Exception {
+  final Exception exception;
+
+  ComicSearchError(this.exception);
+
+}
 
 class LoginUsernameOrPasswordError implements Exception {}
 

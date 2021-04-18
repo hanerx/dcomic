@@ -45,6 +45,11 @@ class DMZJRequestHandler extends SingleDomainRequestHandler {
   Future<Response> getComic(String comicId, String chapterId) {
     return dio.get('/chapter/$comicId/$chapterId.json');
   }
+
+  Future<Response> search(String keyword, int page, {int type: 0}) {
+    return dio
+        .get('/search/show/$type/${Uri.encodeComponent(keyword)}/$page.json');
+  }
 }
 
 class DMZJIRequestHandler extends SingleDomainRequestHandler {

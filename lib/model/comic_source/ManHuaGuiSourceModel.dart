@@ -281,7 +281,7 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
         return list;
       }
     } catch (e) {
-      throw ComicSearchError();
+      throw ComicSearchError(e);
     }
     return [];
   }

@@ -38,7 +38,8 @@ class DMZJSourceModel extends BaseSourceModel {
       throw IDInvalidError();
     }
     try {
-      var response = await UniversalRequestModel.dmzjRequestHandler.getComicDetail(comicId);
+      var response = await UniversalRequestModel.dmzjRequestHandler
+          .getComicDetail(comicId);
       if (response.statusCode == 200) {
         var title = response.data['title'];
         var cover = response.data['cover'];
@@ -88,7 +89,8 @@ class DMZJSourceModel extends BaseSourceModel {
 
   Future<ComicDetail> getComicDetailBackup(String comicId) async {
     try {
-      var response = await UniversalRequestModel.dmzjapiRequestHandler.getComicDetailWithBackupApi(comicId);
+      var response = await UniversalRequestModel.dmzjapiRequestHandler
+          .getComicDetailWithBackupApi(comicId);
       if (response.statusCode == 200) {
         var data = jsonDecode(response.data)['data'];
         var title = data['info']['title'];
@@ -151,6 +153,18 @@ class DMZJSourceModel extends BaseSourceModel {
   @override
   Future<List<SearchResult>> search(String keyword, {int page: 0}) async {
     // TODO: implement search
+    try {
+      var response =
+          await UniversalRequestModel.dmzjRequestHandler.search(keyword, page);
+      if (response.statusCode == 200) {
+        return response.data
+            .map<SearchResult>((e) => DMZJSearchResult(e['authors'],
+                e['id'].toString(), e['cover'], e['types'], e['title']))
+            .toList();
+      }
+    } catch (e) {
+      throw ComicSearchError(e);
+    }
     return [];
   }
 
@@ -629,7 +643,8 @@ class DMZJWebSourceModel extends DMZJSourceModel {
       throw IDInvalidError();
     }
     try {
-      var response = await UniversalRequestModel.dmzjMobileRequestHandler.getComicDetailWeb(comicId);
+      var response = await UniversalRequestModel.dmzjMobileRequestHandler
+          .getComicDetailWeb(comicId);
       if (response.statusCode == 200) {
         var jsonString =
             RegExp('initIntroData(.*);').stringMatch(response.data);
@@ -1072,7 +1087,8 @@ class DMZJComic extends Comic {
       return;
     }
     try {
-      var response = await UniversalRequestModel.dmzjRequestHandler.getComic(comicId, chapterId);
+      var response = await UniversalRequestModel.dmzjRequestHandler
+          .getComic(comicId, chapterId);
       if (response.statusCode == 200) {
         _pageAt = chapterId;
         _pages =
@@ -1104,7 +1120,8 @@ class DMZJComic extends Comic {
 
   Future<void> getComicWeb(String comicId, String chapterId) async {
     try {
-      var response = await UniversalRequestModel.dmzjMobileRequestHandler.getComicWeb(comicId, chapterId);
+      var response = await UniversalRequestModel.dmzjMobileRequestHandler
+          .getComicWeb(comicId, chapterId);
       if (response.statusCode == 200) {
         var data = jsonDecode(response.data);
         _title = data['chapter_name'];
@@ -1135,7 +1152,8 @@ class DMZJComic extends Comic {
 
   Future<void> getComicBackup(String comicId, String chapterId) async {
     try {
-      var response = await UniversalRequestModel.dmzjapiRequestHandler.getComicDetailWithBackupApi(comicId);
+      var response = await UniversalRequestModel.dmzjapiRequestHandler
+          .getComicDetailWithBackupApi(comicId);
       if (response.statusCode == 200) {
         var data = jsonDecode(response.data)['data'];
         var firstLetter = data['info']['first_letter'];
@@ -1148,8 +1166,8 @@ class DMZJComic extends Comic {
         List<String> pages = [];
         while (true) {
           try {
-            var item =
-                await UniversalRequestModel.dmzjImageRequestHandler.getImage(firstLetter, comicId, chapterId, page);
+            var item = await UniversalRequestModel.dmzjImageRequestHandler
+                .getImage(firstLetter, comicId, chapterId, page);
             if (item.headers.value('Content-Type') == 'image/jpeg') {
               pages.add(
                   'http://imgsmall.dmzj.com/$firstLetter/$comicId/$chapterId/$page.jpg');
@@ -1299,4 +1317,35 @@ class DMZJComic extends Comic {
   @override
   // TODO: implement headers
   Map<String, String> get headers => {'referer': 'http://images.dmzj.com'};
+}
+
+class DMZJSearchResult extends SearchResult {
+  final String _author;
+  final String _comicId;
+  final String _cover;
+  final String _tag;
+  final String _title;
+
+  DMZJSearchResult(
+      this._author, this._comicId, this._cover, this._tag, this._title);
+
+  @override
+  // TODO: implement author
+  String get author => _author;
+
+  @override
+  // TODO: implement comicId
+  String get comicId => _comicId;
+
+  @override
+  // TODO: implement cover
+  String get cover => _cover;
+
+  @override
+  // TODO: implement tag
+  String get tag => _tag;
+
+  @override
+  // TODO: implement title
+  String get title => _title;
 }

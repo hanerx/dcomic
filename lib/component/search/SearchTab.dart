@@ -1,3 +1,4 @@
+import 'package:dcomic/http/UniversalRequestModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:dcomic/component/EmptyView.dart';
@@ -30,8 +31,7 @@ class _SearchTab extends State<SearchTab>{
 
   search() async {
     if(widget.keyword!=null &&widget.keyword!=''){
-      CustomHttp http = CustomHttp();
-      var response = await http.search(widget.keyword, page);
+      var response = await UniversalRequestModel.dmzjRequestHandler.search(widget.keyword, page);
       if (response.statusCode == 200 && mounted) {
         setState(() {
           if (response.data.length == 0) {

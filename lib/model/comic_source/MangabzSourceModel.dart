@@ -252,7 +252,7 @@ class MangabzSourceModel extends BaseSourceModel {
         return data;
       }
     } catch (e) {
-      throw ComicSearchError();
+      throw ComicSearchError(e);
     }
     return [];
   }

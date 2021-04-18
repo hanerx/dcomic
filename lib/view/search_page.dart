@@ -27,15 +27,24 @@ class _SearchPage extends State<SearchPage> {
     super.initState();
   }
 
-  void _onSubmit() {
+  void _onSubmit(context) {
     _node.unfocus();
     setState(() {
       keyword = _controller.text;
     });
+    Provider.of<SystemSettingModel>(context, listen: false)
+        .analytics
+        .logSearch(searchTerm: keyword);
     if (keyword == '宝塔镇河妖') {
       Provider.of<SystemSettingModel>(context, listen: false).backupApi = true;
+      Provider.of<SystemSettingModel>(context, listen: false)
+          .analytics
+          .logEvent(name: 'backup_api', parameters: {'status': true});
     } else if (keyword == '天王盖地虎') {
       Provider.of<SystemSettingModel>(context, listen: false).backupApi = false;
+      Provider.of<SystemSettingModel>(context, listen: false)
+          .analytics
+          .logEvent(name: 'backup_api', parameters: {'status': false});
     }
     var comicId = int.tryParse(keyword);
     if (comicId != null) {
@@ -45,13 +54,13 @@ class _SearchPage extends State<SearchPage> {
                 title: Text('看起来你输入了一个漫画ID'),
                 content: Text('是否直接跳转至漫画'),
                 actions: [
-                  FlatButton(
+                  TextButton(
                     child: Text(S.of(context).Cancel),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
                   ),
-                  FlatButton(
+                  TextButton(
                     child: Text(S.of(context).Confirm),
                     onPressed: () {
                       Navigator.of(context).pop();
@@ -115,20 +124,20 @@ class _SearchPage extends State<SearchPage> {
             ),
             textInputAction: TextInputAction.search,
             onSubmitted: (val) {
-              _onSubmit();
+              _onSubmit(context);
             },
           ),
           bottom: TabBar(
             tabs: tabs,
           ),
           actions: <Widget>[
-            FlatButton(
-              child: Icon(
+            IconButton(
+              icon: Icon(
                 Icons.search,
                 color: Colors.white,
               ),
               onPressed: () {
-                _onSubmit();
+                _onSubmit(context);
               },
             )
           ],
