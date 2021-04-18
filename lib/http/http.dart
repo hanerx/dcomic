@@ -135,6 +135,7 @@ class CustomHttp {
         '$baseUrl/novel/$categoryId/$tag/$type/$page.json?$queryOptions');
   }
 
+  @Deprecated('使用新接口')
   Future<Response<T>> getSubscribe<T>(int uid, int page, {int type: 0}) {
     return dio.get(
         '$baseUrl/UCenter/subscribe?uid=$uid&sub_type=1&letter=all&page=$page&type=$type&$queryOptions');
@@ -235,6 +236,7 @@ class CustomHttp {
         '$baseUrl/recommend/batchUpdate?uid=$uid&category_id=49&$queryOptions');
   }
 
+  @Deprecated('使用新接口')
   Future<Response<T>> search<T>(String keyword, int page, {int type: 0}) {
     return dio.get(
         '$baseUrl/search/show/$type/${Uri.encodeComponent(keyword)}/$page.json?$queryOptions');
@@ -278,6 +280,7 @@ class CustomHttp {
     return dio.get('$baseUrl/UCenter/author/$authorId.json?$queryOptions');
   }
 
+  @Deprecated('使用新接口')
   Future<Response<T>> deepSearch<T>(String search) {
     return dio.get('$sacgUrl/comicsum/search.php?s=$search&callback=');
   }

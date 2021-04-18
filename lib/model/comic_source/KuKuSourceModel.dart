@@ -222,7 +222,7 @@ class KuKuSourceModel extends BaseSourceModel {
         return data;
       }
     } catch (e) {
-      throw ComicSearchError();
+      throw ComicSearchError(e);
     }
     return [];
   }
@@ -318,7 +318,7 @@ class KuKuSearchResult extends SearchResult {
 
   @override
   // TODO: implement author
-  String get author => '';
+  String get author => '暂无数据';
 
   @override
   // TODO: implement comicId
@@ -330,11 +330,15 @@ class KuKuSearchResult extends SearchResult {
 
   @override
   // TODO: implement tag
-  String get tag => '';
+  String get tag => '暂无数据';
 
   @override
   // TODO: implement title
   String get title => _title;
+
+  @override
+  // TODO: implement latestChapter
+  String get latestChapter => '暂无数据';
 }
 
 class KuKuComicDetail extends ComicDetail {

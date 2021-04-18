@@ -144,5 +144,7 @@
   "SettingPageIPFSSettingPageProxyPortTitle": "Proxy Server Port",
   "SettingPageIPFSSettingPageTestTitle": "Test IPFS network connection",
   "SettingPageIPFSSettingPageTestSubtitle": "Test the connection between IPFS network, the result will show below if test succeed.",
-  "NoImage": "No Image to show."
+  "NoImage": "No Image to show.",
+  "SettingPageDebugSettingPageEnableCrashlyticsTitle": "Enable Crash Analytics",
+  "SettingPageDebugSettingPageEnableCrashlyticsSubtitle": "To improve software, report your crash log to developer anonymously."
 }

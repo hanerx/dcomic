@@ -80,6 +80,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "SettingPageDarkModeTitle" : MessageLookupByLibrary.simpleMessage("Dark mode"),
     "SettingPageDatabaseDetailSubtitle" : MessageLookupByLibrary.simpleMessage("Show all the data in your local database. CAUTION: Will direct expose your secret information like token, uid, etc."),
     "SettingPageDatabaseDetailTitle" : MessageLookupByLibrary.simpleMessage("Check database"),
+    "SettingPageDebugSettingPageEnableCrashlyticsSubtitle" : MessageLookupByLibrary.simpleMessage("To improve software, report your crash log to developer anonymously."),
+    "SettingPageDebugSettingPageEnableCrashlyticsTitle" : MessageLookupByLibrary.simpleMessage("Enable Crash Analytics"),
     "SettingPageDebugTestSubtitle" : MessageLookupByLibrary.simpleMessage("Provide a test page to test API"),
     "SettingPageDebugTestTitle" : MessageLookupByLibrary.simpleMessage("API Test Page"),
     "SettingPageDisclaimerDetail1" : MessageLookupByLibrary.simpleMessage("1. This program is a third-party app, all program content is provided by anime home, this program does not guarantee the content security and reliability."),

@@ -51,6 +51,7 @@ class _LocalHistoryTab extends State<LocalHistoryTab> {
                   chapterName: comic.latestChapter,
                   date: comic.timestamp,
                   title: comic.title,
+                  provider: comic.model.type.title,
                   onPressed: () {
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => ComicDetailPage(

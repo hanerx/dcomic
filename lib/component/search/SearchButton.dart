@@ -19,7 +19,7 @@ class _SearchButton extends State<SearchButton> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return FlatButton(
+    return TextButton(
       child: Icon(
         Icons.search,
         color: Colors.white,
@@ -27,7 +27,7 @@ class _SearchButton extends State<SearchButton> {
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return SearchPage();
-        }));
+        },settings: RouteSettings(name: 'search_page')));
       },
       onLongPress: () {
         showDialog(

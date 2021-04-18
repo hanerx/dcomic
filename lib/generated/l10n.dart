@@ -1181,6 +1181,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Enable Crash Analytics`
+  String get SettingPageDebugSettingPageEnableCrashlyticsTitle {
+    return Intl.message(
+      'Enable Crash Analytics',
+      name: 'SettingPageDebugSettingPageEnableCrashlyticsTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `To improve software, report your crash log to developer anonymously.`
+  String get SettingPageDebugSettingPageEnableCrashlyticsSubtitle {
+    return Intl.message(
+      'To improve software, report your crash log to developer anonymously.',
+      name: 'SettingPageDebugSettingPageEnableCrashlyticsSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -45,6 +45,11 @@ class DMZJRequestHandler extends SingleDomainRequestHandler {
   Future<Response> getComic(String comicId, String chapterId) {
     return dio.get('/chapter/$comicId/$chapterId.json');
   }
+
+  Future<Response> search(String keyword, int page, {int type: 0}) {
+    return dio
+        .get('/search/show/$type/${Uri.encodeComponent(keyword)}/$page.json');
+  }
 }
 
 class DMZJIRequestHandler extends SingleDomainRequestHandler {
@@ -112,5 +117,13 @@ class DMZJImageRequestHandler extends SingleDomainRequestHandler {
         options: Options(
             headers: {'referer': 'http://images.dmzj.com'},
             responseType: ResponseType.bytes));
+  }
+}
+
+class DMZJSACGRequestHandler extends SingleDomainRequestHandler {
+  DMZJSACGRequestHandler() : super('http://s.acg.dmzj.com');
+
+  Future<Response> deepSearch(String keyword) {
+    return dio.get('/comicsum/search.php?s=$keyword&callback=');
   }
 }

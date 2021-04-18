@@ -238,6 +238,8 @@ abstract class SearchResult extends BaseModel {
 
   String get tag;
 
+  String get latestChapter;
+
   @override
   String toString() {
     return 'SearchResult{title: $title, comicId: $comicId, cover: $cover, author: $author, tag: $tag}';
@@ -270,7 +272,12 @@ class ComicIdNotBoundError implements Exception {
   }
 }
 
-class ComicSearchError implements Exception {}
+class ComicSearchError implements Exception {
+  final Exception exception;
+
+  ComicSearchError(this.exception);
+
+}
 
 class LoginUsernameOrPasswordError implements Exception {}
 

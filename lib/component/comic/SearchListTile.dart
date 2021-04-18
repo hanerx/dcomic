@@ -4,24 +4,24 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dcomic/utils/tool_methods.dart';
 
-class ComicListTile extends StatelessWidget {
+class SearchListTile extends StatelessWidget {
   final String cover;
   final Map<String, String> headers;
   final String title;
   final String authors;
   final String tag;
-  final int date;
+  final String latest;
   final VoidCallback onPressed;
 
-  const ComicListTile(
+  const SearchListTile(
       {Key key,
-      this.cover,
-      this.headers,
-      this.title,
-      this.authors,
-      this.tag,
-      this.date,
-      this.onPressed})
+        this.cover,
+        this.headers,
+        this.title,
+        this.authors,
+        this.tag,
+        this.latest,
+        this.onPressed})
       : super(key: key);
 
   @override
@@ -101,7 +101,7 @@ class ComicListTile extends StatelessWidget {
               text: " ",
             ),
             TextSpan(
-                text: ToolMethods.formatTimestamp(date),
+                text: '$latest',
                 style: TextStyle(color: Colors.grey, fontSize: 16))
           ]),
         ),

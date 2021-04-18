@@ -38,6 +38,11 @@ class _CloudHistoryTab extends State<CloudHistoryTab> {
                 title: item['comic_name'],
                 chapterName: item['chapter_name'],
                 date: item['viewing_time'],
+                provider: Provider.of<SourceProvider>(context)
+                    .activeSources
+                    .first
+                    .type
+                    .title,
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => ComicDetailPage(
@@ -46,7 +51,8 @@ class _CloudHistoryTab extends State<CloudHistoryTab> {
                             model: Provider.of<SourceProvider>(context)
                                 .activeSources
                                 .first,
-                          ),settings: RouteSettings(name: 'comic_detail_page')));
+                          ),
+                      settings: RouteSettings(name: 'comic_detail_page')));
                 },
               );
             }),

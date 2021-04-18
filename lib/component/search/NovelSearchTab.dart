@@ -1,10 +1,11 @@
+import 'package:dcomic/component/comic/SearchListTile.dart';
+import 'package:dcomic/view/novel_pages/novel_detail_page.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:dcomic/component/EmptyView.dart';
 import 'package:dcomic/component/LoadingCube.dart';
 import 'package:dcomic/http/http.dart';
-
-import 'SearchListTile.dart';
 
 class NovelSearchTab extends StatefulWidget {
   final String keyword;
@@ -39,9 +40,23 @@ class _NovelSearchTab extends State<NovelSearchTab> {
             return;
           }
           for (var item in response.data) {
-            list.add(SearchListTile(item['cover'], item['title'], item['types'],
-                item['last_name'], item['id'].toString(), item['authors'],
-                novel: 1));
+            list.add(SearchListTile(
+              cover: item['cover'],
+              title: item['title'],
+              tag: item['types'],
+              authors: item['authors'],
+              latest: item['last_name'],
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => NovelDetailPage(
+                          id: item['id'],
+                        ),
+                    settings: RouteSettings(name: 'novel_detail_page')));
+              },
+            ));
+            // list.add(SearchListTile(item['cover'], item['title'], item['types'],
+            //     item['last_name'], item['id'].toString(), item['authors'],
+            //     novel: 1));
           }
           refreshState = false;
         });
@@ -76,7 +91,7 @@ class _NovelSearchTab extends State<NovelSearchTab> {
         });
         await search();
       },
-      emptyWidget: list.length==0?EmptyView():null,
+      emptyWidget: list.length == 0 ? EmptyView() : null,
       child: ListView.builder(
         controller: _scrollController,
         itemCount: list.length,

@@ -83,7 +83,9 @@ class ComicDetailModel extends BaseModel {
   Future<void> init() async {
     try {
       detail = await _model.get(title: this._title, comicId: this._comicId);
-      await detail.getIfSubscribed();
+      if(detail!=null){
+        await detail.getIfSubscribed();
+      }
       error = null;
       notifyListeners();
     } catch (e,s) {
@@ -179,21 +181,21 @@ class ComicDetailModel extends BaseModel {
     }
     var state = await Permission.storage.request().isGranted;
     if (state) {
-      CustomHttp http = CustomHttp();
-      var response = await http.getComic(comicId, chapterId);
+      Comic comic =await detail.getChapter(chapterId: chapterId);
+      await comic.init();
       var path = await SystemConfigDatabaseProvider().downloadPath;
 
       List data = <String>[];
-      if (response.statusCode == 200) {
+      if (comic.type==PageType.url) {
         var directory = Directory('$path/chapters/$comicId/$chapterId');
         if (!await directory.exists()) {
           await directory.create(recursive: true);
         }
-        for (var item in response.data['page_url']) {
+        for (var item in comic.comicPages) {
           String taskId = await FlutterDownloader.enqueue(
-            headers: {'referer': 'http://images.dmzj.com'},
+            headers: comic.headers,
             url: item,
-            savedDir: '$path/chapters/$comicId/$chapterId',
+            savedDir: '$path/chapters/${comic.comicId}/${comic.pageAt}',
             showNotification: false,
             // show download progress in status bar (for Android)
             openFileFromNotification:
@@ -213,7 +215,7 @@ class ComicDetailModel extends BaseModel {
       chapter.comicId = comicId;
       chapter.tasks = data;
       chapter.chapterId = chapterId;
-      chapter.title = response.data['title'];
+      chapter.title = comic.title;
       await downloadProvider.insertChapter(chapter);
       notifyListeners();
       return data;

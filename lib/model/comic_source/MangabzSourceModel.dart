@@ -64,7 +64,7 @@ class MangabzSourceModel extends BaseSourceModel {
     try {
       var response =
           await UniversalRequestModel.mangabzRequestHandler.getComic(comicId);
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 304) {
         var soup = BeautifulSoup(
             ChineseHelper.convertToSimplifiedChinese(response.data.toString()));
         var title =
@@ -103,6 +103,9 @@ class MangabzSourceModel extends BaseSourceModel {
                   'updatetime': 0
                 })
             .toList();
+        var history = (await HistoryDatabaseProvider(this.type.name)
+            .getReadHistory(comicId));
+        var lastChapterId = history == null ? null : history['last_chapter_id'];
         return MangabzComicDetail(
             title,
             authors,
@@ -116,7 +119,8 @@ class MangabzSourceModel extends BaseSourceModel {
               {'data': chapters, 'title': 'Mangabz连载'}
             ],
             _options,
-            type);
+            type,
+            lastChapterId);
       }
     } catch (e) {
       throw ComicLoadingError();
@@ -221,8 +225,8 @@ class MangabzSourceModel extends BaseSourceModel {
   Future<List<SearchResult>> search(String keyword, {int page: 0}) async {
     // TODO: implement search
     try {
-      var response =
-          await UniversalRequestModel.mangabzRequestHandler.search(keyword);
+      var response = await UniversalRequestModel.mangabzRequestHandler
+          .search(keyword, page: page);
       if (response.statusCode == 200) {
         var soup = BeautifulSoup(ChineseHelper.convertCharToSimplifiedChinese(
             response.data.toString()));
@@ -243,12 +247,17 @@ class MangabzSourceModel extends BaseSourceModel {
                   .children
                   .first
                   .attributes['href']
-                  .replaceAll('/', '')));
+                  .replaceAll('/', ''),
+              ChineseHelper.convertToSimplifiedChinese(item
+                  .getElementsByClassName('chapter')
+                  .first
+                  .children[1]
+                  .text)));
         }
         return data;
       }
     } catch (e) {
-      throw ComicSearchError();
+      throw ComicSearchError(e);
     }
     return [];
   }
@@ -417,12 +426,12 @@ class MangabzUserConfig extends UserConfig {
                             Navigator.of(context).pop();
                           } on LoginUsernameOrPasswordError catch (e) {
                             EasyLoading.dismiss();
-                            Scaffold.of(context).showSnackBar(SnackBar(
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text('用户名或密码错误！'),
                             ));
                           } catch (e) {
                             EasyLoading.dismiss();
-                            Scaffold.of(context).showSnackBar(SnackBar(
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text('俺也不知道的错误'),
                             ));
                           }
@@ -473,8 +482,7 @@ class MangabzUserConfig extends UserConfig {
   Future<bool> login(String username, String password) async {
     // TODO: implement login
     try {
-      await UniversalRequestModel
-          .mangabzRequestHandler
+      await UniversalRequestModel.mangabzRequestHandler
           .login(username, password);
     } on DioError catch (e) {
       if (e.response.statusCode == 302) {
@@ -489,8 +497,7 @@ class MangabzUserConfig extends UserConfig {
         }
         _status = UserStatus.login;
         try {
-          var response = await UniversalRequestModel
-              .mangabzRequestHandler
+          var response = await UniversalRequestModel.mangabzRequestHandler
               .home(headers: <String, dynamic>{
             'Cookie': login,
             'User-Agent':
@@ -614,6 +621,7 @@ class MangabzComicDetail extends ComicDetail {
   final String _updateTime;
   final List _tags;
   final List _chapters;
+  final String _historyChapter;
   final MangabzSourceOptions options;
   final SourceDetail sourceDetail;
 
@@ -628,7 +636,8 @@ class MangabzComicDetail extends ComicDetail {
       this._tags,
       this._chapters,
       this.options,
-      this.sourceDetail);
+      this.sourceDetail,
+      this._historyChapter);
 
   @override
   String toString() {
@@ -657,7 +666,7 @@ class MangabzComicDetail extends ComicDetail {
     for (var item in _chapters) {
       for (var chapter in item['data']) {
         if (chapter['chapter_id'].toString() == chapterId) {
-          return MangabzComic(_comicId, chapterId, item['data'], options);
+          return MangabzComic(_comicId, chapterId, item['data'], options, this);
         }
       }
     }
@@ -672,7 +681,7 @@ class MangabzComicDetail extends ComicDetail {
 
   @override
   // TODO: implement historyChapter
-  String get historyChapter => null;
+  String get historyChapter => _historyChapter;
 
   @override
   // TODO: implement hotNum
@@ -721,12 +730,14 @@ class MangabzSearchResult extends SearchResult {
   final String _cover;
   final String _title;
   final String _comicId;
+  final String _latestChapter;
 
-  MangabzSearchResult(this._cover, this._title, this._comicId);
+  MangabzSearchResult(
+      this._cover, this._title, this._comicId, this._latestChapter);
 
   @override
   // TODO: implement author
-  String get author => '';
+  String get author => '暂无数据';
 
   @override
   // TODO: implement comicId
@@ -738,11 +749,15 @@ class MangabzSearchResult extends SearchResult {
 
   @override
   // TODO: implement tag
-  String get tag => '';
+  String get tag => '暂无数据';
 
   @override
   // TODO: implement title
   String get title => _title;
+
+  @override
+  // TODO: implement latestChapter
+  String get latestChapter => _latestChapter;
 }
 
 class MangabzComic extends Comic {
@@ -750,6 +765,7 @@ class MangabzComic extends Comic {
   final String _chapterId;
   final List _chapters;
   final MangabzSourceOptions options;
+  final MangabzComicDetail _detail;
   List<String> _pages = [];
   String _title;
   List<String> _chapterIdList;
@@ -759,7 +775,8 @@ class MangabzComic extends Comic {
   String _next;
   String _pageAt;
 
-  MangabzComic(this._comicId, this._chapterId, this._chapters, this.options) {
+  MangabzComic(this._comicId, this._chapterId, this._chapters, this.options,
+      this._detail) {
     _chapterIdList = _chapters
         .map<String>((value) => value['chapter_id'].toString())
         .toList();
@@ -775,7 +792,13 @@ class MangabzComic extends Comic {
       String chapterTitle,
       String chapterId}) async {
     // TODO: implement addReadHistory
-    return;
+    HistoryDatabaseProvider('mangabz').addReadHistory(
+        comicId,
+        _detail.title,
+        _detail.cover,
+        chapterTitle,
+        chapterId,
+        DateTime.now().millisecondsSinceEpoch ~/ 1000);
   }
 
   @override
@@ -813,8 +836,7 @@ class MangabzComic extends Comic {
       throw IDInvalidError();
     }
     try {
-      var response = await UniversalRequestModel
-          .mangabzRequestHandler
+      var response = await UniversalRequestModel.mangabzRequestHandler
           .getChapter(chapterId);
       if (response.statusCode == 200) {
         var soup = BeautifulSoup(
@@ -847,8 +869,7 @@ class MangabzComic extends Comic {
             var codes = <String>[];
             while (page < int.parse(length)) {
               try {
-                var data = await UniversalRequestModel
-                    .mangabzRequestHandler
+                var data = await UniversalRequestModel.mangabzRequestHandler
                     .getChapterImage(chapterId, page);
                 if (data.statusCode == 200) {
                   codes.add(data.data.toString());
@@ -876,6 +897,8 @@ class MangabzComic extends Comic {
         } else {
           _next = null;
         }
+        addReadHistory(
+            comicId: _comicId, chapterId: _pageAt, chapterTitle: _title);
         notifyListeners();
       }
     } catch (e) {

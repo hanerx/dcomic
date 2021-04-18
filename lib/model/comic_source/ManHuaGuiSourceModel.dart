@@ -276,12 +276,13 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
           String comicId = item.children[1].attributes['href']
               .replaceAll('/', '')
               .replaceAll('comic', '');
-          list.add(ManHuaGuiSearchResult(author, comicId, cover, tag, title));
+          String latestChapter=item.children[1].children[4].children[1].text;
+          list.add(ManHuaGuiSearchResult(author, comicId, cover, tag, title,latestChapter));
         }
         return list;
       }
     } catch (e) {
-      throw ComicSearchError();
+      throw ComicSearchError(e);
     }
     return [];
   }
@@ -308,9 +309,10 @@ class ManHuaGuiSearchResult extends SearchResult {
   final String _cover;
   final String _tag;
   final String _title;
+  final String _latestChapter;
 
   ManHuaGuiSearchResult(
-      this._author, this._comicId, this._cover, this._tag, this._title);
+      this._author, this._comicId, this._cover, this._tag, this._title, this._latestChapter);
 
   @override
   // TODO: implement author
@@ -331,6 +333,10 @@ class ManHuaGuiSearchResult extends SearchResult {
   @override
   // TODO: implement title
   String get title => _title;
+
+  @override
+  // TODO: implement latestChapter
+  String get latestChapter => _latestChapter;
 }
 
 class ManHuaGuiSourceOptions extends SourceOptions {

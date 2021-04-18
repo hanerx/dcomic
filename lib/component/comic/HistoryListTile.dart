@@ -10,6 +10,7 @@ class HistoryListTile extends StatelessWidget {
   final String title;
   final String chapterName;
   final int date;
+  final String provider;
   final VoidCallback onPressed;
 
   const HistoryListTile({
@@ -19,6 +20,7 @@ class HistoryListTile extends StatelessWidget {
     this.chapterName,
     this.date,
     this.onPressed,
+    this.provider,
   }) : super(key: key);
 
   @override
@@ -30,8 +32,11 @@ class HistoryListTile extends StatelessWidget {
         imageUrl: '$cover',
         fit: BoxFit.cover,
         httpHeaders: {'referer': 'http://images.dmzj.com'},
-        progressIndicatorBuilder: (context, url, downloadProgress) => Center(
-          child: CircularProgressIndicator(value: downloadProgress.progress),
+        progressIndicatorBuilder: (context, url, downloadProgress) =>Container(
+          child: Center(
+            child: CircularProgressIndicator(
+                value: downloadProgress.progress),
+          ),
         ),
         errorWidget: (context, url, error) => Icon(Icons.error),
         width: 100,
@@ -44,7 +49,7 @@ class HistoryListTile extends StatelessWidget {
           style: TextStyle(fontSize: 18),
         ),
         SizedBox(
-          height: 24,
+          height: 12,
         ),
         Text.rich(
           TextSpan(children: [
@@ -63,7 +68,7 @@ class HistoryListTile extends StatelessWidget {
           ]),
         ),
         SizedBox(
-          height: 12,
+          height: 6,
         ),
         Text.rich(
           TextSpan(children: [
@@ -78,6 +83,25 @@ class HistoryListTile extends StatelessWidget {
             ),
             TextSpan(
                 text: ToolMethods.formatTimestamp(date),
+                style: TextStyle(color: Colors.grey, fontSize: 16))
+          ]),
+        ),
+        SizedBox(
+          height: 6,
+        ),
+        Text.rich(
+          TextSpan(children: [
+            WidgetSpan(
+                child: Icon(
+              Icons.electrical_services,
+              color: Colors.grey,
+              size: 23,
+            )),
+            TextSpan(
+              text: " ",
+            ),
+            TextSpan(
+                text: '$provider',
                 style: TextStyle(color: Colors.grey, fontSize: 16))
           ]),
         ),

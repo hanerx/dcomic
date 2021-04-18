@@ -1,4 +1,5 @@
 import 'package:dcomic/http/UniversalRequestModel.dart';
+import 'package:dcomic/model/systemSettingModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dcomic/database/databaseCommon.dart';
@@ -6,18 +7,17 @@ import 'package:dcomic/generated/l10n.dart';
 import 'package:dcomic/view/database_detail_page.dart';
 import 'package:dcomic/view/settings/debug_test_page.dart';
 import 'package:logger_flutter/logger_flutter.dart';
+import 'package:provider/provider.dart';
 
-
-
-class DebugSettingPage extends StatefulWidget{
+class DebugSettingPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
     return _DebugSettingPage();
   }
-
 }
-class _DebugSettingPage extends State<DebugSettingPage>{
+
+class _DebugSettingPage extends State<DebugSettingPage> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -30,10 +30,27 @@ class _DebugSettingPage extends State<DebugSettingPage>{
           ListTile(
             title: Text(S.of(context).SettingPageDebugTestTitle),
             subtitle: Text(S.of(context).SettingPageDebugTestSubtitle),
-            onTap: (){
+            onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => DebugTestPage(),settings: RouteSettings(name: 'debug_test_page')));
+                  builder: (context) => DebugTestPage(),
+                  settings: RouteSettings(name: 'debug_test_page')));
             },
+          ),
+          Divider(),
+          ListTile(
+            title: Text(S
+                .of(context)
+                .SettingPageDebugSettingPageEnableCrashlyticsTitle),
+            subtitle: Text(S
+                .of(context)
+                .SettingPageDebugSettingPageEnableCrashlyticsSubtitle),
+            trailing: Switch(
+              value: Provider.of<SystemSettingModel>(context).crashReport,
+              onChanged: (value) {
+                Provider.of<SystemSettingModel>(context, listen: false)
+                    .crashReport = value;
+              },
+            ),
           ),
           Divider(),
           ListTile(
@@ -41,7 +58,8 @@ class _DebugSettingPage extends State<DebugSettingPage>{
             subtitle: Text(S.of(context).SettingPageDatabaseDetailSubtitle),
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => DatabaseDetailPage(),settings: RouteSettings(name: 'database_detail_page')));
+                  builder: (context) => DatabaseDetailPage(),
+                  settings: RouteSettings(name: 'database_detail_page')));
             },
           ),
           ListTile(
@@ -100,7 +118,7 @@ class _DebugSettingPage extends State<DebugSettingPage>{
                         ),
                         TextButton(
                           child: Text(S.of(context).Confirm),
-                          onPressed: ()async {
+                          onPressed: () async {
                             (await CacheDatabase.store).clean();
                             Navigator.of(context).pop();
                           },
@@ -110,8 +128,6 @@ class _DebugSettingPage extends State<DebugSettingPage>{
                   });
             },
           ),
-
-
           Divider(),
           ListTile(
             title: Text(S.of(context).SettingPageLogConsoleTitle),
@@ -124,5 +140,4 @@ class _DebugSettingPage extends State<DebugSettingPage>{
       ),
     );
   }
-
 }

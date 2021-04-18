@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:dcomic/http/UniversalRequestModel.dart';
 
 class MangabzRequestHandler extends CookiesRequestHandler {
-  MangabzRequestHandler() : super('mangabz','http://mangabz.com');
+  MangabzRequestHandler() : super('mangabz', 'http://mangabz.com');
 
   Future<Map<String, dynamic>> getOptions(String url) async {
     try {
@@ -28,44 +28,51 @@ class MangabzRequestHandler extends CookiesRequestHandler {
 
   Future<Response> getChapterImage(String chapterId, int page) async {
     var param = await getOptions('$chapterId');
-    return dio.get('/$chapterId/chapterimage.ashx',
-        queryParameters: {
-          'cid': param['cid'],
-          '_cid': param['cid'],
-          'key': '',
-          '_mid': param['mid'],
-          '_sign': param['sign'],
-          '_dt': param['dt'],
-          'page': page
-        });
+    return dio.get('/$chapterId/chapterimage.ashx', queryParameters: {
+      'cid': param['cid'],
+      '_cid': param['cid'],
+      'key': '',
+      '_mid': param['mid'],
+      '_sign': param['sign'],
+      '_dt': param['dt'],
+      'page': page
+    });
   }
 
-  Future<Response> getChapter(String chapterId)async{
-    return dio.get('/$chapterId/',options: Options(headers: {'User-Agent':'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Mobile Safari/537.36'}));
+  Future<Response> getChapter(String chapterId) async {
+    return dio.get('/$chapterId/',
+        options: Options(headers: {
+          'User-Agent':
+              'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Mobile Safari/537.36'
+        }));
   }
 
-  Future<Response> search(String keyword) {
-    return dio.get('/search?title=$keyword');
+  Future<Response> search(String keyword, {int page: 0}) {
+    return dio.get('/search?title=$keyword&page=${page + 1}',options: Options(headers: {
+      'User-Agent':
+      'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.134 Safari/537.36'
+    }));
   }
 
-  Future<Response> getComic(String comicId){
+  Future<Response> getComic(String comicId) {
     return dio.get('/$comicId');
   }
-  
-  Future<Response> login(String username,String password){
-    var data=FormData.fromMap({
-      'txt_username':username,
-      "txt_password":password
+
+  Future<Response> login(String username, String password) {
+    var data =
+        FormData.fromMap({'txt_username': username, "txt_password": password});
+    return dio.post('/login', data: data);
+  }
+
+  Future<Response> home({Map headers}) async {
+    return dio.get('/', options: Options(headers: headers));
+  }
+
+  Future<Response> getSubscribe() async {
+    Options options = await setHeader(headers: {
+      'User-Agent':
+          'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.134 Safari/537.36'
     });
-    return dio.post('/login',data: data);
-  }
-
-  Future<Response> home({Map headers})async{
-    return dio.get('/',options: Options(headers: headers));
-  }
-
-  Future<Response> getSubscribe()async{
-    Options options= await setHeader(headers: {'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.134 Safari/537.36'});
-    return dio.get('/bookmarker',options: options);
+    return dio.get('/bookmarker', options: options);
   }
 }
