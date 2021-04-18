@@ -135,6 +135,7 @@ class CustomHttp {
         '$baseUrl/novel/$categoryId/$tag/$type/$page.json?$queryOptions');
   }
 
+  @Deprecated('使用新接口')
   Future<Response<T>> getSubscribe<T>(int uid, int page, {int type: 0}) {
     return dio.get(
         '$baseUrl/UCenter/subscribe?uid=$uid&sub_type=1&letter=all&page=$page&type=$type&$queryOptions');

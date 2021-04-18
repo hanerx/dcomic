@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dcomic/model/comic_source/baseSourceModel.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dcomic/database/database.dart';
@@ -45,14 +46,46 @@ class _ComicPage extends State<ComicPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.type==PageType.local) {
-      return Image.file(
-        File(widget.url),
-        fit: widget.cover ? BoxFit.cover : BoxFit.contain,
-        errorBuilder: (context, object, stack) {
-          return Icon(Icons.error);
-        },
-      );
+    if (widget.type == PageType.local) {
+      return GestureDetector(
+          onLongPress: () {
+            showDialog(
+                context: context,
+                builder: (context) {
+                  return SimpleDialog(
+                    children: [
+                      SimpleDialogOption(
+                        child: Text(
+                          '分享图片',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        onPressed: () async {
+                          var state =
+                              await Permission.storage.request().isGranted;
+                          if (state) {
+                            Navigator.of(context).pop();
+                            Share.shareFiles([widget.url], text: '来自大妈之家的分享');
+                            Provider.of<SystemSettingModel>(context,
+                                    listen: false)
+                                .analytics
+                                .logShare(
+                                    contentType: 'Image',
+                                    itemId: widget.url,
+                                    method: 'share_local_image');
+                          }
+                        },
+                      )
+                    ],
+                  );
+                });
+          },
+          child: Image.file(
+            File(widget.url),
+            fit: widget.cover ? BoxFit.cover : BoxFit.contain,
+            errorBuilder: (context, object, stack) {
+              return Icon(Icons.error);
+            },
+          ));
     }
     // TODO: implement build
     return GestureDetector(
@@ -70,18 +103,14 @@ class _ComicPage extends State<ComicPage> {
                     onPressed: () async {
                       var state = await Permission.storage.request().isGranted;
                       if (state) {
-                        var http = new CustomHttp();
-                        // var response = await http.getImage(widget.url);
-                        // var result = await ImageGallerySaver.saveImage(
-                        //     Uint8List.fromList(response.data));
-                        // print(result);
                         String path = Provider.of<SystemSettingModel>(context,
                                 listen: false)
                             .savePath;
                         String save =
                             "$path/${DateTime.now().millisecondsSinceEpoch}${widget.url.substring(widget.url.lastIndexOf('.'))}";
                         try {
-                          await http.downloadFile(widget.url, save);
+                          await Dio().download(widget.url, save,
+                              options: Options(headers: widget.headers));
                           Navigator.of(context).pop();
                           Toast.show("已保存至:$save", context,
                               duration: Toast.LENGTH_LONG);
@@ -101,17 +130,19 @@ class _ComicPage extends State<ComicPage> {
                     onPressed: () async {
                       var state = await Permission.storage.request().isGranted;
                       if (state) {
-                        var http = new CustomHttp();
-                        // var response = await http.getImage(widget.url);
-                        // var result = await ImageGallerySaver.saveImage(
-                        //     Uint8List.fromList(response.data));
-                        // print(result);
                         Directory path = await getTemporaryDirectory();
                         String save =
                             "${path.path}/${DateTime.now().millisecondsSinceEpoch}${widget.url.substring(widget.url.lastIndexOf('.'))}";
-                        await http.downloadFile(widget.url, save);
+                        await Dio().download(widget.url, save,
+                            options: Options(headers: widget.headers));
                         Navigator.of(context).pop();
                         Share.shareFiles([save], text: '来自大妈之家的分享');
+                        Provider.of<SystemSettingModel>(context, listen: false)
+                            .analytics
+                            .logShare(
+                                contentType: 'Image',
+                                itemId: widget.url,
+                                method: 'share_image');
                       }
                     },
                   )
@@ -123,7 +154,6 @@ class _ComicPage extends State<ComicPage> {
         fit: widget.cover ? BoxFit.cover : BoxFit.contain,
         imageUrl: widget.url,
         httpHeaders: widget.headers,
-        // cacheManager: ProxyCacheManager('192.168.123.47', 7890),
         progressIndicatorBuilder: (context, url, downloadProgress) => Center(
             child: Container(
           height: 500,
