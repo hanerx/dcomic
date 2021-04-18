@@ -312,6 +312,11 @@ class MangabzSourceModel extends BaseSourceModel {
             if (updateTime.indexOf('-') != 4) {
               updateTime = '${DateTime.now().year}-$updateTime';
             }
+            if (updateTime.contains('昨天')) {
+              var time = DateTime.now().add(Duration(days: -1));
+              updateTime =
+                  '${time.year}-${time.month >= 10 ? time.month : '0${time.month}'}-${time.day >= 10 ? time.day : '0${time.day}'}';
+            }
             bool update = unreadList[comicId] == null ||
                 unreadList[comicId] < ToolMethods.formatTimeString(updateTime);
             return FavoriteComic(
