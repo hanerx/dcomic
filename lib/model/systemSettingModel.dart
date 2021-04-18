@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:dcomic/database/configDatabaseProvider.dart';
-import 'package:dcomic/database/database.dart';
 import 'package:dcomic/model/baseModel.dart';
 
 class SystemSettingModel extends BaseModel {
@@ -32,6 +34,10 @@ class SystemSettingModel extends BaseModel {
 
   bool _darkSide = false;
 
+  bool _crashReport = false;
+
+  FirebaseAnalytics analytics = FirebaseAnalytics();
+
   SystemConfigDatabaseProvider _databaseProvider =
       SystemConfigDatabaseProvider();
 
@@ -42,6 +48,11 @@ class SystemSettingModel extends BaseModel {
   }
 
   Future<void> init() async {
+    _crashReport = await _databaseProvider.crashReport;
+    FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(_crashReport);
+    if (_crashReport) {
+      initAnonymousUser();
+    }
     _darkState = await _databaseProvider.darkMode;
     _backupApi = await _databaseProvider.backupApi;
     _blackBox = await _databaseProvider.blackBox;
@@ -52,6 +63,13 @@ class SystemSettingModel extends BaseModel {
     _darkSide = await _databaseProvider.darkSide;
     _deepSearch = await _databaseProvider.deepSearch;
     notifyListeners();
+  }
+
+  initAnonymousUser() async {
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+    UserCredential userCredential =
+        await FirebaseAuth.instance.signInAnonymously();
+    FirebaseCrashlytics.instance.setUserIdentifier(userCredential.user.uid);
   }
 
   ThemeMode get themeMode => darkMode[_darkState];
@@ -138,6 +156,15 @@ class SystemSettingModel extends BaseModel {
   set novel(bool value) {
     _databaseProvider.novelState = Future.value(value);
     _novel = value;
+    notifyListeners();
+  }
+
+  bool get crashReport => _crashReport;
+
+  set crashReport(bool value) {
+    _databaseProvider.crashReport = Future.value(value);
+    _crashReport = value;
+    analytics.logEvent(name: 'stop_crash_report');
     notifyListeners();
   }
 }

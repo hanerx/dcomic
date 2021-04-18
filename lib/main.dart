@@ -36,7 +36,6 @@ import 'package:uni_links/uni_links.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
   runApp(App());
 }
 
@@ -78,7 +77,7 @@ class MainFrame extends StatefulWidget {
 }
 
 class _MainFrame extends State<MainFrame> {
-  FirebaseAnalytics analytics = FirebaseAnalytics();
+
 
   initDownloader() async {
     print("class: MainFrame, action: initDownloader");
@@ -104,19 +103,12 @@ class _MainFrame extends State<MainFrame> {
         noMoreText: '没有更多内容了');
   }
 
-  initAnonymousUser() async {
-    UserCredential userCredential =
-        await FirebaseAuth.instance.signInAnonymously();
-    FirebaseCrashlytics.instance.setUserIdentifier(userCredential.user.uid);
-  }
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     initDownloader();
     initEasyRefresh();
-    initAnonymousUser();
   }
 
   @override
@@ -132,7 +124,8 @@ class _MainFrame extends State<MainFrame> {
     return new MaterialApp(
         themeMode: Provider.of<SystemSettingModel>(context).themeMode,
         navigatorObservers: [
-          FirebaseAnalyticsObserver(analytics: analytics),
+          FirebaseAnalyticsObserver(
+              analytics: Provider.of<SystemSettingModel>(context,listen: false).analytics),
         ],
         darkTheme: ThemeData(
             brightness: Brightness.dark,

@@ -144,5 +144,7 @@
   "SettingPageIPFSSettingPageProxyPortTitle": "代理服务器端口",
   "SettingPageIPFSSettingPageTestTitle": "检查IPFS网络连接情况",
   "SettingPageIPFSSettingPageTestSubtitle": "检查IPFS网络的连接情况，成功后将会在下方显示图片",
-  "NoImage": "无图片数据"
+  "NoImage": "无图片数据",
+  "SettingPageDebugSettingPageEnableCrashlyticsTitle": "启用崩溃追踪",
+  "SettingPageDebugSettingPageEnableCrashlyticsSubtitle": "为了解决软件问题，该选项将会将你的崩溃报告匿名传输给开发者，你可以在这里关闭它。"
 }

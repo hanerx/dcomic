@@ -80,6 +80,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "SettingPageDarkModeTitle" : MessageLookupByLibrary.simpleMessage("夜间模式"),
     "SettingPageDatabaseDetailSubtitle" : MessageLookupByLibrary.simpleMessage("会直接暴露整个数据库内的数据长啥样，是个没啥用的debug功能，当然会出现包括你uid和token在内的各种信息，请不要随便乱贴"),
     "SettingPageDatabaseDetailTitle" : MessageLookupByLibrary.simpleMessage("查看数据库"),
+    "SettingPageDebugSettingPageEnableCrashlyticsSubtitle" : MessageLookupByLibrary.simpleMessage("为了解决软件问题，该选项将会将你的崩溃报告匿名传输给开发者，你可以在这里关闭它。"),
+    "SettingPageDebugSettingPageEnableCrashlyticsTitle" : MessageLookupByLibrary.simpleMessage("启用崩溃追踪"),
     "SettingPageDebugTestSubtitle" : MessageLookupByLibrary.simpleMessage("提供一个测试页面测试各种平时外面看不到的接口"),
     "SettingPageDebugTestTitle" : MessageLookupByLibrary.simpleMessage("调试测试接口功能"),
     "SettingPageDisclaimerDetail1" : MessageLookupByLibrary.simpleMessage("1. 本程序为第三方APP，所有程序内容由动漫之家提供，本程序不保证内容安全性和可靠性。"),

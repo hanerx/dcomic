@@ -45,7 +45,7 @@ abstract class ConfigDatabaseProvider {
   Future get<T>(String configName, {T defaultValue}) async {
     var batch = (await db).batch();
     batch.query("configures", where: "key='$name.$configName'");
-    var result = await batch.commit()as List<dynamic>;
+    var result = await batch.commit() as List<dynamic>;
     try {
       switch (T) {
         case String:
@@ -59,8 +59,9 @@ abstract class ConfigDatabaseProvider {
         default:
           return result.first[0]['value'];
       }
-    } catch (e,s) {
-      FirebaseCrashlytics.instance.recordError(e, s, reason: 'configGetFailed: $configName, provider: $name');
+    } catch (e, s) {
+      FirebaseCrashlytics.instance.recordError(e, s,
+          reason: 'configGetFailed: $configName, provider: $name');
       logger.w(
           'action: configGetFailed, name: $name, configName: $configName, exception: $e');
     }
@@ -210,9 +211,10 @@ class SystemConfigDatabaseProvider extends ConfigDatabaseProvider {
     darkMode.then((value) => insert<int>('dark_mode', value));
   }
 
-  Future<int> get updateChannel async =>await get<int>('update_channel',defaultValue: 0);
+  Future<int> get updateChannel async =>
+      await get<int>('update_channel', defaultValue: 0);
 
-  set updateChannel(Future<int> updateChannel){
+  set updateChannel(Future<int> updateChannel) {
     updateChannel.then((value) => insert<int>('update_channel', value));
   }
 
@@ -223,21 +225,31 @@ class SystemConfigDatabaseProvider extends ConfigDatabaseProvider {
     latestVersion.then((value) => insert<String>('latest_version', value));
   }
 
-  Future<bool> get backupApi async=> await get<bool>('backup_api',defaultValue: false);
+  Future<bool> get backupApi async =>
+      await get<bool>('backup_api', defaultValue: false);
 
-  set backupApi(Future<bool> backupApi){
+  set backupApi(Future<bool> backupApi) {
     backupApi.then((value) => insert<bool>('backup_api', value));
   }
 
-  Future<bool> get novelState async =>await get<bool>('novel_state',defaultValue: false);
+  Future<bool> get novelState async =>
+      await get<bool>('novel_state', defaultValue: false);
 
-  set novelState(Future<bool> novelState){
+  set novelState(Future<bool> novelState) {
     novelState.then((value) => insert<bool>('novel_state', value));
   }
 
-  Future<String> get downloadPath async => await get<String>('download_path',defaultValue: (await getExternalStorageDirectory()).path);
+  Future<String> get downloadPath async => await get<String>('download_path',
+      defaultValue: (await getExternalStorageDirectory()).path);
 
-  set downloadPath(Future<String> downloadPath){
+  set downloadPath(Future<String> downloadPath) {
     downloadPath.then((value) => insert<String>('download_path', value));
+  }
+
+  Future<bool> get crashReport async =>
+      await get<bool>('crash_report', defaultValue: true);
+
+  set crashReport(Future<bool> crashReport) {
+    crashReport.then((value) => insert<bool>('crash_report', value));
   }
 }

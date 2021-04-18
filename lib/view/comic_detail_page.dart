@@ -97,6 +97,9 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                         Provider.of<ComicDetailModel>(context, listen: false)
                             .detail
                             .share());
+                    Provider.of<SystemSettingModel>(context,listen: false).analytics.logShare(contentType: 'String', itemId: Provider.of<ComicDetailModel>(context, listen: false)
+                        .detail
+                        .share(), method: 'share');
                   },
                 ),
                 Builder(
@@ -113,12 +116,12 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                         if (Provider.of<ComicDetailModel>(context,
                                 listen: false)
                             .loading) {
-                          Scaffold.of(context).showSnackBar(
+                          ScaffoldMessenger.of(context).showSnackBar(
                               new SnackBar(content: Text('订阅信息还在加载中!')));
                         } else if (!Provider.of<ComicDetailModel>(context,
                                 listen: false)
                             .login) {
-                          Scaffold.of(context).showSnackBar(new SnackBar(
+                          ScaffoldMessenger.of(context).showSnackBar(new SnackBar(
                             content: Text('请先登录!'),
                             action: SnackBarAction(
                               label: '去登录',
@@ -212,7 +215,7 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                               );
                             },settings: RouteSettings(name: 'comic_view_page')));
                           } else {
-                            Scaffold.of(context).showSnackBar(SnackBar(
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text('好像没得记录，没法继续阅读'),
                             ));
                           }
@@ -244,12 +247,12 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                                   .subscribe(Provider.of<ComicDetailModel>(
                                       context,
                                       listen: false));
-                              Scaffold.of(context).showSnackBar(SnackBar(
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                 content:
                                     Text('${flag == 1 ? '加入' : '取消加入'}黑匣子成功'),
                               ));
                             } else {
-                              Scaffold.of(context).showSnackBar(SnackBar(
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                 content: Text('该漫画源不支持黑匣子功能，请将当前漫画源调整为动漫之家漫画源'),
                               ));
                             }
@@ -410,7 +413,7 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                                           );
                                         }),
                                 onItemSelectedListener: (item, index, context) {
-                                  Scaffold.of(context).showSnackBar(
+                                  ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(content: Text(item.type.title)));
                                   Provider.of<SourceProvider>(context,
                                           listen: false)
