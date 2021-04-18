@@ -54,9 +54,11 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
   Future<ComicDetail> getManHuaGuiComic(String comicId) async {
     try {
       if (_options.enableProxy) {
-        UniversalRequestModel.manHuaGuiRequestHandler.setProxy(_options.proxy, _options.port);
+        UniversalRequestModel.manHuaGuiRequestHandler
+            .setProxy(_options.proxy, _options.port);
       }
-      var response = await UniversalRequestModel.manHuaGuiRequestHandler.getComic(comicId);
+      var response =
+          await UniversalRequestModel.manHuaGuiRequestHandler.getComic(comicId);
       if (response.statusCode == 200) {
         var soup = BeautifulSoup(response.data);
         var contList = soup.find(id: '.cont-list');
@@ -132,7 +134,6 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
             subtitle: Text(
                 '${Provider.of<ManHuaGuiOptionsProvider>(context).ping} ms'),
             onTap: () async {
-
               if (Provider.of<ManHuaGuiOptionsProvider>(context, listen: false)
                   .enableProxy) {
                 UniversalRequestModel.manHuaGuiRequestHandler.setProxy(
@@ -144,7 +145,8 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
                         .port);
               }
               Provider.of<ManHuaGuiOptionsProvider>(context, listen: false)
-                  .ping = await UniversalRequestModel.manHuaGuiRequestHandler.ping();
+                      .ping =
+                  await UniversalRequestModel.manHuaGuiRequestHandler.ping();
             },
           ),
           ListTile(
@@ -260,9 +262,11 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
     // TODO: implement search
     try {
       if (_options.enableProxy) {
-        UniversalRequestModel.manHuaGuiRequestHandler.setProxy(_options.proxy, _options.port);
+        UniversalRequestModel.manHuaGuiRequestHandler
+            .setProxy(_options.proxy, _options.port);
       }
-      var response = await UniversalRequestModel.manHuaGuiRequestHandler.search(keyword);
+      var response =
+          await UniversalRequestModel.manHuaGuiRequestHandler.search(keyword);
       if (response.statusCode == 200) {
         var soup = BeautifulSoup(response.data);
         List<SearchResult> list = [];
@@ -276,8 +280,9 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
           String comicId = item.children[1].attributes['href']
               .replaceAll('/', '')
               .replaceAll('comic', '');
-          String latestChapter=item.children[1].children[4].children[1].text;
-          list.add(ManHuaGuiSearchResult(author, comicId, cover, tag, title,latestChapter));
+          String latestChapter = item.children[1].children[4].children[1].text;
+          list.add(ManHuaGuiSearchResult(
+              author, comicId, cover, tag, title, latestChapter));
         }
         return list;
       }
@@ -289,8 +294,14 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
 
   @override
   // TODO: implement type
-  SourceDetail get type => SourceDetail('manhuagui', '漫画柜', '漫画柜漫画源，需要代理', true,
-      SourceType.LocalDecoderSource, false, false);
+  SourceDetail get type => SourceDetail(
+      name: 'manhuagui',
+      title: '漫画柜',
+      description: '漫画柜漫画源，需要代理',
+      canDisable: true,
+      sourceType: SourceType.LocalDecoderSource,
+      deprecated: false,
+      canSubscribe: false);
 
   @override
   // TODO: implement userConfig
@@ -311,8 +322,8 @@ class ManHuaGuiSearchResult extends SearchResult {
   final String _title;
   final String _latestChapter;
 
-  ManHuaGuiSearchResult(
-      this._author, this._comicId, this._cover, this._tag, this._title, this._latestChapter);
+  ManHuaGuiSearchResult(this._author, this._comicId, this._cover, this._tag,
+      this._title, this._latestChapter);
 
   @override
   // TODO: implement author
@@ -599,10 +610,11 @@ class ManHuaGuiComic extends Comic {
     }
     try {
       if (options.enableProxy) {
-        UniversalRequestModel.manHuaGuiRequestHandler.setProxy(options.proxy, options.port);
+        UniversalRequestModel.manHuaGuiRequestHandler
+            .setProxy(options.proxy, options.port);
       }
-      var response =
-          await UniversalRequestModel.manHuaGuiRequestHandler.getChapter(comicId, chapterId);
+      var response = await UniversalRequestModel.manHuaGuiRequestHandler
+          .getChapter(comicId, chapterId);
       if (response.statusCode == 200) {
         var soup = BeautifulSoup(response.data);
         var scripts = soup.findAll('script');

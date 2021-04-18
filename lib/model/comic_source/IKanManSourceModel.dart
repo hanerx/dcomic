@@ -38,14 +38,21 @@ class IKanManSourceModel extends BaseSourceModel {
   SourceOptions get options => _options;
 
   @override
-  Future<List<SearchResult>> search(String keyword,{int page:0}) {
+  Future<List<SearchResult>> search(String keyword, {int page: 0}) {
     // TODO: implement search
     throw UnimplementedError();
   }
 
   @override
   // TODO: implement type
-  SourceDetail get type => SourceDetail('ikanman', '看漫画', '一个毫无卵用的漫画源，写出来是因为cimoc的原版有这个，甚至没有实现', true, SourceType.DeprecatedSource,true,false);
+  SourceDetail get type => SourceDetail(
+      name: 'ikanman',
+      title: '看漫画',
+      description: '一个毫无卵用的漫画源，写出来是因为cimoc的原版有这个，甚至没有实现',
+      canDisable: true,
+      sourceType: SourceType.DeprecatedSource,
+      deprecated: true,
+      canSubscribe: false);
 
   @override
   // TODO: implement userConfig
@@ -56,11 +63,9 @@ class IKanManSourceModel extends BaseSourceModel {
     // TODO: implement getFavoriteComics
     throw UnimplementedError();
   }
-
 }
 
 class IKanManSourceOptions extends SourceOptions {
-
   @override
   bool get active => false;
 

@@ -205,8 +205,14 @@ class SourceDetail {
   final bool deprecated;
   final bool canSubscribe;
 
-  SourceDetail(this.name, this.title, this.description, this.canDisable,
-      this.sourceType, this.deprecated, this.canSubscribe);
+  SourceDetail(
+      {@required this.name,
+      @required this.title,
+      @required this.description,
+      this.canDisable: true,
+      @required this.sourceType,
+      this.deprecated: false,
+      this.canSubscribe: false});
 
   @override
   // TODO: implement hashCode
@@ -227,7 +233,7 @@ class SourceDetail {
   }
 }
 
-abstract class SearchResult extends BaseModel {
+abstract class SearchResult {
   String get title;
 
   String get comicId;
@@ -276,14 +282,13 @@ class ComicSearchError implements Exception {
   final Exception exception;
 
   ComicSearchError(this.exception);
-
 }
 
 class LoginUsernameOrPasswordError implements Exception {}
 
-class LoginRequiredError implements Exception{}
+class LoginRequiredError implements Exception {}
 
-class FavoriteUnavailableError implements Exception{}
+class FavoriteUnavailableError implements Exception {}
 
 class InactiveUserConfig extends UserConfig {
   final SourceDetail type;

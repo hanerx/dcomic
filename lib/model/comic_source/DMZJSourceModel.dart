@@ -194,8 +194,13 @@ class DMZJSourceModel extends BaseSourceModel {
           await UniversalRequestModel.dmzjRequestHandler.search(keyword, page);
       if (response.statusCode == 200) {
         return response.data
-            .map<SearchResult>((e) => DMZJSearchResult(e['authors'],
-                e['id'].toString(), e['cover'], e['types'], e['title'],e['last_name']))
+            .map<SearchResult>((e) => DMZJSearchResult(
+                e['authors'],
+                e['id'].toString(),
+                e['cover'],
+                e['types'],
+                e['title'],
+                e['last_name']))
             .toList();
       }
     } catch (e) {
@@ -206,8 +211,14 @@ class DMZJSourceModel extends BaseSourceModel {
 
   @override
   // TODO: implement type
-  SourceDetail get type => SourceDetail('dmzj', '默认-动漫之家', '默认数据提供商，不可关闭',
-      false, SourceType.LocalDecoderSource, false, true);
+  SourceDetail get type => SourceDetail(
+      name: 'dmzj',
+      title: '默认-动漫之家',
+      description: '默认数据提供商，不可关闭',
+      canDisable: false,
+      sourceType: SourceType.LocalDecoderSource,
+      deprecated: false,
+      canSubscribe: true);
 
   @override
   Widget getSettingWidget(context) {
@@ -793,13 +804,13 @@ class DMZJWebSourceModel extends DMZJSourceModel {
   @override
   // TODO: implement type
   SourceDetail get type => SourceDetail(
-      'dmzj-web',
-      '动漫之家网页',
-      '使用大妈之家移动网页版的接口，让漫画重新可以看了',
-      true,
-      SourceType.LocalDecoderSource,
-      false,
-      false);
+      name:'dmzj-web',
+      title:'动漫之家网页',
+      description:'使用大妈之家移动网页版的接口，让漫画重新可以看了',
+      canDisable:true,
+      sourceType:SourceType.LocalDecoderSource,
+      deprecated:false,
+      canSubscribe: false);
 
   @override
   // TODO: implement options
@@ -1398,8 +1409,8 @@ class DMZJSearchResult extends SearchResult {
   final String _title;
   final String _latestChapter;
 
-  DMZJSearchResult(
-      this._author, this._comicId, this._cover, this._tag, this._title, this._latestChapter);
+  DMZJSearchResult(this._author, this._comicId, this._cover, this._tag,
+      this._title, this._latestChapter);
 
   @override
   // TODO: implement author

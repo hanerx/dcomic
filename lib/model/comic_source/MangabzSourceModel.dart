@@ -265,13 +265,13 @@ class MangabzSourceModel extends BaseSourceModel {
   @override
   // TODO: implement type
   SourceDetail get type => SourceDetail(
-      'mangabz',
-      'Mangabz',
-      'Mangabz的漫画源，嘿呀，你妈的好难实现的，为了这个功能我已经快燃尽自己了',
-      true,
-      SourceType.LocalDecoderSource,
-      false,
-      true);
+      name:'mangabz',
+      title:'Mangabz',
+      description:'Mangabz的漫画源，嘿呀，你妈的好难实现的，为了这个功能我已经快燃尽自己了',
+      canDisable:true,
+      sourceType:SourceType.LocalDecoderSource,
+      deprecated:false,
+      canSubscribe: true);
 
   @override
   // TODO: implement userConfig
