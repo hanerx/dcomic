@@ -119,3 +119,11 @@ class DMZJImageRequestHandler extends SingleDomainRequestHandler {
             responseType: ResponseType.bytes));
   }
 }
+
+class DMZJSACGRequestHandler extends SingleDomainRequestHandler {
+  DMZJSACGRequestHandler() : super('http://s.acg.dmzj.com');
+
+  Future<Response> deepSearch(String keyword) {
+    return dio.get('/comicsum/search.php?s=$keyword&callback=');
+  }
+}

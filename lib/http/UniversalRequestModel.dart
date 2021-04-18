@@ -55,6 +55,8 @@ class UniversalRequestModel {
       DMZJImageRequestHandler();
   static DMZJMobileRequestHandler dmzjMobileRequestHandler=DMZJMobileRequestHandler();
 
+  static DMZJSACGRequestHandler dmzjsacgRequestHandler =DMZJSACGRequestHandler();
+
   static GithubRequestHandler githubRequestHandler = GithubRequestHandler();
 }
 

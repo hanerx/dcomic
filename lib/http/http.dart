@@ -279,6 +279,7 @@ class CustomHttp {
     return dio.get('$baseUrl/UCenter/author/$authorId.json?$queryOptions');
   }
 
+  @Deprecated('使用新接口')
   Future<Response<T>> deepSearch<T>(String search) {
     return dio.get('$sacgUrl/comicsum/search.php?s=$search&callback=');
   }

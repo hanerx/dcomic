@@ -225,8 +225,8 @@ class MangabzSourceModel extends BaseSourceModel {
   Future<List<SearchResult>> search(String keyword, {int page: 0}) async {
     // TODO: implement search
     try {
-      var response =
-          await UniversalRequestModel.mangabzRequestHandler.search(keyword,page: page);
+      var response = await UniversalRequestModel.mangabzRequestHandler
+          .search(keyword, page: page);
       if (response.statusCode == 200) {
         var soup = BeautifulSoup(ChineseHelper.convertCharToSimplifiedChinese(
             response.data.toString()));
@@ -248,7 +248,11 @@ class MangabzSourceModel extends BaseSourceModel {
                   .first
                   .attributes['href']
                   .replaceAll('/', ''),
-              item.getElementsByClassName('chapter').first.children[1].text));
+              ChineseHelper.convertToSimplifiedChinese(item
+                  .getElementsByClassName('chapter')
+                  .first
+                  .children[1]
+                  .text)));
         }
         return data;
       }
@@ -422,12 +426,12 @@ class MangabzUserConfig extends UserConfig {
                             Navigator.of(context).pop();
                           } on LoginUsernameOrPasswordError catch (e) {
                             EasyLoading.dismiss();
-                            Scaffold.of(context).showSnackBar(SnackBar(
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text('用户名或密码错误！'),
                             ));
                           } catch (e) {
                             EasyLoading.dismiss();
-                            Scaffold.of(context).showSnackBar(SnackBar(
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text('俺也不知道的错误'),
                             ));
                           }
@@ -733,7 +737,7 @@ class MangabzSearchResult extends SearchResult {
 
   @override
   // TODO: implement author
-  String get author => '';
+  String get author => '暂无数据';
 
   @override
   // TODO: implement comicId
@@ -745,7 +749,7 @@ class MangabzSearchResult extends SearchResult {
 
   @override
   // TODO: implement tag
-  String get tag => '';
+  String get tag => '暂无数据';
 
   @override
   // TODO: implement title

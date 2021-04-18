@@ -318,7 +318,7 @@ class KuKuSearchResult extends SearchResult {
 
   @override
   // TODO: implement author
-  String get author => '';
+  String get author => '暂无数据';
 
   @override
   // TODO: implement comicId
@@ -330,7 +330,7 @@ class KuKuSearchResult extends SearchResult {
 
   @override
   // TODO: implement tag
-  String get tag => '';
+  String get tag => '暂无数据';
 
   @override
   // TODO: implement title
@@ -338,7 +338,7 @@ class KuKuSearchResult extends SearchResult {
 
   @override
   // TODO: implement latestChapter
-  String get latestChapter => '';
+  String get latestChapter => '暂无数据';
 }
 
 class KuKuComicDetail extends ComicDetail {

@@ -33,10 +33,12 @@ class SearchListTile extends StatelessWidget {
         imageUrl: cover,
         httpHeaders: headers,
         progressIndicatorBuilder:
-            (context, url, downloadProgress) => Center(
-          child: CircularProgressIndicator(
-              value: downloadProgress.progress),
-        ),
+            (context, url, downloadProgress) => Container(
+              child: Center(
+                child: CircularProgressIndicator(
+                    value: downloadProgress.progress),
+              ),
+            ),
         errorWidget: (context, url, error) => Icon(Icons.error),
       ),
       detail: <Widget>[
