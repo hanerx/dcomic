@@ -1,52 +1,35 @@
-import 'package:dcomic/http/UniversalRequestModel.dart';
+import 'package:dcomic/component/comic/SearchListTile.dart';
+import 'package:dcomic/model/comicSearchModel.dart';
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
+import 'package:dcomic/view/comic_detail_page.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:dcomic/component/EmptyView.dart';
-import 'package:dcomic/component/LoadingCube.dart';
-import 'package:dcomic/http/http.dart';
+import 'package:provider/provider.dart';
 
-import 'SearchListTile.dart';
+import '../EmptyView.dart';
+import '../LoadingCube.dart';
 
-class SearchTab extends StatefulWidget{
+class SearchTab extends StatefulWidget {
   final String keyword;
   final Key key;
+  final BaseSourceModel model;
 
-  SearchTab({this.key,@required this.keyword});
+  SearchTab({this.key, @required this.keyword, this.model});
 
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
     return _SearchTab();
   }
-
 }
 
-class _SearchTab extends State<SearchTab>{
+class _SearchTab extends State<SearchTab> {
   List list = <Widget>[];
   int page = 0;
   bool refreshState = false;
 
-
   _SearchTab();
-
-  search() async {
-    if(widget.keyword!=null &&widget.keyword!=''){
-      var response = await UniversalRequestModel.dmzjRequestHandler.search(widget.keyword, page);
-      if (response.statusCode == 200 && mounted) {
-        setState(() {
-          if (response.data.length == 0) {
-            refreshState = true;
-            return;
-          }
-          for (var item in response.data) {
-            list.add(SearchListTile(item['cover'], item['title'], item['types'],
-                item['last_name'], item['id'].toString(), item['authors']));
-          }
-          refreshState = false;
-        });
-      }
-    }
-  }
 
   @override
   void initState() {
@@ -57,32 +40,45 @@ class _SearchTab extends State<SearchTab>{
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return EasyRefresh(
-      scrollController: ScrollController(),
-      firstRefreshWidget: LoadingCube(),
-      firstRefresh: true,
-      onRefresh: ()async{
-        setState(() {
-          refreshState = true;
-          page=0;
-        });
-        search();
-      },
-      onLoad: ()async{
-        setState(() {
-          refreshState = true;
-          page++;
-        });
-        search();
-      },
-      emptyWidget: list.length==0?EmptyView():null,
-      child: ListView.builder(
-        itemCount: list.length,
-        itemBuilder: (context, index) {
-          return list[index];
+    return ChangeNotifierProvider(
+      create: (_) => ComicSearchModel(widget.model, widget.keyword),
+      builder: (context, child) => EasyRefresh(
+        scrollController: ScrollController(),
+        firstRefreshWidget: LoadingCube(),
+        firstRefresh: true,
+        onRefresh: () async {
+          await Provider.of<ComicSearchModel>(context, listen: false).refresh();
         },
+        onLoad: () async {
+          await Provider.of<ComicSearchModel>(context, listen: false).next();
+        },
+        emptyWidget: Provider.of<ComicSearchModel>(context).length == 0
+            ? EmptyView()
+            : null,
+        child: ListView.builder(
+          itemCount: Provider.of<ComicSearchModel>(context).length,
+          itemBuilder: (context, index) {
+            var comic = Provider.of<ComicSearchModel>(context, listen: false)
+                .list[index];
+            return SearchListTile(
+              cover: comic.cover,
+              title: comic.title,
+              authors: comic.author,
+              tag: comic.tag,
+              latest: comic.latestChapter,
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => ComicDetailPage(
+                          id: comic.comicId,
+                          title: comic.title,
+                          model: widget.model,
+                        ),
+                    settings: RouteSettings(name: 'comic_detail_page')));
+              },
+            );
+          },
+        ),
       ),
     );
   }
-
 }

@@ -335,6 +335,10 @@ class KuKuSearchResult extends SearchResult {
   @override
   // TODO: implement title
   String get title => _title;
+
+  @override
+  // TODO: implement latestChapter
+  String get latestChapter => '';
 }
 
 class KuKuComicDetail extends ComicDetail {

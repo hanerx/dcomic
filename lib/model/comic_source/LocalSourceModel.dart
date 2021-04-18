@@ -136,7 +136,7 @@ class LocalSourceModel extends BaseSourceModel {
     var list = await LocalMangaDatabaseProvider().search(keyword);
     return list
         .map<SearchResult>((e) => LocalSearchResult(
-            e.authors.join('/'), e.name, e.cover, e.tags.join('/'), e.title))
+            e.authors.join('/'), e.name, e.cover, e.tags.join('/'), e.title,e.lastChapter))
         .toList();
   }
 
@@ -472,7 +472,8 @@ class LocalSearchResult extends SearchResult {
   final String cover;
   final String tag;
   final String title;
+  final String latestChapter;
 
   LocalSearchResult(
-      this.author, this.comicId, this.cover, this.tag, this.title);
+      this.author, this.comicId, this.cover, this.tag, this.title, this.latestChapter);
 }

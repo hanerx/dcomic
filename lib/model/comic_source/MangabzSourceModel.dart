@@ -64,7 +64,7 @@ class MangabzSourceModel extends BaseSourceModel {
     try {
       var response =
           await UniversalRequestModel.mangabzRequestHandler.getComic(comicId);
-      if (response.statusCode == 200||response.statusCode==304) {
+      if (response.statusCode == 200 || response.statusCode == 304) {
         var soup = BeautifulSoup(
             ChineseHelper.convertToSimplifiedChinese(response.data.toString()));
         var title =
@@ -226,7 +226,7 @@ class MangabzSourceModel extends BaseSourceModel {
     // TODO: implement search
     try {
       var response =
-          await UniversalRequestModel.mangabzRequestHandler.search(keyword);
+          await UniversalRequestModel.mangabzRequestHandler.search(keyword,page: page);
       if (response.statusCode == 200) {
         var soup = BeautifulSoup(ChineseHelper.convertCharToSimplifiedChinese(
             response.data.toString()));
@@ -247,7 +247,8 @@ class MangabzSourceModel extends BaseSourceModel {
                   .children
                   .first
                   .attributes['href']
-                  .replaceAll('/', '')));
+                  .replaceAll('/', ''),
+              item.getElementsByClassName('chapter').first.children[1].text));
         }
         return data;
       }
@@ -661,7 +662,7 @@ class MangabzComicDetail extends ComicDetail {
     for (var item in _chapters) {
       for (var chapter in item['data']) {
         if (chapter['chapter_id'].toString() == chapterId) {
-          return MangabzComic(_comicId, chapterId, item['data'], options,this);
+          return MangabzComic(_comicId, chapterId, item['data'], options, this);
         }
       }
     }
@@ -725,8 +726,10 @@ class MangabzSearchResult extends SearchResult {
   final String _cover;
   final String _title;
   final String _comicId;
+  final String _latestChapter;
 
-  MangabzSearchResult(this._cover, this._title, this._comicId);
+  MangabzSearchResult(
+      this._cover, this._title, this._comicId, this._latestChapter);
 
   @override
   // TODO: implement author
@@ -747,6 +750,10 @@ class MangabzSearchResult extends SearchResult {
   @override
   // TODO: implement title
   String get title => _title;
+
+  @override
+  // TODO: implement latestChapter
+  String get latestChapter => _latestChapter;
 }
 
 class MangabzComic extends Comic {
@@ -764,7 +771,8 @@ class MangabzComic extends Comic {
   String _next;
   String _pageAt;
 
-  MangabzComic(this._comicId, this._chapterId, this._chapters, this.options, this._detail) {
+  MangabzComic(this._comicId, this._chapterId, this._chapters, this.options,
+      this._detail) {
     _chapterIdList = _chapters
         .map<String>((value) => value['chapter_id'].toString())
         .toList();
@@ -885,7 +893,8 @@ class MangabzComic extends Comic {
         } else {
           _next = null;
         }
-        addReadHistory(comicId: _comicId,chapterId: _pageAt,chapterTitle: _title);
+        addReadHistory(
+            comicId: _comicId, chapterId: _pageAt, chapterTitle: _title);
         notifyListeners();
       }
     } catch (e) {

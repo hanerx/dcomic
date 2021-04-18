@@ -238,6 +238,8 @@ abstract class SearchResult extends BaseModel {
 
   String get tag;
 
+  String get latestChapter;
+
   @override
   String toString() {
     return 'SearchResult{title: $title, comicId: $comicId, cover: $cover, author: $author, tag: $tag}';

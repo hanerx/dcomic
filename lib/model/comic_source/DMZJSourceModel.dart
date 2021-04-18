@@ -195,7 +195,7 @@ class DMZJSourceModel extends BaseSourceModel {
       if (response.statusCode == 200) {
         return response.data
             .map<SearchResult>((e) => DMZJSearchResult(e['authors'],
-                e['id'].toString(), e['cover'], e['types'], e['title']))
+                e['id'].toString(), e['cover'], e['types'], e['title'],e['last_name']))
             .toList();
       }
     } catch (e) {
@@ -1396,9 +1396,10 @@ class DMZJSearchResult extends SearchResult {
   final String _cover;
   final String _tag;
   final String _title;
+  final String _latestChapter;
 
   DMZJSearchResult(
-      this._author, this._comicId, this._cover, this._tag, this._title);
+      this._author, this._comicId, this._cover, this._tag, this._title, this._latestChapter);
 
   @override
   // TODO: implement author
@@ -1419,4 +1420,8 @@ class DMZJSearchResult extends SearchResult {
   @override
   // TODO: implement title
   String get title => _title;
+
+  @override
+  // TODO: implement latestChapter
+  String get latestChapter => _latestChapter;
 }

@@ -1,3 +1,4 @@
+import 'package:dcomic/model/comic_source/sourceProvider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dcomic/component/search/DeepSearchTab.dart';
@@ -79,14 +80,20 @@ class _SearchPage extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    List tabs = <Tab>[
-      Tab(
-        text: '普通搜索',
-      ),
-    ];
-    List views = <Widget>[
-      SearchTab(key: UniqueKey(), keyword: keyword),
-    ];
+    List tabs = Provider.of<SourceProvider>(context, listen: false)
+        .activeSources
+        .map<Tab>((e) => Tab(
+              text: e.type.title,
+            ))
+        .toList();
+    List views = Provider.of<SourceProvider>(context, listen: false)
+        .activeSources
+        .map<Widget>((e) => SearchTab(
+              key: UniqueKey(),
+              keyword: keyword,
+              model: e,
+            ))
+        .toList();
     if (Provider.of<SystemSettingModel>(context, listen: false).novel) {
       tabs.add(Tab(
         text: '轻小说搜索',
@@ -128,6 +135,7 @@ class _SearchPage extends State<SearchPage> {
             },
           ),
           bottom: TabBar(
+            isScrollable: true,
             tabs: tabs,
           ),
           actions: <Widget>[

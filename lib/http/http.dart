@@ -235,6 +235,7 @@ class CustomHttp {
         '$baseUrl/recommend/batchUpdate?uid=$uid&category_id=49&$queryOptions');
   }
 
+  @Deprecated('使用新接口')
   Future<Response<T>> search<T>(String keyword, int page, {int type: 0}) {
     return dio.get(
         '$baseUrl/search/show/$type/${Uri.encodeComponent(keyword)}/$page.json?$queryOptions');
