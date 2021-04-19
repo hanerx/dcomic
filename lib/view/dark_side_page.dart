@@ -204,23 +204,31 @@ class DarkCustomListTile extends StatelessWidget {
       padding: EdgeInsets.fromLTRB(1, 0, 1, 0),
       onPressed: () async {
         if (Provider.of<SystemSettingModel>(context, listen: false).backupApi) {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return ComicDetailPage(
-              id: comicId,
-              title: title,
-            );
-          },settings: RouteSettings(name:'comic_detail_page')));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) {
+                    return ComicDetailPage(
+                      id: comicId,
+                      title: title,
+                    );
+                  },
+                  settings: RouteSettings(name: 'comic_detail_page')));
         } else {
           CustomHttp http = CustomHttp();
           var response = await http.getComicDetail(comicId);
           if (response.statusCode == 200 &&
               response.data['chapters'].length > 0) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return ComicDetailPage(
-                id: comicId,
-                title: title,
-              );
-            },settings: RouteSettings(name: 'comic_detail_page')));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) {
+                      return ComicDetailPage(
+                        id: comicId,
+                        title: title,
+                      );
+                    },
+                    settings: RouteSettings(name: 'comic_detail_page')));
           } else if (live) {
             Comic comic = DMZJComic(
                 comicId,
@@ -244,13 +252,20 @@ class DarkCustomListTile extends StatelessWidget {
                     formatDate,
                     null,
                     lastChapterId,
-                    SourceDetail('dmzj', '动漫之家-dark', '', false,
-                        SourceType.LocalDecoderSource, false,false)));
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return ComicViewPage(
-                comic: comic,
-              );
-            },settings: RouteSettings(name: 'comic_view_page')));
+                    SourceDetail(
+                        name: 'dmzj',
+                        title: '动漫之家',
+                        description: '',
+                        sourceType: SourceType.LocalDecoderSource)));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) {
+                      return ComicViewPage(
+                        comic: comic,
+                      );
+                    },
+                    settings: RouteSettings(name: 'comic_view_page')));
           } else {
             Scaffold.of(context).showSnackBar(SnackBar(
                 content: Text(

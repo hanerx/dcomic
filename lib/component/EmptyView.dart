@@ -57,7 +57,7 @@ class EmptyView extends StatelessWidget {
 }
 
 class ComicDetailEmptyView extends StatelessWidget {
-  final Exception exception;
+  final dynamic exception;
   final String title;
   final String comicId;
 

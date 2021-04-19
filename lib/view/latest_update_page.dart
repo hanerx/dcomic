@@ -7,9 +7,7 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:dcomic/component/EmptyView.dart';
 import 'package:dcomic/component/LoadingCube.dart';
 import 'package:dcomic/component/comic/ComicListTile.dart';
-import 'package:dcomic/http/http.dart';
 import 'package:dcomic/model/comicLatestUpdateModel.dart';
-import 'package:dcomic/view/ranking_page.dart';
 import 'package:provider/provider.dart';
 
 import 'comic_detail_page.dart';
@@ -64,7 +62,7 @@ class _LatestUpdatePage extends State<LatestUpdatePage> {
                           cover: item['cover'],
                           tag: item['types'],
                           authors: item['authors'],
-                          date: item['latest_updatetime'],
+                          date: item['last_updatetime'],
                           headers: {'referer': 'https://m.dmzj.com'},
                           onPressed: () {
                             Navigator.of(context).push(MaterialPageRoute(

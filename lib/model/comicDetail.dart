@@ -35,7 +35,7 @@ class ComicDetailModel extends BaseModel {
   ComicDetail detail;
 
   //漫画加载状态
-  Exception error;
+  dynamic error;
 
   //基础信息
   String get title => detail == null ? "" : detail.title;
@@ -323,7 +323,9 @@ class ComicDetailModel extends BaseModel {
 
   bool get sub => this.detail == null ? false : this.detail.isSubscribed;
 
-  bool get login=>_model.userConfig.status!=UserStatus.logout;
+  UserStatus get login=>_model.userConfig.status;
 
   bool get loading=>this.detail==null||this.detail.isSubscribed==null;
+
+  SourceDetail get sourceDetail=>_model.type;
 }

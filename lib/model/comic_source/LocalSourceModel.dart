@@ -135,15 +135,21 @@ class LocalSourceModel extends BaseSourceModel {
     }
     var list = await LocalMangaDatabaseProvider().search(keyword);
     return list
-        .map<SearchResult>((e) => LocalSearchResult(
-            e.authors.join('/'), e.name, e.cover, e.tags.join('/'), e.title,e.lastChapter))
+        .map<SearchResult>((e) => LocalSearchResult(e.authors.join('/'), e.name,
+            e.cover, e.tags.join('/'), e.title, e.lastChapter))
         .toList();
   }
 
   @override
   // TODO: implement type
   SourceDetail get type => SourceDetail(
-      'local', '本地漫画', '本地漫画解析器', true, SourceType.LocalSource, false, true);
+      name: 'local',
+      title: '本地漫画',
+      description: '本地漫画解析器',
+      canDisable: true,
+      sourceType: SourceType.LocalSource,
+      deprecated: false,
+      canSubscribe: true);
 
   @override
   // TODO: implement userConfig
@@ -474,6 +480,6 @@ class LocalSearchResult extends SearchResult {
   final String title;
   final String latestChapter;
 
-  LocalSearchResult(
-      this.author, this.comicId, this.cover, this.tag, this.title, this.latestChapter);
+  LocalSearchResult(this.author, this.comicId, this.cover, this.tag, this.title,
+      this.latestChapter);
 }

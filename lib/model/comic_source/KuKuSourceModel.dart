@@ -54,24 +54,20 @@ class KuKuSourceModel extends BaseSourceModel {
       Response response;
       switch (_options.server) {
         case 1:
-          response = await UniversalRequestModel
-              .kkkkRequestHandler1
-              .getComic(comicId);
+          response =
+              await UniversalRequestModel.kkkkRequestHandler1.getComic(comicId);
           break;
         case 2:
-          response = await UniversalRequestModel
-              .kkkkRequestHandler2
-              .getComic(comicId);
+          response =
+              await UniversalRequestModel.kkkkRequestHandler2.getComic(comicId);
           break;
         case 3:
-          response = await UniversalRequestModel
-              .kkkkRequestHandler3
-              .getComic(comicId);
+          response =
+              await UniversalRequestModel.kkkkRequestHandler3.getComic(comicId);
           break;
         default:
-          response = await UniversalRequestModel
-              .kuKuRequestHandler
-              .getComic(comicId);
+          response =
+              await UniversalRequestModel.kuKuRequestHandler.getComic(comicId);
       }
       if (response.statusCode == 200) {
         var soup = BeautifulSoup(response.data);
@@ -170,19 +166,16 @@ class KuKuSourceModel extends BaseSourceModel {
                 switch (Provider.of<KuKuOptionsProvider>(context, listen: false)
                     .server) {
                   case 1:
-                    ping = await UniversalRequestModel
-                        .kkkkRequestHandler1
-                        .ping();
+                    ping =
+                        await UniversalRequestModel.kkkkRequestHandler1.ping();
                     break;
                   case 2:
-                    ping = await UniversalRequestModel
-                        .kkkkRequestHandler2
-                        .ping();
+                    ping =
+                        await UniversalRequestModel.kkkkRequestHandler2.ping();
                     break;
                   case 3:
-                    ping = await UniversalRequestModel
-                        .kkkkRequestHandler3
-                        .ping();
+                    ping =
+                        await UniversalRequestModel.kkkkRequestHandler3.ping();
                     break;
                   default:
                     ping =
@@ -230,12 +223,13 @@ class KuKuSourceModel extends BaseSourceModel {
   @override
   // TODO: implement type
   SourceDetail get type => SourceDetail(
-      'kuku',
-      'KuKu动漫',
-      'KuKu动漫源，存在四个节点，请根据延迟自行选择。由于采用多线程脚本，可能会导致你被服务器ban掉，所以请轻拿轻放。',
-      true,
-      SourceType.LocalDecoderSource,
-      false,false);
+      name: 'kuku',
+      title: 'KuKu动漫',
+      description: 'KuKu动漫源，存在四个节点，请根据延迟自行选择。由于采用多线程脚本，可能会导致你被服务器ban掉，所以请轻拿轻放。',
+      canDisable: true,
+      sourceType: SourceType.LocalDecoderSource,
+      deprecated: false,
+      canSubscribe: false);
 
   @override
   // TODO: implement userConfig
@@ -246,7 +240,6 @@ class KuKuSourceModel extends BaseSourceModel {
     // TODO: implement getFavoriteComics
     throw UnimplementedError();
   }
-
 }
 
 class KuKuOptionsProvider extends SourceOptionsProvider {
@@ -437,12 +430,11 @@ class KuKuComicDetail extends ComicDetail {
   String get updateTime => _updateTime;
 
   @override
-  bool isSubscribed=false;
+  bool isSubscribed = false;
 
   @override
-  Future<void> getIfSubscribed() async{
+  Future<void> getIfSubscribed() async {
     // TODO: implement getIfSubscribed
-
   }
 
   @override
@@ -460,7 +452,7 @@ class KuKuComic extends Comic {
   List<String> _pages = [];
   String _title;
   List<String> _chapterIdList;
-  PageType _type=PageType.url;
+  PageType _type = PageType.url;
 
   String _previous;
   String _next;

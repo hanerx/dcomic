@@ -48,14 +48,15 @@ class MangabzRequestHandler extends CookiesRequestHandler {
   }
 
   Future<Response> search(String keyword, {int page: 0}) {
-    return dio.get('/search?title=$keyword&page=${page + 1}',options: Options(headers: {
-      'User-Agent':
-      'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.134 Safari/537.36'
-    }));
+    return dio.get('/search?title=$keyword&page=${page + 1}',
+        options: Options(headers: {
+          'User-Agent':
+              'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.134 Safari/537.36'
+        }));
   }
 
-  Future<Response> getComic(String comicId) {
-    return dio.get('/$comicId');
+  Future<Response> getComic(String comicId) async {
+    return dio.get('/$comicId', options: await setHeader());
   }
 
   Future<Response> login(String username, String password) {
@@ -74,5 +75,19 @@ class MangabzRequestHandler extends CookiesRequestHandler {
           'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.134 Safari/537.36'
     });
     return dio.get('/bookmarker', options: options);
+  }
+
+  Future<Response> addSubscribe(String comicId, String userId) async {
+    var data = FormData.fromMap({
+      'cid': 0,
+      'mid': comicId.replaceAll('bz', ''),
+      'page': 0,
+      'uid': userId,
+      'language': 1
+    });
+    return dio.post(
+        '/$comicId/bookmarker.ashx?d=${DateTime.now().millisecondsSinceEpoch}',
+        data: data,
+        options: await setHeader());
   }
 }

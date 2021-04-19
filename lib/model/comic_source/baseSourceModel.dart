@@ -205,8 +205,14 @@ class SourceDetail {
   final bool deprecated;
   final bool canSubscribe;
 
-  SourceDetail(this.name, this.title, this.description, this.canDisable,
-      this.sourceType, this.deprecated, this.canSubscribe);
+  SourceDetail(
+      {@required this.name,
+      @required this.title,
+      @required this.description,
+      this.canDisable: true,
+      @required this.sourceType,
+      this.deprecated: false,
+      this.canSubscribe: false});
 
   @override
   // TODO: implement hashCode
@@ -227,7 +233,7 @@ class SourceDetail {
   }
 }
 
-abstract class SearchResult extends BaseModel {
+abstract class SearchResult {
   String get title;
 
   String get comicId;
@@ -273,17 +279,16 @@ class ComicIdNotBoundError implements Exception {
 }
 
 class ComicSearchError implements Exception {
-  final Exception exception;
+  final dynamic exception;
 
   ComicSearchError(this.exception);
-
 }
 
 class LoginUsernameOrPasswordError implements Exception {}
 
-class LoginRequiredError implements Exception{}
+class LoginRequiredError implements Exception {}
 
-class FavoriteUnavailableError implements Exception{}
+class FavoriteUnavailableError implements Exception {}
 
 class InactiveUserConfig extends UserConfig {
   final SourceDetail type;
@@ -314,6 +319,7 @@ class InactiveUserConfig extends UserConfig {
     return Card(
       child: ListView(
         shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
         children: [
           ListTile(
             leading: Icon(Icons.cloud_off),

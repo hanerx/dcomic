@@ -1,4 +1,5 @@
 import 'package:dcomic/database/cookieDatabaseProvider.dart';
+import 'package:dcomic/http/CopyMangaRequestHandler.dart';
 import 'package:dcomic/http/GithubRequestHandler.dart';
 import 'package:dcomic/utils/HttpProxyAdapter.dart';
 import 'package:dio/dio.dart';
@@ -58,6 +59,8 @@ class UniversalRequestModel {
   static DMZJSACGRequestHandler dmzjsacgRequestHandler =DMZJSACGRequestHandler();
 
   static GithubRequestHandler githubRequestHandler = GithubRequestHandler();
+
+  static CopyMangaRequestHandler copyMangaRequestHandler=CopyMangaRequestHandler();
 }
 
 abstract class RequestHandler {
