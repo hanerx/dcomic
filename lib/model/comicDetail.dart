@@ -323,7 +323,9 @@ class ComicDetailModel extends BaseModel {
 
   bool get sub => this.detail == null ? false : this.detail.isSubscribed;
 
-  bool get login=>_model.userConfig.status!=UserStatus.logout;
+  UserStatus get login=>_model.userConfig.status;
 
   bool get loading=>this.detail==null||this.detail.isSubscribed==null;
+
+  SourceDetail get sourceDetail=>_model.type;
 }

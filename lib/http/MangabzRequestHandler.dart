@@ -85,7 +85,9 @@ class MangabzRequestHandler extends CookiesRequestHandler {
       'uid': userId,
       'language': 1
     });
-    return dio.post('/$comicId/bookmarker.ashx',
-        data: data, options: await setHeader());
+    return dio.post(
+        '/$comicId/bookmarker.ashx?d=${DateTime.now().millisecondsSinceEpoch}',
+        data: data,
+        options: await setHeader());
   }
 }
