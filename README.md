@@ -24,7 +24,7 @@
 
 [https://github.com/hanerx/flutter_dmzj/releases/latest](https://github.com/hanerx/flutter_dmzj/releases/latest)
 
-![image-20210419184914844](.\doc\image-20210419184914844.png)
+<img src=".\doc\image-20210419184914844.png" alt="image-20210419193403782" />
 
 ## 预览
 
