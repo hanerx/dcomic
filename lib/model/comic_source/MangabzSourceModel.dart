@@ -82,11 +82,9 @@ class MangabzSourceModel extends BaseSourceModel {
             soup.find(id: '.detail-info-tip').children[1].children.first.text;
         var updateTime = RegExp('[0-9]{4}-[0-9]{2}-[0-9]{2}')
             .stringMatch(soup.find(id: '.detail-list-form-title').text);
-        if (updateTime == null) {
-          updateTime =
-              '${DateTime.now().year.toString()}-${RegExp('[0-9]{2}月[0-9]{2}号').stringMatch(soup.find(id: '.detail-list-form-title').text)}'
-                  .replaceAll('月', '-')
-                  .replaceAll('号', '');
+        if (updateTime != null) {
+          updateTime = ToolMethods.formatTimestamp(
+              ToolMethods.formatTimeStringForMangabz(updateTime) ~/ 1000);
         }
         var tags = soup
             .find(id: '.detail-info-tip')
@@ -106,6 +104,10 @@ class MangabzSourceModel extends BaseSourceModel {
         var history = (await HistoryDatabaseProvider(this.type.name)
             .getReadHistory(comicId));
         var lastChapterId = history == null ? null : history['last_chapter_id'];
+        var userId = RegExp('var MANGABZ_USERID=".+?"')
+            .stringMatch(response.data)
+            .replaceAll('var MANGABZ_USERID="', '')
+            .replaceAll('"', '');
         return MangabzComicDetail(
             title,
             authors,
@@ -120,10 +122,12 @@ class MangabzSourceModel extends BaseSourceModel {
             ],
             _options,
             type,
-            lastChapterId);
+            lastChapterId,
+            this,
+            userId);
       }
     } catch (e) {
-      throw ComicLoadingError();
+      throw ComicLoadingError(exception: e);
     }
     return null;
   }
@@ -265,12 +269,12 @@ class MangabzSourceModel extends BaseSourceModel {
   @override
   // TODO: implement type
   SourceDetail get type => SourceDetail(
-      name:'mangabz',
-      title:'Mangabz',
-      description:'Mangabz的漫画源，嘿呀，你妈的好难实现的，为了这个功能我已经快燃尽自己了',
-      canDisable:true,
-      sourceType:SourceType.LocalDecoderSource,
-      deprecated:false,
+      name: 'mangabz',
+      title: 'Mangabz',
+      description: 'Mangabz的漫画源，嘿呀，你妈的好难实现的，为了这个功能我已经快燃尽自己了',
+      canDisable: true,
+      sourceType: SourceType.LocalDecoderSource,
+      deprecated: false,
       canSubscribe: true);
 
   @override
@@ -305,20 +309,9 @@ class MangabzSourceModel extends BaseSourceModel {
             comicId = comicId.substring(1, comicId.length - 1);
             String updateTime =
                 e.children.first.children.first.children[1].innerHtml;
-            updateTime = updateTime
-                .replaceAll(' 更新', '')
-                .replaceAll('月', '-')
-                .replaceAll('号', '');
-            if (updateTime.indexOf('-') != 4) {
-              updateTime = '${DateTime.now().year}-$updateTime';
-            }
-            if (updateTime.contains('昨天')) {
-              var time = DateTime.now().add(Duration(days: -1));
-              updateTime =
-                  '${time.year}-${time.month >= 10 ? time.month : '0${time.month}'}-${time.day >= 10 ? time.day : '0${time.day}'}';
-            }
             bool update = unreadList[comicId] == null ||
-                unreadList[comicId] < ToolMethods.formatTimeString(updateTime);
+                unreadList[comicId] <
+                    ToolMethods.formatTimeStringForMangabz(updateTime);
             return FavoriteComic(
                 cover, title, latestChapter, comicId, this, update);
           }).toList();
@@ -459,6 +452,7 @@ class MangabzUserConfig extends UserConfig {
     return Card(
       child: ListView(
         shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
         children: [
           ListTile(
             leading: Icon(Icons.account_circle),
@@ -629,6 +623,10 @@ class MangabzComicDetail extends ComicDetail {
   final String _historyChapter;
   final MangabzSourceOptions options;
   final SourceDetail sourceDetail;
+  final MangabzSourceModel model;
+  final String userId;
+
+  bool _isSubscribed = false;
 
   MangabzComicDetail(
       this._title,
@@ -642,7 +640,9 @@ class MangabzComicDetail extends ComicDetail {
       this._chapters,
       this.options,
       this.sourceDetail,
-      this._historyChapter);
+      this._historyChapter,
+      this.model,
+      this.userId);
 
   @override
   String toString() {
@@ -717,11 +717,30 @@ class MangabzComicDetail extends ComicDetail {
   Map<String, String> get headers => {'referer': 'http://images.dmzj.com'};
 
   @override
-  bool isSubscribed = false;
+  bool get isSubscribed => _isSubscribed;
+
+  set isSubscribed(bool value) {
+    _isSubscribed = value;
+    UniversalRequestModel.mangabzRequestHandler.addSubscribe(comicId, userId);
+    notifyListeners();
+  }
 
   @override
   Future<void> getIfSubscribed() async {
     // TODO: implement getIfSubscribed
+    try {
+      var list = await model.getFavoriteComics(0);
+      for (var item in list) {
+        if (item.comicId == comicId) {
+          _isSubscribed = true;
+          return;
+        }
+      }
+    } on LoginRequiredError catch (e) {
+      logger.e('loginRequired');
+    } catch (e) {
+      throw e;
+    }
   }
 
   @override

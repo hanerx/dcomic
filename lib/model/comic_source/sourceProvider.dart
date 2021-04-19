@@ -1,3 +1,4 @@
+import 'package:dcomic/model/comic_source/CopyMangaSourceModel.dart';
 import 'package:dcomic/model/comic_source/LocalSourceModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dcomic/component/ComicSourceCard.dart';
@@ -14,7 +15,7 @@ class SourceProvider extends BaseModel {
   List<BaseSourceModel> sources = [];
   BaseSourceModel _active;
   int _index = 0;
-  LocalSourceModel localSourceModel=LocalSourceModel();
+  LocalSourceModel localSourceModel = LocalSourceModel();
 
   SourceProvider() {
     init();
@@ -28,6 +29,7 @@ class SourceProvider extends BaseModel {
     sources.add(ManHuaGuiSourceModel());
     sources.add(KuKuSourceModel());
     sources.add(localSourceModel);
+    sources.add(CopyMangaSourceModel());
     var options = await SourceDatabaseProvider.getSourceOptions('provider');
     if (options.containsKey('index')) {
       _index = int.parse(options['index']);

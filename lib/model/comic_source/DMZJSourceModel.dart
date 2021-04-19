@@ -505,6 +505,7 @@ class DMZJUserConfig extends UserConfig {
     return Card(
       child: ListView(
         shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
         children: [
           ListTile(
             leading: CachedNetworkImage(

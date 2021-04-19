@@ -35,7 +35,7 @@ class ComicDetailModel extends BaseModel {
   ComicDetail detail;
 
   //漫画加载状态
-  Exception error;
+  dynamic error;
 
   //基础信息
   String get title => detail == null ? "" : detail.title;

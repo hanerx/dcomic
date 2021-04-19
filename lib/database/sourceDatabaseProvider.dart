@@ -42,13 +42,21 @@ class SourceDatabaseProvider {
     return defaultValue;
   }
 
-  static Future<void> insertSourceOption(
+  static Future<void> insertSourceOption<T>(
       String name, String key, dynamic value) async {
     Database database = await initDataBase();
     await database.delete('source_options',
         where: 'source_name = ? and key= ?', whereArgs: [name, key]);
-    await database.insert('source_options',
-        {'source_name': name, 'key': key, 'value': value.toString()});
+    switch(T){
+      case bool:
+        await database.insert('source_options',
+            {'source_name': name, 'key': key, 'value': value?'1':'0'});
+        break;
+      default:
+        await database.insert('source_options',
+            {'source_name': name, 'key': key, 'value': value.toString()});
+    }
+
   }
 
   static Future<void> boundComic(

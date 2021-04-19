@@ -279,7 +279,7 @@ class ComicIdNotBoundError implements Exception {
 }
 
 class ComicSearchError implements Exception {
-  final Exception exception;
+  final dynamic exception;
 
   ComicSearchError(this.exception);
 }
@@ -319,6 +319,7 @@ class InactiveUserConfig extends UserConfig {
     return Card(
       child: ListView(
         shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
         children: [
           ListTile(
             leading: Icon(Icons.cloud_off),
