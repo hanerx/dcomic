@@ -26,7 +26,7 @@ class ComicCommentModel extends BaseModel {
             'nickname': firstComment['nickname'],
             'content': firstComment['content'],
             'timestamp': int.tryParse(firstComment['create_time'].toString()),
-            'like': firstComment['like_amount'],
+            'like': int.parse(firstComment['like_amount'].toString()),
             'upload_image':firstComment['upload_image'],
             'reply': commentList.sublist(1).map<Map>((e) {
               if (comments[e] == null) {

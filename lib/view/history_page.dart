@@ -1,8 +1,8 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'file:///C:/Users/hanerx/AndroidStudioProjects/dcomic/lib/component/history_tab/CloudHistoryTab.dart';
-import 'file:///C:/Users/hanerx/AndroidStudioProjects/dcomic/lib/component/history_tab/LocalHistoryTab.dart';
+import 'package:dcomic/component/history_tab/CloudHistoryTab.dart';
+import 'package:dcomic/component/history_tab/LocalHistoryTab.dart';
 
 class HistoryPage extends StatefulWidget {
   @override

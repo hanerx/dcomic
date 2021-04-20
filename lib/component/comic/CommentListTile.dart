@@ -11,7 +11,7 @@ class CommentListTile extends StatelessWidget {
   final int timestamp;
   final String nickname;
   final String uploadImage;
-  final String like;
+  final int like;
 
   const CommentListTile(
       {Key key,
