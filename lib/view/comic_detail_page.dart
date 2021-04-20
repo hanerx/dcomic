@@ -20,6 +20,7 @@ import 'package:dcomic/model/systemSettingModel.dart';
 import 'package:dcomic/model/trackerModel.dart';
 import 'package:dcomic/view/comment_page.dart';
 import 'package:dcomic/view/login_page.dart';
+import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 
@@ -167,7 +168,7 @@ class _ComicDetailPage extends State<ComicDetailPage> {
             ),
             endDrawer: CustomDrawer(
               child: CommentPage(
-                  Provider.of<ComicDetailModel>(context).rawComicId, 0),
+                  Provider.of<ComicDetailModel>(context).rawComicId),
               widthPercent: 0.9,
             ),
             floatingActionButton: Provider.of<ComicDetailModel>(context)
@@ -177,15 +178,11 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                 : Builder(
                     builder: (context) {
                       return FancyFab(
-                        reverse: Provider.of<ComicDetailModel>(context).reverse,
                         isSubscribe: Provider.of<TrackerModel>(context)
                             .ifSubscribe(
                                 Provider.of<ComicDetailModel>(context)),
-                        onSort: () {
-                          Provider.of<ComicDetailModel>(context, listen: false)
-                              .reverse = !Provider.of<ComicDetailModel>(context,
-                                  listen: false)
-                              .reverse;
+                        onMessage: () {
+                          Scaffold.of(context).openEndDrawer();
                         },
                         onPlay: () async {
                           if (Provider.of<ComicDetailModel>(context,
@@ -298,6 +295,7 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                               context: context,
                               builder: (context) {
                                 return Dialog(
+                                  insetPadding: EdgeInsets.all(10),
                                   child: Container(
                                     child: SingleChildScrollView(
                                       child: Column(
@@ -475,6 +473,63 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                         ],
                       ),
                     ),
+                    Card(
+                        elevation: 0,
+                        margin: EdgeInsets.only(bottom: 10),
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 5, right: 5),
+                          child: Row(
+                            children: [
+                              TextButton.icon(
+                                  onPressed: () {
+                                    Provider.of<ComicDetailModel>(context,
+                                            listen: false)
+                                        .block = !Provider.of<ComicDetailModel>(
+                                            context,
+                                            listen: false)
+                                        .block;
+                                  },
+                                  icon: Icon(
+                                    Provider.of<ComicDetailModel>(context).block
+                                        ? Icons.apps
+                                        : Icons.list,
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodyText1
+                                        .color,
+                                  ),
+                                  label: Text(
+                                      '${Provider.of<ComicDetailModel>(context).block ? '棋盘' : '列表'}',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyText1)),
+                              Expanded(child: Container()),
+                              TextButton.icon(
+                                  onPressed: () {
+                                    Provider.of<ComicDetailModel>(context,
+                                                listen: false)
+                                            .reverse =
+                                        !Provider.of<ComicDetailModel>(context,
+                                                listen: false)
+                                            .reverse;
+                                  },
+                                  icon: Icon(
+                                      Provider.of<ComicDetailModel>(context)
+                                              .reverse
+                                          ? FontAwesome5.sort_amount_down_alt
+                                          : FontAwesome5.sort_amount_down,
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodyText1
+                                          .color),
+                                  label: Text(
+                                    '${Provider.of<ComicDetailModel>(context).reverse ? '正序' : '倒序'}',
+                                    style:
+                                        Theme.of(context).textTheme.bodyText1,
+                                  ))
+                            ],
+                          ),
+                        )),
                     Card(
                       elevation: 0,
                       margin: EdgeInsets.fromLTRB(0, 0, 0, 10),

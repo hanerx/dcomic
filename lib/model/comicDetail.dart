@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dcomic/utils/tool_methods.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +34,8 @@ class ComicDetailModel extends BaseModel {
   String _title;
 
   ComicDetail detail;
+
+  bool _block = true;
 
   //漫画加载状态
   dynamic error;
@@ -83,13 +86,14 @@ class ComicDetailModel extends BaseModel {
   Future<void> init() async {
     try {
       detail = await _model.get(title: this._title, comicId: this._comicId);
-      if(detail!=null){
+      if (detail != null) {
         await detail.getIfSubscribed();
       }
       error = null;
       notifyListeners();
-    } catch (e,s) {
-      FirebaseCrashlytics.instance.recordError(e, s, reason: 'comicDetailLoadingFail: $_comicId');
+    } catch (e, s) {
+      FirebaseCrashlytics.instance
+          .recordError(e, s, reason: 'comicDetailLoadingFail: $_comicId');
       error = e;
       notifyListeners();
       logger.w('class: ComicDetail, action: loadingFailed, exception: $e');
@@ -137,18 +141,14 @@ class ComicDetailModel extends BaseModel {
 
   Widget _buildBasicButton(context, String title, style, VoidCallback onPress,
       {double width: 120}) {
-    return Container(
-      width: width,
-      margin: EdgeInsets.fromLTRB(3, 0, 3, 0),
-      child: OutlineButton(
-        child: Text(
-          '$title',
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: style,
-        ),
-        onPressed: onPress,
+    return OutlinedButton(
+      child: Text(
+        '$title',
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: style,
       ),
+      onPressed: onPress,
     );
   }
 
@@ -161,16 +161,20 @@ class ComicDetailModel extends BaseModel {
         chapter['chapter_title'],
         chapter['chapter_id'].toString() ==
                 Provider.of<ComicDetailModel>(context).lastChapterId
-            ? TextStyle(color: Colors.blue)
-            : null, () async {
+            ? TextStyle(color: Theme.of(context).accentColor)
+            : Theme.of(context).textTheme.bodyText1, () async {
       Comic comic = await detail.getChapter(
           title: chapter['chapter_title'],
           chapterId: chapter['chapter_id'].toString());
-      Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return ComicViewPage(
-          comic: comic,
-        );
-      },settings: RouteSettings(name: 'comic_view_page')));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) {
+                return ComicViewPage(
+                  comic: comic,
+                );
+              },
+              settings: RouteSettings(name: 'comic_view_page')));
     });
   }
 
@@ -181,12 +185,12 @@ class ComicDetailModel extends BaseModel {
     }
     var state = await Permission.storage.request().isGranted;
     if (state) {
-      Comic comic =await detail.getChapter(chapterId: chapterId);
+      Comic comic = await detail.getChapter(chapterId: chapterId);
       await comic.init();
       var path = await SystemConfigDatabaseProvider().downloadPath;
 
       List data = <String>[];
-      if (comic.type==PageType.url) {
+      if (comic.type == PageType.url) {
         var directory = Directory('$path/chapters/$comicId/$chapterId');
         if (!await directory.exists()) {
           await directory.create(recursive: true);
@@ -227,10 +231,12 @@ class ComicDetailModel extends BaseModel {
     DownloadProvider downloadProvider = DownloadProvider();
     if (await downloadProvider.getChapter(chapter['chapter_id'].toString()) !=
         null) {
-      return _buildBasicButton(context, chapter['chapter_title'], null, null,
+      return _buildBasicButton(context, chapter['chapter_title'],
+          TextStyle(color: Theme.of(context).disabledColor), null,
           width: 80);
     }
-    return _buildBasicButton(context, chapter['chapter_title'], null, () async {
+    return _buildBasicButton(context, chapter['chapter_title'],
+        Theme.of(context).textTheme.bodyText1, () async {
       List list =
           await downloadChapter(comicId, chapter['chapter_id'].toString());
       logger.i(
@@ -249,9 +255,7 @@ class ComicDetailModel extends BaseModel {
       //     (index) => chapterIdList[chapterIdList.length - 1 - index]);
 
       // 生成每版的章节列表
-      List<Widget> chapterList = item['data']
-          .map<Widget>((value) => _buildButton(context, value, item['data']))
-          .toList();
+      List chapterList = item['data'];
       // 反向排序
       if (_reverse) {
         var tempList = List.generate(chapterList.length,
@@ -260,16 +264,50 @@ class ComicDetailModel extends BaseModel {
       }
 
       //添加每版
-      lists.add(Column(
-        children: <Widget>[
-          Divider(),
-          Text(item['title']),
-          Divider(),
-          Wrap(
-            children: chapterList,
-          )
-        ],
-      ));
+      if (_block) {
+        lists.add(Column(
+          children: <Widget>[
+            Divider(),
+            Text(item['title']),
+            Divider(),
+            GridView.count(
+              padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              mainAxisSpacing: 5,
+              crossAxisSpacing: 5,
+              childAspectRatio: 3,
+              crossAxisCount: 3,
+              children: chapterList
+                  .map<Widget>(
+                      (value) => _buildButton(context, value, item['data']))
+                  .toList(),
+            )
+          ],
+        ));
+      } else {
+        lists.add(Column(
+          children: <Widget>[
+            Divider(),
+            Text(item['title']),
+            Divider(),
+            ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: chapterList.length,
+                itemBuilder: (context, index) {
+                  var chapter = chapterList[index];
+                  return ListTile(
+                    selected: chapter['chapter_id'].toString() ==
+                        Provider.of<ComicDetailModel>(context).lastChapterId,
+                    title: Text('${chapter['chapter_title']}'),
+                    subtitle: Text(
+                        '更新时间：${ToolMethods.formatTimestamp(chapter['updatetime'])} 章节ID：${chapter['chapter_id']}'),
+                  );
+                })
+          ],
+        ));
+      }
     }
     return lists;
   }
@@ -295,7 +333,14 @@ class ComicDetailModel extends BaseModel {
           Divider(),
           Text(item['title']),
           Divider(),
-          Wrap(
+          GridView.count(
+            padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            mainAxisSpacing: 5,
+            crossAxisSpacing: 5,
+            childAspectRatio: 3,
+            crossAxisCount: 3,
             children: chapterList,
           )
         ],
@@ -315,7 +360,7 @@ class ComicDetailModel extends BaseModel {
   bool get reverse => this._reverse;
 
   set sub(bool sub) {
-    if (detail != null&&detail.isSubscribed!=null) {
+    if (detail != null && detail.isSubscribed != null) {
       this.detail.isSubscribed = sub;
     }
     notifyListeners();
@@ -323,9 +368,16 @@ class ComicDetailModel extends BaseModel {
 
   bool get sub => this.detail == null ? false : this.detail.isSubscribed;
 
-  UserStatus get login=>_model.userConfig.status;
+  UserStatus get login => _model.userConfig.status;
 
-  bool get loading=>this.detail==null||this.detail.isSubscribed==null;
+  bool get loading => this.detail == null || this.detail.isSubscribed == null;
 
-  SourceDetail get sourceDetail=>_model.type;
+  SourceDetail get sourceDetail => _model.type;
+
+  bool get block => _block;
+
+  set block(bool value) {
+    _block = value;
+    notifyListeners();
+  }
 }

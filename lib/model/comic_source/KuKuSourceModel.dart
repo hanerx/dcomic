@@ -442,6 +442,12 @@ class KuKuComicDetail extends ComicDetail {
     // TODO: implement share
     return '【$title】https://manhua.kukudm.com/comiclist/$comicId/';
   }
+
+  @override
+  Future<ComicComment> getComments(int page) {
+    // TODO: implement getComments
+    throw UnimplementedError();
+  }
 }
 
 class KuKuComic extends Comic {

@@ -261,9 +261,9 @@ class ComicDetailEmptyView extends StatelessWidget {
               ],
             ),
           ),
-          FlatButton(
+          TextButton(
             child: Text('点击此处打开搜索'),
-            textColor: Theme.of(context).primaryColor,
+            style: ButtonStyle(textStyle: MaterialStateProperty.all(TextStyle(color: Theme.of(context).primaryColor))),
             onPressed: () async {
               var flag = await showDialog(
                   context: context,

@@ -698,6 +698,12 @@ class CopyMangaComicDetail extends ComicDetail {
   @override
   // TODO: implement updateTime
   String get updateTime => _updateTime;
+
+  @override
+  Future<ComicComment> getComments(int page) {
+    // TODO: implement getComments
+    throw UnimplementedError();
+  }
 }
 
 class CopyMangaComic extends Comic {

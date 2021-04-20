@@ -46,13 +46,15 @@ class VersionModel extends BaseModel {
       switch (_updateChannel) {
         case 0:
           var response = await UniversalRequestModel.githubRequestHandler.getLatestRelease();
-          if (response.statusCode == 200) {
+          if (response.statusCode == 200||response.statusCode==304) {
             _latestVersion = response.data['tag_name'].substring(1);
           }
           break;
         case 1:
           var response = await UniversalRequestModel.githubRequestHandler.getReleases();
-          _latestVersion = response.data.first['tag_name'].substring(1);
+          if (response.statusCode == 200||response.statusCode==304) {
+            _latestVersion = response.data.first['tag_name'].substring(1);
+          }
           break;
       }
       notifyListeners();

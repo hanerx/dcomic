@@ -748,6 +748,12 @@ class MangabzComicDetail extends ComicDetail {
     // TODO: implement share
     return '【$title】http://www.mangabz.com/$comicId/';
   }
+
+  @override
+  Future<ComicComment> getComments(int page) {
+    // TODO: implement getComments
+    throw UnimplementedError();
+  }
 }
 
 class MangabzSearchResult extends SearchResult {

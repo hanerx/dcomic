@@ -1108,6 +1108,12 @@ class DMZJComicDetail extends ComicDetail {
     // TODO: implement share
     return '【$title】 https://m.dmzj.com/info/$comicId.html';
   }
+
+  @override
+  Future<ComicComment> getComments(int page) {
+    // TODO: implement getComments
+    throw UnimplementedError();
+  }
 }
 
 class DMZJComic extends Comic {

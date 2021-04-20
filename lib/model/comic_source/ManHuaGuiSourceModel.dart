@@ -547,6 +547,12 @@ class ManHuaGuiComicDetail extends ComicDetail {
     // TODO: implement share
     return '【$title】https://www.manhuagui.com/comic/$comicId/';
   }
+
+  @override
+  Future<ComicComment> getComments(int page) {
+    // TODO: implement getComments
+    throw UnimplementedError();
+  }
 }
 
 class ManHuaGuiComic extends Comic {

@@ -1,4 +1,4 @@
-
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dcomic/component/ViewPointChip.dart';
@@ -12,7 +12,7 @@ class ComicModel extends BaseModel {
 
   int _index = 0;
 
-  bool refreshState=false;
+  bool refreshState = false;
 
   //用户信息
   bool login = false;
@@ -22,37 +22,54 @@ class ComicModel extends BaseModel {
     init();
   }
 
-  Future<void> init()async {
-    await comic.init();
+  Future<void> init() async {
+    try {
+      await comic.init();
+    } catch (e, s) {
+      FirebaseCrashlytics.instance.recordError(e, s,
+          reason: 'chapterLoadingFailed: $comicId, chapterId: $pageAt');
+    }
     notifyListeners();
   }
 
   Future<void> getComic(chapterId, comicId) async {
-    refreshState=true;
+    refreshState = true;
     notifyListeners();
-    await comic.getComic(chapterId: chapterId, comicId: comicId);
-    refreshState=false;
+    try {
+      await comic.getComic(chapterId: chapterId, comicId: comicId);
+    } catch (e, s) {
+      FirebaseCrashlytics.instance.recordError(e, s,
+          reason: 'chapterLoadingFailed: $comicId, chapterId: $pageAt');
+    }
+    index = 0;
+    refreshState = false;
     notifyListeners();
   }
 
   Future<void> refreshViewPoint() async {
-    if(!left&&!refreshState){
-      refreshState=true;
+    if (!left && !refreshState) {
+      refreshState = true;
       notifyListeners();
       await comic.getViewPoint();
-      refreshState=false;
+      refreshState = false;
       notifyListeners();
     }
     return false;
   }
 
   Future<bool> nextChapter() async {
-    if(!right&&!refreshState){
-      refreshState=true;
+    if (!right && !refreshState) {
+      refreshState = true;
       notifyListeners();
-      index=0;
-      bool flag=await comic.next();
-      refreshState=false;
+      index = 0;
+      bool flag = false;
+      try {
+        flag = await comic.next();
+      } catch (e, s) {
+        FirebaseCrashlytics.instance.recordError(e, s,
+            reason: 'chapterLoadingFailed: $comicId, chapterId: $pageAt');
+      }
+      refreshState = false;
       notifyListeners();
       return flag;
     }
@@ -60,11 +77,17 @@ class ComicModel extends BaseModel {
   }
 
   Future<bool> previousChapter() async {
-    refreshState=true;
+    refreshState = true;
     notifyListeners();
-    bool flag=await comic.previous();
-    index=0;
-    refreshState=false;
+    bool flag = false;
+    try {
+      flag = await comic.previous();
+    } catch (e, s) {
+      FirebaseCrashlytics.instance.recordError(e, s,
+          reason: 'chapterLoadingFailed: $comicId, chapterId: $pageAt');
+    }
+    index = 0;
+    refreshState = false;
     notifyListeners();
     return flag;
   }
@@ -99,7 +122,7 @@ class ComicModel extends BaseModel {
   }
 
   List<Widget> buildViewPoint(context) {
-    if(comic==null){
+    if (comic == null) {
       return <Widget>[];
     }
     return comic.viewpoints
@@ -129,9 +152,10 @@ class ComicModel extends BaseModel {
 
   String get pageAt => comic == null ? '' : comic.pageAt;
 
-  String get title=>comic==null?'':comic.title;
+  String get title => comic == null ? '' : comic.title;
 
-  bool get emptyViewPoint=>comic==null?true:comic.viewpoints.length==0;
+  bool get emptyViewPoint =>
+      comic == null ? true : comic.viewpoints.length == 0;
 
   set index(int index) {
     this._index = index;
