@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dcomic/view/settings/user_setting_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -27,6 +28,15 @@ class _LoginPage extends State<LoginPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('选择登录账号'),
+        actions: [
+          IconButton(
+              icon: Icon(Icons.settings),
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => UserSettingPage(),
+                    settings: RouteSettings(name: 'user_setting_page')));
+              })
+        ],
       ),
       body: ListView.builder(
         itemCount: Provider.of<SourceProvider>(context).activeSources.length,
@@ -47,7 +57,9 @@ class _LoginPage extends State<LoginPage> {
               onTap: () async {
                 await Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) =>
-                        model.userConfig.getLoginWidget(context),settings: RouteSettings(name: '${model.type.name}_login_page')));
+                        model.userConfig.getLoginWidget(context),
+                    settings:
+                        RouteSettings(name: '${model.type.name}_login_page')));
                 Navigator.of(context).pop();
               },
             ),
