@@ -65,17 +65,19 @@ class CommentListTile extends StatelessWidget {
                 TextButton.icon(
                   onPressed: () {},
                   icon: Icon(
-                    Icons.message
+                    Icons.message,
+                    size: 20,
                   ),
-                  label: Text('${reply.length}'),
+                  label: Text('${reply.length}',style: TextStyle(fontSize: 15),),
                 ),
                 Expanded(child: Container()),
                 TextButton.icon(
                   onPressed: () {},
                   icon: Icon(
                     Icons.favorite,
+                    size: 20,
                   ),
-                  label: Text('$like'),
+                  label: Text('$like',style: TextStyle(fontSize: 15),),
                   style: ButtonStyle(
                       padding: MaterialStateProperty.all(EdgeInsets.zero)),
                 )

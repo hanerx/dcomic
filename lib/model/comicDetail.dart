@@ -141,7 +141,7 @@ class ComicDetailModel extends BaseModel {
 
   Widget _buildBasicButton(context, String title, style, VoidCallback onPress,
       {double width: 120}) {
-    return OutlineButton(
+    return OutlinedButton(
       child: Text(
         '$title',
         maxLines: 1,
@@ -161,8 +161,8 @@ class ComicDetailModel extends BaseModel {
         chapter['chapter_title'],
         chapter['chapter_id'].toString() ==
                 Provider.of<ComicDetailModel>(context).lastChapterId
-            ? TextStyle(color: Colors.blue)
-            : null, () async {
+            ? TextStyle(color: Theme.of(context).accentColor)
+            : Theme.of(context).textTheme.bodyText1, () async {
       Comic comic = await detail.getChapter(
           title: chapter['chapter_title'],
           chapterId: chapter['chapter_id'].toString());
@@ -231,10 +231,12 @@ class ComicDetailModel extends BaseModel {
     DownloadProvider downloadProvider = DownloadProvider();
     if (await downloadProvider.getChapter(chapter['chapter_id'].toString()) !=
         null) {
-      return _buildBasicButton(context, chapter['chapter_title'], null, null,
+      return _buildBasicButton(context, chapter['chapter_title'],
+          TextStyle(color: Theme.of(context).disabledColor), null,
           width: 80);
     }
-    return _buildBasicButton(context, chapter['chapter_title'], null, () async {
+    return _buildBasicButton(context, chapter['chapter_title'],
+        Theme.of(context).textTheme.bodyText1, () async {
       List list =
           await downloadChapter(comicId, chapter['chapter_id'].toString());
       logger.i(
@@ -299,7 +301,8 @@ class ComicDetailModel extends BaseModel {
                     selected: chapter['chapter_id'].toString() ==
                         Provider.of<ComicDetailModel>(context).lastChapterId,
                     title: Text('${chapter['chapter_title']}'),
-                    subtitle: Text('更新时间：${ToolMethods.formatTimestamp(chapter['updatetime'])} 章节ID：${chapter['chapter_id']}'),
+                    subtitle: Text(
+                        '更新时间：${ToolMethods.formatTimestamp(chapter['updatetime'])} 章节ID：${chapter['chapter_id']}'),
                   );
                 })
           ],
