@@ -1,4 +1,5 @@
 
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dcomic/component/ViewPointChip.dart';
@@ -23,7 +24,12 @@ class ComicModel extends BaseModel {
   }
 
   Future<void> init()async {
-    await comic.init();
+    try{
+      await comic.init();
+    }catch(e,s){
+      FirebaseCrashlytics.instance
+          .recordError(e, s, reason: 'chapterLoadingFailed: $comicId');
+    }
     notifyListeners();
   }
 
@@ -31,6 +37,7 @@ class ComicModel extends BaseModel {
     refreshState=true;
     notifyListeners();
     await comic.getComic(chapterId: chapterId, comicId: comicId);
+    index=0;
     refreshState=false;
     notifyListeners();
   }

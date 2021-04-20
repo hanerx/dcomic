@@ -48,7 +48,7 @@ class _AboutSettingPage extends State<AboutSettingPage> {
                   Expanded(
                     flex: 1,
                     child: Container(
-                      color: Colors.white,
+                      color: Theme.of(context).cardColor.withOpacity(1),
                     ),
                   ),
                 ],
@@ -64,7 +64,7 @@ class _AboutSettingPage extends State<AboutSettingPage> {
                         Container(
                           width: double.infinity,
                           height: 220.0,
-                          color: Colors.white,
+                          color: Theme.of(context).cardColor.withOpacity(1),
                         ),
                         ClipPath(
                           clipper: new TopBarClipper(
@@ -145,7 +145,7 @@ class _AboutSettingPage extends State<AboutSettingPage> {
                     // 内容
                     Container(
                       width: double.infinity,
-                      color: Colors.white,
+                      color: Theme.of(context).cardColor.withOpacity(1),
                       padding: EdgeInsets.all(10.0),
                       child: ListView(
                         shrinkWrap: true,

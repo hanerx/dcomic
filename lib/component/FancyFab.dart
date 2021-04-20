@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
 
 class FancyFab extends StatefulWidget {
-  final bool reverse;
-  final VoidCallback onSort;
   final VoidCallback onPlay;
   final VoidCallback onBlackBox;
   final VoidCallback onDownload;
+  final VoidCallback onMessage;
   final bool isSubscribe;
 
-  FancyFab({this.reverse: false, this.onSort, this.onPlay, this.onBlackBox,this.onDownload, this.isSubscribe});
+  FancyFab({this.onPlay, this.onBlackBox,this.onDownload, this.isSubscribe, this.onMessage});
 
   @override
   _FancyFabState createState() => _FancyFabState();
@@ -106,17 +105,15 @@ class _FancyFabState extends State<FancyFab>
     );
   }
 
-  Widget image() {
+  Widget message() {
     return Container(
       child: FloatingActionButton(
-        heroTag: "order",
-        onPressed: widget.onSort,
+        heroTag: "message",
+        onPressed: widget.onMessage,
         backgroundColor: Colors.green,
-        tooltip: '排序',
+        tooltip: '评论',
         elevation: isOpened ? 16 : 0,
-        child: Icon(widget.reverse
-            ? FontAwesome5.sort_amount_down_alt
-            : FontAwesome5.sort_amount_down),
+        child: Icon(Icons.message),
       ),
     );
   }
@@ -178,7 +175,7 @@ class _FancyFabState extends State<FancyFab>
             _translateButton.value * 2.0,
             0.0,
           ),
-          child: image(),
+          child: message(),
         ),
         Transform(
           transform: Matrix4.translationValues(
