@@ -100,6 +100,8 @@ abstract class ComicDetail extends BaseModel {
 
   List<Map<String, dynamic>> getChapters();
 
+  Future<ComicComment> getComments(int page);
+
   String get title;
 
   String get description;
@@ -384,4 +386,15 @@ class HistoryComic extends FavoriteComic {
       Map<String, dynamic> map, BaseSourceModel model, this.timestamp)
       : super(map['cover'], map['title'], map['last_chapter'], map['comicId'],
             model, false);
+}
+
+class ComicComment{
+  final String avatar;
+  final String nickname;
+  final String content;
+  final List reply;
+  final int timestamp;
+  final int like;
+
+  ComicComment(this.avatar, this.nickname, this.content, this.reply, this.timestamp, this.like);
 }

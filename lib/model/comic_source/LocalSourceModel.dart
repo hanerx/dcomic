@@ -323,6 +323,12 @@ class LocalComicDetail extends ComicDetail {
   // TODO: implement updateTime
   String get updateTime =>
       ToolMethods.formatTimestamp(_mangaObject.lastUpdateTimeStamp);
+
+  @override
+  Future<ComicComment> getComments(int page) {
+    // TODO: implement getComments
+    throw UnimplementedError();
+  }
 }
 
 class LocalComic extends Comic {

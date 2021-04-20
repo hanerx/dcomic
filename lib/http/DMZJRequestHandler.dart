@@ -127,3 +127,11 @@ class DMZJSACGRequestHandler extends SingleDomainRequestHandler {
     return dio.get('/comicsum/search.php?s=$keyword&callback=');
   }
 }
+
+class DMZJCommentRequestHandler extends SingleDomainRequestHandler{
+  DMZJCommentRequestHandler() : super('https://v3comment.dmzj1.com');
+
+  Future<Response> getComments(String comicId,int page,{int limit:30,int type:4}){
+    return dio.get('/v1/$type/latest/$comicId?limit=$limit&page_index=${page+1}');
+  }
+}
