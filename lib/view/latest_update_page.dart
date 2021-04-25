@@ -1,3 +1,4 @@
+import 'package:dcomic/model/comic_source/sourceProvider.dart';
 import 'package:direct_select_flutter/direct_select_container.dart';
 import 'package:direct_select_flutter/direct_select_item.dart';
 import 'package:direct_select_flutter/direct_select_list.dart';
@@ -58,18 +59,22 @@ class _LatestUpdatePage extends State<LatestUpdatePage> {
                                 listen: false)
                             .data[index];
                         return ComicListTile(
-                          title: item['title'],
-                          cover: item['cover'],
-                          tag: item['types'],
-                          authors: item['authors'],
-                          date: item['last_updatetime'],
-                          headers: {'referer': 'https://m.dmzj.com'},
+                          title: item.title,
+                          cover: item.cover,
+                          tag: item.types,
+                          authors: item.authors,
+                          date: item.timestamp,
+                          headers: item.headers,
                           onPressed: () {
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => ComicDetailPage(
-                                      id: item['id'].toString(),
-                                      title: item['title'],
-                                    ),settings: RouteSettings(name: 'comic_detail_page')));
+                                  id: item.comicId,
+                                  title: item.title,
+                                  model: Provider.of<SourceProvider>(context)
+                                      .activeSources
+                                      .first,
+                                ),
+                                settings: RouteSettings(name: 'comic_detail_page')));
                           },
                         );
                         // return list[index];

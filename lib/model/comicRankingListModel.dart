@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:dcomic/http/UniversalRequestModel.dart';
 import 'package:dcomic/http/http.dart';
 import 'package:dcomic/model/baseModel.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -7,12 +10,12 @@ class ComicRankingListModel extends BaseModel {
   int filterType = 0;
   int filterTag = 0;
   int page = 0;
-  List _data = [];
+  List<RankingComic> _data = [];
   final List dateTypeList = <String>['日排行', '周排行', '月排行', '总排行'];
   final List typeTypeList = <String>['按人气', '按吐槽', '按订阅'];
   Map tagTypeList = <int, String>{0: '全部'};
 
-  ComicRankingListModel(){
+  ComicRankingListModel() {
     init();
   }
 
@@ -23,20 +26,29 @@ class ComicRankingListModel extends BaseModel {
 
   loadRankingList() async {
     try {
-      CustomHttp http = CustomHttp();
-      var response =
-          await http.getRankList(filterDate, filterType, filterTag, page);
+      var response = await UniversalRequestModel.dmzjMobileRequestHandler
+          .getRankList(filterDate, filterType, filterTag, page);
       if (response.statusCode == 200) {
         if (response.data.length == 0) {
           return;
         }
-        _data += response.data;
+        _data += jsonDecode(response.data)
+            .map<RankingComic>((item) => RankingComic(
+                cover: 'https://images.dmzj.com/' + item['cover'],
+                title: item['name'],
+                types: item['types'],
+                authors: item['authors'],
+                timestamp: item['last_updatetime'],
+                headers: {'referer': 'https://m.dmzj.com'},
+                comicId: item['comic_id']))
+            .toList();
       }
       notifyListeners();
       logger.i(
           'class: ComicRankingList, action: loadingRankingList, page: $page');
-    } catch (e,s) {
-      FirebaseCrashlytics.instance.recordError(e, s, reason: 'loadRankingListFailed');
+    } catch (e, s) {
+      FirebaseCrashlytics.instance
+          .recordError(e, s, reason: 'loadRankingListFailed');
       logger.e(
           'class: ComicRankingList, action: loadRankingListFailed, exception: $e');
     }
@@ -74,5 +86,24 @@ class ComicRankingListModel extends BaseModel {
 
   int get length => _data.length;
 
-  List get data => _data;
+  List<RankingComic> get data => _data;
+}
+
+class RankingComic {
+  final String cover;
+  final String title;
+  final String comicId;
+  final String types;
+  final String authors;
+  final int timestamp;
+  final Map<String, String> headers;
+
+  RankingComic(
+      {this.cover,
+      this.title,
+      this.comicId,
+      this.types,
+      this.authors,
+      this.timestamp,
+      this.headers});
 }

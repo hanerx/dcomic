@@ -54,21 +54,22 @@ class _RankingPage extends State<RankingPage> {
                   var item =
                       Provider.of<ComicRankingListModel>(context).data[index];
                   return ComicListTile(
-                    title: item['title'],
-                    cover: item['cover'],
-                    tag: item['types'],
-                    authors: item['authors'],
-                    date: item['last_updatetime'],
-                    headers: {'referer': 'https://m.dmzj.com'},
+                    title: item.title,
+                    cover: item.cover,
+                    tag: item.types,
+                    authors: item.authors,
+                    date: item.timestamp,
+                    headers: item.headers,
                     onPressed: () {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => ComicDetailPage(
-                                id: item['comic_id'].toString(),
-                                title: item['title'],
+                                id: item.comicId,
+                                title: item.title,
                                 model: Provider.of<SourceProvider>(context)
                                     .activeSources
                                     .first,
-                              ),settings: RouteSettings(name: 'comic_detail_page')));
+                              ),
+                          settings: RouteSettings(name: 'comic_detail_page')));
                     },
                   );
                 },
