@@ -1,5 +1,9 @@
+import 'dart:convert';
+
+import 'package:dcomic/http/UniversalRequestModel.dart';
 import 'package:dcomic/http/http.dart';
 import 'package:dcomic/model/baseModel.dart';
+import 'package:dcomic/model/comicRankingListModel.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 class ComicLatestUpdateModel extends BaseModel {
@@ -10,10 +14,16 @@ class ComicLatestUpdateModel extends BaseModel {
 
   getLatestList() async {
     try {
-      CustomHttp http = CustomHttp();
-      var response = await http.getLatestList(filterTag, page);
+      var response=await UniversalRequestModel.dmzjMobileRequestHandler.getLatest(page);
       if (response.statusCode == 200) {
-        _data += response.data;
+        _data += jsonDecode(response.data).map<RankingComic>((item)=>RankingComic(
+            cover: 'https://images.dmzj.com/' + item['cover'],
+            title: item['name'],
+            types: item['types'],
+            authors: item['authors'],
+            timestamp: item['last_updatetime'],
+            headers: {'referer': 'https://m.dmzj.com'},
+            comicId: item['comic_id'])).toList();
       }
       notifyListeners();
       logger.i(

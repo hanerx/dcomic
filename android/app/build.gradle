@@ -40,7 +40,6 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "top.hanerx.flutterdmzj"
         minSdkVersion 26
         targetSdkVersion 28
