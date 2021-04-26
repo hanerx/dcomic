@@ -70,6 +70,11 @@ class DMZJRequestHandler extends SingleDomainRequestHandler {
   Future<Response> getSubjectDetail(String subjectId) {
     return dio.get('/subject/$subjectId.json');
   }
+
+  Future<Response> getCategoryDetail(
+      int categoryId, int date, int tag, int type, int page) {
+    return dio.get('/classify/$categoryId-$date-$tag/$type/$page.json');
+  }
 }
 
 class DMZJIRequestHandler extends SingleDomainRequestHandler {

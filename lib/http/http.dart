@@ -127,6 +127,7 @@ class CustomHttp {
         '/${novel == 0 ? 'classify' : 'novel'}/filter.json?$queryOptions');
   }
 
+  @Deprecated('使用新接口')
   Future<Response<T>> getCategoryDetail<T>(
       int categoryId, int date, int tag, int type, int page) async {
     return dio.get(
