@@ -6,7 +6,7 @@ class SubjectListModel extends BaseModel {
   final BaseSourceModel model;
   int page = 0;
   List<SubjectItem> _data = [];
-  dynamic error;
+  String error;
 
   SubjectListModel(this.model);
 
@@ -15,10 +15,13 @@ class SubjectListModel extends BaseModel {
       _data += await this.model.getSubjectList(page);
       error = null;
       notifyListeners();
+    } on LoginRequiredError catch (e) {
+      error = '专题页需要登录，请先登录';
+      notifyListeners();
     } catch (e, s) {
       FirebaseCrashlytics.instance
-          .recordError(e, s, reason: 'comicDetailLoadingFail');
-      error = e;
+          .recordError(e, s, reason: 'subjectListLoadingFail');
+      error = '未知错误：$e';
       notifyListeners();
     }
   }

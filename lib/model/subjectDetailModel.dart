@@ -9,7 +9,7 @@ class SubjectDetailModel extends BaseModel {
   String _title = "";
   String _description = "";
   List _data = [];
-  dynamic error;
+  String error;
 
   SubjectDetailModel(this.subjectId);
 
@@ -22,20 +22,12 @@ class SubjectDetailModel extends BaseModel {
         _title = response.data['title'];
         _description = response.data['description'];
         _data = response.data['comics'];
-        // for (var item in response.data['comics']) {
-        //   list.add(CustomListTile(
-        //       item['cover'],
-        //       item['name'],
-        //       item['recommend_brief'],
-        //       item['recommend_reason'],
-        //       item['id'].toString()));
-        // }
         notifyListeners();
       }
     } catch (e, s) {
       FirebaseCrashlytics.instance
           .recordError(e, s, reason: 'subjectDetailLoadingFail: $subjectId');
-      error=e;
+      error = '未知错误：$e';
       notifyListeners();
     }
   }
