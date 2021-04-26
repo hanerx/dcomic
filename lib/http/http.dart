@@ -58,6 +58,7 @@ class CustomHttp {
     return dio.get(baseUrl + "/novel/recommend.json?$queryOptions");
   }
 
+  @Deprecated("使用新实现方案")
   Future<Response<T>> getCategory<T>(int type) async {
     return dio.get(baseUrl + '/$type/category.json?$queryOptions');
   }

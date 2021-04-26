@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dcomic/http/UniversalRequestModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dcomic/component/CategoryCard.dart';
 import 'package:dcomic/http/http.dart';
@@ -24,9 +25,8 @@ class ComicCategoryModel extends BaseModel {
           .toList();
       notifyListeners();
     } else {
-      CustomHttp http = CustomHttp();
       try {
-        var response = await http.getCategory(type);
+        var response = await UniversalRequestModel.dmzjRequestHandler.getCategory(type);
         if (response.statusCode == 200) {
           category = response.data;
           notifyListeners();
