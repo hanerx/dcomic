@@ -1,12 +1,11 @@
 import 'dart:convert';
 
 import 'package:dcomic/http/UniversalRequestModel.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dcomic/component/CategoryCard.dart';
-import 'package:dcomic/http/http.dart';
 import 'package:dcomic/model/baseModel.dart';
 import 'package:flutter/services.dart';
-import 'package:lpinyin/lpinyin.dart';
 
 class ComicCategoryModel extends BaseModel {
   final int type;
@@ -31,7 +30,9 @@ class ComicCategoryModel extends BaseModel {
           category = response.data;
           notifyListeners();
         }
-      } catch (e) {
+      } catch (e,s) {
+        FirebaseCrashlytics.instance
+            .recordError(e, s, reason: 'CategoryLoadingFailed: $type');
         logger
             .e('class: ComicCategoryModel, action: initFailed, exception: $e');
       }

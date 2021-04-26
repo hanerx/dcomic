@@ -1,13 +1,13 @@
+import 'package:dcomic/http/UniversalRequestModel.dart';
 import 'package:dcomic/model/comic_source/sourceProvider.dart';
 import 'package:dcomic/view/comic_pages/subject_list_page.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:dcomic/component/CardView.dart';
 import 'package:dcomic/component/LoadingCube.dart';
-import 'package:dcomic/database/database.dart';
 import 'package:dcomic/database/sourceDatabaseProvider.dart';
-import 'package:dcomic/http/http.dart';
 import 'package:dcomic/view/favorite_page.dart';
 import 'package:provider/provider.dart';
 
@@ -34,10 +34,9 @@ class _HomePage extends State<HomePage> {
     bool login =
         await SourceDatabaseProvider.getSourceOption<bool>('dmzj', 'login');
     if (login) {
-      CustomHttp http = CustomHttp();
       var uid = await SourceDatabaseProvider.getSourceOption('dmzj', 'uid');
       try {
-        var response = await http.getRecommendBatchUpdate(uid);
+        var response = await UniversalRequestModel.dmzjRequestHandler.getUpdateBatch(uid);
         if (response.statusCode == 200 && mounted) {
           setState(() {
             list.insert(
@@ -66,9 +65,9 @@ class _HomePage extends State<HomePage> {
   }
 
   getMainPage() async {
-    CustomHttp http = CustomHttp();
     try {
-      var response = await http.getMainPageRecommend();
+      var response =
+          await UniversalRequestModel.dmzjRequestHandler.getMainPageRecommend();
       if (response.statusCode == 200) {
         List data = response.data;
         if (this.mounted) {
@@ -119,7 +118,10 @@ class _HomePage extends State<HomePage> {
           await getSubscribe();
         }
       }
-    } catch (e) {}
+    } catch (e, s) {
+      FirebaseCrashlytics.instance
+          .recordError(e, s, reason: 'MainPageLoadingFailed');
+    }
   }
 
   @override

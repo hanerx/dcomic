@@ -1,10 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dcomic/component/EmptyView.dart';
+import 'package:dcomic/component/LoadingCube.dart';
+import 'package:dcomic/component/comic/SubjectListTile.dart';
+import 'package:dcomic/model/comic_source/sourceProvider.dart';
+import 'package:dcomic/model/subjectDetailModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_parallax/flutter_parallax.dart';
 import 'package:dcomic/http/http.dart';
 import 'package:dcomic/view/comic_detail_page.dart';
-
+import 'package:provider/provider.dart';
 
 class SubjectDetailPage extends StatefulWidget {
   final String subjectId;
@@ -14,159 +20,131 @@ class SubjectDetailPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
-    return _SubjectDetailPage(subjectId);
+    return _SubjectDetailPage();
   }
 }
 
 class _SubjectDetailPage extends State<SubjectDetailPage> {
-  String title = '加载中';
-  String cover = 'http://manhua.dmzj.com/css/img/mh_logo_dmzj.png?t=20131122';
-  String description = '加载中';
-  String subjectId;
   List list = <Widget>[];
 
-  _SubjectDetailPage(this.subjectId);
-
-  void getSubjectDetail() async {
-    CustomHttp http = CustomHttp();
-    var response = await http.getSubjectDetail(subjectId);
-    if (response.statusCode == 200 && mounted) {
-      setState(() {
-        cover = response.data['mobile_header_pic'];
-        title = response.data['title'];
-        description = response.data['description'];
-        for (var item in response.data['comics']) {
-          list.add(CustomListTile(
-              item['cover'],
-              item['name'],
-              item['recommend_brief'],
-              item['recommend_reason'],
-              item['id'].toString()));
-        }
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    getSubjectDetail();
-  }
+  _SubjectDetailPage();
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return Scaffold(
-        appBar: AppBar(
-          title: Text('$title'),
-        ),
-        body: Scrollbar(
-            child: SingleChildScrollView(
-          child: Container(
-            margin: EdgeInsets.fromLTRB(3, 0, 0, 10),
-            child: Column(
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Parallax.inside(
-                        child: Image(
-                            image: CachedNetworkImageProvider(cover,
-                                headers: {'referer': 'http://images.dmzj.com'}),
-                            fit: BoxFit.cover),
-                        mainAxisExtent: 200.0,
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Card(
-                        margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                        child: Text('$description'),
-                      ),
-                    ),
-                  ],
-                ),
-                ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: list.length,
-                    itemBuilder: (context, index) {
-                      return list[index];
-                    })
-              ],
-            ),
+    return ChangeNotifierProvider(
+      create: (_) => SubjectDetailModel(widget.subjectId),
+      builder: (context, child) => Scaffold(
+          appBar: AppBar(
+            title: Text('${Provider.of<SubjectDetailModel>(context).title}'),
           ),
-        )));
-  }
-}
-
-class CustomListTile extends StatelessWidget {
-  final String cover;
-  final String title;
-  final String recommendBrief;
-  final String recommendReason;
-  final String comicId;
-
-  CustomListTile(this.cover, this.title, this.recommendBrief,
-      this.recommendReason, this.comicId);
-
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    return IntrinsicHeight(
-        child: FlatButton(
-      padding: EdgeInsets.fromLTRB(1, 0, 1, 0),
-      onPressed: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return ComicDetailPage(id:comicId,title: title,);
-        },settings: RouteSettings(name: 'comic_detail_page')));
-      },
-      child: Card(
-        child: Row(
-          children: <Widget>[
-            CachedNetworkImage(
-              imageUrl: '$cover',
-              httpHeaders: {'referer': 'http://images.dmzj.com'},
-              progressIndicatorBuilder: (context, url, downloadProgress) =>
-                  Center(
-                child:
-                    CircularProgressIndicator(value: downloadProgress.progress),
-              ),
-              errorWidget: (context, url, error) => Icon(Icons.error),
-              width: 100,
-            ),
-            Expanded(
-                child: Padding(
-              padding: EdgeInsets.fromLTRB(10, 2, 0, 0),
+          body: EasyRefresh(
+            firstRefreshWidget: LoadingCube(),
+            firstRefresh: true,
+            onRefresh: () async {
+              await Provider.of<SubjectDetailModel>(context, listen: false)
+                  .getSubjectDetail();
+            },
+            emptyWidget: Provider.of<SubjectDetailModel>(context).error == null
+                ? null
+                : EmptyView(
+                    message: Provider.of<SubjectDetailModel>(context).error,
+                  ),
+            child: Container(
+              margin: EdgeInsets.fromLTRB(3, 0, 0, 10),
               child: Column(
                 children: <Widget>[
-                  Text(
-                    title,
-                    style: TextStyle(fontSize: 16),
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Parallax.inside(
+                          child: Image(
+                              image: CachedNetworkImageProvider(
+                                  Provider.of<SubjectDetailModel>(context)
+                                      .cover,
+                                  headers:
+                                      Provider.of<SubjectDetailModel>(context)
+                                          .headers),
+                              fit: BoxFit.cover),
+                          mainAxisExtent: 200.0,
+                        ),
+                      )
+                    ],
                   ),
-                  Text(
-                    recommendBrief,
-                    style: TextStyle(color: Colors.grey[500]),
-                  ),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        recommendReason,
-                        style: TextStyle(color: Colors.grey[500]),
-                      ),
-                    ),
-                  ),
+                  Card(
+                      elevation: 0,
+                      margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(4, 2, 4, 10),
+                        child: Column(
+                          children: <Widget>[
+                            Row(
+                              children: <Widget>[
+                                Expanded(
+                                  child: Text(
+                                    Provider.of<SubjectDetailModel>(context)
+                                        .title,
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 2,
+                                  ),
+                                )
+                              ],
+                            ),
+                            Divider(
+                              color: Colors.black,
+                            ),
+                            Row(
+                              children: <Widget>[
+                                Expanded(
+                                  child: Text(
+                                      Provider.of<SubjectDetailModel>(context)
+                                          .description),
+                                )
+                              ],
+                            )
+                          ],
+                        ),
+                      )),
+                  Card(
+                    elevation: 0,
+                    child: ListView.builder(
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount:
+                        Provider.of<SubjectDetailModel>(context).data.length,
+                        itemBuilder: (context, index) {
+                          var item = Provider.of<SubjectDetailModel>(context,
+                              listen: false)
+                              .data[index];
+                          return SubjectListTile(
+                            cover: item['cover'],
+                            title: item['name'],
+                            recommendBrief: item['recommend_brief'],
+                            recommendReason: item['recommend_reason'],
+                            onPressed: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => ComicDetailPage(
+                                    id: item['id'].toString(),
+                                    title: item['name'],
+                                    model: Provider.of<SourceProvider>(
+                                        context,
+                                        listen: false)
+                                        .activeSources
+                                        .first,
+                                  ),
+                                  settings:
+                                  RouteSettings(name: 'comic_detail_page')));
+                            },
+                          );
+                        }),
+                  )
                 ],
               ),
-            ))
-          ],
-        ),
-      ),
-    ));
+            ),
+          )),
+    );
   }
 }

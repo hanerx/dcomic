@@ -170,19 +170,19 @@ class _DebugTestPage extends State<DebugTestPage> {
           ),
           EasyRefresh(
             onRefresh: () async {
-              var response = await CustomHttp().getSubscribeWeb();
-              if (response.statusCode == 200) {
-                var list = jsonDecode(response.data);
-                for (var item in list) {
-                  var data =
-                      await Provider.of<SourceProvider>(context, listen: false)
-                          .active
-                          .get(comicId: item['sub_id'].toString());
-                  setState(() {
-                    _subs.add(data);
-                  });
-                }
-              }
+              // var response = await CustomHttp().getSubscribeWeb();
+              // if (response.statusCode == 200) {
+              //   var list = jsonDecode(response.data);
+              //   for (var item in list) {
+              //     var data =
+              //         await Provider.of<SourceProvider>(context, listen: false)
+              //             .active
+              //             .get(comicId: item['sub_id'].toString());
+              //     setState(() {
+              //       _subs.add(data);
+              //     });
+              //   }
+              // }
             },
             child: ListView.builder(
               itemBuilder: (context, index) {

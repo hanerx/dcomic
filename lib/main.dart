@@ -50,6 +50,7 @@ class App extends StatelessWidget {
       ),
       ChangeNotifierProvider<ComicViewerSettingModel>(
         create: (_) => ComicViewerSettingModel(),
+        lazy: false,
       ),
       ChangeNotifierProvider<VersionModel>(
         create: (_) => VersionModel(),
@@ -77,8 +78,6 @@ class MainFrame extends StatefulWidget {
 }
 
 class _MainFrame extends State<MainFrame> {
-
-
   initDownloader() async {
     print("class: MainFrame, action: initDownloader");
     WidgetsFlutterBinding.ensureInitialized();
@@ -125,7 +124,8 @@ class _MainFrame extends State<MainFrame> {
         themeMode: Provider.of<SystemSettingModel>(context).themeMode,
         navigatorObservers: [
           FirebaseAnalyticsObserver(
-              analytics: Provider.of<SystemSettingModel>(context,listen: false).analytics),
+              analytics: Provider.of<SystemSettingModel>(context, listen: false)
+                  .analytics),
         ],
         darkTheme: ThemeData(
             brightness: Brightness.dark,

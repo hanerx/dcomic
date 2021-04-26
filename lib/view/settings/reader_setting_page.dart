@@ -65,7 +65,6 @@ class _ReaderSettingPage extends State<ReaderSettingPage> {
                 },
               ),
               Divider(),
-              Divider(),
               ListTile(
                 title: Text("章节末尾显示吐槽"),
                 subtitle: Text("选择章节末尾是否显示吐槽（重进阅读器启用）"),
@@ -77,6 +76,7 @@ class _ReaderSettingPage extends State<ReaderSettingPage> {
                   },
                 ),
               ),
+              Divider(),
               ListTile(
                 title: Text('碰撞体积'),
                 subtitle: Slider(
