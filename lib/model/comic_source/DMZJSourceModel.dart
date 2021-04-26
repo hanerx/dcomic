@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dcomic/database/historyDatabaseProvider.dart';
+import 'package:dcomic/model/subjectListModel.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:dcomic/database/cookieDatabaseProvider.dart';
@@ -304,6 +305,23 @@ class DMZJSourceModel extends BaseSourceModel {
         logger.e(
             'class: ${this.runtimeType}, action: loadingFavoriteError, exception: $e');
         throw e;
+      }
+    }
+    throw LoginRequiredError();
+  }
+
+  Future<List<SubjectItem>> getSubjectList(int page) async {
+    if (_userConfig.status == UserStatus.login) {
+      var response = await UniversalRequestModel.dmzjRequestHandler
+          .getSubjectList(_userConfig.userId, page: page);
+      if (response.statusCode == 200) {
+        return response.data['data']
+            .map<SubjectItem>((e) => SubjectItem(
+                cover: e['small_cover'],
+                title: e['short_title'],
+                subjectId: e['id'].toString(),
+                subtitle: e['title']))
+            .toList();
       }
     }
     throw LoginRequiredError();
@@ -805,12 +823,12 @@ class DMZJWebSourceModel extends DMZJSourceModel {
   @override
   // TODO: implement type
   SourceDetail get type => SourceDetail(
-      name:'dmzj-web',
-      title:'动漫之家网页',
-      description:'使用大妈之家移动网页版的接口，让漫画重新可以看了',
-      canDisable:true,
-      sourceType:SourceType.LocalDecoderSource,
-      deprecated:false,
+      name: 'dmzj-web',
+      title: '动漫之家网页',
+      description: '使用大妈之家移动网页版的接口，让漫画重新可以看了',
+      canDisable: true,
+      sourceType: SourceType.LocalDecoderSource,
+      deprecated: false,
       canSubscribe: false);
 
   @override

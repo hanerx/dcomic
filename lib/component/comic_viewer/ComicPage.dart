@@ -5,8 +5,6 @@ import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:dcomic/database/database.dart';
-import 'package:dcomic/http/http.dart';
 import 'package:dcomic/model/systemSettingModel.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';

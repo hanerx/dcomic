@@ -50,6 +50,10 @@ class DMZJRequestHandler extends SingleDomainRequestHandler {
     return dio
         .get('/search/show/$type/${Uri.encodeComponent(keyword)}/$page.json');
   }
+
+  Future<Response> getSubjectList(String uid, {int page: 0}) {
+    return dio.get('/subject_with_level/0/$page.json?uid=$uid');
+  }
 }
 
 class DMZJIRequestHandler extends SingleDomainRequestHandler {

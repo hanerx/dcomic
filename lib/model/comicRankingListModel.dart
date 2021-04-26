@@ -40,7 +40,7 @@ class ComicRankingListModel extends BaseModel {
                 authors: item['authors'],
                 timestamp: item['last_updatetime'],
                 headers: {'referer': 'https://m.dmzj.com'},
-                comicId: item['comic_id']))
+                comicId: item['id'].toString()))
             .toList();
       }
       notifyListeners();

@@ -14,8 +14,8 @@ class CategoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return FlatButton(
-      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+    return TextButton(
+      style: ButtonStyle(padding: MaterialStateProperty.all(EdgeInsets.zero)),
       child: Card(
           elevation: 0,
           child: new Container(

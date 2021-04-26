@@ -9,6 +9,7 @@ import 'package:dcomic/utils/tool_methods.dart';
 
 class ComicModel extends BaseModel {
   final Comic comic;
+  final bool enableViewpoint;
 
   int _index = 0;
 
@@ -18,7 +19,9 @@ class ComicModel extends BaseModel {
   bool login = false;
   String uid = '';
 
-  ComicModel(this.comic) {
+  int _initialIndex = 0;
+
+  ComicModel(this.comic, this.enableViewpoint) {
     init();
   }
 
@@ -106,7 +109,7 @@ class ComicModel extends BaseModel {
     );
   }
 
-  Widget builder(int index) {
+  Widget builder(int index, context) {
     if (comic != null && index >= 0 && index < comic.comicPages.length) {
       return ComicPage(
         url: comic.comicPages[index],
@@ -116,6 +119,36 @@ class ComicModel extends BaseModel {
         index: index,
         cover: false,
         headers: comic.headers,
+      );
+    } else if (comic.comicPages.length == index && enableViewpoint) {
+      return Center(
+        child: Card(
+          child: Wrap(
+            alignment: WrapAlignment.center,
+            children: [
+              Text('本章结束'),
+              Divider(),
+              Container(
+                height: 200,
+                child: Wrap(
+                  clipBehavior: Clip.antiAliasWithSaveLayer,
+                  children: buildViewPoint(context),
+                ),
+              ),
+              Divider(),
+              TextButton.icon(
+                  onPressed: () {
+                    print('hit!');
+                  },
+                  onLongPress: () {
+                    initialIndex = 0;
+                    Scaffold.of(context).openEndDrawer();
+                  },
+                  icon: Icon(Icons.message),
+                  label: Text('长按查看更多'))
+            ],
+          ),
+        ),
       );
     }
     return null;
@@ -136,7 +169,11 @@ class ComicModel extends BaseModel {
 
   int get catalogueLength => comic == null ? 0 : comic.chapters.length;
 
-  int get length => comic == null ? 0 : comic.comicPages.length;
+  int get length => comic == null
+      ? 0
+      : enableViewpoint
+          ? comic.comicPages.length + 1
+          : comic.comicPages.length;
 
   bool get left => comic == null ? true : !comic.canPrevious;
 
@@ -159,6 +196,13 @@ class ComicModel extends BaseModel {
 
   set index(int index) {
     this._index = index;
+    notifyListeners();
+  }
+
+  int get initialIndex => _initialIndex;
+
+  set initialIndex(int index) {
+    _initialIndex = index;
     notifyListeners();
   }
 }

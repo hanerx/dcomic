@@ -169,6 +169,13 @@ class ViewerConfigDatabaseProvider extends ConfigDatabaseProvider {
   set autoDark(Future<bool> autoDark) {
     autoDark.then((value) => insert<bool>('auto_dark', value));
   }
+
+  Future<bool> get enableViewpoint async =>
+      await get<bool>('enable_viewpoint', defaultValue: false);
+
+  set enableViewpoint(Future<bool> enableViewpoint) {
+    enableViewpoint.then((value) => insert<bool>('enable_viewpoint', value));
+  }
 }
 
 class SystemConfigDatabaseProvider extends ConfigDatabaseProvider {

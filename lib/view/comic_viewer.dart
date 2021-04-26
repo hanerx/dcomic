@@ -27,7 +27,6 @@ class ComicViewPage extends StatefulWidget {
 class _ComicViewPage extends State<ComicViewPage>
     with TickerProviderStateMixin {
   bool _show = false;
-  int _initialIndex = 0;
 
   @override
   void initState() {
@@ -52,7 +51,7 @@ class _ComicViewPage extends State<ComicViewPage>
   Widget build(BuildContext context) {
     // TODO: implement build
     return ChangeNotifierProvider(
-        create: (_) => ComicModel(widget.comic),
+        create: (_) => ComicModel(widget.comic,Provider.of<ComicViewerSettingModel>(context).enableViewpoint),
         builder: (context, test) {
           return Scaffold(
               backgroundColor: _getBackgroundColor(context),
@@ -108,21 +107,21 @@ class _ComicViewPage extends State<ComicViewPage>
                                         break;
                                       case 1:
                                         Scaffold.of(context).openEndDrawer();
-                                        setState(() {
-                                          _initialIndex = 0;
-                                        });
+                                        Provider.of<ComicModel>(context,
+                                                listen: false)
+                                            .initialIndex = 0;
                                         break;
                                       case 2:
                                         Scaffold.of(context).openEndDrawer();
-                                        setState(() {
-                                          _initialIndex = 1;
-                                        });
+                                        Provider.of<ComicModel>(context,
+                                                listen: false)
+                                            .initialIndex = 1;
                                         break;
                                       case 3:
                                         Scaffold.of(context).openEndDrawer();
-                                        setState(() {
-                                          _initialIndex = 2;
-                                        });
+                                        Provider.of<ComicModel>(context,
+                                                listen: false)
+                                            .initialIndex = 2;
                                         break;
                                       case 4:
                                         await Provider.of<ComicModel>(context,
@@ -193,7 +192,7 @@ class _ComicViewPage extends State<ComicViewPage>
                 widthPercent: 0.9,
                 child: DefaultTabController(
                   length: 3,
-                  initialIndex: _initialIndex,
+                  initialIndex: Provider.of<ComicModel>(context).initialIndex,
                   child: Scaffold(
                     appBar: AppBar(
                       backgroundColor: Colors.black54,
@@ -236,7 +235,7 @@ class _ComicViewPage extends State<ComicViewPage>
       return HorizontalPageView(
         key: horizontalKey,
         builder: (context, index) =>
-            Provider.of<ComicModel>(context).builder(index),
+            Provider.of<ComicModel>(context).builder(index, context),
         left: Provider.of<ComicModel>(context).left,
         right: Provider.of<ComicModel>(context).right,
         count: Provider.of<ComicModel>(context).length + 2,
@@ -257,7 +256,7 @@ class _ComicViewPage extends State<ComicViewPage>
       return VerticalPageView(
         key: verticalKey,
         builder: (context, index) =>
-            Provider.of<ComicModel>(context).builder(index),
+            Provider.of<ComicModel>(context).builder(index, context),
         refreshState: Provider.of<ComicModel>(context).refreshState,
         left: Provider.of<ComicModel>(context).left,
         right: Provider.of<ComicModel>(context).right,
@@ -330,6 +329,18 @@ class _ComicViewPage extends State<ComicViewPage>
                 !Provider.of<ComicViewerSettingModel>(context, listen: false)
                     .animation;
           },
+        ),
+        Divider(),
+        ListTile(
+          title: Text("章节末尾显示吐槽"),
+          subtitle: Text("选择章节末尾是否显示吐槽（重进阅读器启用）"),
+          trailing: Switch(
+            value: Provider.of<ComicViewerSettingModel>(context).enableViewpoint,
+            onChanged: (state) {
+              Provider.of<ComicViewerSettingModel>(context, listen: false)
+                  .enableViewpoint = state;
+            },
+          ),
         ),
         Divider(),
         ListTile(
@@ -439,7 +450,7 @@ class _ComicViewPage extends State<ComicViewPage>
               : 1,
           onChanged: (index) {
             if (index >= 1 &&
-                index <
+                index <=
                     Provider.of<ComicModel>(context, listen: false).length) {
               Provider.of<ComicModel>(context, listen: false).index =
                   index.toInt();
