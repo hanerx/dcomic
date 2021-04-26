@@ -1,3 +1,5 @@
+import 'package:dcomic/model/comic_source/sourceProvider.dart';
+import 'package:dcomic/view/comic_pages/subject_list_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -7,6 +9,7 @@ import 'package:dcomic/database/database.dart';
 import 'package:dcomic/database/sourceDatabaseProvider.dart';
 import 'package:dcomic/http/http.dart';
 import 'package:dcomic/view/favorite_page.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -47,10 +50,11 @@ class _HomePage extends State<HomePage> {
                     categoryId: 49,
                     action: IconButton(
                       onPressed: () {
-                        Navigator.of(context)
-                            .push(MaterialPageRoute(builder: (context) {
-                          return FavoritePage();
-                        },settings: RouteSettings(name: 'favorite_page')));
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) {
+                              return FavoritePage();
+                            },
+                            settings: RouteSettings(name: 'favorite_page')));
                       },
                       icon: Icon(Icons.arrow_forward_ios),
                     )));
@@ -77,6 +81,30 @@ class _HomePage extends State<HomePage> {
                       list: item['data'],
                       row: 3,
                       categoryId: item['category_id']));
+                } else if (item['category_id'] == 48) {
+                  list.add(CardView(
+                    title: item['title'],
+                    list: item['data'],
+                    row: 2,
+                    ratio: 1.4,
+                    categoryId: item['category_id'],
+                    action: IconButton(
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) {
+                              return SubjectListPage(
+                                model: Provider.of<SourceProvider>(context,
+                                        listen: false)
+                                    .activeSources
+                                    .first,
+                              );
+                            },
+                            settings:
+                                RouteSettings(name: 'subject_list_page')));
+                      },
+                      icon: Icon(Icons.arrow_forward_ios),
+                    ),
+                  ));
                 } else {
                   list.add(new CardView(
                       title: item['title'],

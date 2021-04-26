@@ -1,4 +1,5 @@
 import 'package:dcomic/database/historyDatabaseProvider.dart';
+import 'package:dcomic/model/subjectListModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dcomic/model/baseModel.dart';
@@ -43,6 +44,10 @@ abstract class BaseSourceModel extends BaseModel {
   String toString() {
     // TODO: implement toString
     return type.toString();
+  }
+
+  Future<List<SubjectItem>> getSubjectList(int page) async {
+    return [];
   }
 }
 
@@ -388,7 +393,7 @@ class HistoryComic extends FavoriteComic {
             model, false);
 }
 
-class ComicComment{
+class ComicComment {
   final String avatar;
   final String nickname;
   final String content;
@@ -396,5 +401,6 @@ class ComicComment{
   final int timestamp;
   final int like;
 
-  ComicComment(this.avatar, this.nickname, this.content, this.reply, this.timestamp, this.like);
+  ComicComment(this.avatar, this.nickname, this.content, this.reply,
+      this.timestamp, this.like);
 }

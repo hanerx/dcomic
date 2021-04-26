@@ -12,6 +12,7 @@ class ComicViewerSettingModel extends BaseModel {
   int _backgroundColor = 0;
   bool _animation = true;
   bool _autoDark = false;
+  bool _enableViewpoint = false;
   ViewerConfigDatabaseProvider _databaseProvider =
       ViewerConfigDatabaseProvider();
   static const List backgroundColors = [
@@ -36,6 +37,7 @@ class ComicViewerSettingModel extends BaseModel {
     _backgroundColor = await _databaseProvider.backgroundColor;
     _animation = await _databaseProvider.enableAnimation;
     _autoDark = await _databaseProvider.autoDark;
+    _enableViewpoint = await _databaseProvider.enableViewpoint;
     notifyListeners();
   }
 
@@ -99,6 +101,14 @@ class ComicViewerSettingModel extends BaseModel {
   set autoDark(bool value) {
     _databaseProvider.autoDark = Future.value(value);
     _autoDark = value;
+    notifyListeners();
+  }
+
+  bool get enableViewpoint => _enableViewpoint;
+
+  set enableViewpoint(bool value) {
+    _databaseProvider.enableViewpoint = Future.value(value);
+    _enableViewpoint = value;
     notifyListeners();
   }
 }

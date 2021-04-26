@@ -23,7 +23,7 @@ class ComicLatestUpdateModel extends BaseModel {
             authors: item['authors'],
             timestamp: item['last_updatetime'],
             headers: {'referer': 'https://m.dmzj.com'},
-            comicId: item['comic_id'])).toList();
+            comicId: item['id'].toString())).toList();
       }
       notifyListeners();
       logger.i(
