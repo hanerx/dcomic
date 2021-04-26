@@ -11,7 +11,7 @@ description: A simple comic viewer application
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.4.10-beta.6+43
+version: 1.4.10+44
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -102,6 +102,7 @@ flutter:
     - assets/guide/chapter0/main.json
     - assets/guide/example.json
     - assets/js/lzString.js
+    - assets/json/category.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

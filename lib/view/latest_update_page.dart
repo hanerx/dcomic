@@ -30,7 +30,6 @@ class _LatestUpdatePage extends State<LatestUpdatePage> {
         builder: (context, child) => DirectSelectContainer(
                 child: Column(
               children: [
-                _buildFilter(context),
                 Expanded(
                   child: EasyRefresh(
                     firstRefreshWidget: LoadingCube(),

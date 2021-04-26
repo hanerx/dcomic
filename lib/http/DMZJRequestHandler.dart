@@ -54,6 +54,27 @@ class DMZJRequestHandler extends SingleDomainRequestHandler {
   Future<Response> getSubjectList(String uid, {int page: 0}) {
     return dio.get('/subject_with_level/0/$page.json?uid=$uid');
   }
+
+  Future<Response> getCategory(int type) {
+    return dio.get('/$type/category.json');
+  }
+
+  Future<Response> getMainPageRecommend() {
+    return dio.get('/recommend.json');
+  }
+
+  Future<Response> getUpdateBatch(String uid) {
+    return dio.get('/recommend/batchUpdate?uid=$uid&category_id=49');
+  }
+
+  Future<Response> getSubjectDetail(String subjectId) {
+    return dio.get('/subject/$subjectId.json');
+  }
+
+  Future<Response> getCategoryDetail(
+      int categoryId, int date, int tag, int type, int page) {
+    return dio.get('/classify/$categoryId-$date-$tag/$type/$page.json');
+  }
 }
 
 class DMZJIRequestHandler extends SingleDomainRequestHandler {

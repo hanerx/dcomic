@@ -1,3 +1,4 @@
+import 'package:dcomic/http/UniversalRequestModel.dart';
 import 'package:dcomic/http/http.dart';
 import 'package:dcomic/model/baseModel.dart';
 
@@ -34,8 +35,7 @@ class ComicCategoryDetailModel extends BaseModel {
   }
 
   getCategoryDetail() async {
-    CustomHttp http = CustomHttp();
-    var response = await http.getCategoryDetail(
+    var response = await UniversalRequestModel.dmzjRequestHandler.getCategoryDetail(
         categoryId, filterDate, filterTag, filterType, page);
     if (response.statusCode == 200) {
       _data += response.data;

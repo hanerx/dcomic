@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+
 // import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:dcomic/database/database.dart';
 
@@ -50,6 +51,7 @@ class CustomHttp {
     return options;
   }
 
+  @Deprecated("使用新实现方案")
   Future<Response<T>> getMainPageRecommend<T>() async {
     return dio.get(baseUrl + "/recommend.json?$queryOptions");
   }
@@ -58,6 +60,7 @@ class CustomHttp {
     return dio.get(baseUrl + "/novel/recommend.json?$queryOptions");
   }
 
+  @Deprecated("使用新实现方案")
   Future<Response<T>> getCategory<T>(int type) async {
     return dio.get(baseUrl + '/$type/category.json?$queryOptions');
   }
@@ -110,10 +113,11 @@ class CustomHttp {
 
   @Deprecated('使用新实现方案')
   Future<Response<T>> getViewPoint<T>(String comicId, String chapterId) async {
-    return dio.get(
-        baseUrl + '/viewPoint/0/$comicId/$chapterId.json?$queryOptions');
+    return dio
+        .get(baseUrl + '/viewPoint/0/$comicId/$chapterId.json?$queryOptions');
   }
 
+  @Deprecated("使用新接口")
   Future<Response<T>> getSubjectDetail<T>(String subjectId) async {
     return dio.get(baseUrl + '/subject/$subjectId.json?$queryOptions');
   }
@@ -123,6 +127,7 @@ class CustomHttp {
         '/${novel == 0 ? 'classify' : 'novel'}/filter.json?$queryOptions');
   }
 
+  @Deprecated('使用新接口')
   Future<Response<T>> getCategoryDetail<T>(
       int categoryId, int date, int tag, int type, int page) async {
     return dio.get(
@@ -131,8 +136,8 @@ class CustomHttp {
 
   Future<Response<T>> getNovelCategoryDetail<T>(
       int categoryId, int tag, int type, int page) async {
-    return dio.get(
-        '$baseUrl/novel/$categoryId/$tag/$type/$page.json?$queryOptions');
+    return dio
+        .get('$baseUrl/novel/$categoryId/$tag/$type/$page.json?$queryOptions');
   }
 
   @Deprecated('使用新接口')
@@ -219,6 +224,7 @@ class CustomHttp {
         "https://interface.dmzj.com/api/record/getRe?st=comic&uid=$uid&callback=record_jsonpCallback&json=[$json]&type=3");
   }
 
+  @Deprecated("没用的")
   Future<Response<T>> setUpRead<T>(String subId) async {
     Options options = await this.setHeader();
     return unCachedDio.get(
@@ -226,11 +232,13 @@ class CustomHttp {
         options: options);
   }
 
+  @Deprecated("没用的")
   Future<Response<T>> getReadHistory<T>(String uid, int page) {
     return dio.get(
         "https://interface.dmzj.com/api/getReInfo/comic/$uid/$page?$queryOptions");
   }
 
+  @Deprecated("使用新接口")
   Future<Response<T>> getRecommendBatchUpdate<T>(String uid) {
     return dio.get(
         '$baseUrl/recommend/batchUpdate?uid=$uid&category_id=49&$queryOptions');
@@ -242,6 +250,7 @@ class CustomHttp {
         '$baseUrl/search/show/$type/${Uri.encodeComponent(keyword)}/$page.json?$queryOptions');
   }
 
+  @Deprecated("使用新接口")
   Future<Response<T>> getLatestList<T>(int tagId, int page) {
     return dio.get('$baseUrl/latest/$tagId/$page.json?$queryOptions');
   }
@@ -254,6 +263,7 @@ class CustomHttp {
     return dio.get('https://dark-dmzj.hloli.net/data.json');
   }
 
+  @Deprecated("使用新接口")
   Future<Response<T>> getComicComment<T>(String comicId, int page, int type,
       {int novel: 0}) {
     return dio.get(
@@ -290,6 +300,7 @@ class CustomHttp {
         options: Options(headers: {'referer': 'http://images.dmzj.com'}));
   }
 
+  @Deprecated("没用的接口")
   Future<Response<T>> getImage<T>(String url) {
     return dio.get(url,
         options: Options(
@@ -319,6 +330,7 @@ class CustomHttp {
             responseType: ResponseType.bytes));
   }
 
+  @Deprecated("没用的接口")
   Future<Response> getSubscribeWeb() async {
     Options options = await setHeader();
     return dio.get('$mUrl/mysubscribe', options: options);

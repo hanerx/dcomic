@@ -1,16 +1,9 @@
-import 'dart:convert';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dcomic/view/settings/user_setting_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
-import 'package:dcomic/database/database.dart';
-import 'package:dcomic/http/http.dart';
 import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:dcomic/model/comic_source/sourceProvider.dart';
-import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
