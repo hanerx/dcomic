@@ -102,6 +102,7 @@ flutter:
     - assets/guide/chapter0/main.json
     - assets/guide/example.json
     - assets/js/lzString.js
+    - assets/json/category.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

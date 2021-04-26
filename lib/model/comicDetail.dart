@@ -87,6 +87,7 @@ class ComicDetailModel extends BaseModel {
     try {
       detail = await _model.get(title: this._title, comicId: this._comicId);
       if (detail != null) {
+        print(detail.cover);
         await detail.getIfSubscribed();
       }
       error = null;

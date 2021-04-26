@@ -23,19 +23,19 @@ class ToolMethods {
     return DateTime.parse(time).millisecondsSinceEpoch;
   }
 
-  static int formatTimeStringForMangabz(String time){
+  static int formatTimeStringForMangabz(String time) {
+    if (time.contains('今天')) {
+      return DateTime.now().millisecondsSinceEpoch;
+    }
     if (time.contains('昨天')) {
       var dateTime = DateTime.now().add(Duration(days: -1));
       return dateTime.millisecondsSinceEpoch;
     }
-    if(time.contains('前天')){
+    if (time.contains('前天')) {
       var dateTime = DateTime.now().add(Duration(days: -1));
       return dateTime.millisecondsSinceEpoch;
     }
-    time = time
-        .replaceAll(' 更新', '')
-        .replaceAll('月', '-')
-        .replaceAll('号', '');
+    time = time.replaceAll(' 更新', '').replaceAll('月', '-').replaceAll('号', '');
     if (time.indexOf('-') != 4) {
       time = '${DateTime.now().year}-$time';
     }

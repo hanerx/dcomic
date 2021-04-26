@@ -34,7 +34,7 @@ class CopyMangaRequestHandler extends SingleDomainRequestHandler {
 
   Future<Response> getComic(String comicId, String chapterId) async {
     return dio.get(
-        '/api/v3/comic/$comicId/chapter/$chapterId?platform=2&_update=true',
+        '/api/v3/comic/$comicId/chapter/$chapterId?platform=1&_update=true',
         options: await setHeader({
           'User-Agent':
               'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.134 Safari/537.36'

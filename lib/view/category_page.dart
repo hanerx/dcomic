@@ -31,25 +31,59 @@ class _CategoryPage extends State<CategoryPage> {
     return ChangeNotifierProvider(
       create: (_) => ComicCategoryModel(widget.type),
       builder: (context, child) {
-        return EasyRefresh(
-          scrollController: ScrollController(),
-          onRefresh: () async {
-            await Provider.of<ComicCategoryModel>(context, listen: false)
-                .init();
-          },
-          firstRefresh: true,
-          firstRefreshWidget: LoadingCube(),
-          emptyWidget: Provider.of<ComicCategoryModel>(context).empty
-              ? EmptyView()
-              : null,
-          child: GridView.count(
-            physics: NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            crossAxisCount: 3,
-            childAspectRatio: 0.85,
-            children: Provider.of<ComicCategoryModel>(context)
-                .buildCategoryWidget(context),
-          ),
+        return Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                    child: Padding(
+                  child: Text('当前分类加载模式：'),
+                  padding: EdgeInsets.only(left: 10),
+                )),
+                Padding(
+                    padding: EdgeInsets.only(right: 10),
+                    child: OutlinedButton(
+                        style: ButtonStyle(
+                            shape: MaterialStateProperty.all(
+                                RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.all(
+                                        Radius.circular(50))))),
+                        child: Text(
+                            '${Provider.of<ComicCategoryModel>(context).local ? "本地模式" : "云端模式"}'),
+                        onPressed: () async {
+                          Provider.of<ComicCategoryModel>(context,
+                                  listen: false)
+                              .local = !Provider.of<ComicCategoryModel>(context,
+                                  listen: false)
+                              .local;
+                          await Provider.of<ComicCategoryModel>(context,
+                                  listen: false)
+                              .init();
+                        }))
+              ],
+            ),
+            Expanded(
+                child: EasyRefresh(
+              scrollController: ScrollController(),
+              onRefresh: () async {
+                await Provider.of<ComicCategoryModel>(context, listen: false)
+                    .init();
+              },
+              firstRefresh: true,
+              firstRefreshWidget: LoadingCube(),
+              emptyWidget: Provider.of<ComicCategoryModel>(context).empty
+                  ? EmptyView()
+                  : null,
+              child: GridView.count(
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                crossAxisCount: 3,
+                childAspectRatio: 0.85,
+                children: Provider.of<ComicCategoryModel>(context)
+                    .buildCategoryWidget(context),
+              ),
+            ))
+          ],
         );
       },
     );

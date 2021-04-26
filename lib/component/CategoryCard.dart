@@ -25,6 +25,7 @@ class CategoryCard extends StatelessWidget {
                   child: AspectRatio(
                     child: CachedNetworkImage(
                       imageUrl: '$cover',
+                      fit: BoxFit.cover,
                       httpHeaders: {'referer': 'http://images.dmzj.com'},
                       progressIndicatorBuilder:
                           (context, url, downloadProgress) => Center(

@@ -10,10 +10,20 @@ import 'package:lpinyin/lpinyin.dart';
 class ComicCategoryModel extends BaseModel {
   final int type;
   List category = [];
+  bool _local = false;
 
   ComicCategoryModel(this.type);
 
   Future<void> init() async {
+    if (type == 0 && _local) {
+      List data =
+          jsonDecode(await rootBundle.loadString("assets/json/category.json"));
+      category = data
+          .map<Map>((e) =>
+              {'title': e['title'], 'cover': e['cover'], 'tag_id': e['tag_id']})
+          .toList();
+      notifyListeners();
+    } else {
       CustomHttp http = CustomHttp();
       try {
         var response = await http.getCategory(type);
@@ -25,6 +35,7 @@ class ComicCategoryModel extends BaseModel {
         logger
             .e('class: ComicCategoryModel, action: initFailed, exception: $e');
       }
+    }
   }
 
   List<Widget> buildCategoryWidget(context) {
@@ -39,4 +50,11 @@ class ComicCategoryModel extends BaseModel {
   }
 
   bool get empty => category.length == 0;
+
+  bool get local => _local;
+
+  set local(bool value) {
+    _local = value;
+    notifyListeners();
+  }
 }
