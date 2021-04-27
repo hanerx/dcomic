@@ -13,35 +13,55 @@ import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 class SourceProvider extends BaseModel {
   List<BaseSourceModel> sources = [];
   BaseSourceModel _active;
+  BaseSourceModel _activeHomeModel;
+  int _homeIndex = 0;
   int _index = 0;
   LocalSourceModel localSourceModel = LocalSourceModel();
+  bool lock = false;
 
   SourceProvider() {
     init();
   }
 
   Future<void> init() async {
-    sources.add(DMZJWebSourceModel());
-    // sources.add(DMZJSourceModel());
-    sources.add(MangabzSourceModel());
-    sources.add(ManHuaGuiSourceModel());
-    sources.add(KuKuSourceModel());
-    sources.add(localSourceModel);
-    sources.add(CopyMangaSourceModel());
-    var options = await SourceDatabaseProvider.getSourceOptions('provider');
-    if (options.containsKey('index')) {
-      _index = int.parse(options['index']);
-      if (_index >= 0 && _index < activeSources.length) {
-        _active = activeSources[index];
+    if (!lock) {
+      sources.add(DMZJWebSourceModel());
+      // sources.add(DMZJSourceModel());
+      sources.add(MangabzSourceModel());
+      sources.add(ManHuaGuiSourceModel());
+      sources.add(KuKuSourceModel());
+      sources.add(localSourceModel);
+      sources.add(CopyMangaSourceModel());
+      var options = await SourceDatabaseProvider.getSourceOptions('provider');
+      if (options.containsKey('index')) {
+        _index = int.parse(options['index']);
+        if (_index >= 0 && _index < activeSources.length) {
+          _active = activeSources[index];
+        } else {
+          _active = sources.first;
+          _index = 0;
+        }
       } else {
         _active = sources.first;
         _index = 0;
       }
-    } else {
-      _active = sources.first;
-      _index = 0;
+      if (options.containsKey("home_index")) {
+        _homeIndex = int.parse(options['home_index']);
+        if (_homeIndex >= 0 && _homeIndex < activeHomeSources.length) {
+          _activeHomeModel = activeHomeSources[homeIndex];
+        } else {
+          _activeHomeModel = activeHomeSources.first;
+          _homeIndex = 0;
+        }
+      } else {
+        _activeHomeModel = activeHomeSources.first;
+        _homeIndex = 0;
+      }
+      logger.i('class: SourceProvider, action: init, sources: $sources');
+      lock=true;
+      notifyListeners();
     }
-    logger.i('class: SourceProvider, action: init, sources: $sources');
+    // notifyListeners();
   }
 
   List<BaseSourceModel> get activeSources {
@@ -91,6 +111,35 @@ class SourceProvider extends BaseModel {
     if (index < activeSources.length) {
       _index = index;
       SourceDatabaseProvider.insertSourceOption('provider', 'index', index);
+      notifyListeners();
+    }
+  }
+
+  List<BaseSourceModel> get activeHomeSources {
+    List<BaseSourceModel> data = [];
+    for (var item in sources) {
+      if (item.options.active && item.type.haveHomePage) {
+        data.add(item);
+      }
+    }
+    return data;
+  }
+
+  BaseSourceModel get activeHomeModel => _activeHomeModel;
+
+  set activeHomeModel(BaseSourceModel active) {
+    _activeHomeModel = active;
+    homeIndex = activeHomeSources.indexOf(active);
+    notifyListeners();
+  }
+
+  int get homeIndex => _homeIndex;
+
+  set homeIndex(int index) {
+    if (index < activeSources.length) {
+      _homeIndex = index;
+      SourceDatabaseProvider.insertSourceOption(
+          'provider', 'home_index', index);
       notifyListeners();
     }
   }

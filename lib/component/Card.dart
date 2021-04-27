@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:dcomic/model/comic_source/sourceProvider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,10 +11,9 @@ class HomePageCard extends StatelessWidget {
   final String imageUrl;
   final String title;
   final String subtitle;
-  final int type;
-  final String id;
+  final ContextCallback onPressed;
 
-  HomePageCard(this.imageUrl, this.title, this.subtitle, this.type, this.id);
+  HomePageCard({this.imageUrl, this.title, this.subtitle, this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -21,32 +21,8 @@ class HomePageCard extends StatelessWidget {
     return TextButton(
       style: ButtonStyle(padding: MaterialStateProperty.all(EdgeInsets.zero)),
       onPressed: () {
-        switch (type) {
-          case 1:
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) {
-                      return ComicDetailPage(
-                        id: id,
-                        title: title,
-                        model: Provider.of<SourceProvider>(context)
-                            .activeSources
-                            .first,
-                      );
-                    },
-                    settings: RouteSettings(name: 'comic_detail_page')));
-            break;
-          case 5:
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) {
-                      return SubjectDetailPage(id);
-                    },
-                    settings: RouteSettings(name: 'subject_detail_page')));
-            break;
-          default:
+        if(onPressed!=null){
+          onPressed(context);
         }
       },
       child: Card(

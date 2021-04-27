@@ -417,28 +417,36 @@ abstract class BaseHomePageHandler {
 
   Future<List<CategoryModel>> getCategory();
 
-  Future<List<SearchResult>> getCategoryDetail(CategoryModel);
+  Future<List<SearchResult>> getCategoryDetail(CategoryModel model);
 
-  Future<List<RankingComic>> getRankingList();
+  Future<List<RankingComic>> getRankingList(int page);
 
-  Future<List<RankingComic>> getLatestUpdate();
+  Future<List<RankingComic>> getLatestUpdate(int page);
 
   Future<List> getSubjectList();
 }
 
+typedef BuilderCallback =Widget Function(BuildContext);
+
 class HomePageCardModel {
   final String title;
-  final Widget action;
+  final BuilderCallback action;
   final List detail;
 
   HomePageCardModel({@required this.title, this.action, @required this.detail});
 }
 
+typedef ContextCallback = void Function(dynamic);
+
 class HomePageCardDetailModel {
   final String title;
   final String subtitle;
   final String cover;
+  final ContextCallback onPressed;
 
   HomePageCardDetailModel(
-      {@required this.title, this.subtitle, @required this.cover});
+      {@required this.title,
+      this.subtitle,
+      @required this.cover,
+      @required this.onPressed});
 }

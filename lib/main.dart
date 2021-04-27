@@ -155,7 +155,16 @@ class _MainFrame extends State<MainFrame> {
             platform: TargetPlatform.iOS,
             buttonTheme: ButtonThemeData(buttonColor: Colors.blue),
             appBarTheme: AppBarTheme(brightness: Brightness.dark)),
-        home: MainPage());
+        home: Provider.of<SourceProvider>(context).lock
+            ? MainPage()
+            : Scaffold(
+                body: Center(
+                  child: Container(
+                    height: 300,
+                    child: FlutterLogo(),
+                  ),
+                ),
+              ));
   }
 }
 

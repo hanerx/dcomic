@@ -26,7 +26,7 @@ class _LatestUpdatePage extends State<LatestUpdatePage> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return ChangeNotifierProvider(
-        create: (_) => ComicLatestUpdateModel(),
+        create: (_) => ComicLatestUpdateModel(Provider.of<SourceProvider>(context).activeHomeModel),
         builder: (context, child) => DirectSelectContainer(
                 child: Column(
               children: [
@@ -69,9 +69,7 @@ class _LatestUpdatePage extends State<LatestUpdatePage> {
                                 builder: (context) => ComicDetailPage(
                                   id: item.comicId,
                                   title: item.title,
-                                  model: Provider.of<SourceProvider>(context)
-                                      .activeSources
-                                      .first,
+                                  model: item.model,
                                 ),
                                 settings: RouteSettings(name: 'comic_detail_page')));
                           },
@@ -85,61 +83,4 @@ class _LatestUpdatePage extends State<LatestUpdatePage> {
             )));
   }
 
-  Widget _buildFilter(context) {
-    return Container(
-      height: 45,
-      child: Row(
-        children: <Widget>[
-          Expanded(
-              flex: 10,
-              child: Padding(
-                child: DirectSelectList<int>(
-                  values: Provider.of<ComicLatestUpdateModel>(context)
-                      .tagTypeList
-                      .keys
-                      .toList(),
-                  defaultItemIndex: Provider.of<ComicLatestUpdateModel>(context)
-                      .tagTypeList
-                      .keys
-                      .toList()
-                      .indexOf(
-                      Provider.of<ComicLatestUpdateModel>(context).filterTag),
-                  itemBuilder: (int value) => DirectSelectItem<int>(
-                      itemHeight: 56,
-                      value: value,
-                      itemBuilder: (context, value) {
-                        return Container(
-                          child: Text(
-                            Provider.of<ComicLatestUpdateModel>(context,
-                                listen: false)
-                                .tagTypeList[value],
-                            textAlign: TextAlign.center,
-                          ),
-                        );
-                      }),
-                  onItemSelectedListener: (item, index, context) {
-                    Provider.of<ComicLatestUpdateModel>(context, listen: false)
-                        .filterTag = item;
-                    Provider.of<ComicLatestUpdateModel>(context, listen: false)
-                        .refresh();
-                  },
-                  focusedItemDecoration: BoxDecoration(
-                    border: BorderDirectional(
-                      bottom: BorderSide(width: 1, color: Colors.black12),
-                      top: BorderSide(width: 1, color: Colors.black12),
-                    ),
-                  ),
-                ),
-                padding: EdgeInsets.only(left: 15),
-              )),
-          Expanded(
-            child: Icon(
-              Icons.unfold_more,
-              color: Theme.of(context).disabledColor,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }

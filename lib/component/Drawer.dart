@@ -1,5 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:dcomic/model/comic_source/sourceProvider.dart';
+import 'package:direct_select_flutter/direct_select_container.dart';
+import 'package:direct_select_flutter/direct_select_item.dart';
+import 'package:direct_select_flutter/direct_select_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dcomic/database/database.dart';
@@ -22,7 +26,6 @@ class CustomDrawer extends StatefulWidget {
 }
 
 class CustomDrawerState extends State<CustomDrawer> {
-
   static const List darkMode = [
     Icons.brightness_4,
     Icons.brightness_5,
@@ -45,6 +48,7 @@ class CustomDrawerState extends State<CustomDrawer> {
     List list = buildList(context);
     // TODO: implement build
     return new Drawer(
+        child: DirectSelectContainer(
       child: ListView.builder(
         padding: EdgeInsets.zero,
         itemCount: list.length,
@@ -52,7 +56,7 @@ class CustomDrawerState extends State<CustomDrawer> {
           return list[index];
         },
       ),
-    );
+    ));
   }
 
   List<Widget> buildList(BuildContext context) {
@@ -81,7 +85,9 @@ class CustomDrawerState extends State<CustomDrawer> {
                     .darkState = 0;
               }
             },
-            style: ButtonStyle(shape: MaterialStateProperty.all(CircleBorder()),padding: MaterialStateProperty.all(EdgeInsets.zero)),
+            style: ButtonStyle(
+                shape: MaterialStateProperty.all(CircleBorder()),
+                padding: MaterialStateProperty.all(EdgeInsets.zero)),
           ),
           TextButton(
             child: Icon(
@@ -89,21 +95,61 @@ class CustomDrawerState extends State<CustomDrawer> {
               color: Colors.white,
             ),
             onPressed: () {
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (context) => LoginPage(),settings: RouteSettings(name: 'login_page')));
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => LoginPage(),
+                  settings: RouteSettings(name: 'login_page')));
             },
-            style: ButtonStyle(shape: MaterialStateProperty.all(CircleBorder()),padding: MaterialStateProperty.all(EdgeInsets.zero)),
+            style: ButtonStyle(
+                shape: MaterialStateProperty.all(CircleBorder()),
+                padding: MaterialStateProperty.all(EdgeInsets.zero)),
           )
         ],
       ),
+      ListTile(
+        leading: Icon(Icons.apps),
+        title: DirectSelectList<BaseSourceModel>(
+          values: Provider.of<SourceProvider>(context).activeHomeSources,
+          defaultItemIndex: Provider.of<SourceProvider>(context).homeIndex,
+          itemBuilder: (BaseSourceModel value) =>
+              DirectSelectItem<BaseSourceModel>(
+                  itemHeight: 56,
+                  value: value,
+                  itemBuilder: (context, value) {
+                    return Container(
+                      child: Text(
+                        value.type.title,
+                        textAlign: TextAlign.start,
+                      ),
+                    );
+                  }),
+          onItemSelectedListener: (item, index, context) {
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(item.type.title)));
+            Provider.of<SourceProvider>(context, listen: false)
+                .activeHomeModel = item;
+          },
+          focusedItemDecoration: BoxDecoration(
+            border: BorderDirectional(
+              bottom: BorderSide(width: 1, color: Colors.black12),
+              top: BorderSide(width: 1, color: Colors.black12),
+            ),
+          ),
+        ),
+        trailing: Icon(Icons.unfold_more),
+      ),
+      Divider(),
       ListTile(
         title: Text(S.of(context).Favorite),
         leading: Icon(Icons.favorite),
         onTap: () {
           Navigator.of(context).pop();
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return FavoritePage();
-          },settings: RouteSettings(name: 'favorite_page')));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) {
+                    return FavoritePage();
+                  },
+                  settings: RouteSettings(name: 'favorite_page')));
         },
       ),
       ListTile(
@@ -131,38 +177,46 @@ class CustomDrawerState extends State<CustomDrawer> {
           leading: Icon(Icons.block),
           onTap: () {
             Navigator.of(context).pop();
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return DarkSidePage();
-            },settings: RouteSettings(name: 'dark_side_page')));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) {
+                      return DarkSidePage();
+                    },
+                    settings: RouteSettings(name: 'dark_side_page')));
           },
         )
       ];
     }
-    if (Provider.of<SystemSettingModel>(context, listen: false).novel) {
-      list += <Widget>[
-        Divider(),
-        ListTile(
-          title: Text(S.of(context).Novel),
-          leading: Icon(Icons.book),
-          onTap: () {
-            Navigator.of(context).pop();
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-              return NovelMainPage();
-            },settings: RouteSettings(name: 'novel_main_page')));
-          },
-        )
-      ];
-    }
+    // if (Provider.of<SystemSettingModel>(context, listen: false).novel) {
+    //   list += <Widget>[
+    //     Divider(),
+    //     ListTile(
+    //       title: Text(S.of(context).Novel),
+    //       leading: Icon(Icons.book),
+    //       onTap: () {
+    //         Navigator.of(context).pop();
+    //         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+    //           return NovelMainPage();
+    //         },settings: RouteSettings(name: 'novel_main_page')));
+    //       },
+    //     )
+    //   ];
+    // }
 
-    if (Provider.of<SourceProvider>(context, listen: false).localSourceModel.options.active) {
-      list+=<Widget>[
+    if (Provider.of<SourceProvider>(context, listen: false)
+        .localSourceModel
+        .options
+        .active) {
+      list += <Widget>[
         Divider(),
         ListTile(
           title: Text('.manga制作器'),
           leading: Icon(Icons.edit),
           onTap: () {
-            Navigator.of(context)
-                .push(MaterialPageRoute(builder: (context) => MagMakePage(),settings: RouteSettings(name: 'mag_make_page')));
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => MagMakePage(),
+                settings: RouteSettings(name: 'mag_make_page')));
           },
         ),
       ];

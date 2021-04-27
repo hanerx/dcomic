@@ -1,7 +1,15 @@
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dcomic/database/historyDatabaseProvider.dart';
+import 'package:dcomic/model/comicCategoryModel.dart';
+import 'package:dcomic/model/comicRankingListModel.dart';
+import 'package:dcomic/model/comic_source/sourceProvider.dart';
 import 'package:dcomic/model/subjectListModel.dart';
+import 'package:dcomic/view/comic_detail_page.dart';
+import 'package:dcomic/view/comic_pages/subject_list_page.dart';
+import 'package:dcomic/view/favorite_page.dart';
+import 'package:dcomic/view/subject_detail_page.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:dcomic/database/cookieDatabaseProvider.dart';
@@ -833,7 +841,8 @@ class DMZJWebSourceModel extends DMZJSourceModel {
       canDisable: false,
       sourceType: SourceType.LocalDecoderSource,
       deprecated: false,
-      canSubscribe: true);
+      canSubscribe: true,
+      haveHomePage: true);
 
   @override
   // TODO: implement options
@@ -847,8 +856,7 @@ class DMZJWebSourceModel extends DMZJSourceModel {
 
   @override
   // TODO: implement homePageHandler
-  BaseHomePageHandler get homePageHandler => throw UnimplementedError();
-
+  BaseHomePageHandler get homePageHandler => DMZJHomePageHandler(this);
 }
 
 class DMZJConfigProvider extends SourceOptionsProvider {
@@ -1464,4 +1472,179 @@ class DMZJSearchResult extends SearchResult {
   @override
   // TODO: implement latestChapter
   String get latestChapter => _latestChapter;
+}
+
+class DMZJHomePageHandler extends BaseHomePageHandler {
+  final DMZJWebSourceModel model;
+  static List allowedCategory = <int>[47, 48, 52, 53, 54, 55, 56];
+
+  DMZJHomePageHandler(this.model);
+
+  @override
+  Future<List<CategoryModel>> getCategory() {
+    // TODO: implement getCategory
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<SearchResult>> getCategoryDetail(CategoryModel model) {
+    // TODO: implement getCategoryDetail
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<HomePageCardModel>> getHomePage() async {
+    // TODO: implement getHomePage
+    List<HomePageCardModel> data = await getSubscribe();
+    try {
+      var response =
+          await UniversalRequestModel.dmzjRequestHandler.getMainPageRecommend();
+      if (response.statusCode == 200) {
+        for (var item in response.data) {
+          if (allowedCategory.indexOf(item['category_id']) >= 0) {
+            if (item['category_id'] == 48) {
+              data.add(HomePageCardModel(
+                  title: item['title'],
+                  detail: item['data']
+                      .map<HomePageCardDetailModel>(
+                          (e) => HomePageCardDetailModel(
+                              title: e['title'],
+                              cover: e['cover'],
+                              subtitle: e['sub_title'],
+                              onPressed: (context) {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => SubjectDetailPage(
+                                        e['obj_id'].toString()),
+                                    settings: RouteSettings(
+                                        name: "subject_detail_page")));
+                              }))
+                      .toList(),
+                  action: (context) => IconButton(
+                        onPressed: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) {
+                                return SubjectListPage(
+                                  model: model,
+                                );
+                              },
+                              settings:
+                                  RouteSettings(name: 'subject_list_page')));
+                        },
+                        icon: Icon(Icons.arrow_forward_ios),
+                      )));
+            } else {
+              data.add(HomePageCardModel(
+                  title: item['title'],
+                  detail: item['data']
+                      .map<HomePageCardDetailModel>(
+                          (e) => HomePageCardDetailModel(
+                              title: e['title'],
+                              cover: e['cover'],
+                              subtitle: e['sub_title'],
+                              onPressed: (context) {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => ComicDetailPage(
+                                          id: e['obj_id'].toString(),
+                                          title: e['title'],
+                                          model: model,
+                                        ),
+                                    settings: RouteSettings(
+                                        name: "comic_detail_page")));
+                              }))
+                      .toList()));
+            }
+          }
+        }
+      }
+    } catch (e, s) {
+      FirebaseCrashlytics.instance
+          .recordError(e, s, reason: 'dmzjGetHomePageFailed');
+    }
+    return data;
+  }
+
+  Future<List<HomePageCardModel>> getSubscribe() async {
+    if (model.userConfig.status == UserStatus.login) {
+      try {
+        var response = await UniversalRequestModel.dmzjRequestHandler
+            .getUpdateBatch(model.userConfig.userId);
+        if (response.statusCode == 200) {
+          return [
+            HomePageCardModel(
+                title: response.data['data']['title'],
+                detail: response.data['data']['data']
+                    .map<HomePageCardDetailModel>(
+                        (e) => HomePageCardDetailModel(
+                            title: e['title'],
+                            cover: e['cover'],
+                            subtitle: e['authors'],
+                            onPressed: (context) {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => ComicDetailPage(
+                                        id: e['id'].toString(),
+                                        title: e['title'],
+                                        model: model,
+                                      ),
+                                  settings: RouteSettings(
+                                      name: "comic_detail_page")));
+                            }))
+                    .toList(),
+                action: (context) => IconButton(
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) {
+                              return FavoritePage();
+                            },
+                            settings: RouteSettings(name: 'favorite_page')));
+                      },
+                      icon: Icon(Icons.arrow_forward_ios),
+                    ))
+          ];
+        }
+      } catch (e, s) {
+        FirebaseCrashlytics.instance.recordError(e, s,
+            reason:
+                'dmzjGetHomePageSubscribeFailed: ${model.userConfig.userId}');
+      }
+    }
+    return [];
+  }
+
+  @override
+  Future<List<RankingComic>> getLatestUpdate(int page) async {
+    // TODO: implement getLatestUpdate
+    try {
+      var response =
+          await UniversalRequestModel.dmzjMobileRequestHandler.getLatest(page);
+      if (response.statusCode == 200) {
+        return jsonDecode(response.data)
+            .map<RankingComic>((item) => RankingComic(
+                cover: 'https://images.dmzj.com/' + item['cover'],
+                title: item['name'],
+                types: item['types'],
+                authors: item['authors'],
+                timestamp: item['last_updatetime'],
+                headers: {'referer': 'https://m.dmzj.com'},
+                comicId: item['id'].toString(),
+                model: model))
+            .toList();
+      }
+    } catch (e, s) {
+      FirebaseCrashlytics.instance
+          .recordError(e, s, reason: 'dmzjGetLatestUpdateFailed: $page');
+    }
+    return [];
+  }
+
+  @override
+  Future<List<RankingComic>> getRankingList(int page) {
+    // TODO: implement getRankingList
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List> getSubjectList() {
+    // TODO: implement getSubjectList
+    throw UnimplementedError();
+  }
 }
