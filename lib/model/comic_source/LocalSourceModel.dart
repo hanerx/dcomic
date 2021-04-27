@@ -154,6 +154,10 @@ class LocalSourceModel extends BaseSourceModel {
   @override
   // TODO: implement userConfig
   UserConfig get userConfig => InactiveUserConfig(type);
+
+  @override
+  // TODO: implement homePageHandler
+  BaseHomePageHandler get homePageHandler => throw UnimplementedError();
 }
 
 class LocalSourceOptions extends SourceOptions {

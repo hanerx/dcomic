@@ -312,6 +312,10 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
     // TODO: implement getFavoriteComics
     throw UnimplementedError();
   }
+
+  @override
+  // TODO: implement homePageHandler
+  BaseHomePageHandler get homePageHandler => throw UnimplementedError();
 }
 
 class ManHuaGuiSearchResult extends SearchResult {

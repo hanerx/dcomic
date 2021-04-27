@@ -5,7 +5,6 @@ import 'package:dcomic/component/ComicSourceCard.dart';
 import 'package:dcomic/database/sourceDatabaseProvider.dart';
 import 'package:dcomic/model/baseModel.dart';
 import 'package:dcomic/model/comic_source/DMZJSourceModel.dart';
-import 'package:dcomic/model/comic_source/IKanManSourceModel.dart';
 import 'package:dcomic/model/comic_source/KuKuSourceModel.dart';
 import 'package:dcomic/model/comic_source/ManHuaGuiSourceModel.dart';
 import 'package:dcomic/model/comic_source/MangabzSourceModel.dart';
@@ -22,9 +21,8 @@ class SourceProvider extends BaseModel {
   }
 
   Future<void> init() async {
-    sources.add(DMZJSourceModel());
-    sources.add(IKanManSourceModel());
     sources.add(DMZJWebSourceModel());
+    // sources.add(DMZJSourceModel());
     sources.add(MangabzSourceModel());
     sources.add(ManHuaGuiSourceModel());
     sources.add(KuKuSourceModel());

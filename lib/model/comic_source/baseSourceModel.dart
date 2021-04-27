@@ -4,6 +4,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dcomic/model/baseModel.dart';
 
+import '../comicCategoryModel.dart';
+import '../comicRankingListModel.dart';
+
 abstract class BaseSourceModel extends BaseModel {
   Future<List<SearchResult>> search(String keyword, {int page: 0});
 
@@ -49,6 +52,8 @@ abstract class BaseSourceModel extends BaseModel {
   Future<List<SubjectItem>> getSubjectList(int page) async {
     return [];
   }
+
+  BaseHomePageHandler get homePageHandler;
 }
 
 enum UserStatus { login, logout, inactivate }
@@ -211,6 +216,7 @@ class SourceDetail {
   final SourceType sourceType;
   final bool deprecated;
   final bool canSubscribe;
+  final bool haveHomePage;
 
   SourceDetail(
       {@required this.name,
@@ -219,7 +225,8 @@ class SourceDetail {
       this.canDisable: true,
       @required this.sourceType,
       this.deprecated: false,
-      this.canSubscribe: false});
+      this.canSubscribe: false,
+      this.haveHomePage: false});
 
   @override
   // TODO: implement hashCode
@@ -403,4 +410,35 @@ class ComicComment {
 
   ComicComment(this.avatar, this.nickname, this.content, this.reply,
       this.timestamp, this.like);
+}
+
+abstract class BaseHomePageHandler {
+  Future<List<HomePageCardModel>> getHomePage();
+
+  Future<List<CategoryModel>> getCategory();
+
+  Future<List<SearchResult>> getCategoryDetail(CategoryModel);
+
+  Future<List<RankingComic>> getRankingList();
+
+  Future<List<RankingComic>> getLatestUpdate();
+
+  Future<List> getSubjectList();
+}
+
+class HomePageCardModel {
+  final String title;
+  final Widget action;
+  final List detail;
+
+  HomePageCardModel({@required this.title, this.action, @required this.detail});
+}
+
+class HomePageCardDetailModel {
+  final String title;
+  final String subtitle;
+  final String cover;
+
+  HomePageCardDetailModel(
+      {@required this.title, this.subtitle, @required this.cover});
 }

@@ -237,6 +237,10 @@ class CopyMangaSourceModel extends BaseSourceModel {
   @override
   // TODO: implement userConfig
   UserConfig get userConfig => _userConfig;
+
+  @override
+  // TODO: implement homePageHandler
+  BaseHomePageHandler get homePageHandler => throw UnimplementedError();
 }
 
 class CopyMangaSourceOptions extends SourceOptions {

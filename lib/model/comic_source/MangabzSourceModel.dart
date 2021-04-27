@@ -326,6 +326,10 @@ class MangabzSourceModel extends BaseSourceModel {
     }
     return [];
   }
+
+  @override
+  // TODO: implement homePageHandler
+  BaseHomePageHandler get homePageHandler => throw UnimplementedError();
 }
 
 class MangabzUserConfig extends UserConfig {

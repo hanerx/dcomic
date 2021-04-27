@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dcomic/http/UniversalRequestModel.dart';
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dcomic/component/CategoryCard.dart';
@@ -58,4 +59,14 @@ class ComicCategoryModel extends BaseModel {
     _local = value;
     notifyListeners();
   }
+}
+
+class CategoryModel{
+  final String cover;
+  final Map<String,String>headers;
+  final String title;
+  final String categoryId;
+  final BaseHomePageHandler handler;
+
+  CategoryModel(this.cover, this.headers, this.title, this.categoryId, this.handler);
 }

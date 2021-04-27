@@ -214,11 +214,11 @@ class DMZJSourceModel extends BaseSourceModel {
   // TODO: implement type
   SourceDetail get type => SourceDetail(
       name: 'dmzj',
-      title: '默认-动漫之家',
+      title: '动漫之家客户端',
       description: '默认数据提供商，不可关闭',
       canDisable: false,
       sourceType: SourceType.LocalDecoderSource,
-      deprecated: false,
+      deprecated: true,
       canSubscribe: true);
 
   @override
@@ -326,6 +326,10 @@ class DMZJSourceModel extends BaseSourceModel {
     }
     throw LoginRequiredError();
   }
+
+  @override
+  // TODO: implement homePageHandler
+  BaseHomePageHandler get homePageHandler => throw UnimplementedError();
 }
 
 class DMZJUserConfig extends UserConfig {
@@ -823,13 +827,13 @@ class DMZJWebSourceModel extends DMZJSourceModel {
   @override
   // TODO: implement type
   SourceDetail get type => SourceDetail(
-      name: 'dmzj-web',
+      name: 'dmzj',
       title: '动漫之家网页',
       description: '使用大妈之家移动网页版的接口，让漫画重新可以看了',
-      canDisable: true,
+      canDisable: false,
       sourceType: SourceType.LocalDecoderSource,
       deprecated: false,
-      canSubscribe: false);
+      canSubscribe: true);
 
   @override
   // TODO: implement options
@@ -842,9 +846,9 @@ class DMZJWebSourceModel extends DMZJSourceModel {
   }
 
   @override
-  // TODO: implement userConfig
-  UserConfig get userConfig =>
-      InactiveUserConfig(this.type, message: '请使用动漫之家默认用户管理，网页端与默认端同步');
+  // TODO: implement homePageHandler
+  BaseHomePageHandler get homePageHandler => throw UnimplementedError();
+
 }
 
 class DMZJConfigProvider extends SourceOptionsProvider {
@@ -890,7 +894,7 @@ class DMZJSourceOptions extends SourceOptions {
 
   @override
   // TODO: implement active
-  bool get active => true;
+  bool get active => false;
 
   @override
   set active(bool value) {
@@ -944,22 +948,22 @@ class DMZJWebSourceOptions extends DMZJSourceOptions {
   @override
   set active(bool value) {
     // TODO: implement active
-    _active = value;
-    SourceDatabaseProvider.insertSourceOption(
-        'dmzj-web', 'active', value ? '1' : '0');
-    notifyListeners();
+    // _active = value;
+    // SourceDatabaseProvider.insertSourceOption(
+    //     'dmzj-web', 'active', value ? '1' : '0');
+    // notifyListeners();
   }
 
   @override
   // TODO: implement active
-  bool get active => _active;
+  bool get active => true;
 
   @override
   set backupApi(bool value) {
     // TODO: implement backupApi
     _backupApi = value;
     SourceDatabaseProvider.insertSourceOption(
-        'dmzj-web', 'backup_api', value ? '1' : '0');
+        'dmzj', 'backup_api', value ? '1' : '0');
     notifyListeners();
   }
 
@@ -968,7 +972,7 @@ class DMZJWebSourceOptions extends DMZJSourceOptions {
     // TODO: implement webApi
     _webApi = value;
     SourceDatabaseProvider.insertSourceOption(
-        'dmzj-web', 'web_api', value ? '1' : '0');
+        'dmzj', 'web_api', value ? '1' : '0');
     notifyListeners();
   }
 }

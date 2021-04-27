@@ -240,6 +240,10 @@ class KuKuSourceModel extends BaseSourceModel {
     // TODO: implement getFavoriteComics
     throw UnimplementedError();
   }
+
+  @override
+  // TODO: implement homePageHandler
+  BaseHomePageHandler get homePageHandler => throw UnimplementedError();
 }
 
 class KuKuOptionsProvider extends SourceOptionsProvider {
