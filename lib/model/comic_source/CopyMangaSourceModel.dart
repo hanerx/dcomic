@@ -2,8 +2,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dcomic/database/historyDatabaseProvider.dart';
 import 'package:dcomic/database/sourceDatabaseProvider.dart';
 import 'package:dcomic/http/UniversalRequestModel.dart';
+import 'package:dcomic/model/comicCategoryModel.dart';
+import 'package:dcomic/model/comicRankingListModel.dart';
 import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:dcomic/utils/tool_methods.dart';
+import 'package:dcomic/view/comic_detail_page.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -232,7 +236,8 @@ class CopyMangaSourceModel extends BaseSourceModel {
       title: '拷贝漫画',
       description: '拷贝漫画，万能的网友提供的网站，还蛮顶的',
       sourceType: SourceType.LocalDecoderSource,
-      canSubscribe: true);
+      canSubscribe: true,
+      haveHomePage: true);
 
   @override
   // TODO: implement userConfig
@@ -240,7 +245,7 @@ class CopyMangaSourceModel extends BaseSourceModel {
 
   @override
   // TODO: implement homePageHandler
-  BaseHomePageHandler get homePageHandler => throw UnimplementedError();
+  BaseHomePageHandler get homePageHandler => CopyMangaHomepageHandler(this);
 }
 
 class CopyMangaSourceOptions extends SourceOptions {
@@ -846,4 +851,87 @@ class CopyMangaComic extends Comic {
   @override
   // TODO: implement viewpoints
   List get viewpoints => [];
+}
+
+class CopyMangaHomepageHandler extends BaseHomePageHandler {
+  final CopyMangaSourceModel model;
+
+  CopyMangaHomepageHandler(this.model);
+
+  @override
+  Future<List<CategoryModel>> getCategory() {
+    // TODO: implement getCategory
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<SearchResult>> getCategoryDetail(CategoryModel model) {
+    // TODO: implement getCategoryDetail
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<HomePageCardModel>> getHomePage() async {
+    // TODO: implement getHomePage
+    try {
+      var response =
+          await UniversalRequestModel.copyMangaRequestHandler.getHomepage();
+      if (response.statusCode == 200) {
+        List<HomePageCardModel> data = [];
+        Map recommendComic = response.data['results']['recComics'];
+        data.add(HomePageCardModel(
+            title: '漫画推荐',
+            detail: recommendComic['list']
+                .map<HomePageCardDetailModel>((e) => HomePageCardDetailModel(
+                    title: e['comic']['name'],
+                    cover: e['comic']['cover'],
+                    onPressed: (context) {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => ComicDetailPage(
+                                id: e['comic']['path_word'],
+                                title: e['comic']['name'],
+                                model: model,
+                              )));
+                    })).toList()));
+        List hotComic =response.data['results']['hotComics'];
+        data.add(HomePageCardModel(
+            title: '热门更新',
+            detail: hotComic
+                .map<HomePageCardDetailModel>((e) => HomePageCardDetailModel(
+                title: e['comic']['name'],
+                cover: e['comic']['cover'],
+                onPressed: (context) {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => ComicDetailPage(
+                        id: e['comic']['path_word'],
+                        title: e['comic']['name'],
+                        model: model,
+                      )));
+                })).toList()));
+        return data;
+      }
+    } catch (e, s) {
+      FirebaseCrashlytics.instance
+          .recordError(e, s, reason: 'dmzjGetHomePageFailed');
+    }
+    return [];
+  }
+
+  @override
+  Future<List<RankingComic>> getLatestUpdate(int page) {
+    // TODO: implement getLatestUpdate
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<RankingComic>> getRankingList(int page) {
+    // TODO: implement getRankingList
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List> getSubjectList() {
+    // TODO: implement getSubjectList
+    throw UnimplementedError();
+  }
 }

@@ -8,7 +8,7 @@ import 'package:dio/dio.dart';
 class CopyMangaRequestHandler extends SingleDomainRequestHandler {
   CopyMangaRequestHandler() : super('https://api.copymanga.com/');
 
-  Future<Options> setHeader([Map<String,dynamic> headers]) async {
+  Future<Options> setHeader([Map<String, dynamic> headers]) async {
     if (await SourceDatabaseProvider.getSourceOption<bool>(
         'copy_manga', 'login',
         defaultValue: false)) {
@@ -83,5 +83,15 @@ class CopyMangaRequestHandler extends SingleDomainRequestHandler {
         {'comic_id': comicId, 'is_collect': subscribe ? 1 : 0});
     return dio.post('/api/v3/member/collect/comic',
         data: data, options: await setHeader());
+  }
+
+  Future<Response> getHomepage() {
+    return dio.get('/api/v3/h5/homeIndex');
+  }
+
+  Future<Response> getRankingList(
+      {bool popular: true, int page: 0, int limit: 21}) {
+    return dio.get(
+        '/api/v3/comics?free_type=1&limit=$limit&offset=$page&ordering=${popular ? '-popular' : '-datetime_updated'}&_update=true');
   }
 }
