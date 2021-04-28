@@ -94,4 +94,9 @@ class CopyMangaRequestHandler extends SingleDomainRequestHandler {
     return dio.get(
         '/api/v3/comics?free_type=1&limit=$limit&offset=$page&ordering=${popular ? '-popular' : '-datetime_updated'}&_update=true');
   }
+
+  Future<Response> getSubjectList({int page: 0, int limit: 20}) {
+    return dio
+        .get('/api/v3/topics?type=1&limit=$limit&offset=$page&_update=true');
+  }
 }

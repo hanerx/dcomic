@@ -6,6 +6,7 @@ import 'package:dcomic/model/baseModel.dart';
 
 import '../comicCategoryModel.dart';
 import '../comicRankingListModel.dart';
+import 'package:dcomic/model/subjectDetailModel.dart';
 
 abstract class BaseSourceModel extends BaseModel {
   Future<List<SearchResult>> search(String keyword, {int page: 0});
@@ -47,10 +48,6 @@ abstract class BaseSourceModel extends BaseModel {
   String toString() {
     // TODO: implement toString
     return type.toString();
-  }
-
-  Future<List<SubjectItem>> getSubjectList(int page) async {
-    return [];
   }
 
   BaseHomePageHandler get homePageHandler;
@@ -423,7 +420,9 @@ abstract class BaseHomePageHandler {
 
   Future<List<RankingComic>> getLatestUpdate(int page);
 
-  Future<List> getSubjectList();
+  Future<List<SubjectItem>> getSubjectList(int page);
+
+  Future<SubjectModel> getSubject(String subjectId);
 }
 
 typedef BuilderCallback =Widget Function(BuildContext);

@@ -4,6 +4,7 @@ import 'package:dcomic/database/historyDatabaseProvider.dart';
 import 'package:dcomic/model/comicCategoryModel.dart';
 import 'package:dcomic/model/comicRankingListModel.dart';
 import 'package:dcomic/model/comic_source/sourceProvider.dart';
+import 'package:dcomic/model/subjectDetailModel.dart';
 import 'package:dcomic/model/subjectListModel.dart';
 import 'package:dcomic/view/comic_detail_page.dart';
 import 'package:dcomic/view/comic_pages/subject_list_page.dart';
@@ -313,23 +314,6 @@ class DMZJSourceModel extends BaseSourceModel {
         logger.e(
             'class: ${this.runtimeType}, action: loadingFavoriteError, exception: $e');
         throw e;
-      }
-    }
-    throw LoginRequiredError();
-  }
-
-  Future<List<SubjectItem>> getSubjectList(int page) async {
-    if (_userConfig.status == UserStatus.login) {
-      var response = await UniversalRequestModel.dmzjRequestHandler
-          .getSubjectList(_userConfig.userId, page: page);
-      if (response.statusCode == 200) {
-        return response.data['data']
-            .map<SubjectItem>((e) => SubjectItem(
-                cover: e['small_cover'],
-                title: e['short_title'],
-                subjectId: e['id'].toString(),
-                subtitle: e['title']))
-            .toList();
       }
     }
     throw LoginRequiredError();
@@ -1514,7 +1498,9 @@ class DMZJHomePageHandler extends BaseHomePageHandler {
                               onPressed: (context) {
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) => SubjectDetailPage(
-                                        e['obj_id'].toString()),
+                                          subjectId: e['obj_id'].toString(),
+                                          model: model,
+                                        ),
                                     settings: RouteSettings(
                                         name: "subject_detail_page")));
                               }))
@@ -1643,8 +1629,27 @@ class DMZJHomePageHandler extends BaseHomePageHandler {
   }
 
   @override
-  Future<List> getSubjectList() {
-    // TODO: implement getSubjectList
+  Future<List<SubjectItem>> getSubjectList(int page) async {
+    if (model.userConfig.status == UserStatus.login) {
+      var response = await UniversalRequestModel.dmzjRequestHandler
+          .getSubjectList(model.userConfig.userId, page: page);
+      if (response.statusCode == 200) {
+        return response.data['data']
+            .map<SubjectItem>((e) => SubjectItem(
+                cover: e['small_cover'],
+                title: e['short_title'],
+                subjectId: e['id'].toString(),
+                subtitle: e['title'],
+                model: model))
+            .toList();
+      }
+    }
+    throw LoginRequiredError();
+  }
+
+  @override
+  Future<SubjectModel> getSubject(String subjectId) {
+    // TODO: implement getSubject
     throw UnimplementedError();
   }
 }

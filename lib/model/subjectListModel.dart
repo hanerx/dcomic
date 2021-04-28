@@ -12,10 +12,13 @@ class SubjectListModel extends BaseModel {
 
   Future<void> getSubjectList(int page) async {
     try {
-      _data += await this.model.getSubjectList(page);
+      _data += await this.model.homePageHandler.getSubjectList(page);
       error = null;
       notifyListeners();
-    } on LoginRequiredError catch (e) {
+    } on UnimplementedError {
+      error = "该源不支持本功能";
+      notifyListeners();
+    } on LoginRequiredError {
       error = '专题页需要登录，请先登录';
       notifyListeners();
     } catch (e, s) {
@@ -49,6 +52,8 @@ class SubjectItem {
   final String title;
   final String subtitle;
   final String subjectId;
+  final BaseSourceModel model;
 
-  SubjectItem({this.cover, this.title, this.subtitle, this.subjectId});
+  SubjectItem(
+      {this.cover, this.title, this.subtitle, this.subjectId, this.model});
 }

@@ -60,8 +60,10 @@ class _SubjectListPage extends State<SubjectListPage> {
                   subtitle: item.subtitle,
                   onPressed: (context) => Navigator.of(context).push(
                       MaterialPageRoute(
-                          builder: (context) =>
-                              SubjectDetailPage(item.subjectId),
+                          builder: (context) => SubjectDetailPage(
+                                subjectId: item.subjectId,
+                                model: item.model,
+                              ),
                           settings:
                               RouteSettings(name: 'subject_detail_page'))),
                 );

@@ -5,8 +5,12 @@ import 'package:dcomic/http/UniversalRequestModel.dart';
 import 'package:dcomic/model/comicCategoryModel.dart';
 import 'package:dcomic/model/comicRankingListModel.dart';
 import 'package:dcomic/model/comic_source/baseSourceModel.dart';
+import 'package:dcomic/model/subjectDetailModel.dart';
+import 'package:dcomic/model/subjectListModel.dart';
 import 'package:dcomic/utils/tool_methods.dart';
 import 'package:dcomic/view/comic_detail_page.dart';
+import 'package:dcomic/view/comic_pages/subject_list_page.dart';
+import 'package:dcomic/view/subject_detail_page.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -883,44 +887,160 @@ class CopyMangaHomepageHandler extends BaseHomePageHandler {
             title: '漫画推荐',
             detail: recommendComic['list']
                 .map<HomePageCardDetailModel>((e) => HomePageCardDetailModel(
-                    title: e['comic']['name'],
+                    title: ChineseHelper.convertToSimplifiedChinese(
+                        e['comic']['name']),
                     cover: e['comic']['cover'],
+                    subtitle: e['comic']['author']
+                        .map<String>((e) => e['name'].toString())
+                        .toList()
+                        .join('/'),
                     onPressed: (context) {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => ComicDetailPage(
                                 id: e['comic']['path_word'],
-                                title: e['comic']['name'],
+                                title: ChineseHelper.convertToSimplifiedChinese(
+                                    e['comic']['name']),
                                 model: model,
-                              )));
-                    })).toList()));
-        List hotComic =response.data['results']['hotComics'];
+                              ),
+                          settings: RouteSettings(name: "comic_detail_page")));
+                    }))
+                .toList()));
+        Map topic = response.data['results']['topics'];
+        data.add(HomePageCardModel(
+            title: '专题系列',
+            detail: topic['list']
+                .map<HomePageCardDetailModel>((e) => HomePageCardDetailModel(
+                    title: ChineseHelper.convertToSimplifiedChinese(e['title']),
+                    cover: e['cover'],
+                    subtitle: ChineseHelper.convertToSimplifiedChinese(
+                        e['series']['name']),
+                    onPressed: (context) {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) =>
+                              SubjectDetailPage(subjectId:e['path_word'],model: model,),
+                          settings:
+                              RouteSettings(name: "subject_detail_page")));
+                    }))
+                .toList(),
+            action: (context) => IconButton(
+                icon: Icon(Icons.chevron_right),
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => SubjectListPage(
+                            model: model,
+                          ),
+                      settings: RouteSettings(name: 'subject_list_page')));
+                })));
+        List hotComic = response.data['results']['hotComics'];
         data.add(HomePageCardModel(
             title: '热门更新',
             detail: hotComic
                 .map<HomePageCardDetailModel>((e) => HomePageCardDetailModel(
-                title: e['comic']['name'],
-                cover: e['comic']['cover'],
-                onPressed: (context) {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => ComicDetailPage(
-                        id: e['comic']['path_word'],
-                        title: e['comic']['name'],
-                        model: model,
-                      )));
-                })).toList()));
+                    title: ChineseHelper.convertToSimplifiedChinese(
+                        e['comic']['name']),
+                    cover: e['comic']['cover'],
+                    subtitle: e['comic']['author']
+                        .map<String>((e) => e['name'].toString())
+                        .toList()
+                        .join('/'),
+                    onPressed: (context) {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => ComicDetailPage(
+                                id: e['comic']['path_word'],
+                                title: ChineseHelper.convertToSimplifiedChinese(
+                                    e['comic']['name']),
+                                model: model,
+                              ),
+                          settings: RouteSettings(name: "comic_detail_page")));
+                    }))
+                .toList()));
+        List newComic = response.data['results']['newComics'];
+        data.add(HomePageCardModel(
+            title: '全新上架',
+            detail: newComic
+                .map<HomePageCardDetailModel>((e) => HomePageCardDetailModel(
+                    title: ChineseHelper.convertToSimplifiedChinese(
+                        e['comic']['name']),
+                    cover: e['comic']['cover'],
+                    subtitle: e['comic']['author']
+                        .map<String>((e) => e['name'].toString())
+                        .toList()
+                        .join('/'),
+                    onPressed: (context) {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => ComicDetailPage(
+                                id: e['comic']['path_word'],
+                                title: ChineseHelper.convertToSimplifiedChinese(
+                                    e['comic']['name']),
+                                model: model,
+                              ),
+                          settings: RouteSettings(name: "comic_detail_page")));
+                    }))
+                .toList()));
+        Map finishComic = response.data['results']['finishComics'];
+        data.add(HomePageCardModel(
+            title: '已完结',
+            detail: finishComic['list']
+                .map<HomePageCardDetailModel>((e) => HomePageCardDetailModel(
+                    title: ChineseHelper.convertToSimplifiedChinese(e['name']),
+                    cover: e['cover'],
+                    subtitle: e['author']
+                        .map<String>((e) => e['name'].toString())
+                        .toList()
+                        .join('/'),
+                    onPressed: (context) {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => ComicDetailPage(
+                                id: e['path_word'],
+                                title: ChineseHelper.convertToSimplifiedChinese(
+                                    e['name']),
+                                model: model,
+                              ),
+                          settings: RouteSettings(name: "comic_detail_page")));
+                    }))
+                .toList()));
         return data;
       }
     } catch (e, s) {
       FirebaseCrashlytics.instance
-          .recordError(e, s, reason: 'dmzjGetHomePageFailed');
+          .recordError(e, s, reason: 'copyMangaGetHomePageFailed');
     }
     return [];
   }
 
   @override
-  Future<List<RankingComic>> getLatestUpdate(int page) {
+  Future<List<RankingComic>> getLatestUpdate(int page) async {
     // TODO: implement getLatestUpdate
-    throw UnimplementedError();
+    try {
+      var response = await UniversalRequestModel.copyMangaRequestHandler
+          .getRankingList(popular: false, page: page);
+      if (response.statusCode == 200) {
+        List data = response.data['results']['list'];
+        return data
+            .map<RankingComic>((e) => RankingComic(
+                cover: e['cover'],
+                title: e['name'],
+                comicId: e['word_path'],
+                authors: e['author']
+                    .map<String>((e) => e['name'].toString())
+                    .toList()
+                    .join('/'),
+                model: model,
+                types: e['theme']
+                    .map<String>((e) => e['name'].toString())
+                    .toList()
+                    .join('/'),
+                headers: {"referer": "https://www.copymanga.com/"},
+                timestamp:
+                    ToolMethods.formatTimeString(e['datetime_updated']) ~/
+                        1000))
+            .toList();
+      }
+    } catch (e, s) {
+      FirebaseCrashlytics.instance
+          .recordError(e, s, reason: 'copyMangaGetLatestUpdateFailed');
+    }
+    return [];
   }
 
   @override
@@ -930,8 +1050,32 @@ class CopyMangaHomepageHandler extends BaseHomePageHandler {
   }
 
   @override
-  Future<List> getSubjectList() {
+  Future<List<SubjectItem>> getSubjectList(int page) async {
     // TODO: implement getSubjectList
+    try {
+      var response = await UniversalRequestModel.copyMangaRequestHandler
+          .getSubjectList(page: page);
+      if (response.statusCode == 200) {
+        List results = response.data['results']['list'];
+        return results
+            .map<SubjectItem>((e) => SubjectItem(
+                cover: e['cover'],
+                title: e['title'],
+                subtitle: e['brief'],
+                subjectId: e['path_word'],
+                model: model))
+            .toList();
+      }
+    } catch (e, s) {
+      FirebaseCrashlytics.instance
+          .recordError(e, s, reason: 'copyMangaGetSubjectListFailed');
+    }
+    return [];
+  }
+
+  @override
+  Future<SubjectModel> getSubject(String subjectId) {
+    // TODO: implement getSubject
     throw UnimplementedError();
   }
 }

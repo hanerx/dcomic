@@ -1,9 +1,13 @@
 import 'package:dcomic/http/UniversalRequestModel.dart';
 import 'package:dcomic/model/baseModel.dart';
+import 'package:dcomic/model/subjectListModel.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+
+import 'comic_source/baseSourceModel.dart';
 
 class SubjectDetailModel extends BaseModel {
   final String subjectId;
+  final BaseSourceModel model;
   Map<String, String> _headers = {"referer": "https://m.dmzj.com"};
   String _cover = 'http://manhua.dmzj.com/css/img/mh_logo_dmzj.png?t=20131122';
   String _title = "";
@@ -11,7 +15,7 @@ class SubjectDetailModel extends BaseModel {
   List _data = [];
   String error;
 
-  SubjectDetailModel(this.subjectId);
+  SubjectDetailModel(this.subjectId, this.model);
 
   Future<void> getSubjectDetail() async {
     try {
@@ -41,4 +45,26 @@ class SubjectDetailModel extends BaseModel {
   String get description => _description;
 
   List get data => _data;
+}
+
+class SubjectModel {
+  final String cover;
+  final String title;
+  final String description;
+  final Map<String, String> headers;
+  final List<SubjectItem> data;
+
+  SubjectModel(
+      {this.cover, this.title, this.description, this.headers, this.data});
+}
+
+class RecommendComic {
+  final String cover;
+  final String title;
+  final String comicId;
+  final String brief;
+  final String reason;
+
+  RecommendComic(
+      {this.cover, this.title, this.comicId, this.brief, this.reason});
 }
