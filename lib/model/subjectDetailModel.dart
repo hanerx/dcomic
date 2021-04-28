@@ -8,43 +8,35 @@ import 'comic_source/baseSourceModel.dart';
 class SubjectDetailModel extends BaseModel {
   final String subjectId;
   final BaseSourceModel model;
-  Map<String, String> _headers = {"referer": "https://m.dmzj.com"};
-  String _cover = 'http://manhua.dmzj.com/css/img/mh_logo_dmzj.png?t=20131122';
-  String _title = "";
-  String _description = "";
-  List _data = [];
   String error;
+  SubjectModel detail;
 
   SubjectDetailModel(this.subjectId, this.model);
 
   Future<void> getSubjectDetail() async {
     try {
-      var response = await UniversalRequestModel.dmzjRequestHandler
-          .getSubjectDetail(subjectId);
-      if (response.statusCode == 200) {
-        _cover = response.data['mobile_header_pic'];
-        _title = response.data['title'];
-        _description = response.data['description'];
-        _data = response.data['comics'];
-        notifyListeners();
-      }
+      detail = await model.homePageHandler.getSubject(subjectId);
+      error = null;
     } catch (e, s) {
       FirebaseCrashlytics.instance
           .recordError(e, s, reason: 'subjectDetailLoadingFail: $subjectId');
       error = '未知错误：$e';
-      notifyListeners();
     }
+    notifyListeners();
   }
 
-  String get cover => _cover;
+  String get cover => detail == null
+      ? 'http://manhua.dmzj.com/css/img/mh_logo_dmzj.png?t=20131122'
+      : detail.cover;
 
-  Map<String, String> get headers => _headers;
+  Map<String, String> get headers =>
+      detail == null ? {"referer": "https://m.dmzj.com"} : detail.headers;
 
-  String get title => _title;
+  String get title => detail == null ? '加载中' : detail.title;
 
-  String get description => _description;
+  String get description => detail == null ? '加载中...' : detail.description;
 
-  List get data => _data;
+  List<RecommendComic> get data => detail == null ? [] : detail.data;
 }
 
 class SubjectModel {
@@ -52,7 +44,7 @@ class SubjectModel {
   final String title;
   final String description;
   final Map<String, String> headers;
-  final List<SubjectItem> data;
+  final List<RecommendComic> data;
 
   SubjectModel(
       {this.cover, this.title, this.description, this.headers, this.data});

@@ -863,9 +863,29 @@ class CopyMangaHomepageHandler extends BaseHomePageHandler {
   CopyMangaHomepageHandler(this.model);
 
   @override
-  Future<List<CategoryModel>> getCategory() {
+  Future<List<CategoryModel>> getCategory({CategoryType type}) async {
     // TODO: implement getCategory
-    throw UnimplementedError();
+    try {
+      var response =
+          await UniversalRequestModel.copyMangaRequestHandler.getCategory();
+      if (response.statusCode == 200) {
+        List tags = response.data['results']['theme'];
+        return tags
+            .map<CategoryModel>((e) => CategoryModel(
+                cover: e['logo'] == null
+                    ? 'https://alicdn2.mangafunc.fun:12001/static/websiteV2/jpg/loading.png'
+                    : e['logo'],
+                title: ChineseHelper.convertToSimplifiedChinese(e['name']),
+                model: model,
+                headers: {"referer": "https://www.copymanga.com/"},
+                categoryId: e['path_word']))
+            .toList();
+      }
+    } catch (e, s) {
+      FirebaseCrashlytics.instance
+          .recordError(e, s, reason: 'copyMangaCategoryFailed');
+    }
+    return [];
   }
 
   @override
@@ -916,8 +936,10 @@ class CopyMangaHomepageHandler extends BaseHomePageHandler {
                         e['series']['name']),
                     onPressed: (context) {
                       Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) =>
-                              SubjectDetailPage(subjectId:e['path_word'],model: model,),
+                          builder: (context) => SubjectDetailPage(
+                                subjectId: e['path_word'],
+                                model: model,
+                              ),
                           settings:
                               RouteSettings(name: "subject_detail_page")));
                     }))
@@ -1020,7 +1042,7 @@ class CopyMangaHomepageHandler extends BaseHomePageHandler {
             .map<RankingComic>((e) => RankingComic(
                 cover: e['cover'],
                 title: e['name'],
-                comicId: e['word_path'],
+                comicId: e['path_word'],
                 authors: e['author']
                     .map<String>((e) => e['name'].toString())
                     .toList()
@@ -1060,8 +1082,8 @@ class CopyMangaHomepageHandler extends BaseHomePageHandler {
         return results
             .map<SubjectItem>((e) => SubjectItem(
                 cover: e['cover'],
-                title: e['title'],
-                subtitle: e['brief'],
+                title: ChineseHelper.convertToSimplifiedChinese(e['title']),
+                subtitle: ChineseHelper.convertToSimplifiedChinese(e['brief']),
                 subjectId: e['path_word'],
                 model: model))
             .toList();
@@ -1074,8 +1096,38 @@ class CopyMangaHomepageHandler extends BaseHomePageHandler {
   }
 
   @override
-  Future<SubjectModel> getSubject(String subjectId) {
+  Future<SubjectModel> getSubject(String subjectId) async {
     // TODO: implement getSubject
-    throw UnimplementedError();
+    try {
+      var response = await UniversalRequestModel.copyMangaRequestHandler
+          .getSubjectDetail(subjectId);
+      var contentResponse = await UniversalRequestModel.copyMangaRequestHandler
+          .getSubjectDetailContent(subjectId);
+      if (response.statusCode == 200 && contentResponse.statusCode == 200) {
+        return SubjectModel(
+            title: ChineseHelper.convertToSimplifiedChinese(
+                response.data['results']['title']),
+            cover: response.data['results']['cover'],
+            description: ChineseHelper.convertToSimplifiedChinese(
+                response.data['results']['intro']),
+            headers: {"referer": "https://www.copymanga.com/"},
+            data: contentResponse.data['results']['list']
+                .map<RecommendComic>((e) => RecommendComic(
+                    cover: e['cover'],
+                    title: ChineseHelper.convertToSimplifiedChinese(e['name']),
+                    comicId: e['path_word'],
+                    brief: e['theme']
+                        .map<String>((e) =>
+                            ChineseHelper.convertToSimplifiedChinese(e['name']))
+                        .toList()
+                        .join('/'),
+                    reason: '热度：${e['popular']}'))
+                .toList());
+      }
+    } catch (e, s) {
+      FirebaseCrashlytics.instance
+          .recordError(e, s, reason: 'copyMangaGetSubjectDetailFailed');
+    }
+    return null;
   }
 }

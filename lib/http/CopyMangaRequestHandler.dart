@@ -99,4 +99,18 @@ class CopyMangaRequestHandler extends SingleDomainRequestHandler {
     return dio
         .get('/api/v3/topics?type=1&limit=$limit&offset=$page&_update=true');
   }
+
+  Future<Response> getSubjectDetail(String subjectId) {
+    return dio.get('/api/v3/topic/$subjectId?limit=&offset=');
+  }
+
+  Future<Response> getSubjectDetailContent(String subjectId,
+      {int page: 0, limit: 30}) {
+    return dio.get(
+        'https://api.copymanga.com/api/v3/topic/$subjectId/contents?limit=$limit&offset=${page * limit}');
+  }
+
+  Future<Response> getCategory() {
+    return dio.get('/api/v3/h5/filterIndex/comic/tags?type=1');
+  }
 }

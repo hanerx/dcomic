@@ -11,6 +11,7 @@ import 'package:dcomic/view/comic_pages/subject_list_page.dart';
 import 'package:dcomic/view/favorite_page.dart';
 import 'package:dcomic/view/subject_detail_page.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:dcomic/database/cookieDatabaseProvider.dart';
@@ -242,17 +243,18 @@ class DMZJSourceModel extends BaseSourceModel {
           itemCount: Provider.of<SystemSettingModel>(context).backupApi ? 2 : 1,
           itemBuilder: (context, index) {
             var list = [
-              ListTile(
-                title: Text('webApi'),
-                subtitle: Text('是否开启webApi'),
-                trailing: Switch(
-                  value: Provider.of<DMZJConfigProvider>(context).webApi,
-                  onChanged: (value) {
-                    Provider.of<DMZJConfigProvider>(context, listen: false)
-                        .webApi = value;
-                  },
-                ),
-              ),
+              // ListTile(
+              //
+              //   title: Text('webApi'),
+              //   subtitle: Text('是否开启webApi'),
+              //   trailing: Switch(
+              //     value: Provider.of<DMZJConfigProvider>(context).webApi,
+              //     onChanged: (value) {
+              //       Provider.of<DMZJConfigProvider>(context, listen: false)
+              //           .webApi = value;
+              //     },
+              //   ),
+              // ),
               ListTile(
                 title: Text('备用API'),
                 subtitle: Text('是否开启备用API'),
@@ -1185,40 +1187,38 @@ class DMZJComic extends Comic {
       notifyListeners();
       return;
     }
-    if (options.webApi) {
-      await getComicWeb(comicId, chapterId);
-      return;
-    }
-    try {
-      var response = await UniversalRequestModel.dmzjRequestHandler
-          .getComic(comicId, chapterId);
-      if (response.statusCode == 200) {
-        _pageAt = chapterId;
-        _pages =
-            response.data['page_url'].map<String>((e) => e.toString()).toList();
-        _title = response.data['title'];
-        if (_chapterIdList.indexOf(chapterId) > 0) {
-          _previous = _chapterIdList[_chapterIdList.indexOf(chapterId) - 1];
-        } else {
-          _previous = null;
-        }
-        if (_chapterIdList.indexOf(chapterId) < _chapterIdList.length - 1) {
-          _next = _chapterIdList[_chapterIdList.indexOf(chapterId) + 1];
-        } else {
-          _next = null;
-        }
-        notifyListeners();
-      }
-    } catch (e) {
-      logger.e('class: DMZJComic, action: getComicFailed, exception: $e');
-      if (options.backupApi) {
-        await this.getComicBackup(comicId, chapterId);
-      }
-    }
-    await getViewPoint();
-    addReadHistory(
-        comicId: comicId, page: 0, chapterTitle: _title, chapterId: chapterId);
-    notifyListeners();
+    await getComicWeb(comicId, chapterId);
+    return;
+    // try {
+    //   var response = await UniversalRequestModel.dmzjRequestHandler
+    //       .getComic(comicId, chapterId);
+    //   if (response.statusCode == 200) {
+    //     _pageAt = chapterId;
+    //     _pages =
+    //         response.data['page_url'].map<String>((e) => e.toString()).toList();
+    //     _title = response.data['title'];
+    //     if (_chapterIdList.indexOf(chapterId) > 0) {
+    //       _previous = _chapterIdList[_chapterIdList.indexOf(chapterId) - 1];
+    //     } else {
+    //       _previous = null;
+    //     }
+    //     if (_chapterIdList.indexOf(chapterId) < _chapterIdList.length - 1) {
+    //       _next = _chapterIdList[_chapterIdList.indexOf(chapterId) + 1];
+    //     } else {
+    //       _next = null;
+    //     }
+    //     notifyListeners();
+    //   }
+    // } catch (e) {
+    //   logger.e('class: DMZJComic, action: getComicFailed, exception: $e');
+    //   if (options.backupApi) {
+    //     await this.getComicBackup(comicId, chapterId);
+    //   }
+    // }
+    // await getViewPoint();
+    // addReadHistory(
+    //     comicId: comicId, page: 0, chapterTitle: _title, chapterId: chapterId);
+    // notifyListeners();
   }
 
   Future<void> getComicWeb(String comicId, String chapterId) async {
@@ -1465,9 +1465,42 @@ class DMZJHomePageHandler extends BaseHomePageHandler {
   DMZJHomePageHandler(this.model);
 
   @override
-  Future<List<CategoryModel>> getCategory() {
+  Future<List<CategoryModel>> getCategory({CategoryType type}) async {
     // TODO: implement getCategory
-    throw UnimplementedError();
+    if (type == CategoryType.local) {
+      List data =
+          jsonDecode(await rootBundle.loadString("assets/json/category.json"));
+      return data
+          .map<CategoryModel>((e) => CategoryModel(
+                cover: e['cover'],
+                title: e['title'],
+                categoryId: e['tag_id'],
+                model: model,
+                headers: {'referer': 'https://m.dmzj.com'},
+              ))
+          .toList();
+    } else {
+      try {
+        var response =
+            await UniversalRequestModel.dmzjRequestHandler.getCategory();
+        if (response.statusCode == 200) {
+          return response.data
+              .map<CategoryModel>((e) => CategoryModel(
+                    cover: e['cover'],
+                    title: e['title'],
+                    categoryId: e['tag_id'],
+                    model: model,
+                    headers: {'referer': 'https://m.dmzj.com'},
+                  ))
+              .toList();
+        }
+      } catch (e, s) {
+        FirebaseCrashlytics.instance
+            .recordError(e, s, reason: 'dmzjCategoryLoadingFailed');
+        throw e;
+      }
+    }
+    return [];
   }
 
   @override
@@ -1648,8 +1681,31 @@ class DMZJHomePageHandler extends BaseHomePageHandler {
   }
 
   @override
-  Future<SubjectModel> getSubject(String subjectId) {
+  Future<SubjectModel> getSubject(String subjectId) async {
     // TODO: implement getSubject
-    throw UnimplementedError();
+    try {
+      var response = await UniversalRequestModel.dmzjRequestHandler
+          .getSubjectDetail(subjectId);
+      if (response.statusCode == 200) {
+        return SubjectModel(
+            cover: response.data['mobile_header_pic'],
+            title: response.data['title'],
+            description: response.data['description'],
+            headers: {"referer": "https://m.dmzj.com"},
+            data: response.data['comics']
+                .map<RecommendComic>((e) => RecommendComic(
+                    cover: e['cover'],
+                    title: e['name'],
+                    brief: e['recommend_brief'],
+                    reason: e['recommend_reason'],
+                    comicId: e['id'].toString()))
+                .toList());
+      }
+    } catch (e, s) {
+      FirebaseCrashlytics.instance
+          .recordError(e, s, reason: 'subjectDetailLoadingFail: $subjectId');
+      throw e;
+    }
+    return null;
   }
 }

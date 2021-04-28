@@ -9,44 +9,30 @@ import 'package:dcomic/model/baseModel.dart';
 import 'package:flutter/services.dart';
 
 class ComicCategoryModel extends BaseModel {
-  final int type;
-  List category = [];
+  final BaseSourceModel model;
+  List<CategoryModel> category = [];
   bool _local = false;
 
-  ComicCategoryModel(this.type);
+  ComicCategoryModel(this.model);
 
   Future<void> init() async {
-    if (type == 0 && _local) {
-      List data =
-          jsonDecode(await rootBundle.loadString("assets/json/category.json"));
-      category = data
-          .map<Map>((e) =>
-              {'title': e['title'], 'cover': e['cover'], 'tag_id': e['tag_id']})
-          .toList();
-      notifyListeners();
-    } else {
-      try {
-        var response = await UniversalRequestModel.dmzjRequestHandler.getCategory(type);
-        if (response.statusCode == 200) {
-          category = response.data;
-          notifyListeners();
-        }
-      } catch (e,s) {
-        FirebaseCrashlytics.instance
-            .recordError(e, s, reason: 'CategoryLoadingFailed: $type');
-        logger
-            .e('class: ComicCategoryModel, action: initFailed, exception: $e');
-      }
+    try {
+      category = await model.homePageHandler
+          .getCategory(type: _local ? CategoryType.local : CategoryType.cloud);
+    } catch (e, s) {
+      FirebaseCrashlytics.instance
+          .recordError(e, s, reason: 'CategoryLoadingFailed');
     }
+    notifyListeners();
   }
 
   List<Widget> buildCategoryWidget(context) {
     return category
         .map<Widget>((e) => CategoryCard(
-              e['cover'],
-              e['title'],
-              e['tag_id'],
-              type: type,
+              cover: e.cover,
+              title: e.title,
+              tagId: e.categoryId,
+              model: e.model,
             ))
         .toList();
   }
@@ -61,12 +47,13 @@ class ComicCategoryModel extends BaseModel {
   }
 }
 
-class CategoryModel{
+class CategoryModel {
   final String cover;
-  final Map<String,String>headers;
+  final Map<String, String> headers;
   final String title;
   final String categoryId;
-  final BaseHomePageHandler handler;
+  final BaseSourceModel model;
 
-  CategoryModel(this.cover, this.headers, this.title, this.categoryId, this.handler);
+  CategoryModel(
+      {this.cover, this.headers, this.title, this.categoryId, this.model});
 }

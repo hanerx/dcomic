@@ -409,10 +409,15 @@ class ComicComment {
       this.timestamp, this.like);
 }
 
+enum CategoryType{
+  local,
+  cloud
+}
+
 abstract class BaseHomePageHandler {
   Future<List<HomePageCardModel>> getHomePage();
 
-  Future<List<CategoryModel>> getCategory();
+  Future<List<CategoryModel>> getCategory({CategoryType type});
 
   Future<List<SearchResult>> getCategoryDetail(CategoryModel model);
 

@@ -123,20 +123,16 @@ class _SubjectDetailPage extends State<SubjectDetailPage> {
                                   listen: false)
                               .data[index];
                           return SubjectListTile(
-                            cover: item['cover'],
-                            title: item['name'],
-                            recommendBrief: item['recommend_brief'],
-                            recommendReason: item['recommend_reason'],
+                            cover: item.cover,
+                            title: item.title,
+                            recommendBrief: item.brief,
+                            recommendReason: item.reason,
                             onPressed: () {
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) => ComicDetailPage(
-                                        id: item['id'].toString(),
-                                        title: item['name'],
-                                        model: Provider.of<SourceProvider>(
-                                                context,
-                                                listen: false)
-                                            .activeSources
-                                            .first,
+                                        id: item.comicId,
+                                        title: item.title,
+                                        model: widget.model,
                                       ),
                                   settings: RouteSettings(
                                       name: 'comic_detail_page')));

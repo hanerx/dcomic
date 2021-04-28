@@ -1,3 +1,4 @@
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:direct_select_flutter/direct_select_container.dart';
 import 'package:direct_select_flutter/direct_select_item.dart';
 import 'package:direct_select_flutter/direct_select_list.dart';
@@ -12,10 +13,11 @@ import 'package:dcomic/view/comic_detail_page.dart';
 import 'package:provider/provider.dart';
 
 class CategoryDetailPage extends StatefulWidget {
-  final int categoryId;
+  final String categoryId;
   final String title;
+  final BaseSourceModel model;
 
-  CategoryDetailPage(this.categoryId, this.title);
+  CategoryDetailPage({this.categoryId, this.title, this.model});
 
   @override
   State<StatefulWidget> createState() {

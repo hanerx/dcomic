@@ -3,7 +3,7 @@ import 'package:dcomic/http/http.dart';
 import 'package:dcomic/model/baseModel.dart';
 
 class ComicCategoryDetailModel extends BaseModel {
-  final int categoryId;
+  final String categoryId;
   final String title;
   int filterDate = 0;
   int filterType = 0;
@@ -35,11 +35,11 @@ class ComicCategoryDetailModel extends BaseModel {
   }
 
   getCategoryDetail() async {
-    var response = await UniversalRequestModel.dmzjRequestHandler.getCategoryDetail(
-        categoryId, filterDate, filterTag, filterType, page);
-    if (response.statusCode == 200) {
-      _data += response.data;
-    }
+    // var response = await UniversalRequestModel.dmzjRequestHandler.getCategoryDetail(
+    //     categoryId, filterDate, filterTag, filterType, page);
+    // if (response.statusCode == 200) {
+    //   _data += response.data;
+    // }
     notifyListeners();
   }
 

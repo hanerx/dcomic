@@ -1,3 +1,4 @@
+import 'package:dcomic/model/comic_source/sourceProvider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -7,9 +8,8 @@ import 'package:dcomic/model/comicCategoryModel.dart';
 import 'package:provider/provider.dart';
 
 class CategoryPage extends StatefulWidget {
-  final int type;
 
-  const CategoryPage({Key key, this.type: 0}) : super(key: key);
+  const CategoryPage({Key key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -29,7 +29,7 @@ class _CategoryPage extends State<CategoryPage> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return ChangeNotifierProvider(
-      create: (_) => ComicCategoryModel(widget.type),
+      create: (_) => ComicCategoryModel(Provider.of<SourceProvider>(context).activeHomeModel),
       builder: (context, child) {
         return Column(
           children: [

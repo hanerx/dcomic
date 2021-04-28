@@ -55,7 +55,7 @@ class DMZJRequestHandler extends SingleDomainRequestHandler {
     return dio.get('/subject_with_level/0/$page.json?uid=$uid');
   }
 
-  Future<Response> getCategory(int type) {
+  Future<Response> getCategory({int type:0}) {
     return dio.get('/$type/category.json');
   }
 
