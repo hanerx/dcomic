@@ -64,8 +64,8 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
         var soup = BeautifulSoup(response.data);
         var contList = soup.find(id: '.cont-list');
         List authors = contList.children[3].children[1].children
-            .map<Map<String, dynamic>>(
-                (e) => {'tag_name': e.text, 'tag_id': null})
+            .map<CategoryModel>((e) =>
+                CategoryModel(title: e.text, model: this, categoryId: null))
             .toList();
         List tags = contList.children[4].children[1].children
             .map<CategoryModel>((e) =>
@@ -444,7 +444,7 @@ class ManHuaGuiOptionsProvider extends SourceOptionsProvider {
 }
 
 class ManHuaGuiComicDetail extends ComicDetail {
-  final List _authors;
+  final List<CategoryModel> _authors;
   final String _comicId;
   final String _cover;
   final String _description;
@@ -471,7 +471,7 @@ class ManHuaGuiComicDetail extends ComicDetail {
 
   @override
   // TODO: implement authors
-  List get authors => _authors;
+  List<CategoryModel> get authors => _authors;
 
   @override
   // TODO: implement comicId

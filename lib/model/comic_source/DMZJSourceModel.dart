@@ -90,7 +90,12 @@ class DMZJSourceModel extends BaseSourceModel {
       if (response.statusCode == 200) {
         var title = response.data['title'];
         var cover = response.data['cover'];
-        var author = response.data['authors'];
+        var author = response.data['authors']
+            .map<CategoryModel>((e) => CategoryModel(
+                title: e['tag_name'],
+                categoryId: e['tag_id'].toString(),
+                model: this))
+            .toList();
         var types = response.data['types']
             .map<CategoryModel>((e) => CategoryModel(
                 title: e['tag_name'],
@@ -148,7 +153,7 @@ class DMZJSourceModel extends BaseSourceModel {
         var title = data['info']['title'];
         var cover = data['info']['cover'];
         var author = [
-          {'tag_name': data['info']['authors'], 'tag_id': null}
+          CategoryModel(title: data['info']['authors'], categoryId: null),
         ];
         var types = [
           CategoryModel(title: data['info']['types'], categoryId: null),
@@ -764,13 +769,21 @@ class DMZJWebSourceModel extends DMZJSourceModel {
           element.children.removeAt(0);
         });
         var author = txtItem.first.children
-            .map<Map<String, dynamic>>(
-                (e) => {'tag_name': e.innerHtml, 'tag_id': null})
+            .map<CategoryModel>((e) => CategoryModel(
+                title: e.innerHtml,
+                categoryId: e.attributes['href']
+                    .replaceAll('/tags/', '')
+                    .replaceAll('.html', ''),
+                model: this))
             .toList();
         var types = txtItem[1]
             .children
             .map<CategoryModel>((e) => CategoryModel(
-                title: e.innerHtml, categoryId: null, model: this))
+                title: e.innerHtml,
+                categoryId: e.attributes['href']
+                    .replaceAll('/tags/', '')
+                    .replaceAll('.html', ''),
+                model: this))
             .toList();
         var hotNum = 0;
         var subscribeNum = 0;
@@ -983,8 +996,8 @@ class DMZJComicDetail extends ComicDetail {
   final int _subscribeNum;
   final String _title;
   final String _cover;
-  final List _authors;
-  final List _tags;
+  final List<CategoryModel> _authors;
+  final List<CategoryModel> _tags;
   final List _chapters;
   final String _status;
   final String _updateTime;
@@ -1071,7 +1084,7 @@ class DMZJComicDetail extends ComicDetail {
 
   @override
   // TODO: implement authors
-  List get authors => _authors;
+  List<CategoryModel> get authors => _authors;
 
   @override
   // TODO: implement tags
@@ -1513,21 +1526,39 @@ class DMZJHomePageHandler extends BaseHomePageHandler {
       {int page: 0, bool popular: true}) async {
     // TODO: implement getCategoryDetail
     try {
-      var response = await UniversalRequestModel.dmzjRequestHandler
-          .getCategoryDetail(
-              int.parse(categoryId), 0, 0, popular ? 0 : 1, page);
-      if (response.statusCode == 200) {
-        return response.data
-            .map<RankingComic>((e) => RankingComic(
-                cover: e['cover'],
-                title: e['title'],
-                comicId: e['id'].toString(),
-                types: e['types'],
-                authors: e['authors'],
-                timestamp: e['last_updatetime'],
-                headers: {'referer': 'https://m.dmzj.com'},
-                model: model))
-            .toList();
+      if (int.tryParse(categoryId) != null) {
+        var response = await UniversalRequestModel.dmzjRequestHandler
+            .getCategoryDetail(
+                int.parse(categoryId), 0, 0, popular ? 0 : 1, page);
+        if (response.statusCode == 200) {
+          return response.data
+              .map<RankingComic>((e) => RankingComic(
+                  cover: e['cover'],
+                  title: e['title'],
+                  comicId: e['id'].toString(),
+                  types: e['types'],
+                  authors: e['authors'],
+                  timestamp: e['last_updatetime'],
+                  headers: {'referer': 'https://m.dmzj.com'},
+                  model: model))
+              .toList();
+        }
+      } else {
+        var response = await UniversalRequestModel.dmzjMobileRequestHandler
+            .getCategoryDetail(categoryId, page: page, popular: popular);
+        if (response.statusCode == 200) {
+          return jsonDecode(response.data)
+              .map<RankingComic>((e) => RankingComic(
+                  cover: 'https://images.dmzj.com/${e['cover']}',
+                  title: e['name'],
+                  comicId: e['id'].toString(),
+                  types: e['types'],
+                  authors: e['authors'],
+                  timestamp: e['last_updatetime'],
+                  headers: {'referer': 'https://m.dmzj.com'},
+                  model: model))
+              .toList();
+        }
       }
     } catch (e, s) {
       FirebaseCrashlytics.instance

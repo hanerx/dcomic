@@ -193,7 +193,7 @@ class _DebugTestPage extends State<DebugTestPage> {
                     data.tags.map((e) => e.title).toList().join('/'),
                     data.updateTime,
                     data.comicId,
-                    data.authors.map((e) => e['tag_name']).toList().join('/'));
+                    data.authors.map((e) => e.title).toList().join('/'));
               },
               itemCount: _subs.length,
             ),

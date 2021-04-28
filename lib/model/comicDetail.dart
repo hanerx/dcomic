@@ -50,7 +50,7 @@ class ComicDetailModel extends BaseModel {
       ? 'http://manhua.dmzj.com/css/img/mh_logo_dmzj.png?t=20131122'
       : detail.cover;
 
-  List get author => detail == null ? [] : detail.authors;
+  List<CategoryModel> get author => detail == null ? [] : detail.authors;
 
   List<CategoryModel> get types => detail == null ? [] : detail.tags;
 

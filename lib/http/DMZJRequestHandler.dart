@@ -55,7 +55,7 @@ class DMZJRequestHandler extends SingleDomainRequestHandler {
     return dio.get('/subject_with_level/0/$page.json?uid=$uid');
   }
 
-  Future<Response> getCategory({int type:0}) {
+  Future<Response> getCategory({int type: 0}) {
     return dio.get('/$type/category.json');
   }
 
@@ -103,6 +103,11 @@ class DMZJMobileRequestHandler extends SingleDomainRequestHandler {
 
   Future<Response> getLatest(int page) {
     return dio.get('/latest/$page.json');
+  }
+
+  Future<Response> getCategoryDetail(String categoryId,
+      {int page: 0, bool popular: true}) {
+    return dio.get('/tags/$categoryId/${popular ? 0 : 1}/$page.json');
   }
 }
 

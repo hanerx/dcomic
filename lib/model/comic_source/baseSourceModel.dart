@@ -121,7 +121,7 @@ abstract class ComicDetail extends BaseModel {
 
   String get cover;
 
-  List get authors;
+  List<CategoryModel> get authors;
 
   List<CategoryModel> get tags;
 

@@ -1,16 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dcomic/view/comic_detail_page.dart';
 
-class AuthorCard extends StatelessWidget{
+class AuthorCard extends StatelessWidget {
   final String imageUrl;
   final String title;
   final String subtitle;
-  final int id;
+  final String id;
+  final BaseSourceModel model;
 
-
-  AuthorCard(this.imageUrl, this.title, this.subtitle, this.id);
+  AuthorCard({this.imageUrl, this.title, this.subtitle, this.id, this.model});
 
   @override
   Widget build(BuildContext context) {
@@ -26,13 +27,17 @@ class AuthorCard extends StatelessWidget{
               ClipRRect(
                 child: AspectRatio(
                   aspectRatio: 0.75,
-                  child:CachedNetworkImage(
+                  child: CachedNetworkImage(
                     imageUrl: '$imageUrl',
                     httpHeaders: {'referer': 'http://images.dmzj.com'},
-                    progressIndicatorBuilder: (context, url, downloadProgress) =>
-                        Center(child: CircularProgressIndicator(value: downloadProgress.progress),),
+                    progressIndicatorBuilder:
+                        (context, url, downloadProgress) => Center(
+                      child: CircularProgressIndicator(
+                          value: downloadProgress.progress),
+                    ),
                     errorWidget: (context, url, error) => Icon(Icons.error),
-                  ),),
+                  ),
+                ),
                 borderRadius: BorderRadius.circular(5),
               ),
               Row(
@@ -58,12 +63,19 @@ class AuthorCard extends StatelessWidget{
           ),
         ),
       ),
-      onPressed: (){
-        Navigator.push(context, MaterialPageRoute(builder: (context){
-          return ComicDetailPage(id:id.toString(),title: title,);
-        },settings: RouteSettings(name: 'comic_detail_page')));
+      onPressed: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) {
+                  return ComicDetailPage(
+                    id: id.toString(),
+                    title: title,
+                    model: model,
+                  );
+                },
+                settings: RouteSettings(name: 'comic_detail_page')));
       },
     );
   }
-
 }

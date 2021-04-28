@@ -241,7 +241,7 @@ class LocalComicDetail extends ComicDetail {
       this.options, this.model);
 
   @override
-  List get authors => _mangaObject.authors.map((e) => e.toMap()).toList();
+  List<CategoryModel> get authors => _mangaObject.authors.map((e) => CategoryModel(title: e.name, categoryId: e.id, model: model)).toList();
 
   @override
   String get comicId => _mangaObject.name;

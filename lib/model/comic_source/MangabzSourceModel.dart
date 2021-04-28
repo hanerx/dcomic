@@ -75,7 +75,7 @@ class MangabzSourceModel extends BaseSourceModel {
             .children
             .first
             .children
-            .map((e) => {'tag_name': e.text, 'tag_id': null})
+            .map<CategoryModel>((e) => CategoryModel(title: e.text, categoryId: null, model: this))
             .toList();
         var cover = soup.find(id: '.detail-info-cover').attributes['src'];
         var description = soup.find(id: '.detail-info-content').text;
@@ -618,7 +618,7 @@ class MangabzSourceOptions extends SourceOptions {
 
 class MangabzComicDetail extends ComicDetail {
   final String _title;
-  final List _authors;
+  final List<CategoryModel> _authors;
   final String _cover;
   final String _description;
   final String _comicId;
@@ -657,7 +657,7 @@ class MangabzComicDetail extends ComicDetail {
 
   @override
   // TODO: implement authors
-  List get authors => _authors;
+  List<CategoryModel> get authors => _authors;
 
   @override
   // TODO: implement comicId

@@ -1,3 +1,4 @@
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -8,10 +9,11 @@ import 'package:dcomic/model/comicAuthorModel.dart';
 import 'package:provider/provider.dart';
 
 class AuthorPage extends StatefulWidget {
-  final int authorId;
+  final String authorId;
   final String author;
+  final BaseSourceModel model;
 
-  AuthorPage(this.authorId, this.author);
+  AuthorPage({this.authorId, this.author, this.model});
 
   @override
   State<StatefulWidget> createState() {
@@ -33,7 +35,7 @@ class _AuthorPage extends State<AuthorPage> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return ChangeNotifierProvider(
-      create: (_) => ComicAuthorModel(widget.authorId),
+      create: (_) => ComicAuthorModel(widget.authorId, widget.model),
       builder: (context, child) {
         return Scaffold(
           appBar: AppBar(
