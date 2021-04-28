@@ -1474,7 +1474,7 @@ class DMZJHomePageHandler extends BaseHomePageHandler {
           .map<CategoryModel>((e) => CategoryModel(
                 cover: e['cover'],
                 title: e['title'],
-                categoryId: e['tag_id'],
+                categoryId: e['tag_id'].toString(),
                 model: model,
                 headers: {'referer': 'https://m.dmzj.com'},
               ))
@@ -1488,7 +1488,7 @@ class DMZJHomePageHandler extends BaseHomePageHandler {
               .map<CategoryModel>((e) => CategoryModel(
                     cover: e['cover'],
                     title: e['title'],
-                    categoryId: e['tag_id'],
+                    categoryId: e['tag_id'].toString(),
                     model: model,
                     headers: {'referer': 'https://m.dmzj.com'},
                   ))
@@ -1504,9 +1504,31 @@ class DMZJHomePageHandler extends BaseHomePageHandler {
   }
 
   @override
-  Future<List<RankingComic>> getCategoryDetail(String categoryId,{int page:0}) {
+  Future<List<RankingComic>> getCategoryDetail(String categoryId,
+      {int page: 0, bool popular: true}) async {
     // TODO: implement getCategoryDetail
-    throw UnimplementedError();
+    try {
+      var response = await UniversalRequestModel.dmzjRequestHandler
+          .getCategoryDetail(
+              int.parse(categoryId), 0, 0, popular ? 0 : 1, page);
+      if (response.statusCode == 200) {
+        return response.data
+            .map<RankingComic>((e) => RankingComic(
+                cover: e['cover'],
+                title: e['title'],
+                comicId: e['id'].toString(),
+                types: e['types'],
+                authors: e['authors'],
+                timestamp: e['last_updatetime'],
+                headers: {'referer': 'https://m.dmzj.com'},
+                model: model))
+            .toList();
+      }
+    } catch (e, s) {
+      FirebaseCrashlytics.instance
+          .recordError(e, s, reason: 'dmzjGetCategoryDetailFailed');
+    }
+    return [];
   }
 
   @override
@@ -1656,9 +1678,28 @@ class DMZJHomePageHandler extends BaseHomePageHandler {
   }
 
   @override
-  Future<List<RankingComic>> getRankingList(int page) {
+  Future<List<RankingComic>> getRankingList(int page) async {
     // TODO: implement getRankingList
-    throw UnimplementedError();
+    try {
+      var response = await UniversalRequestModel.dmzjMobileRequestHandler
+          .getRankList(0, 0, 0, page);
+      if (response.statusCode == 200) {
+        return jsonDecode(response.data)
+            .map<RankingComic>((item) => RankingComic(
+                cover: 'https://images.dmzj.com/' + item['cover'],
+                title: item['name'],
+                types: item['types'],
+                authors: item['authors'],
+                timestamp: item['last_updatetime'],
+                headers: {'referer': 'https://m.dmzj.com'},
+                comicId: item['id'].toString()))
+            .toList();
+      }
+    } catch (e, s) {
+      FirebaseCrashlytics.instance
+          .recordError(e, s, reason: 'dmzjRankingListLoadingFail');
+    }
+    return [];
   }
 
   @override

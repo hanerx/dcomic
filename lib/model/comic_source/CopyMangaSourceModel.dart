@@ -890,11 +890,11 @@ class CopyMangaHomepageHandler extends BaseHomePageHandler {
 
   @override
   Future<List<RankingComic>> getCategoryDetail(String categoryId,
-      {int page: 0}) async {
+      {int page: 0, bool popular: true}) async {
     // TODO: implement getCategoryDetail
     try {
       var response = await UniversalRequestModel.copyMangaRequestHandler
-          .getTagList(categoryId: categoryId, page: page);
+          .getTagList(categoryId: categoryId, page: page, popular: popular);
       if (response.statusCode == 200) {
         List data = response.data['results']['list'];
         return data
@@ -921,6 +921,7 @@ class CopyMangaHomepageHandler extends BaseHomePageHandler {
       FirebaseCrashlytics.instance
           .recordError(e, s, reason: 'copyMangaCategoryDetailFailed');
     }
+    return [];
   }
 
   @override
@@ -1095,9 +1096,38 @@ class CopyMangaHomepageHandler extends BaseHomePageHandler {
   }
 
   @override
-  Future<List<RankingComic>> getRankingList(int page) {
+  Future<List<RankingComic>> getRankingList(int page) async {
     // TODO: implement getRankingList
-    throw UnimplementedError();
+    try {
+      var response = await UniversalRequestModel.copyMangaRequestHandler
+          .getTagList(popular: true, page: page);
+      if (response.statusCode == 200) {
+        List data = response.data['results']['list'];
+        return data
+            .map<RankingComic>((e) => RankingComic(
+                cover: e['cover'],
+                title: e['name'],
+                comicId: e['path_word'],
+                authors: e['author']
+                    .map<String>((e) => e['name'].toString())
+                    .toList()
+                    .join('/'),
+                model: model,
+                types: e['theme']
+                    .map<String>((e) => e['name'].toString())
+                    .toList()
+                    .join('/'),
+                headers: {"referer": "https://www.copymanga.com/"},
+                timestamp:
+                    ToolMethods.formatTimeString(e['datetime_updated']) ~/
+                        1000))
+            .toList();
+      }
+    } catch (e, s) {
+      FirebaseCrashlytics.instance
+          .recordError(e, s, reason: 'copyMangaGetLatestUpdateFailed');
+    }
+    return [];
   }
 
   @override

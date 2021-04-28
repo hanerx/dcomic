@@ -419,7 +419,7 @@ abstract class BaseHomePageHandler {
 
   Future<List<CategoryModel>> getCategory({CategoryType type});
 
-  Future<List<RankingComic>> getCategoryDetail(String categoryId,{int page:0});
+  Future<List<RankingComic>> getCategoryDetail(String categoryId,{int page:0,bool popular:true});
 
   Future<List<RankingComic>> getRankingList(int page);
 
