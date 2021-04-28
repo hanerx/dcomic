@@ -65,9 +65,7 @@ class _RankingPage extends State<RankingPage> {
                           builder: (context) => ComicDetailPage(
                                 id: item.comicId,
                                 title: item.title,
-                                model: Provider.of<SourceProvider>(context)
-                                    .activeSources
-                                    .first,
+                                model: item.model,
                               ),
                           settings: RouteSettings(name: 'comic_detail_page')));
                     },

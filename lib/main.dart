@@ -160,8 +160,25 @@ class _MainFrame extends State<MainFrame> {
             : Scaffold(
                 body: Center(
                   child: Container(
-                    height: 300,
-                    child: FlutterLogo(),
+                    height: 200,
+                    child: Column(
+                      children: [
+                        Text(
+                          'DComic',
+                          style: TextStyle(
+                              fontSize: 35,
+                              color: Theme.of(context).primaryColor,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          'Loading the everything~',
+                          style: TextStyle(
+                              fontSize: 20,
+                              color: Theme.of(context).disabledColor,
+                              fontWeight: FontWeight.bold),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ));

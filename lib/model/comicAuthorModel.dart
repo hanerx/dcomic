@@ -1,5 +1,6 @@
 import 'package:dcomic/model/comicRankingListModel.dart';
 import 'package:dcomic/model/comic_source/baseSourceModel.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dcomic/component/AuthorCard.dart';
 import 'package:dcomic/http/http.dart';
@@ -8,6 +9,8 @@ import 'package:dcomic/model/baseModel.dart';
 class ComicAuthorModel extends BaseModel {
   final String authorId;
   final BaseSourceModel model;
+
+  int page = 0;
 
   List<RankingComic> comics = [];
 
@@ -24,11 +27,14 @@ class ComicAuthorModel extends BaseModel {
     // }catch(e){
     //   logger.e('class: ComicAuthorModel, action: initFailed, authorId: $authorId exception: $e');
     // }
-    try{
-
-    }catch(e,s){
-
+    try {
+      comics =
+          await model.homePageHandler.getAuthorComics(authorId, page: page);
+    } catch (e, s) {
+      FirebaseCrashlytics.instance
+          .recordError(e, s, reason: 'getAuthorFailed');
     }
+    notifyListeners();
   }
 
   List<Widget> buildAuthorWidget(context) {

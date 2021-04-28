@@ -1551,7 +1551,7 @@ class DMZJHomePageHandler extends BaseHomePageHandler {
               .map<RankingComic>((e) => RankingComic(
                   cover: 'https://images.dmzj.com/${e['cover']}',
                   title: e['name'],
-                  comicId: e['id'].toString(),
+                  comicId: e['comic_id'].toString(),
                   types: e['types'],
                   authors: e['authors'],
                   timestamp: e['last_updatetime'],
@@ -1784,5 +1784,53 @@ class DMZJHomePageHandler extends BaseHomePageHandler {
       throw e;
     }
     return null;
+  }
+
+  @override
+  Future<List<RankingComic>> getAuthorComics(String authorId,
+      {int page = 0, bool popular = true}) async {
+    // TODO: implement getAuthorComics
+    try {
+      if (int.tryParse(authorId) != null) {
+        if (page == 0) {
+          var response = await UniversalRequestModel.dmzjRequestHandler
+              .getAuthorDetail(int.parse(authorId));
+          if (response.statusCode == 200) {
+            return response.data
+                .map<RankingComic>((e) => RankingComic(
+                    cover: e['cover'],
+                    title: e['title'],
+                    comicId: e['id'].toString(),
+                    types: e['status'],
+                    timestamp: e['last_updatetime'],
+                    headers: {'referer': 'https://m.dmzj.com'},
+                    model: model))
+                .toList();
+          }
+        } else {
+          return [];
+        }
+      } else {
+        var response = await UniversalRequestModel.dmzjMobileRequestHandler
+            .getCategoryDetail(authorId, page: page, popular: popular);
+        if (response.statusCode == 200) {
+          return jsonDecode(response.data)
+              .map<RankingComic>((e) => RankingComic(
+                  cover: 'https://images.dmzj.com/${e['cover']}',
+                  title: e['name'],
+                  comicId: e['comic_id'].toString(),
+                  types: e['types'],
+                  authors: e['authors'],
+                  timestamp: e['last_updatetime'],
+                  headers: {'referer': 'https://m.dmzj.com'},
+                  model: model))
+              .toList();
+        }
+      }
+    } catch (e, s) {
+      FirebaseCrashlytics.instance
+          .recordError(e, s, reason: 'dmzjGetCategoryDetailFailed');
+    }
+    return [];
   }
 }

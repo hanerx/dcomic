@@ -409,17 +409,15 @@ class ComicComment {
       this.timestamp, this.like);
 }
 
-enum CategoryType{
-  local,
-  cloud
-}
+enum CategoryType { local, cloud }
 
 abstract class BaseHomePageHandler {
   Future<List<HomePageCardModel>> getHomePage();
 
   Future<List<CategoryModel>> getCategory({CategoryType type});
 
-  Future<List<RankingComic>> getCategoryDetail(String categoryId,{int page:0,bool popular:true});
+  Future<List<RankingComic>> getCategoryDetail(String categoryId,
+      {int page: 0, bool popular: true});
 
   Future<List<RankingComic>> getRankingList(int page);
 
@@ -428,9 +426,11 @@ abstract class BaseHomePageHandler {
   Future<List<SubjectItem>> getSubjectList(int page);
 
   Future<SubjectModel> getSubject(String subjectId);
+
+  Future<List<RankingComic>> getAuthorComics(String authorId, {int page: 0,bool popular:true});
 }
 
-typedef BuilderCallback =Widget Function(BuildContext);
+typedef BuilderCallback = Widget Function(BuildContext);
 
 class HomePageCardModel {
   final String title;

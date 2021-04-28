@@ -25,6 +25,7 @@ class SourceProvider extends BaseModel {
 
   Future<void> init() async {
     if (!lock) {
+      await Future.delayed(Duration(seconds: 5));
       sources.add(DMZJWebSourceModel());
       // sources.add(DMZJSourceModel());
       sources.add(MangabzSourceModel());
@@ -58,7 +59,7 @@ class SourceProvider extends BaseModel {
         _homeIndex = 0;
       }
       logger.i('class: SourceProvider, action: init, sources: $sources');
-      lock=true;
+      lock = true;
       notifyListeners();
     }
     // notifyListeners();

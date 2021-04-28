@@ -75,6 +75,10 @@ class DMZJRequestHandler extends SingleDomainRequestHandler {
       int categoryId, int date, int tag, int type, int page) {
     return dio.get('/classify/$categoryId-$date-$tag/$type/$page.json');
   }
+
+  Future<Response> getAuthorDetail(int authorId){
+    return dio.get('/UCenter/author/$authorId.json');
+  }
 }
 
 class DMZJIRequestHandler extends SingleDomainRequestHandler {

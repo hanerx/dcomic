@@ -1187,4 +1187,39 @@ class CopyMangaHomepageHandler extends BaseHomePageHandler {
     }
     return null;
   }
+
+  @override
+  Future<List<RankingComic>> getAuthorComics(String authorId, {int page = 0,bool popular:true}) async{
+    // TODO: implement getAuthorComics
+    try {
+      var response = await UniversalRequestModel.copyMangaRequestHandler
+          .getTagList(authorId: authorId, page: page, popular: popular);
+      if (response.statusCode == 200) {
+        List data = response.data['results']['list'];
+        return data
+            .map<RankingComic>((e) => RankingComic(
+            cover: e['cover'],
+            title: e['name'],
+            comicId: e['path_word'],
+            authors: e['author']
+                .map<String>((e) => e['name'].toString())
+                .toList()
+                .join('/'),
+            model: model,
+            types: e['theme']
+                .map<String>((e) => e['name'].toString())
+                .toList()
+                .join('/'),
+            headers: {"referer": "https://www.copymanga.com/"},
+            timestamp:
+            ToolMethods.formatTimeString(e['datetime_updated']) ~/
+                1000))
+            .toList();
+      }
+    } catch (e, s) {
+      FirebaseCrashlytics.instance
+          .recordError(e, s, reason: 'copyMangaAuthorDetailFailed');
+    }
+    return [];
+  }
 }
