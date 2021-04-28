@@ -190,7 +190,7 @@ class _DebugTestPage extends State<DebugTestPage> {
                 return _CustomListTile(
                     data.cover,
                     data.title,
-                    data.tags.map((e) => e['tag_name']).toList().join('/'),
+                    data.tags.map((e) => e.title).toList().join('/'),
                     data.updateTime,
                     data.comicId,
                     data.authors.map((e) => e['tag_name']).toList().join('/'));

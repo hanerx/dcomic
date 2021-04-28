@@ -101,11 +101,10 @@ class CopyMangaSourceModel extends BaseSourceModel {
             data['popular'],
             ChineseHelper.convertToSimplifiedChinese(data['status']['display']),
             data['theme']
-                .map<Map>((e) => {
-                      'tag_name':
-                          ChineseHelper.convertToSimplifiedChinese(e['name']),
-                      'tag_id': e['path_word']
-                    })
+                .map<CategoryModel>((e) => CategoryModel(
+                    title: ChineseHelper.convertToSimplifiedChinese(e['name']),
+                    categoryId: e['path_word'],
+                    model: this))
                 .toList(),
             data['author']
                 .map<Map>((e) => {
@@ -587,7 +586,7 @@ class CopyMangaComicDetail extends ComicDetail {
   final String _historyChapter;
   final int _popular;
   final String _status;
-  final List _tags;
+  final List<CategoryModel> _tags;
   final List _authors;
   final String _updateTime;
   final List _chapters;
@@ -702,7 +701,7 @@ class CopyMangaComicDetail extends ComicDetail {
 
   @override
   // TODO: implement tags
-  List get tags => _tags;
+  List<CategoryModel> get tags => _tags;
 
   @override
   // TODO: implement title

@@ -1,3 +1,4 @@
+import 'package:dcomic/model/comicCategoryModel.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -423,7 +424,7 @@ class KuKuComicDetail extends ComicDetail {
 
   @override
   // TODO: implement tags
-  List get tags => [];
+  List<CategoryModel> get tags => [];
 
   @override
   // TODO: implement title

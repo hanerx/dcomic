@@ -91,7 +91,12 @@ class DMZJSourceModel extends BaseSourceModel {
         var title = response.data['title'];
         var cover = response.data['cover'];
         var author = response.data['authors'];
-        var types = response.data['types'];
+        var types = response.data['types']
+            .map<CategoryModel>((e) => CategoryModel(
+                title: e['tag_name'],
+                categoryId: e['tag_id'].toString(),
+                model: this))
+            .toList();
         var hotNum = response.data['hot_num'];
         var subscribeNum = response.data['subscribe_num'];
         var description = response.data['description'];
@@ -146,7 +151,7 @@ class DMZJSourceModel extends BaseSourceModel {
           {'tag_name': data['info']['authors'], 'tag_id': null}
         ];
         var types = [
-          {'tag_name': data['info']['types'], 'tag_id': null}
+          CategoryModel(title: data['info']['types'], categoryId: null),
         ];
         var description = data['info']['description'];
         var updateDate = ToolMethods.formatTimestamp(
@@ -764,8 +769,8 @@ class DMZJWebSourceModel extends DMZJSourceModel {
             .toList();
         var types = txtItem[1]
             .children
-            .map<Map<String, dynamic>>(
-                (e) => {'tag_name': e.innerHtml, 'tag_id': null})
+            .map<CategoryModel>((e) => CategoryModel(
+                title: e.innerHtml, categoryId: null, model: this))
             .toList();
         var hotNum = 0;
         var subscribeNum = 0;
@@ -1070,7 +1075,7 @@ class DMZJComicDetail extends ComicDetail {
 
   @override
   // TODO: implement tags
-  List get tags => _tags;
+  List<CategoryModel> get tags => _tags;
 
   @override
   // TODO: implement status

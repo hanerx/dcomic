@@ -123,7 +123,7 @@ abstract class ComicDetail extends BaseModel {
 
   List get authors;
 
-  List get tags;
+  List<CategoryModel> get tags;
 
   String get updateTime;
 

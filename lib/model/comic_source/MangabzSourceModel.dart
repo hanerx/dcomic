@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dcomic/database/cookieDatabaseProvider.dart';
 import 'package:dcomic/database/historyDatabaseProvider.dart';
+import 'package:dcomic/model/comicCategoryModel.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -90,7 +91,8 @@ class MangabzSourceModel extends BaseSourceModel {
             .find(id: '.detail-info-tip')
             .children[2]
             .children
-            .map((e) => {'tag_name': e.text, 'tag_id': null})
+            .map<CategoryModel>((e) =>
+                CategoryModel(title: e.text, categoryId: null, model: this))
             .toList();
         var chapters = soup
             .find(id: '.detail-list-form-con')
@@ -622,7 +624,7 @@ class MangabzComicDetail extends ComicDetail {
   final String _comicId;
   final String _status;
   final String _updateTime;
-  final List _tags;
+  final List<CategoryModel> _tags;
   final List _chapters;
   final String _historyChapter;
   final MangabzSourceOptions options;
@@ -706,7 +708,7 @@ class MangabzComicDetail extends ComicDetail {
 
   @override
   // TODO: implement tags
-  List get tags => _tags;
+  List<CategoryModel> get tags => _tags;
 
   @override
   // TODO: implement title

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dcomic/model/comicCategoryModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -67,8 +68,8 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
                 (e) => {'tag_name': e.text, 'tag_id': null})
             .toList();
         List tags = contList.children[4].children[1].children
-            .map<Map<String, dynamic>>(
-                (e) => {'tag_name': e.text, 'tag_id': null})
+            .map<CategoryModel>((e) =>
+                CategoryModel(title: e.text, model: this, categoryId: null))
             .toList();
         String description = soup.find(id: '#bookIntro').children.first.text;
         String title = soup.find(id: '.main-bar').children.first.text;
@@ -449,7 +450,7 @@ class ManHuaGuiComicDetail extends ComicDetail {
   final String _description;
   final List _chapters;
   final String _status;
-  final List _tags;
+  final List<CategoryModel> _tags;
   final String _title;
   final String _updateTime;
   final ManHuaGuiSourceOptions options;
@@ -528,7 +529,7 @@ class ManHuaGuiComicDetail extends ComicDetail {
 
   @override
   // TODO: implement tags
-  List get tags => _tags;
+  List<CategoryModel> get tags => _tags;
 
   @override
   // TODO: implement title
