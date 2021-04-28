@@ -889,9 +889,38 @@ class CopyMangaHomepageHandler extends BaseHomePageHandler {
   }
 
   @override
-  Future<List<SearchResult>> getCategoryDetail(CategoryModel model) {
+  Future<List<RankingComic>> getCategoryDetail(String categoryId,
+      {int page: 0}) async {
     // TODO: implement getCategoryDetail
-    throw UnimplementedError();
+    try {
+      var response = await UniversalRequestModel.copyMangaRequestHandler
+          .getTagList(categoryId: categoryId, page: page);
+      if (response.statusCode == 200) {
+        List data = response.data['results']['list'];
+        return data
+            .map<RankingComic>((e) => RankingComic(
+                cover: e['cover'],
+                title: e['name'],
+                comicId: e['path_word'],
+                authors: e['author']
+                    .map<String>((e) => e['name'].toString())
+                    .toList()
+                    .join('/'),
+                model: model,
+                types: e['theme']
+                    .map<String>((e) => e['name'].toString())
+                    .toList()
+                    .join('/'),
+                headers: {"referer": "https://www.copymanga.com/"},
+                timestamp:
+                    ToolMethods.formatTimeString(e['datetime_updated']) ~/
+                        1000))
+            .toList();
+      }
+    } catch (e, s) {
+      FirebaseCrashlytics.instance
+          .recordError(e, s, reason: 'copyMangaCategoryDetailFailed');
+    }
   }
 
   @override
@@ -1035,7 +1064,7 @@ class CopyMangaHomepageHandler extends BaseHomePageHandler {
     // TODO: implement getLatestUpdate
     try {
       var response = await UniversalRequestModel.copyMangaRequestHandler
-          .getRankingList(popular: false, page: page);
+          .getTagList(popular: false, page: page);
       if (response.statusCode == 200) {
         List data = response.data['results']['list'];
         return data

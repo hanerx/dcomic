@@ -1,20 +1,24 @@
 import 'package:dcomic/http/UniversalRequestModel.dart';
 import 'package:dcomic/http/http.dart';
 import 'package:dcomic/model/baseModel.dart';
+import 'package:dcomic/model/comicRankingListModel.dart';
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 class ComicCategoryDetailModel extends BaseModel {
   final String categoryId;
   final String title;
+  final BaseSourceModel model;
   int filterDate = 0;
   int filterType = 0;
   int filterTag = 0;
   int page = 0;
-  List _data = [];
+  List<RankingComic> _data = [];
   Map dateTypeList = <int, String>{};
   List typeTypeList = <String>['按人气', '按更新'];
   Map tagTypeList = <int, String>{};
 
-  ComicCategoryDetailModel(this.categoryId, this.title) {
+  ComicCategoryDetailModel(this.categoryId, this.title, this.model) {
     init();
   }
 
@@ -40,23 +44,30 @@ class ComicCategoryDetailModel extends BaseModel {
     // if (response.statusCode == 200) {
     //   _data += response.data;
     // }
+    try {
+      _data =
+          await model.homePageHandler.getCategoryDetail(categoryId, page: page);
+    } catch (e, s) {
+      FirebaseCrashlytics.instance
+          .recordError(e, s, reason: 'comicGetCategoryFailed');
+    }
     notifyListeners();
   }
 
-  refresh()async{
-    page=0;
+  refresh() async {
+    page = 0;
     _data.clear();
     await getCategoryDetail();
     notifyListeners();
   }
 
-  next()async{
+  next() async {
     page++;
     await getCategoryDetail();
     notifyListeners();
   }
 
-  int get length=>_data.length;
+  int get length => _data.length;
 
-  List get data=>_data;
+  List<RankingComic> get data => _data;
 }

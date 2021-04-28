@@ -1504,7 +1504,7 @@ class DMZJHomePageHandler extends BaseHomePageHandler {
   }
 
   @override
-  Future<List<SearchResult>> getCategoryDetail(CategoryModel model) {
+  Future<List<RankingComic>> getCategoryDetail(String categoryId,{int page:0}) {
     // TODO: implement getCategoryDetail
     throw UnimplementedError();
   }

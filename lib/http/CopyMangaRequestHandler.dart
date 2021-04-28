@@ -89,10 +89,10 @@ class CopyMangaRequestHandler extends SingleDomainRequestHandler {
     return dio.get('/api/v3/h5/homeIndex');
   }
 
-  Future<Response> getRankingList(
-      {bool popular: true, int page: 0, int limit: 21}) {
+  Future<Response> getTagList(
+      {bool popular: true, int page: 0, int limit: 21, String categoryId}) {
     return dio.get(
-        '/api/v3/comics?free_type=1&limit=$limit&offset=$page&ordering=${popular ? '-popular' : '-datetime_updated'}&_update=true');
+        '/api/v3/comics?free_type=1&limit=$limit&offset=$page${categoryId == null ? '' : '&theme=$categoryId'}&ordering=${popular ? '-popular' : '-datetime_updated'}&_update=true');
   }
 
   Future<Response> getSubjectList({int page: 0, int limit: 20}) {

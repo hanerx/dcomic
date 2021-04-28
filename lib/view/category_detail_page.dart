@@ -26,8 +26,6 @@ class CategoryDetailPage extends StatefulWidget {
 }
 
 class _CategoryDetailPage extends State<CategoryDetailPage> {
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,7 +34,7 @@ class _CategoryDetailPage extends State<CategoryDetailPage> {
         ),
         body: ChangeNotifierProvider(
             create: (_) =>
-                ComicCategoryDetailModel(widget.categoryId, widget.title),
+                ComicCategoryDetailModel(widget.categoryId, widget.title,widget.model),
             builder: (context, child) => DirectSelectContainer(
                   child: Column(
                     children: <Widget>[
@@ -56,7 +54,12 @@ class _CategoryDetailPage extends State<CategoryDetailPage> {
                                     listen: false)
                                 .next();
                           },
-                          emptyWidget: Provider.of<ComicCategoryDetailModel>(context).length == 0 ? EmptyView() : null,
+                          emptyWidget:
+                              Provider.of<ComicCategoryDetailModel>(context)
+                                          .length ==
+                                      0
+                                  ? EmptyView()
+                                  : null,
                           child: ListView.builder(
                             shrinkWrap: true,
                             itemCount:
@@ -68,17 +71,20 @@ class _CategoryDetailPage extends State<CategoryDetailPage> {
                                       listen: false)
                                   .data[index];
                               return ComicListTile(
-                                cover: item['cover'],
-                                title: item['title'],
-                                date: item['last_updatetime'],
-                                authors: item['authors'],
-                                tag: item['types'],
+                                cover: item.cover,
+                                title: item.title,
+                                date: item.timestamp,
+                                authors: item.authors,
+                                tag: item.types,
                                 onPressed: () {
                                   Navigator.of(context).push(MaterialPageRoute(
                                       builder: (context) => ComicDetailPage(
-                                            id: item['id'].toString(),
-                                            title: item['title'],
-                                          ),settings: RouteSettings(name: 'comic_detail_page')));
+                                            id: item.comicId,
+                                            title: item.title,
+                                            model: item.model,
+                                          ),
+                                      settings: RouteSettings(
+                                          name: 'comic_detail_page')));
                                 },
                                 headers: {'referer': 'https://m.dmzj.com'},
                               );
@@ -109,7 +115,7 @@ class _CategoryDetailPage extends State<CategoryDetailPage> {
                     .keys
                     .toList()
                     .indexOf(Provider.of<ComicCategoryDetailModel>(context)
-                    .filterDate),
+                        .filterDate),
                 itemBuilder: (int value) => DirectSelectItem<int>(
                     itemHeight: 56,
                     value: value,
@@ -152,12 +158,14 @@ class _CategoryDetailPage extends State<CategoryDetailPage> {
                       .tagTypeList
                       .keys
                       .toList(),
-                  defaultItemIndex: Provider.of<ComicCategoryDetailModel>(context)
-                      .tagTypeList
-                      .keys
-                      .toList()
-                      .indexOf(Provider.of<ComicCategoryDetailModel>(context)
-                      .filterTag),
+                  defaultItemIndex:
+                      Provider.of<ComicCategoryDetailModel>(context)
+                          .tagTypeList
+                          .keys
+                          .toList()
+                          .indexOf(
+                              Provider.of<ComicCategoryDetailModel>(context)
+                                  .filterTag),
                   itemBuilder: (int value) => DirectSelectItem<int>(
                       itemHeight: 56,
                       value: value,
@@ -165,16 +173,18 @@ class _CategoryDetailPage extends State<CategoryDetailPage> {
                         return Container(
                           child: Text(
                             Provider.of<ComicCategoryDetailModel>(context,
-                                listen: false)
+                                    listen: false)
                                 .tagTypeList[value],
                             textAlign: TextAlign.center,
                           ),
                         );
                       }),
                   onItemSelectedListener: (item, index, context) {
-                    Provider.of<ComicCategoryDetailModel>(context, listen: false)
+                    Provider.of<ComicCategoryDetailModel>(context,
+                            listen: false)
                         .filterTag = item;
-                    Provider.of<ComicCategoryDetailModel>(context, listen: false)
+                    Provider.of<ComicCategoryDetailModel>(context,
+                            listen: false)
                         .refresh();
                   },
                   focusedItemDecoration: BoxDecoration(
@@ -196,10 +206,10 @@ class _CategoryDetailPage extends State<CategoryDetailPage> {
               flex: 2,
               child: Padding(
                 child: DirectSelectList<String>(
-                  values:
-                  Provider.of<ComicCategoryDetailModel>(context).typeTypeList,
+                  values: Provider.of<ComicCategoryDetailModel>(context)
+                      .typeTypeList,
                   defaultItemIndex:
-                  Provider.of<ComicCategoryDetailModel>(context).filterType,
+                      Provider.of<ComicCategoryDetailModel>(context).filterType,
                   itemBuilder: (String value) => DirectSelectItem<String>(
                       itemHeight: 56,
                       value: value,
@@ -212,9 +222,11 @@ class _CategoryDetailPage extends State<CategoryDetailPage> {
                         );
                       }),
                   onItemSelectedListener: (item, index, context) {
-                    Provider.of<ComicCategoryDetailModel>(context, listen: false)
+                    Provider.of<ComicCategoryDetailModel>(context,
+                            listen: false)
                         .filterType = index;
-                    Provider.of<ComicCategoryDetailModel>(context, listen: false)
+                    Provider.of<ComicCategoryDetailModel>(context,
+                            listen: false)
                         .refresh();
                   },
                   focusedItemDecoration: BoxDecoration(
