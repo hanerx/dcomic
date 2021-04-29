@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:dcomic/model/comic_source/sourceProvider.dart';
+import 'package:dcomic/view/server_controllers/server_sellect_page.dart';
 import 'package:direct_select_flutter/direct_select_container.dart';
 import 'package:direct_select_flutter/direct_select_item.dart';
 import 'package:direct_select_flutter/direct_select_list.dart';
@@ -15,6 +16,7 @@ import 'package:dcomic/view/favorite_page.dart';
 import 'package:dcomic/view/login_page.dart';
 import 'package:dcomic/view/mag_maker/mag_make_page.dart';
 import 'package:dcomic/view/novel_pages/novel_main_page.dart';
+import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:provider/provider.dart';
 
 class CustomDrawer extends StatefulWidget {
@@ -217,6 +219,25 @@ class CustomDrawerState extends State<CustomDrawer> {
             Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => MagMakePage(),
                 settings: RouteSettings(name: 'mag_make_page')));
+          },
+        ),
+      ];
+    }
+
+    if (Provider.of<SourceProvider>(context, listen: false)
+            .ipfsSourceProvider
+            .nodes
+            .length >
+        0) {
+      list += <Widget>[
+        Divider(),
+        ListTile(
+          title: Text('分布式服务器管理器'),
+          leading: Icon(FontAwesome5.server),
+          onTap: () {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => ServerSelectPage(),
+                settings: RouteSettings(name: 'server_select_page')));
           },
         ),
       ];
