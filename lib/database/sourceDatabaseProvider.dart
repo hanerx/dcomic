@@ -56,6 +56,10 @@ class SourceDatabaseProvider {
         await database.insert('source_options',
             {'source_name': name, 'key': key, 'value': value ? '1' : '0'});
         break;
+      case List:
+        await database.insert('source_options',
+            {'source_name': name, 'key': key, 'value': value.join(',')});
+        break;
       default:
         await database.insert('source_options',
             {'source_name': name, 'key': key, 'value': value.toString()});

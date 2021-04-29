@@ -250,7 +250,7 @@ class DMZJSourceModel extends BaseSourceModel {
         return ListView.builder(
           shrinkWrap: true,
           physics: NeverScrollableScrollPhysics(),
-          itemCount: Provider.of<SystemSettingModel>(context).backupApi ? 2 : 1,
+          itemCount: Provider.of<SystemSettingModel>(context).backupApi ? 1 : 0,
           itemBuilder: (context, index) {
             var list = [
               // ListTile(

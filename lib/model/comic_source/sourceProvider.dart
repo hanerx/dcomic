@@ -1,4 +1,5 @@
 import 'package:dcomic/model/comic_source/CopyMangaSourceModel.dart';
+import 'package:dcomic/model/comic_source/IPFSSourceProivder.dart';
 import 'package:dcomic/model/comic_source/LocalSourceModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dcomic/component/ComicSourceCard.dart';
@@ -17,6 +18,7 @@ class SourceProvider extends BaseModel {
   int _homeIndex = 0;
   int _index = 0;
   LocalSourceModel localSourceModel = LocalSourceModel();
+  IPFSSourceProvider ipfsSourceProvider = IPFSSourceProvider();
   bool lock = false;
 
   SourceProvider() {
@@ -25,7 +27,7 @@ class SourceProvider extends BaseModel {
 
   Future<void> init() async {
     if (!lock) {
-      await Future.delayed(Duration(seconds: 5));
+      // await Future.delayed(Duration(seconds: 5));
       sources.add(DMZJWebSourceModel());
       // sources.add(DMZJSourceModel());
       sources.add(MangabzSourceModel());
@@ -33,6 +35,10 @@ class SourceProvider extends BaseModel {
       sources.add(KuKuSourceModel());
       sources.add(localSourceModel);
       sources.add(CopyMangaSourceModel());
+      try {
+        await ipfsSourceProvider.init();
+        sources.addAll(ipfsSourceProvider.getSources());
+      } catch (e) {}
       var options = await SourceDatabaseProvider.getSourceOptions('provider');
       if (options.containsKey('index')) {
         _index = int.parse(options['index']);
@@ -143,5 +149,20 @@ class SourceProvider extends BaseModel {
           'provider', 'home_index', index);
       notifyListeners();
     }
+  }
+
+  Future<void> refresh() async {
+    await ipfsSourceProvider.init();
+    notifyListeners();
+  }
+
+  Future<void> addAddress(String address) async {
+    await ipfsSourceProvider.addSource(address);
+    notifyListeners();
+  }
+
+  Future<void> deleteAddress(String address) async {
+    await ipfsSourceProvider.deleteSource(address);
+    notifyListeners();
   }
 }

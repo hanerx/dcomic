@@ -3,27 +3,34 @@ import 'package:dcomic/database/sourceDatabaseProvider.dart';
 import 'package:dcomic/http/IPFSSourceRequestHandler.dart';
 import 'package:dcomic/model/comicCategoryModel.dart';
 import 'package:dcomic/model/comic_source/baseSourceModel.dart';
-import 'package:dcomic/model/comic_source/baseSourceProvider.dart';
 import 'package:dcomic/utils/tool_methods.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
-class IPFSSourceProvider extends BaseSourceProvider {
-  List<String> address;
-  List<Map> nodes;
+class IPFSSourceProvider {
+  List<String> address = [];
+  List<Map> nodes = [];
 
-  @override
   List<BaseSourceModel> getSources() {
     // TODO: implement getSources
-    return nodes
-        .map<IPFSSourceModel>((e) => IPFSSourceModel(
-            e['address'], e['name'], e['title'], e['description']))
-        .toList();
+    try {
+      List<BaseSourceModel> data = [];
+      for (var e in nodes) {
+        if (e['error'] != true) {
+          data.add(IPFSSourceModel(
+              e['url'], e['name'], e['title'], e['description']));
+        }
+      }
+      return data;
+    } catch (e, s) {
+      FirebaseCrashlytics.instance
+          .recordError(e, s, reason: 'initIPFSSourceFailed');
+    }
+    return [];
   }
 
-  @override
   Future<void> init() async {
     // TODO: implement init
     address = (await SourceDatabaseProvider.getSourceOption<List>(
@@ -33,19 +40,48 @@ class IPFSSourceProvider extends BaseSourceProvider {
       try {
         var response = await IPFSSourceRequestHandler(item).getServerState();
         if (response.statusCode == 200) {
+          response.data['data']['url'] = item;
           nodes.add(response.data['data']);
         }
       } catch (e, s) {
         FirebaseCrashlytics.instance
             .recordError(e, s, reason: 'initIPFSSourceFailed: $item');
+        nodes.add({
+          "url": item,
+          "address": item,
+          "name": "error",
+          "title": "配置错误",
+          "description": "服务器不可访问时显示",
+          "error": true
+        });
       }
     }
   }
 
-  @override
-  Future<List<BaseSourceModel>> update() {
-    // TODO: implement update
-    throw UnimplementedError();
+  Future<void> addSource(String address) async {
+    try {
+      var response = await IPFSSourceRequestHandler(address).getServerState();
+      if (response.statusCode == 200) {
+        nodes.add(response.data['data']);
+        this.address.add(address);
+        SourceDatabaseProvider.insertSourceOption<List>(
+            'ipfs_provider', 'address', this.address);
+      }
+    } catch (e, s) {
+      FirebaseCrashlytics.instance
+          .recordError(e, s, reason: 'initIPFSSourceFailed: $address');
+    }
+  }
+
+  Future<void> deleteSource(String address) async {
+    int index = this.address.indexOf(address);
+    if (index < 0) {
+      return;
+    }
+    this.address.remove(address);
+    this.nodes.removeAt(index);
+    SourceDatabaseProvider.insertSourceOption<List>(
+        'ipfs_provider', 'address', this.address);
   }
 }
 
@@ -74,29 +110,35 @@ class IPFSSourceModel extends BaseSourceModel {
     // TODO: implement get
     if (comicId == null && title == null) {
       throw IDInvalidError();
-    } else if (comicId != null && !RegExp('[0-9]+').hasMatch(comicId)) {
-      return await getComicDetail(comicId);
-    } else if (comicId != null &&
-        await SourceDatabaseProvider.getBoundComic(type.name, comicId) !=
-            null) {
-      var map = await SourceDatabaseProvider.getBoundComic(type.name, comicId);
-      return await getComicDetail(map['bound_id']);
-    } else if (title != null) {
-      var list = await search(title);
-      for (var item in list) {
-        if (item.title == title) {
-          if (comicId != null) {
-            SourceDatabaseProvider.boundComic(type.name, comicId, item.comicId);
+    } else if (comicId != null) {
+      try {
+        return await getComicDetail(comicId);
+      } catch (e) {}
+      if (comicId != null &&
+          await SourceDatabaseProvider.getBoundComic(type.name, comicId) !=
+              null) {
+        var map =
+            await SourceDatabaseProvider.getBoundComic(type.name, comicId);
+        return await getComicDetail(map['bound_id']);
+      } else if (title != null) {
+        var list = await search(title);
+        for (var item in list) {
+          if (item.title == title) {
+            if (comicId != null) {
+              SourceDatabaseProvider.boundComic(
+                  type.name, comicId, item.comicId);
+            }
+            return await getComicDetail(item.comicId);
           }
-          return await getComicDetail(item.comicId);
         }
+        throw ComicIdNotBoundError(comicId);
+      } else if (title == null) {
+        throw IDInvalidError();
+      } else {
+        throw ComicLoadingError();
       }
-      throw ComicIdNotBoundError(comicId);
-    } else if (title == null) {
-      throw IDInvalidError();
-    } else {
-      throw ComicLoadingError();
     }
+    throw ComicLoadingError();
   }
 
   Future<ComicDetail> getComicDetail(String comicId) async {
@@ -105,13 +147,25 @@ class IPFSSourceModel extends BaseSourceModel {
       if (response.statusCode == 200) {
         var data = response.data['data'];
         var history = (await HistoryDatabaseProvider(this.type.name)
-            .getReadHistory(name));
+            .getReadHistory(comicId));
         var lastChapterId = history == null ? null : history['last_chapter_id'];
         return IPFSComicDetail(
             comicId: data['comic_id'],
-            cover: data['cover'],
+            cover: this.address + '/upload/ipfs/' + data['cover'],
             description: data['description'],
-            chapters: data['data'],
+            chapters: data['data']
+                .map<Map<String, dynamic>>((e) => {
+                      "title": e['title'],
+                      "name": e['name'],
+                      "data": e['data']
+                          .map<Map>((c) => {
+                                "chapter_id": c['chapter_id'],
+                                "chapter_title": c['title'],
+                                "updatetime": c['timestamp']
+                              })
+                          .toList()
+                    })
+                .toList(),
             tags: data['tags']
                 .map<CategoryModel>((e) => CategoryModel(
                     categoryId: e['tag_id'], title: e['title'], model: this))
@@ -204,7 +258,7 @@ class IPFSSourceModel extends BaseSourceModel {
                     .toList()
                     .join('/'),
                 e['title'],
-                e['cover']);
+                this.address + '/upload/ipfs/' + e['cover']);
           }).toList();
         }
       } catch (e, s) {
@@ -258,7 +312,7 @@ class IPFSComicDetail extends ComicDetail {
   final String comicId;
   final String cover;
   final String description;
-  final List chapters;
+  final List<Map<String, dynamic>> chapters;
   final String historyChapter;
   final List<CategoryModel> tags;
   final String title;
@@ -297,7 +351,7 @@ class IPFSComicDetail extends ComicDetail {
               comicId: comicId,
               chapterId: chapterId,
               chapters: item['data'],
-              groupId: item['group_id'],
+              groupId: item['name'],
               handler: handler);
         }
       }
@@ -308,7 +362,8 @@ class IPFSComicDetail extends ComicDetail {
   @override
   List<Map<String, dynamic>> getChapters() {
     // TODO: implement getChapters
-    return chapters;
+    return List.generate(
+        chapters.length, (index) => chapters[chapters.length - index - 1]);
   }
 
   @override
@@ -320,7 +375,6 @@ class IPFSComicDetail extends ComicDetail {
   @override
   Future<void> getIfSubscribed() async {
     // TODO: implement getIfSubscribed
-    throw UnimplementedError();
   }
 
   @override
@@ -354,7 +408,7 @@ class IPFSComic extends Comic {
   String _next;
   String _pageAt;
   String _title;
-  List<String> _pages;
+  List<String> _pages = [];
   List<String> _chapterIdList;
 
   IPFSComic(
@@ -406,7 +460,9 @@ class IPFSComic extends Comic {
       if (response.statusCode == 200) {
         _pageAt = chapterId;
         _title = response.data['data']['title'];
-        _pages = response.data['data']['data'];
+        _pages = response.data['data']['data']
+            .map<String>((e) => e.toString())
+            .toList();
         if (_chapterIdList.indexOf(chapterId) > 0) {
           _previous = _chapterIdList[_chapterIdList.indexOf(chapterId) - 1];
         } else {
@@ -426,7 +482,7 @@ class IPFSComic extends Comic {
   }
 
   @override
-  Future<void> getViewPoint() {
+  Future<void> getViewPoint() async {
     // TODO: implement getViewPoint
   }
 
