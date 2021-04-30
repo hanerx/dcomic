@@ -54,4 +54,8 @@ class IPFSSourceRequestHandler extends SingleDomainRequestHandler {
   Future<Response> getUserState() async {
     return dio.get('/user/my', options: Options(headers: await setHeader()));
   }
+
+  Future<Response> getServerList() async {
+    return dio.get('/server/', options: Options(headers: await setHeader()));
+  }
 }

@@ -8,6 +8,7 @@ import 'package:dcomic/model/comicCategoryModel.dart';
 import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:dcomic/model/ipfsSettingProvider.dart';
 import 'package:dcomic/utils/tool_methods.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -533,6 +534,13 @@ class IPFSUserConfig extends UserConfig {
     try {
       var response = await handler.logout();
       if (response.statusCode == 200) {
+        _status = UserStatus.logout;
+        await SourceDatabaseProvider.insertSourceOption<bool>(
+            sourceDetail.name, 'login', false);
+        return true;
+      }
+    } on DioError catch (e) {
+      if (e.response.statusCode == 401) {
         _status = UserStatus.logout;
         await SourceDatabaseProvider.insertSourceOption<bool>(
             sourceDetail.name, 'login', false);
