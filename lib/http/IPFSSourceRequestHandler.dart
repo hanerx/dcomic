@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dcomic/database/sourceDatabaseProvider.dart';
 import 'package:dcomic/http/UniversalRequestModel.dart';
 import 'package:dcomic/model/comic_source/baseSourceModel.dart';
@@ -57,5 +59,16 @@ class IPFSSourceRequestHandler extends SingleDomainRequestHandler {
 
   Future<Response> getServerList() async {
     return dio.get('/server/', options: Options(headers: await setHeader()));
+  }
+
+  Future<Response> deleteServer(String address) async {
+    return dio.delete("/server/delete?address=$address",
+        options: Options(headers: await setHeader()));
+  }
+
+  Future<Response> addServer(String address, String token) async {
+    return dio.post('/server/add',
+        data: jsonEncode({"address": address, "token": token}),
+        options: Options(headers: await setHeader()));
   }
 }

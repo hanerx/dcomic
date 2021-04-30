@@ -1,4 +1,6 @@
+import 'package:dcomic/component/EmptyView.dart';
 import 'package:dcomic/component/LoadingCube.dart';
+import 'package:dcomic/generated/l10n.dart';
 import 'package:dcomic/model/comic_source/IPFSSourceProivder.dart';
 import 'package:dcomic/model/server_controller/ServerListModel.dart';
 import 'package:flutter/cupertino.dart';
@@ -35,6 +37,9 @@ class _ServerListPage extends State<ServerListPage> {
           },
           firstRefresh: true,
           firstRefreshWidget: LoadingCube(),
+          emptyWidget: Provider.of<ServerListModel>(context).data.length == 0
+              ? EmptyView()
+              : null,
           child: ListView.builder(
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
@@ -44,10 +49,35 @@ class _ServerListPage extends State<ServerListPage> {
                 return Card(
                   child: ListTile(
                       leading: Icon(FontAwesome5.server),
-                      title: Text('${item.title}',style: TextStyle(fontSize: 20),),
+                      title: Text(
+                        '${item.title}',
+                        style: TextStyle(fontSize: 20),
+                      ),
                       trailing: IconButton(
                         icon: Icon(Icons.delete),
-                        onPressed: () {},
+                        onPressed: () {
+                          var model = Provider.of<ServerListModel>(context,
+                              listen: false);
+                          showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                    title: Text("确认删除"),
+                                    content: Text('确认删除 ${item.address} 的节点吗'),
+                                    actions: [
+                                      TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text(S.of(context).Cancel)),
+                                      TextButton(
+                                          onPressed: () async {
+                                            await model.delete(item.address);
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text(S.of(context).Confirm))
+                                    ],
+                                  ));
+                        },
                       ),
                       subtitle: ListView(
                         shrinkWrap: true,

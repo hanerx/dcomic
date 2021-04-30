@@ -32,6 +32,18 @@ class ServerMainPageModel extends BaseModel {
     }
   }
 
+  Future<void> addServer(String address, String token) async {
+    try {
+      var response = await _handler.addServer(address, token);
+      if (response.statusCode == 200) {
+        return;
+      }
+    } catch (e, s) {
+      FirebaseCrashlytics.instance
+          .recordError(e, s, reason: 'serverAddFailed: $address');
+    }
+  }
+
   String get username => _username;
 
   String get title => node.title;

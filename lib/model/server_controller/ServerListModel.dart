@@ -25,6 +25,18 @@ class ServerListModel extends BaseModel {
     }
   }
 
+  Future<void> delete(String address) async {
+    try {
+      var response = await node.handler.deleteServer(address);
+      if (response.statusCode == 200) {
+        await init();
+      }
+    } catch (e, s) {
+      FirebaseCrashlytics.instance
+          .recordError(e, s, reason: 'serverListDeleteFailed: ${address}');
+    }
+  }
+
   List<Node> get data => _data;
 }
 

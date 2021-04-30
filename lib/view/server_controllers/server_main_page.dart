@@ -221,11 +221,18 @@ class _ServerMainPage extends State<ServerMainPage> {
                                             },
                                             child: Text(S.of(context).Cancel)),
                                         TextButton(
-                                            onPressed: () {},
+                                            onPressed: () {
+                                              Navigator.of(context).pop(true);
+                                            },
                                             child: Text(S.of(context).Confirm))
                                       ],
                                     ));
-                            if (data != null && data) {}
+                            if (data != null && data) {
+                              await Provider.of<ServerMainPageModel>(context,
+                                      listen: false)
+                                  .addServer(
+                                      urlController.text, tokenController.text);
+                            }
                           },
                         )
                       ],
