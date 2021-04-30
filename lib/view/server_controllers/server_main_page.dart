@@ -2,6 +2,7 @@ import 'package:dcomic/component/LoadingCube.dart';
 import 'package:dcomic/generated/l10n.dart';
 import 'package:dcomic/model/comic_source/IPFSSourceProivder.dart';
 import 'package:dcomic/model/server_controller/ServerMainPageModel.dart';
+import 'package:dcomic/view/server_controllers/comic_list_page.dart';
 import 'package:dcomic/view/server_controllers/server_comic_detail_page.dart';
 import 'package:dcomic/view/server_controllers/server_list_page.dart';
 import 'package:flutter/cupertino.dart';
@@ -261,7 +262,14 @@ class _ServerMainPage extends State<ServerMainPage> {
                           leading: Icon(Icons.collections_bookmark),
                           title: Text('漫画列表'),
                           subtitle: Text('管理漫画列表'),
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => ComicListPage(
+                                      node: widget.node,
+                                    ),
+                                settings:
+                                    RouteSettings(name: "comic_list_page")));
+                          },
                         ),
                         ListTile(
                           enabled:
