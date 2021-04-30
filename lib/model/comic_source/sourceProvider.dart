@@ -20,6 +20,7 @@ class SourceProvider extends BaseModel {
   LocalSourceModel localSourceModel = LocalSourceModel();
   IPFSSourceProvider ipfsSourceProvider = IPFSSourceProvider();
   bool lock = false;
+  List<IPFSSourceModel> ipfsSourceModels = [];
 
   SourceProvider() {
     init();
@@ -37,7 +38,8 @@ class SourceProvider extends BaseModel {
       sources.add(CopyMangaSourceModel());
       try {
         await ipfsSourceProvider.init();
-        sources.addAll(ipfsSourceProvider.getSources());
+        ipfsSourceModels=ipfsSourceProvider.getSources();
+        sources.addAll(ipfsSourceModels);
       } catch (e) {}
       var options = await SourceDatabaseProvider.getSourceOptions('provider');
       if (options.containsKey('index')) {

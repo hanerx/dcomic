@@ -1,26 +1,32 @@
+import 'dart:typed_data';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dcomic/database/historyDatabaseProvider.dart';
 import 'package:dcomic/database/sourceDatabaseProvider.dart';
 import 'package:dcomic/http/IPFSSourceRequestHandler.dart';
 import 'package:dcomic/model/comicCategoryModel.dart';
 import 'package:dcomic/model/comic_source/baseSourceModel.dart';
+import 'package:dcomic/model/ipfsSettingProvider.dart';
 import 'package:dcomic/utils/tool_methods.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:provider/provider.dart';
 
 class IPFSSourceProvider {
   List<String> address = [];
   List<Map> nodes = [];
 
-  List<BaseSourceModel> getSources() {
+  List<IPFSSourceModel> getSources() {
     // TODO: implement getSources
     try {
-      List<BaseSourceModel> data = [];
+      List<IPFSSourceModel> data = [];
       for (var e in nodes) {
         if (e['error'] != true) {
-          data.add(IPFSSourceModel(
-              e['url'], e['name'], e['title'], e['description']));
+          data.add(IPFSSourceModel(e['url'], e['name'], e['title'],
+              e['description'], e['version'], e['type']));
         }
       }
       return data;
@@ -38,7 +44,8 @@ class IPFSSourceProvider {
         defaultValue: []));
     for (var item in address) {
       try {
-        var response = await IPFSSourceRequestHandler(item).getServerState();
+        var response =
+            await IPFSSourceRequestHandler(item, null).getServerState();
         if (response.statusCode == 200) {
           response.data['data']['url'] = item;
           nodes.add(response.data['data']);
@@ -60,7 +67,8 @@ class IPFSSourceProvider {
 
   Future<void> addSource(String address) async {
     try {
-      var response = await IPFSSourceRequestHandler(address).getServerState();
+      var response =
+          await IPFSSourceRequestHandler(address, null).getServerState();
       if (response.statusCode == 200) {
         nodes.add(response.data['data']);
         this.address.add(address);
@@ -90,17 +98,23 @@ class IPFSSourceModel extends BaseSourceModel {
   final String name;
   final String title;
   final String description;
+  final String version;
+  final int mode;
 
   IPFSSourceRequestHandler handler;
 
   IPFSSourceOptions _sourceOptions = IPFSSourceOptions.fromMap(null, {});
 
-  IPFSSourceModel(this.address, this.name, this.title, this.description) {
+  IPFSUserConfig _userConfig;
+
+  IPFSSourceModel(this.address, this.name, this.title, this.description,
+      this.version, this.mode) {
     init();
   }
 
   Future<void> init() async {
-    handler = IPFSSourceRequestHandler(this.address);
+    handler = IPFSSourceRequestHandler(this.address, this.type);
+    _userConfig = IPFSUserConfig(handler, this.type);
     var map = await SourceDatabaseProvider.getSourceOptions(type.name);
     _sourceOptions = IPFSSourceOptions.fromMap(type, map);
   }
@@ -179,7 +193,8 @@ class IPFSSourceModel extends BaseSourceModel {
             updateTime: ToolMethods.formatTimestamp(data['timestamp']),
             sourceDetail: type,
             historyChapter: lastChapterId,
-            handler: handler);
+            handler: handler,
+            hotNum: data['hot_num']);
       }
     } catch (e, s) {
       FirebaseCrashlytics.instance
@@ -280,7 +295,264 @@ class IPFSSourceModel extends BaseSourceModel {
 
   @override
   // TODO: implement userConfig
-  UserConfig get userConfig => InactiveUserConfig(type);
+  IPFSUserConfig get userConfig => _userConfig;
+}
+
+class IPFSUserConfig extends UserConfig {
+  final IPFSSourceRequestHandler handler;
+  final SourceDetail sourceDetail;
+  String _token;
+  String _username;
+  String _nickname;
+  String _avatar = 'QmSY5BqPor7aQD8EsSJvXdixkgLoAdQHP3uq5yX28jGwsT';
+  UserStatus _status = UserStatus.logout;
+
+  IPFSUserConfig(this.handler, this.sourceDetail) {
+    init();
+  }
+
+  Future<void> init() async {
+    if (await SourceDatabaseProvider.getSourceOption<bool>(
+        sourceDetail.name, "login",
+        defaultValue: false)) {
+      try {
+        var response = await handler.getUserState();
+        _status = UserStatus.login;
+        _nickname = response.data['data']['nickname'];
+        _username = response.data['data']['username'];
+        _token = await SourceDatabaseProvider.getSourceOption(
+            sourceDetail.name, "token");
+      } catch (e) {}
+    }
+  }
+
+  @override
+  // TODO: implement avatar
+  String get avatar => _avatar;
+
+  @override
+  Widget getLoginWidget(context) {
+    // TODO: implement getLoginWidget
+    TextEditingController usernameController = TextEditingController();
+    TextEditingController passwordController = TextEditingController();
+    return FlutterEasyLoading(
+        child: Scaffold(
+      appBar: AppBar(
+        title: Text('登录'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.help_outline),
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return SimpleDialog(
+                      title: Text('说明'),
+                      children: <Widget>[
+                        SimpleDialogOption(
+                          child: Text(
+                              '这次程序不是第三方的了，但是内容是来自服务器提供商的，所以本程序还是不保证能正常登录（'),
+                        )
+                      ],
+                    );
+                  });
+            },
+          )
+        ],
+      ),
+      body: Scrollbar(
+        child: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.all(10),
+                child: Center(
+                  child: Text(
+                    'DComic',
+                    style: TextStyle(
+                        fontSize: 35,
+                        color: Theme.of(context).primaryColor,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(5),
+                child: TextField(
+                  controller: usernameController,
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: '用户名',
+                      icon: Icon(Icons.account_circle),
+                      helperText: '分布式服务器用户名'),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(5),
+                child: TextField(
+                  controller: passwordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: '密码',
+                      icon: Icon(Icons.lock),
+                      helperText: '分布式服务器密码'),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(10),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        '*本程序为第三方登录程序，存在登录风险',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                    Builder(
+                      builder: (context) {
+                        return ElevatedButton(
+                          child: Text(
+                            '登录',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          onPressed: () async {
+                            EasyLoading.instance
+                              ..indicatorType =
+                                  EasyLoadingIndicatorType.fadingCube;
+                            EasyLoading.instance
+                              ..maskType = EasyLoadingMaskType.black;
+                            EasyLoading.show(status: "登录中");
+                            try {
+                              await login(usernameController.text,
+                                  passwordController.text);
+                              EasyLoading.dismiss();
+                              Navigator.of(context).pop();
+                            } on LoginUsernameOrPasswordError catch (e) {
+                              EasyLoading.dismiss();
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content: Text('用户名或密码错误！'),
+                              ));
+                            } catch (e) {
+                              EasyLoading.dismiss();
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content: Text('俺也不知道的错误'),
+                              ));
+                            }
+                          },
+                        );
+                      },
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ));
+  }
+
+  @override
+  Widget getSettingWidget(context) {
+    // TODO: implement getSettingWidget
+    var bytes = Provider.of<IPFSSettingProvider>(context, listen: false)
+        .catBytes(avatar);
+    return Card(
+      child: ListView(
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        children: [
+          ListTile(
+            leading: FutureBuilder<Uint8List>(
+              future: bytes,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  if (snapshot.hasError) {
+                    return Icon(Icons.error);
+                  } else {
+                    return Image.memory(snapshot.data);
+                  }
+                } else {
+                  return CircularProgressIndicator();
+                }
+              },
+            ),
+            title: Text('${sourceDetail.title}用户设置'),
+            subtitle: Text('昵称：$nickname 用户ID：$userId'),
+            trailing: Icon(status == UserStatus.login
+                ? Icons.cloud_done
+                : Icons.cloud_off),
+          ),
+          Divider(),
+          ListTile(
+            enabled: status == UserStatus.login,
+            title: Text('退出登录'),
+            subtitle: Text('退出登录，字面意思'),
+            onTap: () async {
+              await logout();
+              Navigator.pop(context);
+            },
+          )
+        ],
+      ),
+    );
+  }
+
+  @override
+  Future<bool> login(String username, String password) async {
+    // TODO: implement login
+    try {
+      var response = await handler.login(username, password);
+      if (response.statusCode == 200) {
+        _token = response.data['data']['token'];
+        _username = username;
+        _status = UserStatus.login;
+        await SourceDatabaseProvider.insertSourceOption<bool>(
+            sourceDetail.name, 'login', true);
+        await SourceDatabaseProvider.insertSourceOption(
+            sourceDetail.name, 'token', _token);
+        var userResponse = await handler.getUserState();
+        if (userResponse.statusCode == 200) {
+          _nickname = userResponse.data['data']['nickname'];
+          _avatar = userResponse.data['data']['avatar'];
+        }
+        return true;
+      }
+    } catch (e) {
+      throw e;
+    }
+    return false;
+  }
+
+  @override
+  Future<bool> logout() async {
+    // TODO: implement logout
+    try {
+      var response = await handler.logout();
+      if (response.statusCode == 200) {
+        _status = UserStatus.logout;
+        await SourceDatabaseProvider.insertSourceOption<bool>(
+            sourceDetail.name, 'login', false);
+        return true;
+      }
+    } catch (e) {}
+    return false;
+  }
+
+  @override
+  // TODO: implement nickname
+  String get nickname => _nickname;
+
+  @override
+  // TODO: implement status
+  UserStatus get status => _status;
+
+  @override
+  // TODO: implement userId
+  String get userId => _username;
 }
 
 class IPFSSourceOptions extends SourceOptions {
@@ -320,20 +592,23 @@ class IPFSComicDetail extends ComicDetail {
   final SourceDetail sourceDetail;
   final String status;
   final IPFSSourceRequestHandler handler;
+  final int hotNum;
 
-  IPFSComicDetail(
-      {this.authors,
-      this.comicId,
-      this.cover,
-      this.description,
-      this.chapters,
-      this.historyChapter,
-      this.tags,
-      this.title,
-      this.updateTime,
-      this.sourceDetail,
-      this.status,
-      this.handler});
+  IPFSComicDetail({
+    this.authors,
+    this.comicId,
+    this.cover,
+    this.description,
+    this.chapters,
+    this.historyChapter,
+    this.tags,
+    this.title,
+    this.updateTime,
+    this.sourceDetail,
+    this.status,
+    this.handler,
+    this.hotNum,
+  });
 
   @override
   bool get isSubscribed => false;
@@ -380,10 +655,6 @@ class IPFSComicDetail extends ComicDetail {
   @override
   // TODO: implement headers
   Map<String, String> get headers => null;
-
-  @override
-  // TODO: implement hotNum
-  int get hotNum => 0;
 
   @override
   String share() {

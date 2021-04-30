@@ -64,6 +64,7 @@ class App extends StatelessWidget {
       ),
       ChangeNotifierProvider<IPFSSettingProvider>(
         create: (_) => IPFSSettingProvider(),
+        lazy: false,
       )
     ], child: MainFrame());
   }

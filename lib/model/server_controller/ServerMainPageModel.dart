@@ -1,19 +1,27 @@
+import 'package:dcomic/http/IPFSSourceRequestHandler.dart';
 import 'package:dcomic/model/baseModel.dart';
+import 'package:dcomic/model/comic_source/IPFSSourceProivder.dart';
 
 class ServerMainPageModel extends BaseModel {
-  final Map node;
+  final IPFSSourceModel node;
+  IPFSSourceRequestHandler _handler;
+  String _username;
 
-  ServerMainPageModel(this.node);
+  ServerMainPageModel(this.node) {
+    _handler = node.handler;
+  }
 
-  String get title => node['title'];
+  String get username => _username;
 
-  String get address => node['address'];
+  String get title => node.title;
 
-  String get name => node['name'];
+  String get address => node.address;
 
-  String get version => node['version'];
+  String get name => node.name;
 
-  int get mode => node['type'];
+  String get version => node.version;
 
-  String get description => node['description'];
+  int get mode => node.mode;
+
+  String get description => node.description;
 }

@@ -1,3 +1,4 @@
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:dcomic/model/comic_source/sourceProvider.dart';
 import 'package:dcomic/view/server_controllers/server_main_page.dart';
 import 'package:flutter/cupertino.dart';
@@ -24,19 +25,16 @@ class _ServerSelectPage extends State<ServerSelectPage> {
       ),
       body: EasyRefresh(
         child: ListView.builder(
-            itemCount: Provider.of<SourceProvider>(context)
-                .ipfsSourceProvider
-                .nodes
-                .length,
+            itemCount:
+                Provider.of<SourceProvider>(context).ipfsSourceModels.length,
             itemBuilder: (context, index) {
-              var node = Provider.of<SourceProvider>(context)
-                  .ipfsSourceProvider
-                  .nodes[index];
+              var node =
+                  Provider.of<SourceProvider>(context).ipfsSourceModels[index];
               return ListTile(
+                enabled: node.userConfig.status == UserStatus.login,
                 leading: Icon(FontAwesome5.server),
-                title: Text('${node['title']}'),
-                subtitle:
-                    Text('服务器地址：${node['address']} 简介：${node['description']}'),
+                title: Text('${node.title}'),
+                subtitle: Text('服务器地址：${node.address} 简介：${node.description}'),
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => ServerMainPage(

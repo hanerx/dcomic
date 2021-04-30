@@ -1,3 +1,5 @@
+import 'package:dcomic/generated/l10n.dart';
+import 'package:dcomic/model/comic_source/IPFSSourceProivder.dart';
 import 'package:dcomic/model/server_controller/ServerMainPageModel.dart';
 import 'package:dcomic/view/server_controllers/server_comic_detail_page.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,7 +9,7 @@ import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:provider/provider.dart';
 
 class ServerMainPage extends StatefulWidget {
-  final Map node;
+  final IPFSSourceModel node;
 
   const ServerMainPage({Key key, this.node}) : super(key: key);
 
@@ -116,7 +118,36 @@ class _ServerMainPage extends State<ServerMainPage> {
                           leading: Icon(Icons.add),
                           title: Text('添加节点'),
                           subtitle: Text('添加新节点'),
-                          onTap: () {},
+                          onTap: () async {
+                            bool data = await showDialog<bool>(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                      title: Text('新增节点'),
+                                      content: ListView(
+                                        shrinkWrap: true,
+                                        physics: NeverScrollableScrollPhysics(),
+                                        children: [
+                                          ListTile(
+                                            title: TextField(),
+                                          ),
+                                          ListTile(
+                                            title: TextField(),
+                                          )
+                                        ],
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                            onPressed: () {},
+                                            child: Text(S.of(context).Cancel)),
+                                        TextButton(
+                                            onPressed: () {},
+                                            child: Text(S.of(context).Confirm))
+                                      ],
+                                    ));
+                            if (data != null && data) {
+
+                            }
+                          },
                         )
                       ],
                     ),
