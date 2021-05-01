@@ -1,10 +1,14 @@
+import 'package:dcomic/component/EmptyView.dart';
 import 'package:dcomic/component/LoadingCube.dart';
 import 'package:dcomic/generated/l10n.dart';
 import 'package:dcomic/model/comic_source/IPFSSourceProivder.dart';
+import 'package:dcomic/model/server_controller/NewComicDetailModel.dart';
 import 'package:dcomic/model/server_controller/ServerMainPageModel.dart';
 import 'package:dcomic/view/server_controllers/comic_list_page.dart';
 import 'package:dcomic/view/server_controllers/server_comic_detail_page.dart';
 import 'package:dcomic/view/server_controllers/server_list_page.dart';
+import 'package:dcomic/view/server_controllers/server_user_detail_page.dart';
+import 'package:dcomic/view/server_controllers/user_list_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -36,6 +40,7 @@ class _ServerMainPage extends State<ServerMainPage> {
         body: EasyRefresh(
           firstRefreshWidget: LoadingCube(),
           firstRefresh: true,
+          emptyWidget: Provider.of<ServerMainPageModel>(context).error==null?null:EmptyView(message: Provider.of<ServerMainPageModel>(context).error,),
           onRefresh: () async {
             await Provider.of<ServerMainPageModel>(context, listen: false)
                 .init();
@@ -279,7 +284,10 @@ class _ServerMainPage extends State<ServerMainPage> {
                           subtitle: Text('添加新漫画'),
                           onTap: () {
                             Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => ServerComicDetailPage(),
+                                builder: (context) => ServerComicDetailPage(
+                                      node: widget.node,
+                                      mode: EditMode.create,
+                                    ),
                                 settings: RouteSettings(
                                     name: 'server_comic_detail_page')));
                           },
@@ -310,7 +318,14 @@ class _ServerMainPage extends State<ServerMainPage> {
                           leading: Icon(Icons.supervisor_account_rounded),
                           title: Text('用户列表'),
                           subtitle: Text('管理用户列表'),
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => UserListPage(
+                                      node: widget.node,
+                                    ),
+                                settings:
+                                    RouteSettings(name: 'user_list_page')));
+                          },
                         ),
                         ListTile(
                           enabled:
@@ -318,7 +333,15 @@ class _ServerMainPage extends State<ServerMainPage> {
                           leading: Icon(Icons.group_add),
                           title: Text('添加用户'),
                           subtitle: Text('添加新用户'),
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => ServerUserDetailPage(
+                                      node: widget.node,
+                                      mode: EditMode.create,
+                                    ),
+                                settings: RouteSettings(
+                                    name: 'server_user_detail_page')));
+                          },
                         )
                       ],
                     ),

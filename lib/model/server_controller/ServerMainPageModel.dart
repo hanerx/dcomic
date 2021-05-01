@@ -1,6 +1,7 @@
 import 'package:dcomic/http/IPFSSourceRequestHandler.dart';
 import 'package:dcomic/model/baseModel.dart';
 import 'package:dcomic/model/comic_source/IPFSSourceProivder.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 class ServerMainPageModel extends BaseModel {
@@ -10,6 +11,8 @@ class ServerMainPageModel extends BaseModel {
   String _nickname;
   String _avatar;
   List _rights = [];
+
+  String error;
 
   ServerMainPageModel(this.node) {
     _handler = node.handler;
@@ -24,12 +27,19 @@ class ServerMainPageModel extends BaseModel {
         _nickname = response.data['data']['nickname'];
         _rights = response.data['data']['rights'];
         _avatar = response.data['data']['avatar'];
+        error = null;
         notifyListeners();
       }
+    } on DioError catch (e, s) {
+      FirebaseCrashlytics.instance
+          .recordError(e, s, reason: 'serverLoadingFailed: $address');
+      error = e.response.data['msg'];
     } catch (e, s) {
       FirebaseCrashlytics.instance
           .recordError(e, s, reason: 'serverLoadingFailed: $address');
+      error = '未知错误：$e';
     }
+    notifyListeners();
   }
 
   Future<void> addServer(String address, String token) async {

@@ -3,6 +3,8 @@ import 'package:dcomic/component/LoadingCube.dart';
 import 'package:dcomic/component/comic/SearchListTile.dart';
 import 'package:dcomic/model/comic_source/IPFSSourceProivder.dart';
 import 'package:dcomic/model/server_controller/ComicListModel.dart';
+import 'package:dcomic/model/server_controller/NewComicDetailModel.dart';
+import 'package:dcomic/view/server_controllers/server_comic_detail_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -70,7 +72,14 @@ class _ComicListPage extends State<ComicListPage> {
                       authors: comic.author,
                       tag: comic.tag,
                       latest: comic.latestChapter,
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => ServerComicDetailPage(
+                                  mode: EditMode.edit,
+                                  node: widget.node,
+                                  comicId: comic.comicId,
+                                )));
+                      },
                     );
                   }),
             ))

@@ -255,8 +255,8 @@ class TagObject {
 
   TagObject(this.name, this.id);
 
-  toMap() {
-    return {'tag_name': name, 'tag_id': id};
+  Map toMap() {
+    return {'title': name, 'tag_id': id};
   }
 
   @override
