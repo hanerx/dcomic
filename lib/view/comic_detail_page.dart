@@ -120,7 +120,7 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                         color: Colors.white,
                       ),
                       onPressed: () {
-                        if (Provider.of<ComicDetailModel>(context)
+                        if (Provider.of<ComicDetailModel>(context,listen: false)
                             .sourceDetail
                             .canSubscribe) {
                           if (Provider.of<ComicDetailModel>(context,

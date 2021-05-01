@@ -16,6 +16,7 @@ import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:dcomic/model/comic_source/sourceProvider.dart';
 import 'package:dcomic/utils/ProxyCacheManager.dart';
 import 'package:dcomic/utils/tool_methods.dart';
+import 'package:gbk2utf8/gbk2utf8.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:ipfs/ipfs.dart';
@@ -91,7 +92,7 @@ class _DebugTestPage extends State<DebugTestPage> {
               text: '获取订阅',
             ),
             Tab(
-              text: 'IPFS测试',
+              text: 'Decode',
             ),
             Tab(
               text: '代理图片测试',
@@ -190,10 +191,10 @@ class _DebugTestPage extends State<DebugTestPage> {
                 return _CustomListTile(
                     data.cover,
                     data.title,
-                    data.tags.map((e) => e['tag_name']).toList().join('/'),
+                    data.tags.map((e) => e.title).toList().join('/'),
                     data.updateTime,
                     data.comicId,
-                    data.authors.map((e) => e['tag_name']).toList().join('/'));
+                    data.authors.map((e) => e.title).toList().join('/'));
               },
               itemCount: _subs.length,
             ),
@@ -202,12 +203,6 @@ class _DebugTestPage extends State<DebugTestPage> {
             child: Center(
               child: Column(
                 children: [
-                  OutlineButton(
-                    child: Text('启动IPFS本地服务器'),
-                    onPressed: () async {
-                      startPeer();
-                    },
-                  ),
                   OutlineButton(
                     child: Text('Test'),
                     onPressed: () async {
@@ -219,17 +214,12 @@ class _DebugTestPage extends State<DebugTestPage> {
                       //   image=Uint8List.fromList(item);
                       // });
 
-                      print('start cat peer');
-                      Uint8List data = await channel.invokeMethod('cat', {
-                        'cid': 'QmSY5BqPor7aQD8EsSJvXdixkgLoAdQHP3uq5yX28jGwsT'
-                      });
-                      print(data);
-                      setState(() {
-                        image = data;
-                      });
-                    },
-                  ),
-                  image == null ? Text('还没返回值') : Image.memory(image)
+                      var data=ToolMethods.decrypt("mlYzsijM2bhmrPvwdDryg6zy0yAM16Jwug6RV2Lfz6JiiT6LACTgIlZhH7xxA1mP+stz7wCvyIySYganZhUHWpVZ1a6wdlDAkFXSLXbS2Y2qlEddonHLWId6efGgapJSJYGb8pZHqV6jkRa0IytY15ZbvHB/lTAo/EjTpLk7uVUd3nNe6dTQx3Zb6YuLR1eMORYaHZTFXS48Bm2muRVcU++YDnl5trwSB9VjKw6HJ/Qek+glImSMZmB9SqTSdIiK8zMtZvTgboz+vxBPpQL82iAQ0AUdfjoDiv53ohLUMj7RESaAxwZ30wZbVZc1mUoTc2NIg+B0vSosTOG6HR/vJzdx+4T1zswKgpqker3pJlGMKmHM+pLmHgoIlD0bb6AXDLn2TJlxtG0F6cWfxKTy6OpjfGwL9NiW0KtvAmole0Ncx+g4w3Nx+dQAWudJGgUp+PrSdcRUGjrP7STvyPw8B0GoI0+VsB2rC17C8XVSCxww4E2rqT/QiwNTNz7kUiXHlLQEMSq3Flt832Bs8jLR5V45J7s7jH/UWR7yOZ1UnpaGWXFjvMxmD2WFt6+Bt6RuSdoKc7NWA6//lV5E5BPDtkCVNXrePCpn3MhzZI1l/AsdRacr1iUqtvCuaAqLyulbG+3EAYQwVMXSKYB7+8XsooZKODkLgQ4zvS9W1nWRsTt1+glid+V/359QzddjdoHtKRrJ7nlGepjeoG+XgZmrbXI8Jdd+FCnrcp12wINpMiHB6bY/MRD9mBwawv2ihO6601r2D6vJ2XycpM/BNOtlQHXtIM5tB7VCWMLvLFADO9HDeUscE7NS6gFYPTInzLFwru6IIQLvP6G9lorT3Q/3tFQAtS8yofT8B2foVWYZ2Rxg3liSVSDkK087POJMExqKno1AlAf0jTXuuRP7bAww/R8xHA/11nj0LYZ3STQHmDp6StfYPSL0qhQFJtB6QNpv41IFRKxe1q9a5UyLqc/XbQ9REld2LeMwge57Wd7iTPrFGGSyJlFI5I7ZlzNPFEpdT+iWAyqrndWZk/s/1RTgO3oFol9bicCBQQx1jNLA9HlchA4rSLajOjbrn5NctjMnLNRDXRb4icsQi5mhsd1Z7TP+x/nERh+Wf82Ua4Drx32bYSeXaHvFPUXbjuvPA1FiYh+rq6KZtmrYT95Y4/QLwHxIKrLde8Jblffl5E5GuWSlrP4KyTdx+joQs03r9+AYT5qGj31fMPC6lI0UPuADM+97pxsatmMfdEwgswbixvcnZCV5XbNKrh326N/k0IF2/2/+jqzstw6MMxFM+daLmAIE+DhOH1pQgdCdC7QsjlfDTZIwOA7u8Y2HnkOEUsonPHzKkClgxBzOJ6mDJCHdkyH98KTVPcC5Bi0rgYZhnVZcIsXHMG1BjjTWJLnam+/mIimG+/QAjMlSU0b+UT+H+z/qvaLRcQz2ENygsttJIWo4MAujrlEM0jitewKxTb9qD1RYY1OXlluWCo33+95yRAeDrabhN/o/YVAwgvKgFpXbYyrviWDT3v4PpailzGl1A3RIcwtwUXNNlphDGR0Vul3wEwLrl7flguiGRPIT5sVhsF10flM234MlvPoSkYUkt3PVxMSEMp8BIkTLRc1plvsvBL0mZwOVURyLKLuZmHbWjXCtSMf2bivEgPr6Xx2Vu3Y+GQjwzj7HEPQxxxrKMF//EzLkkctUKLcnbVKnCb4ZOnhUj79NwY7jIOQxc55JBfPGg22z90oTw3vmMOyw7nvzvVGp+13UdnEdY6BQNSCd5zTgeW1mWkGuoMTA+cA3DbpJGcrhgzNNe7mR+WXVwtR36WuTLcX4Zw8vQvIRcU4RXzFPTiwKsqW81gUIRiWm1YwPi0T7QGCfvSvoHr0wODu5bXt1b3qGBGuVOjRzJkhyq0ivQJzoCFeEPTx1JMSzTSKmwyDHVfF5yWPsvZhClh3Xtov015vOwUp39lPN8ziGKsinPID0oH7yboA9kAVaG1hhjopggYG4gKdnSBQ2S+NAWjgrmcBRBC5pXsU87WD7iOE++/0GFq4aeUjOY9kWGsKIMhmrLl8q98PyM2Z5Y7O4o83D9tYtgUcQPO7HosYp1CavSci9U9wi1bPP0avRZUdm341bVhIteR8H15Eu6e0yjg9GcWtxdycAzGdqZ6gI+O0rCYcj40nxlhvqhyHt5oofVTzfEQrqZUN4sKF5xDriwzKOjNdzs3Yi2AQD11lyjP5wCCxiDS7/Yq6wfU+bD1r2EM7J/5c7En+9x+/qTYuMINhAo0J1ufRmVMPTKIRa2u8UBDLBa38nTq1ZGlM9upYj7vdQhEtFvBd9lcbUBn552h+PZGtHbu4ItGjyHNfbIN6hsLXdkZzUNoxypvxLpVIMp88YryrAkJE0xNeb2Y3N0jPFkN5iUk3o2Nz2BBx+b5DUKBpRzayZOAHO8XOkGlcKNV5qBv3HWuhDKiTZutVbAi5M5Kmxff+RO4D8uD/Z7VrEzXE8LKFdL8wolMxLYyVkQd/Ha+2yXfF0arVu3IjoIXXXQ+UNhY4lHfsKjiX0SymQXq/hMU065VSDcbaSOQBGft6rHMfdZusEdELlSvJpwFWrLlj9eKrcrL/EDOc100ZipVT1zYTxBiCTmilb/19YOu2cEmB5ZRFJ4GMOyhkDxbhVzqbvcpFKqwHor8pPBR4cqGdNMwWHCh0XYJvCqtiEoBHF87t23QYAudhLwtkwPpTw3fsqDEv1bFluLtuQN4jMDgDED/d10Aj2YJRtSIFYlWcYbHYAFkrpulrtXt5MrHxBHV389MB/O9iJ+zmRIKofSAXtVkzIT9GSTL+3tTEf4g+/VcY+V4uofz1IF8Ti+HzlaMxlNMfOS8rjYsMlkVQRRoYyI2X8FCfKePFLNGjLhsbYqj0kUDQRdLDaWg==");
+                    print(data);
+                    print(utf8.decode(unicode2utf8(data)));
+
+                      },
+                  )
                 ],
               ),
             ),

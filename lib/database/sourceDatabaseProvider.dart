@@ -19,7 +19,8 @@ class SourceDatabaseProvider {
     return data;
   }
 
-  static Future getSourceOption<T>(String name, String key,{T defaultValue}) async {
+  static Future getSourceOption<T>(String name, String key,
+      {T defaultValue}) async {
     Database database = await initDataBase();
     try {
       List<Map> maps = await database.query('source_options',
@@ -33,11 +34,14 @@ class SourceDatabaseProvider {
           return maps.first['value'] == '1';
         case double:
           return double.parse(maps.first['value']);
+        case List:
+          return maps.first['value'].toString().split(',');
         default:
           return maps.first['value'];
       }
-    } catch (e,s) {
-      FirebaseCrashlytics.instance.recordError(e, s, reason: 'getSourceOptionFailed: $name, key: $key');
+    } catch (e, s) {
+      FirebaseCrashlytics.instance
+          .recordError(e, s, reason: 'getSourceOptionFailed: $name, key: $key');
     }
     return defaultValue;
   }
@@ -47,16 +51,19 @@ class SourceDatabaseProvider {
     Database database = await initDataBase();
     await database.delete('source_options',
         where: 'source_name = ? and key= ?', whereArgs: [name, key]);
-    switch(T){
+    switch (T) {
       case bool:
         await database.insert('source_options',
-            {'source_name': name, 'key': key, 'value': value?'1':'0'});
+            {'source_name': name, 'key': key, 'value': value ? '1' : '0'});
+        break;
+      case List:
+        await database.insert('source_options',
+            {'source_name': name, 'key': key, 'value': value.join(',')});
         break;
       default:
         await database.insert('source_options',
             {'source_name': name, 'key': key, 'value': value.toString()});
     }
-
   }
 
   static Future<void> boundComic(

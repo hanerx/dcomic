@@ -1,3 +1,4 @@
+import 'package:dcomic/model/comicCategoryModel.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -91,7 +92,7 @@ class KuKuSourceModel extends BaseSourceModel {
             .first
             .split('：')[1]
             .split(',')
-            .map<Map<String, dynamic>>((e) => {'tag_name': e, 'tag_id': null})
+            .map<CategoryModel>((e) => CategoryModel(title: e,categoryId: null,model: this))
             .toList();
         String status = text.split('|')[1].split('：')[1];
         String updateTime = text.split('|')[2].split('：')[1];
@@ -240,6 +241,10 @@ class KuKuSourceModel extends BaseSourceModel {
     // TODO: implement getFavoriteComics
     throw UnimplementedError();
   }
+
+  @override
+  // TODO: implement homePageHandler
+  BaseHomePageHandler get homePageHandler => throw UnimplementedError();
 }
 
 class KuKuOptionsProvider extends SourceOptionsProvider {
@@ -335,7 +340,7 @@ class KuKuSearchResult extends SearchResult {
 }
 
 class KuKuComicDetail extends ComicDetail {
-  final List _authors;
+  final List<CategoryModel> _authors;
   final String _comicId;
   final String _cover;
   final String _description;
@@ -360,7 +365,7 @@ class KuKuComicDetail extends ComicDetail {
 
   @override
   // TODO: implement authors
-  List get authors => _authors;
+  List<CategoryModel> get authors => _authors;
 
   @override
   // TODO: implement comicId
@@ -419,7 +424,7 @@ class KuKuComicDetail extends ComicDetail {
 
   @override
   // TODO: implement tags
-  List get tags => [];
+  List<CategoryModel> get tags => [];
 
   @override
   // TODO: implement title

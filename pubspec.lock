@@ -15,6 +15,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.0.0"
+  asn1lib:
+    dependency: transitive
+    description:
+      name: asn1lib
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.0"
   async:
     dependency: transitive
     description:
@@ -143,6 +150,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.0.1"
+  crypton:
+    dependency: "direct main"
+    description:
+      name: crypton
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.1"
   csslib:
     dependency: transitive
     description:
@@ -736,6 +750,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.0.0"
+  pointycastle:
+    dependency: transitive
+    description:
+      name: pointycastle
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "3.0.1"
   pretty_json:
     dependency: "direct main"
     description:

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dcomic/model/comicCategoryModel.dart';
 import 'package:dcomic/utils/tool_methods.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
@@ -49,9 +50,9 @@ class ComicDetailModel extends BaseModel {
       ? 'http://manhua.dmzj.com/css/img/mh_logo_dmzj.png?t=20131122'
       : detail.cover;
 
-  List get author => detail == null ? [] : detail.authors;
+  List<CategoryModel> get author => detail == null ? [] : detail.authors;
 
-  List get types => detail == null ? [] : detail.tags;
+  List<CategoryModel> get types => detail == null ? [] : detail.tags;
 
   int get hotNum => detail == null ? 0 : detail.hotNum;
 

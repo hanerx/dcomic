@@ -8,7 +8,7 @@ import 'package:dio/dio.dart';
 class CopyMangaRequestHandler extends SingleDomainRequestHandler {
   CopyMangaRequestHandler() : super('https://api.copymanga.com/');
 
-  Future<Options> setHeader([Map<String,dynamic> headers]) async {
+  Future<Options> setHeader([Map<String, dynamic> headers]) async {
     if (await SourceDatabaseProvider.getSourceOption<bool>(
         'copy_manga', 'login',
         defaultValue: false)) {
@@ -83,5 +83,38 @@ class CopyMangaRequestHandler extends SingleDomainRequestHandler {
         {'comic_id': comicId, 'is_collect': subscribe ? 1 : 0});
     return dio.post('/api/v3/member/collect/comic',
         data: data, options: await setHeader());
+  }
+
+  Future<Response> getHomepage() {
+    return dio.get('/api/v3/h5/homeIndex');
+  }
+
+  Future<Response> getTagList(
+      {bool popular: true,
+      int page: 0,
+      int limit: 21,
+      String categoryId,
+      String authorId}) {
+    return dio.get(
+        '/api/v3/comics?free_type=1&limit=$limit&offset=$page${categoryId == null ? '' : '&theme=$categoryId'}${authorId == null ? '' : '&author=$authorId'}&ordering=${popular ? '-popular' : '-datetime_updated'}&_update=true');
+  }
+
+  Future<Response> getSubjectList({int page: 0, int limit: 20}) {
+    return dio
+        .get('/api/v3/topics?type=1&limit=$limit&offset=$page&_update=true');
+  }
+
+  Future<Response> getSubjectDetail(String subjectId) {
+    return dio.get('/api/v3/topic/$subjectId?limit=&offset=');
+  }
+
+  Future<Response> getSubjectDetailContent(String subjectId,
+      {int page: 0, limit: 30}) {
+    return dio.get(
+        'https://api.copymanga.com/api/v3/topic/$subjectId/contents?limit=$limit&offset=${page * limit}');
+  }
+
+  Future<Response> getCategory() {
+    return dio.get('/api/v3/h5/filterIndex/comic/tags?type=1');
   }
 }

@@ -1,3 +1,4 @@
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -130,15 +131,22 @@ import 'Card.dart';
 //   }
 // }
 
-class CardView extends StatelessWidget{
+class CardView extends StatelessWidget {
   final String title;
-  final List list;
+  final List<HomePageCardDetailModel> list;
   final int row;
   final double ratio;
   final Widget action;
-  final int categoryId;
 
-  const CardView({Key key, this.title, this.list, this.row:3, this.action, this.categoryId, this.ratio:0.6}) : super(key: key);
+  const CardView(
+      {Key key,
+      this.title,
+      this.list,
+      this.row: 3,
+      this.action,
+      this.ratio: 0.6})
+      : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -147,7 +155,14 @@ class CardView extends StatelessWidget{
       elevation: 0,
       child: Wrap(
         children: [
-          ListTile(dense: true,title: Text('$title',style: TextStyle(fontSize: 20),),trailing: action,),
+          ListTile(
+            dense: true,
+            title: Text(
+              '$title',
+              style: TextStyle(fontSize: 20),
+            ),
+            trailing: action,
+          ),
           GridView.count(
             crossAxisCount: row,
             childAspectRatio: ratio,
@@ -160,25 +175,16 @@ class CardView extends StatelessWidget{
     );
   }
 
-  List<Widget> getCardContent(context){
+  List<Widget> getCardContent(context) {
     return list.map<Widget>((e) => buildCard(context, e)).toList();
   }
 
-  Widget buildCard(context,item){
-    switch (categoryId) {
-      case 49:
-        return HomePageCard(item['cover'], item['title'], item['authors'],
-            1, item['id'].toString());
-        break;
-      case 56:
-        return HomePageCard(item['cover'], item['title'], item['authors'],
-            1, item['id'].toString());
-        break;
-      default:
-        return HomePageCard(item['cover'], item['title'],
-            item['sub_title'], item['type'], item['obj_id'].toString());
-    }
+  Widget buildCard(context, HomePageCardDetailModel item) {
+    return HomePageCard(
+      imageUrl: item.cover,
+      title: item.title,
+      subtitle: item.subtitle,
+      onPressed: item.onPressed,
+    );
   }
-  
 }
-

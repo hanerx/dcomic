@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dcomic/database/cookieDatabaseProvider.dart';
 import 'package:dcomic/database/historyDatabaseProvider.dart';
+import 'package:dcomic/model/comicCategoryModel.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -74,7 +75,7 @@ class MangabzSourceModel extends BaseSourceModel {
             .children
             .first
             .children
-            .map((e) => {'tag_name': e.text, 'tag_id': null})
+            .map<CategoryModel>((e) => CategoryModel(title: e.text, categoryId: null, model: this))
             .toList();
         var cover = soup.find(id: '.detail-info-cover').attributes['src'];
         var description = soup.find(id: '.detail-info-content').text;
@@ -90,7 +91,8 @@ class MangabzSourceModel extends BaseSourceModel {
             .find(id: '.detail-info-tip')
             .children[2]
             .children
-            .map((e) => {'tag_name': e.text, 'tag_id': null})
+            .map<CategoryModel>((e) =>
+                CategoryModel(title: e.text, categoryId: null, model: this))
             .toList();
         var chapters = soup
             .find(id: '.detail-list-form-con')
@@ -326,6 +328,10 @@ class MangabzSourceModel extends BaseSourceModel {
     }
     return [];
   }
+
+  @override
+  // TODO: implement homePageHandler
+  BaseHomePageHandler get homePageHandler => throw UnimplementedError();
 }
 
 class MangabzUserConfig extends UserConfig {
@@ -612,13 +618,13 @@ class MangabzSourceOptions extends SourceOptions {
 
 class MangabzComicDetail extends ComicDetail {
   final String _title;
-  final List _authors;
+  final List<CategoryModel> _authors;
   final String _cover;
   final String _description;
   final String _comicId;
   final String _status;
   final String _updateTime;
-  final List _tags;
+  final List<CategoryModel> _tags;
   final List _chapters;
   final String _historyChapter;
   final MangabzSourceOptions options;
@@ -651,7 +657,7 @@ class MangabzComicDetail extends ComicDetail {
 
   @override
   // TODO: implement authors
-  List get authors => _authors;
+  List<CategoryModel> get authors => _authors;
 
   @override
   // TODO: implement comicId
@@ -702,7 +708,7 @@ class MangabzComicDetail extends ComicDetail {
 
   @override
   // TODO: implement tags
-  List get tags => _tags;
+  List<CategoryModel> get tags => _tags;
 
   @override
   // TODO: implement title

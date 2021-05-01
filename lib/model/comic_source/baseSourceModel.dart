@@ -4,6 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dcomic/model/baseModel.dart';
 
+import '../comicCategoryModel.dart';
+import '../comicRankingListModel.dart';
+import 'package:dcomic/model/subjectDetailModel.dart';
+
 abstract class BaseSourceModel extends BaseModel {
   Future<List<SearchResult>> search(String keyword, {int page: 0});
 
@@ -46,9 +50,7 @@ abstract class BaseSourceModel extends BaseModel {
     return type.toString();
   }
 
-  Future<List<SubjectItem>> getSubjectList(int page) async {
-    return [];
-  }
+  BaseHomePageHandler get homePageHandler;
 }
 
 enum UserStatus { login, logout, inactivate }
@@ -119,9 +121,9 @@ abstract class ComicDetail extends BaseModel {
 
   String get cover;
 
-  List get authors;
+  List<CategoryModel> get authors;
 
-  List get tags;
+  List<CategoryModel> get tags;
 
   String get updateTime;
 
@@ -211,6 +213,7 @@ class SourceDetail {
   final SourceType sourceType;
   final bool deprecated;
   final bool canSubscribe;
+  final bool haveHomePage;
 
   SourceDetail(
       {@required this.name,
@@ -219,7 +222,8 @@ class SourceDetail {
       this.canDisable: true,
       @required this.sourceType,
       this.deprecated: false,
-      this.canSubscribe: false});
+      this.canSubscribe: false,
+      this.haveHomePage: false});
 
   @override
   // TODO: implement hashCode
@@ -403,4 +407,50 @@ class ComicComment {
 
   ComicComment(this.avatar, this.nickname, this.content, this.reply,
       this.timestamp, this.like);
+}
+
+enum CategoryType { local, cloud }
+
+abstract class BaseHomePageHandler {
+  Future<List<HomePageCardModel>> getHomePage();
+
+  Future<List<CategoryModel>> getCategory({CategoryType type});
+
+  Future<List<RankingComic>> getCategoryDetail(String categoryId,
+      {int page: 0, bool popular: true});
+
+  Future<List<RankingComic>> getRankingList(int page);
+
+  Future<List<RankingComic>> getLatestUpdate(int page);
+
+  Future<List<SubjectItem>> getSubjectList(int page);
+
+  Future<SubjectModel> getSubject(String subjectId);
+
+  Future<List<RankingComic>> getAuthorComics(String authorId, {int page: 0,bool popular:true});
+}
+
+typedef BuilderCallback = Widget Function(BuildContext);
+
+class HomePageCardModel {
+  final String title;
+  final BuilderCallback action;
+  final List detail;
+
+  HomePageCardModel({@required this.title, this.action, @required this.detail});
+}
+
+typedef ContextCallback = void Function(dynamic);
+
+class HomePageCardDetailModel {
+  final String title;
+  final String subtitle;
+  final String cover;
+  final ContextCallback onPressed;
+
+  HomePageCardDetailModel(
+      {@required this.title,
+      this.subtitle,
+      @required this.cover,
+      @required this.onPressed});
 }

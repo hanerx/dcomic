@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dcomic/component/EmptyView.dart';
 import 'package:dcomic/component/LoadingCube.dart';
 import 'package:dcomic/component/comic/SubjectListTile.dart';
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:dcomic/model/comic_source/sourceProvider.dart';
 import 'package:dcomic/model/subjectDetailModel.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,8 +15,9 @@ import 'package:provider/provider.dart';
 
 class SubjectDetailPage extends StatefulWidget {
   final String subjectId;
+  final BaseSourceModel model;
 
-  SubjectDetailPage(this.subjectId);
+  SubjectDetailPage({this.subjectId, this.model});
 
   @override
   State<StatefulWidget> createState() {
@@ -33,7 +35,7 @@ class _SubjectDetailPage extends State<SubjectDetailPage> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return ChangeNotifierProvider(
-      create: (_) => SubjectDetailModel(widget.subjectId),
+      create: (_) => SubjectDetailModel(widget.subjectId, widget.model),
       builder: (context, child) => Scaffold(
           appBar: AppBar(
             title: Text('${Provider.of<SubjectDetailModel>(context).title}'),
@@ -113,30 +115,27 @@ class _SubjectDetailPage extends State<SubjectDetailPage> {
                     child: ListView.builder(
                         physics: NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
-                        itemCount:
-                        Provider.of<SubjectDetailModel>(context).data.length,
+                        itemCount: Provider.of<SubjectDetailModel>(context)
+                            .data
+                            .length,
                         itemBuilder: (context, index) {
                           var item = Provider.of<SubjectDetailModel>(context,
-                              listen: false)
+                                  listen: false)
                               .data[index];
                           return SubjectListTile(
-                            cover: item['cover'],
-                            title: item['name'],
-                            recommendBrief: item['recommend_brief'],
-                            recommendReason: item['recommend_reason'],
+                            cover: item.cover,
+                            title: item.title,
+                            recommendBrief: item.brief,
+                            recommendReason: item.reason,
                             onPressed: () {
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) => ComicDetailPage(
-                                    id: item['id'].toString(),
-                                    title: item['name'],
-                                    model: Provider.of<SourceProvider>(
-                                        context,
-                                        listen: false)
-                                        .activeSources
-                                        .first,
-                                  ),
-                                  settings:
-                                  RouteSettings(name: 'comic_detail_page')));
+                                        id: item.comicId,
+                                        title: item.title,
+                                        model: widget.model,
+                                      ),
+                                  settings: RouteSettings(
+                                      name: 'comic_detail_page')));
                             },
                           );
                         }),

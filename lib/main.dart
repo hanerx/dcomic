@@ -64,6 +64,7 @@ class App extends StatelessWidget {
       ),
       ChangeNotifierProvider<IPFSSettingProvider>(
         create: (_) => IPFSSettingProvider(),
+        lazy: false,
       )
     ], child: MainFrame());
   }
@@ -155,7 +156,33 @@ class _MainFrame extends State<MainFrame> {
             platform: TargetPlatform.iOS,
             buttonTheme: ButtonThemeData(buttonColor: Colors.blue),
             appBarTheme: AppBarTheme(brightness: Brightness.dark)),
-        home: MainPage());
+        home: Provider.of<SourceProvider>(context).lock
+            ? MainPage()
+            : Scaffold(
+                body: Center(
+                  child: Container(
+                    height: 200,
+                    child: Column(
+                      children: [
+                        Text(
+                          'DComic',
+                          style: TextStyle(
+                              fontSize: 35,
+                              color: Theme.of(context).primaryColor,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          'Loading the everything~',
+                          style: TextStyle(
+                              fontSize: 20,
+                              color: Theme.of(context).disabledColor,
+                              fontWeight: FontWeight.bold),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ));
   }
 }
 

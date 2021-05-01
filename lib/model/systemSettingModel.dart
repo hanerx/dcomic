@@ -34,7 +34,7 @@ class SystemSettingModel extends BaseModel {
 
   bool _darkSide = false;
 
-  bool _crashReport = false;
+  bool _crashReport = true;
 
   FirebaseAnalytics analytics = FirebaseAnalytics();
 

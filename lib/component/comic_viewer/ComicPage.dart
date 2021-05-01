@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dcomic/model/comic_source/baseSourceModel.dart';
+import 'package:dcomic/model/ipfsSettingProvider.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -41,6 +43,25 @@ class ComicPage extends StatefulWidget {
 
 class _ComicPage extends State<ComicPage> {
   _ComicPage();
+
+  Uint8List _bytes;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    initIPFS();
+  }
+
+  Future<void> initIPFS() async {
+    if (widget.type == PageType.ipfs) {
+      var bytes = await Provider.of<IPFSSettingProvider>(context, listen: false)
+          .catBytes(widget.url);
+      setState(() {
+        _bytes = bytes;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,6 +105,15 @@ class _ComicPage extends State<ComicPage> {
               return Icon(Icons.error);
             },
           ));
+    } else if (widget.type == PageType.ipfs) {
+      return _bytes == null
+          ? Container(
+              height: 500,
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            )
+          : Image.memory(_bytes);
     }
     // TODO: implement build
     return GestureDetector(

@@ -69,6 +69,7 @@ class CustomHttp {
     return dio.get(baseUrl + '/rank/type_filter.json?$queryOptions');
   }
 
+  @Deprecated('使用新接口')
   Future<Response<T>> getRankList<T>(
       int date, int type, int tag, int page) async {
     return dio.get(baseUrl + '/rank/$tag/$date/$type/$page.json?$queryOptions');
@@ -286,6 +287,7 @@ class CustomHttp {
     return dio.get('https://api.github.com/repos/hanerx/flutter_dmzj/releases');
   }
 
+  @Deprecated('使用新接口')
   Future<Response<T>> getAuthor<T>(int authorId) {
     return dio.get('$baseUrl/UCenter/author/$authorId.json?$queryOptions');
   }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dcomic/model/comicCategoryModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -63,12 +64,12 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
         var soup = BeautifulSoup(response.data);
         var contList = soup.find(id: '.cont-list');
         List authors = contList.children[3].children[1].children
-            .map<Map<String, dynamic>>(
-                (e) => {'tag_name': e.text, 'tag_id': null})
+            .map<CategoryModel>((e) =>
+                CategoryModel(title: e.text, model: this, categoryId: null))
             .toList();
         List tags = contList.children[4].children[1].children
-            .map<Map<String, dynamic>>(
-                (e) => {'tag_name': e.text, 'tag_id': null})
+            .map<CategoryModel>((e) =>
+                CategoryModel(title: e.text, model: this, categoryId: null))
             .toList();
         String description = soup.find(id: '#bookIntro').children.first.text;
         String title = soup.find(id: '.main-bar').children.first.text;
@@ -312,6 +313,10 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
     // TODO: implement getFavoriteComics
     throw UnimplementedError();
   }
+
+  @override
+  // TODO: implement homePageHandler
+  BaseHomePageHandler get homePageHandler => throw UnimplementedError();
 }
 
 class ManHuaGuiSearchResult extends SearchResult {
@@ -439,13 +444,13 @@ class ManHuaGuiOptionsProvider extends SourceOptionsProvider {
 }
 
 class ManHuaGuiComicDetail extends ComicDetail {
-  final List _authors;
+  final List<CategoryModel> _authors;
   final String _comicId;
   final String _cover;
   final String _description;
   final List _chapters;
   final String _status;
-  final List _tags;
+  final List<CategoryModel> _tags;
   final String _title;
   final String _updateTime;
   final ManHuaGuiSourceOptions options;
@@ -466,7 +471,7 @@ class ManHuaGuiComicDetail extends ComicDetail {
 
   @override
   // TODO: implement authors
-  List get authors => _authors;
+  List<CategoryModel> get authors => _authors;
 
   @override
   // TODO: implement comicId
@@ -524,7 +529,7 @@ class ManHuaGuiComicDetail extends ComicDetail {
 
   @override
   // TODO: implement tags
-  List get tags => _tags;
+  List<CategoryModel> get tags => _tags;
 
   @override
   // TODO: implement title

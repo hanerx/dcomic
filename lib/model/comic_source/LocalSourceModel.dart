@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dcomic/database/historyDatabaseProvider.dart';
 import 'package:dcomic/database/localMangaDatabaseProvider.dart';
 import 'package:dcomic/database/sourceDatabaseProvider.dart';
+import 'package:dcomic/model/comicCategoryModel.dart';
 import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:dcomic/model/mag_model/baseMangaModel.dart';
 import 'package:dcomic/utils/tool_methods.dart';
@@ -65,7 +66,7 @@ class LocalSourceModel extends BaseSourceModel {
       var history =
           (await HistoryDatabaseProvider(this.type.name).getReadHistory(name));
       var lastChapterId = history == null ? null : history['last_chapter_id'];
-      return LocalComicDetail(comic, type, lastChapterId, _sourceOptions);
+      return LocalComicDetail(comic, type, lastChapterId, _sourceOptions, this);
     } catch (e) {
       logger.e(
           'class: ${this.runtimeType}, action: getComicFailed, exception: $e');
@@ -154,6 +155,10 @@ class LocalSourceModel extends BaseSourceModel {
   @override
   // TODO: implement userConfig
   UserConfig get userConfig => InactiveUserConfig(type);
+
+  @override
+  // TODO: implement homePageHandler
+  BaseHomePageHandler get homePageHandler => throw UnimplementedError();
 }
 
 class LocalSourceOptions extends SourceOptions {
@@ -208,6 +213,7 @@ class LocalComicDetail extends ComicDetail {
   final SourceDetail _sourceDetail;
   final String _history;
   final LocalSourceOptions options;
+  final LocalSourceModel model;
 
   bool _isSubscribed = true;
 
@@ -231,11 +237,11 @@ class LocalComicDetail extends ComicDetail {
     notifyListeners();
   }
 
-  LocalComicDetail(
-      this._mangaObject, this._sourceDetail, this._history, this.options);
+  LocalComicDetail(this._mangaObject, this._sourceDetail, this._history,
+      this.options, this.model);
 
   @override
-  List get authors => _mangaObject.authors.map((e) => e.toMap()).toList();
+  List<CategoryModel> get authors => _mangaObject.authors.map((e) => CategoryModel(title: e.name, categoryId: e.id, model: model)).toList();
 
   @override
   String get comicId => _mangaObject.name;
@@ -313,7 +319,9 @@ class LocalComicDetail extends ComicDetail {
 
   @override
   // TODO: implement tags
-  List get tags => _mangaObject.tags.map((e) => e.toMap()).toList();
+  List<CategoryModel> get tags => _mangaObject.tags
+      .map((e) => CategoryModel(title: e.name, categoryId: e.id, model: model))
+      .toList();
 
   @override
   // TODO: implement title

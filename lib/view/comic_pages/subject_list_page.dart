@@ -3,6 +3,7 @@ import 'package:dcomic/component/EmptyView.dart';
 import 'package:dcomic/component/LoadingCube.dart';
 import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:dcomic/model/subjectListModel.dart';
+import 'package:dcomic/view/subject_detail_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -54,7 +55,18 @@ class _SubjectListPage extends State<SubjectListPage> {
                 var item = Provider.of<SubjectListModel>(context, listen: false)
                     .data[index];
                 return HomePageCard(
-                    item.cover, item.title, item.subtitle, 5, item.subjectId);
+                  imageUrl: item.cover,
+                  title: item.title,
+                  subtitle: item.subtitle,
+                  onPressed: (context) => Navigator.of(context).push(
+                      MaterialPageRoute(
+                          builder: (context) => SubjectDetailPage(
+                                subjectId: item.subjectId,
+                                model: item.model,
+                              ),
+                          settings:
+                              RouteSettings(name: 'subject_detail_page'))),
+                );
               }),
         ),
       ),

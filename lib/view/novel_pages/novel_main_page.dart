@@ -45,7 +45,7 @@ class _NovelMainPage extends State<NovelMainPage> {
         body: TabBarView(
           children: [
             NovelHomePage(),
-            CategoryPage(type: 1,),
+            CategoryPage(),
             NovelRankingPage(),
             NovelLatestUpdatePage(),
           ],
