@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:direct_select_flutter/direct_select_container.dart';
 import 'package:direct_select_flutter/direct_select_item.dart';
@@ -120,7 +122,8 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                         color: Colors.white,
                       ),
                       onPressed: () {
-                        if (Provider.of<ComicDetailModel>(context,listen: false)
+                        if (Provider.of<ComicDetailModel>(context,
+                                listen: false)
                             .sourceDetail
                             .canSubscribe) {
                           if (Provider.of<ComicDetailModel>(context,
@@ -333,12 +336,7 @@ class _ComicDetailPage extends State<ComicDetailPage> {
                         Expanded(
                           child: Parallax.inside(
                             child: Image(
-                                image: CachedNetworkImageProvider(
-                                    Provider.of<ComicDetailModel>(context)
-                                        .cover,
-                                    headers:
-                                        Provider.of<ComicDetailModel>(context)
-                                            .headers),
+                                image: buildProvider(context),
                                 fit: BoxFit.cover),
                             mainAxisExtent: 200.0,
                           ),
@@ -544,6 +542,15 @@ class _ComicDetailPage extends State<ComicDetailPage> {
             ));
       },
     );
+  }
+
+  ImageProvider buildProvider(context) {
+    if (Provider.of<ComicDetailModel>(context).pageType == PageType.local) {
+      return FileImage(File(Provider.of<ComicDetailModel>(context).cover));
+    }
+    return CachedNetworkImageProvider(
+        Provider.of<ComicDetailModel>(context).cover,
+        headers: Provider.of<ComicDetailModel>(context).headers);
   }
 }
 

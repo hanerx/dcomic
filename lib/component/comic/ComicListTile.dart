@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dcomic/component/comic/BaseListTile.dart';
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dcomic/utils/tool_methods.dart';
@@ -12,6 +15,7 @@ class ComicListTile extends StatelessWidget {
   final String tag;
   final int date;
   final VoidCallback onPressed;
+  final PageType pageType;
 
   const ComicListTile(
       {Key key,
@@ -21,7 +25,8 @@ class ComicListTile extends StatelessWidget {
       this.authors,
       this.tag,
       this.date,
-      this.onPressed})
+      this.onPressed,
+      this.pageType: PageType.url})
       : super(key: key);
 
   @override
@@ -29,18 +34,7 @@ class ComicListTile extends StatelessWidget {
     // TODO: implement build
     return BaseListTile(
       onPressed: onPressed,
-      leading: CachedNetworkImage(
-        imageUrl: cover,
-        httpHeaders: headers,
-        progressIndicatorBuilder:
-            (context, url, downloadProgress) => Container(
-              child: Center(
-                child: CircularProgressIndicator(
-                    value: downloadProgress.progress),
-              ),
-            ),
-        errorWidget: (context, url, error) => Icon(Icons.error),
-      ),
+      leading: buildImage(context),
       detail: <Widget>[
         Text(
           title,
@@ -55,10 +49,10 @@ class ComicListTile extends StatelessWidget {
           TextSpan(children: [
             WidgetSpan(
                 child: Icon(
-                  Icons.supervisor_account,
-                  color: Colors.grey,
-                  size: 23,
-                )),
+              Icons.supervisor_account,
+              color: Colors.grey,
+              size: 23,
+            )),
             TextSpan(
               text: " ",
             ),
@@ -74,16 +68,15 @@ class ComicListTile extends StatelessWidget {
           TextSpan(children: [
             WidgetSpan(
                 child: Icon(
-                  Icons.category,
-                  color: Colors.grey,
-                  size: 23,
-                )),
+              Icons.category,
+              color: Colors.grey,
+              size: 23,
+            )),
             TextSpan(
               text: " ",
             ),
             TextSpan(
-                text: tag,
-                style: TextStyle(color: Colors.grey, fontSize: 16))
+                text: tag, style: TextStyle(color: Colors.grey, fontSize: 16))
           ]),
         ),
         SizedBox(
@@ -93,10 +86,10 @@ class ComicListTile extends StatelessWidget {
           TextSpan(children: [
             WidgetSpan(
                 child: Icon(
-                  Icons.history,
-                  color: Colors.grey,
-                  size: 23,
-                )),
+              Icons.history,
+              color: Colors.grey,
+              size: 23,
+            )),
             TextSpan(
               text: " ",
             ),
@@ -106,6 +99,22 @@ class ComicListTile extends StatelessWidget {
           ]),
         ),
       ],
+    );
+  }
+
+  Widget buildImage(context) {
+    if (pageType == PageType.local) {
+      return Image.file(File(cover));
+    }
+    return CachedNetworkImage(
+      imageUrl: cover,
+      httpHeaders: headers,
+      progressIndicatorBuilder: (context, url, downloadProgress) => Container(
+        child: Center(
+          child: CircularProgressIndicator(value: downloadProgress.progress),
+        ),
+      ),
+      errorWidget: (context, url, error) => Icon(Icons.error),
     );
   }
 }

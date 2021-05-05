@@ -319,7 +319,7 @@ class DMZJSourceModel extends BaseSourceModel {
           }
           return response.data
               .map<FavoriteComic>((e) => FavoriteComic(e['sub_img'], e['name'],
-                  e['sub_update'], e['id'].toString(), this, e['unread']))
+                  e['sub_update'], e['id'].toString(), this, e['unread'],PageType.url))
               .toList();
         }
       } catch (e) {

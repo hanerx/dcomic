@@ -51,6 +51,7 @@ class ComicFavoriteModel extends BaseModel {
               title: e.title,
               subTitle: e.latestChapter,
               isUnread: e.update,
+              type: e.type,
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => ComicDetailPage(

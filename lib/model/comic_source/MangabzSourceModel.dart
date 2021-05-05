@@ -75,7 +75,8 @@ class MangabzSourceModel extends BaseSourceModel {
             .children
             .first
             .children
-            .map<CategoryModel>((e) => CategoryModel(title: e.text, categoryId: null, model: this))
+            .map<CategoryModel>((e) =>
+                CategoryModel(title: e.text, categoryId: null, model: this))
             .toList();
         var cover = soup.find(id: '.detail-info-cover').attributes['src'];
         var description = soup.find(id: '.detail-info-content').text;
@@ -314,8 +315,8 @@ class MangabzSourceModel extends BaseSourceModel {
             bool update = unreadList[comicId] == null ||
                 unreadList[comicId] <
                     ToolMethods.formatTimeStringForMangabz(updateTime);
-            return FavoriteComic(
-                cover, title, latestChapter, comicId, this, update);
+            return FavoriteComic(cover, title, latestChapter, comicId, this,
+                update, PageType.url);
           }).toList();
         }
       } catch (e) {

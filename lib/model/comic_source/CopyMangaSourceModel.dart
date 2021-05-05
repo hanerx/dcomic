@@ -185,7 +185,8 @@ class CopyMangaSourceModel extends BaseSourceModel {
                   this,
                   unreadList[e['path_word']] != null &&
                       unreadList[e['path_word']] <
-                          ToolMethods.formatTimeString(e['datetime_updated'])))
+                          ToolMethods.formatTimeString(e['datetime_updated']),
+                  PageType.url))
               .toList();
         }
       } catch (e) {
@@ -1189,7 +1190,8 @@ class CopyMangaHomepageHandler extends BaseHomePageHandler {
   }
 
   @override
-  Future<List<RankingComic>> getAuthorComics(String authorId, {int page = 0,bool popular:true}) async{
+  Future<List<RankingComic>> getAuthorComics(String authorId,
+      {int page = 0, bool popular: true}) async {
     // TODO: implement getAuthorComics
     try {
       var response = await UniversalRequestModel.copyMangaRequestHandler
@@ -1198,22 +1200,22 @@ class CopyMangaHomepageHandler extends BaseHomePageHandler {
         List data = response.data['results']['list'];
         return data
             .map<RankingComic>((e) => RankingComic(
-            cover: e['cover'],
-            title: e['name'],
-            comicId: e['path_word'],
-            authors: e['author']
-                .map<String>((e) => e['name'].toString())
-                .toList()
-                .join('/'),
-            model: model,
-            types: e['theme']
-                .map<String>((e) => e['name'].toString())
-                .toList()
-                .join('/'),
-            headers: {"referer": "https://www.copymanga.com/"},
-            timestamp:
-            ToolMethods.formatTimeString(e['datetime_updated']) ~/
-                1000))
+                cover: e['cover'],
+                title: e['name'],
+                comicId: e['path_word'],
+                authors: e['author']
+                    .map<String>((e) => e['name'].toString())
+                    .toList()
+                    .join('/'),
+                model: model,
+                types: e['theme']
+                    .map<String>((e) => e['name'].toString())
+                    .toList()
+                    .join('/'),
+                headers: {"referer": "https://www.copymanga.com/"},
+                timestamp:
+                    ToolMethods.formatTimeString(e['datetime_updated']) ~/
+                        1000))
             .toList();
       }
     } catch (e, s) {
