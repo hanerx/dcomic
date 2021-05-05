@@ -90,8 +90,8 @@ class LocalSourceModel extends BaseSourceModel {
     // TODO: implement getFavoriteComics
     List<MangaObject> comics = await LocalMangaDatabaseProvider().getAll();
     return comics
-        .map<FavoriteComic>((e) =>
-            FavoriteComic(e.cover, e.title, e.lastChapter, e.name, this, false))
+        .map<FavoriteComic>((e) => FavoriteComic(e.cover, e.title,
+            e.lastChapter, e.name, this, false, e.coverPageType))
         .toList();
   }
 
@@ -220,6 +220,8 @@ class LocalComicDetail extends ComicDetail {
   @override
   bool get isSubscribed => _isSubscribed;
 
+  PageType get pageType => _mangaObject.coverPageType;
+
   set isSubscribed(bool value) {
     if (value) {
       if (!options.delete) {
@@ -241,7 +243,9 @@ class LocalComicDetail extends ComicDetail {
       this.options, this.model);
 
   @override
-  List<CategoryModel> get authors => _mangaObject.authors.map((e) => CategoryModel(title: e.name, categoryId: e.id, model: model)).toList();
+  List<CategoryModel> get authors => _mangaObject.authors
+      .map((e) => CategoryModel(title: e.name, categoryId: e.id, model: model))
+      .toList();
 
   @override
   String get comicId => _mangaObject.name;

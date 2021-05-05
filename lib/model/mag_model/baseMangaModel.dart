@@ -101,6 +101,34 @@ class BaseMangaModel extends BaseModel {
       throw FileInvalidError();
     }
   }
+
+  Future<void> encodeFromObject(MangaObject object, String outputPath) async {
+    if (object == null) {
+      return;
+    }
+    var directory = Directory(outputPath + '/temp');
+    if (!directory.existsSync()) {
+      directory.createSync(recursive: true);
+    }
+    var file = File(outputPath + "/temp/meta.json");
+    if (!file.existsSync()) {
+      file.create(recursive: true);
+    }
+    file.writeAsStringSync(jsonEncode(object.toMap()));
+    await FlutterArchive.ZipFile.createFromDirectory(
+        sourceDir: directory,
+        zipFile: File(outputPath + "/${object.name}.manga"));
+  }
+
+  Future<void> encodeFromDirectory(String path, String outputPath) async {
+    var directory = Directory(path);
+    if (!directory.existsSync()) {
+      return;
+    }
+    var file = File(outputPath + '/output.manga');
+    await FlutterArchive.ZipFile.createFromDirectory(
+        sourceDir: directory, zipFile: file);
+  }
 }
 
 class MangaObject {
@@ -128,6 +156,19 @@ class MangaObject {
 
   String basePath;
 
+  MangaObject(
+      this.name,
+      this.title,
+      this.description,
+      this.authors,
+      this.tags,
+      this.data,
+      this.cover,
+      this.coverPageType,
+      this.status,
+      this.lastUpdateTimeStamp,
+      this.basePath);
+
   MangaObject.fromMap(Map map, String filepath, {ProcessCallBack callBack}) {
     if (callBack == null) {
       callBack = (value, message) {};
@@ -149,6 +190,14 @@ class MangaObject {
           defaultDecoder: DefaultVolumeDecoder());
       cover = autoDecode(map['cover'], filepath,
           defaultDecoder: LocalPathDecoder());
+      if (cover != null &&
+          (cover.startsWith("http://") || cover.startsWith("https://"))) {
+        coverPageType = PageType.url;
+      } else if (cover != null) {
+        coverPageType = PageType.local;
+      } else {
+        coverPageType = PageType.url;
+      }
       status = autoDecode(map['status'], filepath);
       lastUpdateTimeStamp = autoDecode(map['last_update_timestamp'], filepath);
       basePath = filepath;
@@ -196,6 +245,21 @@ class MangaObject {
 
   String get lastChapter =>
       data != null && data.length > 0 ? data.first.lastChapter : '无';
+
+  Map toMap() {
+    return {
+      "name": name,
+      "title": title,
+      "description": description,
+      "authors": authors.map((e) => e.toMap()).toList(),
+      "cover": cover,
+      "tags": tags.map((e) => e.toMap()).toList(),
+      "data": data.map((e) => e.toMap()).toList(),
+      "last_update_timestamp": lastUpdateTimeStamp,
+      "version": version,
+      "status": status
+    };
+  }
 }
 
 class VolumeObject {
@@ -218,6 +282,14 @@ class VolumeObject {
 
   String get lastChapter =>
       chapters != null && chapters.length > 0 ? chapters.first.title : '无';
+
+  Map toMap() {
+    return {
+      "name": name,
+      "title": title,
+      "data": chapters.map((e) => e.toMap()).toList()
+    };
+  }
 }
 
 class ChapterObject implements Comparable {
@@ -225,12 +297,13 @@ class ChapterObject implements Comparable {
   final int timestamp;
   final int order;
   final String title;
-  final List<String> pages;
+  final List<String> _pages;
   final PageType type;
   final Map<String, String> headers;
+  final String basePath;
 
-  ChapterObject(this.name, this.timestamp, this.order, this.title, this.pages,
-      this.type, this.headers);
+  ChapterObject(this.name, this.timestamp, this.order, this.title, this._pages,
+      this.type, this.headers, this.basePath);
 
   @override
   int compareTo(other) {
@@ -246,6 +319,20 @@ class ChapterObject implements Comparable {
       return this.order.compareTo(other.order);
     }
     return 0;
+  }
+
+  List<String> get pages => _pages.map<String>((e) {
+        var directory = Directory(basePath);
+        if (e.toString().startsWith('..')) {
+          return directory.parent.path + e.toString().substring(2);
+        } else if (e.toString().startsWith('.')) {
+          return directory.path + e.toString().substring(1);
+        }
+        return e.toString();
+      }).toList();
+
+  Map toMap() {
+    return {"name": name, "order": order, "title": title, "data": _pages};
   }
 }
 
@@ -323,7 +410,7 @@ class DefaultTagDecoder extends Decoder {
     if (data is String) {
       return TagObject(data, null);
     } else if (data is Map) {
-      return TagObject(data['tag_name'], data['tag_id']);
+      return TagObject(data['title'], data['tag_id']);
     }
     return TagObject(data.toString(), null);
   }
@@ -346,14 +433,16 @@ class DefaultChapterDecoder extends Decoder {
   ChapterObject decode(data, String outputPath) {
     // TODO: implement decode
     return ChapterObject(
-        data['name'],
-        data['timestamp'],
-        data['order'],
-        data['title'],
-        MangaObject.autoDecode<String>(data['data'], outputPath,
-            defaultDecoder: LocalPathDecoder()),
-        PageType.local,
-        {});
+      data['name'],
+      data['timestamp'],
+      data['order'],
+      data['title'],
+      MangaObject.autoDecode<String>(data['data'], outputPath,
+          defaultDecoder: StringDecoder()),
+      PageType.local,
+      {},
+      outputPath,
+    );
   }
 }
 

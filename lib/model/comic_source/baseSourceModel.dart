@@ -23,7 +23,7 @@ abstract class BaseSourceModel extends BaseModel {
   Future<List<HistoryComic>> getLocalHistoryComics() async {
     List item = await HistoryDatabaseProvider(type.name).getReadHistories();
     return item.first
-        .map<HistoryComic>((e) => HistoryComic.fromMap(e, this, e['timestamp']))
+        .map<HistoryComic>((e) => HistoryComic.fromMap(e, this, e['timestamp'],PageType.url))
         .toList();
   }
 
@@ -103,6 +103,8 @@ class SourceOptionsProvider extends BaseModel {
 }
 
 abstract class ComicDetail extends BaseModel {
+  PageType get pageType => PageType.url;
+
   Future<Comic> getChapter({String title, String chapterId});
 
   List<Map<String, dynamic>> getChapters();
@@ -380,21 +382,23 @@ class FavoriteComic {
 
   final bool update;
 
+  final PageType type;
+
   FavoriteComic(this.cover, this.title, this.latestChapter, this.comicId,
-      this.model, this.update);
+      this.model, this.update, this.type);
 }
 
 class HistoryComic extends FavoriteComic {
   final int timestamp;
 
   HistoryComic(String cover, String title, String latestChapter, String comicId,
-      BaseSourceModel model, bool update, this.timestamp)
-      : super(cover, title, latestChapter, comicId, model, update);
+      BaseSourceModel model, bool update, this.timestamp,PageType type)
+      : super(cover, title, latestChapter, comicId, model, update,type);
 
   HistoryComic.fromMap(
-      Map<String, dynamic> map, BaseSourceModel model, this.timestamp)
+      Map<String, dynamic> map, BaseSourceModel model, this.timestamp,PageType type)
       : super(map['cover'], map['title'], map['last_chapter'], map['comicId'],
-            model, false);
+            model, false,type);
 }
 
 class ComicComment {

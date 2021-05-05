@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dcomic/generated/l10n.dart';
@@ -10,10 +13,17 @@ class SubscribeCard extends StatefulWidget {
   final String subTitle;
   final bool isUnread;
   final VoidCallback onTap;
+  final PageType type;
 
-  const SubscribeCard({Key key, this.cover, this.title, this.subTitle, this.isUnread, this.onTap}) : super(key: key);
-
-
+  const SubscribeCard(
+      {Key key,
+      this.cover,
+      this.title,
+      this.subTitle,
+      this.isUnread,
+      this.onTap,
+      this.type})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -32,7 +42,7 @@ class _SubscribeCard extends State<SubscribeCard> {
     // TODO: implement initState
     super.initState();
     setState(() {
-      isUnread=widget.isUnread;
+      isUnread = widget.isUnread;
     });
   }
 
@@ -50,7 +60,8 @@ class _SubscribeCard extends State<SubscribeCard> {
             shape: BadgeShape.square,
             elevation: 0,
             borderRadius: BorderRadius.circular(5),
-            child: _Card(widget.cover, widget.title, widget.subTitle),
+            child:
+                _Card(widget.cover, widget.title, widget.subTitle, widget.type),
             badgeContent: Text(
               S.of(context).TipsNew,
               style: TextStyle(color: Colors.white),
@@ -70,8 +81,9 @@ class _Card extends StatelessWidget {
   final String cover;
   final String title;
   final String subTitle;
+  final PageType type;
 
-  _Card(this.cover, this.title, this.subTitle);
+  _Card(this.cover, this.title, this.subTitle, this.type);
 
   @override
   Widget build(BuildContext context) {
@@ -81,14 +93,8 @@ class _Card extends StatelessWidget {
         ClipRRect(
           child: AspectRatio(
             aspectRatio: 0.75,
-            child:CachedNetworkImage(
-              fit: BoxFit.cover,
-            imageUrl: '$cover',
-            httpHeaders: {'referer': 'http://images.dmzj.com'},
-            progressIndicatorBuilder: (context, url, downloadProgress) =>
-                Center(child: CircularProgressIndicator(value: downloadProgress.progress),),
-            errorWidget: (context, url, error) => Icon(Icons.error),
-          ),),
+            child: buildImage(context),
+          ),
           borderRadius: BorderRadius.circular(5),
         ),
         Row(
@@ -108,6 +114,21 @@ class _Card extends StatelessWidget {
           maxLines: 1,
         )
       ],
+    );
+  }
+
+  Widget buildImage(context) {
+    if (type == PageType.local) {
+      return Image.file(File(cover));
+    }
+    return CachedNetworkImage(
+      fit: BoxFit.cover,
+      imageUrl: '$cover',
+      httpHeaders: {'referer': 'http://images.dmzj.com'},
+      progressIndicatorBuilder: (context, url, downloadProgress) => Center(
+        child: CircularProgressIndicator(value: downloadProgress.progress),
+      ),
+      errorWidget: (context, url, error) => Icon(Icons.error),
     );
   }
 }

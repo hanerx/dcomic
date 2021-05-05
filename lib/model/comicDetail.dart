@@ -79,6 +79,8 @@ class ComicDetailModel extends BaseModel {
 
   Map data;
 
+  PageType get pageType=>detail==null?PageType.url:detail.pageType;
+
   ComicDetailModel(this._model, this._title, this._comicId) {
     init().then((value) =>
         getHistory(_comicId).then((value) => addReadHistory(_comicId)));
