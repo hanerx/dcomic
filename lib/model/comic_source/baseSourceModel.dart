@@ -109,7 +109,7 @@ abstract class ComicDetail extends BaseModel {
 
   List<Map<String, dynamic>> getChapters();
 
-  Future<ComicComment> getComments(int page);
+  Future<List<ComicComment>> getComments(int page);
 
   String get title;
 
@@ -401,18 +401,6 @@ class HistoryComic extends FavoriteComic {
             model, false,type);
 }
 
-class ComicComment {
-  final String avatar;
-  final String nickname;
-  final String content;
-  final List reply;
-  final int timestamp;
-  final int like;
-
-  ComicComment(this.avatar, this.nickname, this.content, this.reply,
-      this.timestamp, this.like);
-}
-
 enum CategoryType { local, cloud }
 
 abstract class BaseHomePageHandler {
@@ -457,4 +445,16 @@ class HomePageCardDetailModel {
       this.subtitle,
       @required this.cover,
       @required this.onPressed});
+}
+
+class ComicComment{
+  final String avatar;
+  final String nickname;
+  final String content;
+  final int timestamp;
+  final int like;
+  final dynamic upload_image;
+  final List<Map> reply;
+
+  ComicComment({this.avatar, this.nickname, this.content, this.timestamp, this.like, this.upload_image, this.reply});
 }

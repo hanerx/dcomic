@@ -63,9 +63,9 @@ class CopyMangaRequestHandler extends SingleDomainRequestHandler {
     return dio.post('/api/v3/logout', options: await setHeader());
   }
 
-  Future<Response> getSubscribe({int page: 0}) async {
+  Future<Response> getSubscribe({int page: 0, int limit: 21}) async {
     return dio.get(
-        '/api/v3/member/collect/comics?free_type=1&limit=21&offset=$page&_update=true&ordering=-datetime_modifier',
+        '/api/v3/member/collect/comics?free_type=1&limit=$limit&offset=${page * limit}&_update=true&ordering=-datetime_modifier',
         options: await setHeader());
   }
 

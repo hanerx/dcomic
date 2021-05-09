@@ -318,8 +318,14 @@ class DMZJSourceModel extends BaseSourceModel {
             item['unread'] = unread;
           }
           return response.data
-              .map<FavoriteComic>((e) => FavoriteComic(e['sub_img'], e['name'],
-                  e['sub_update'], e['id'].toString(), this, e['unread'],PageType.url))
+              .map<FavoriteComic>((e) => FavoriteComic(
+                  e['sub_img'],
+                  e['name'],
+                  e['sub_update'],
+                  e['id'].toString(),
+                  this,
+                  e['unread'],
+                  PageType.url))
               .toList();
         }
       } catch (e) {
@@ -1006,6 +1012,8 @@ class DMZJComicDetail extends ComicDetail {
   final SourceDetail sourceDetail;
   bool _isSubscribed;
 
+  Map comments = {};
+
   DMZJComicDetail(
       this._comicId,
       this._description,
@@ -1144,9 +1152,48 @@ class DMZJComicDetail extends ComicDetail {
   }
 
   @override
-  Future<ComicComment> getComments(int page) {
+  Future<List<ComicComment>> getComments(int page) async {
     // TODO: implement getComments
-    throw UnimplementedError();
+    try {
+      var response = await UniversalRequestModel.dmzjCommentRequestHandler
+          .getComments(comicId, page, type: 4);
+      if (response.statusCode == 200 || response.statusCode == 304) {
+        var idList = response.data['commentIds'];
+        comments.addAll(response.data['comments']);
+        var data = <ComicComment>[];
+        for (String item in idList) {
+          var commentList = item.split(',');
+          var firstComment = comments[commentList.first];
+          data.add(ComicComment(
+              avatar: firstComment['avatar_url'],
+              nickname: firstComment['nickname'],
+              content: firstComment['content'],
+              timestamp: int.tryParse(firstComment['create_time'].toString()),
+              like: int.parse(firstComment['like_amount'].toString()),
+              upload_image: firstComment['upload_image'],
+              reply: commentList.sublist(1).map<Map>((e) {
+                if (comments[e] == null) {
+                  return {
+                    'avatar': 'https://avatar.dmzj.com/default.png',
+                    'nickname': '异次元',
+                    'content': '被异次元吞噬的评论'
+                  };
+                }
+                return {
+                  'avatar': comments[e]['avatar_url'],
+                  'nickname': comments[e]['nickname'],
+                  'content': comments[e]['content']
+                };
+              }).toList()));
+        }
+        return data;
+      }
+    } catch (e, s) {
+      FirebaseCrashlytics.instance
+          .recordError(e, s, reason: 'getComicCommentFailed: $comicId');
+      throw e;
+    }
+    return [];
   }
 }
 
@@ -1728,6 +1775,7 @@ class DMZJHomePageHandler extends BaseHomePageHandler {
                 authors: item['authors'],
                 timestamp: item['last_updatetime'],
                 headers: {'referer': 'https://m.dmzj.com'},
+                model: model,
                 comicId: item['id'].toString()))
             .toList();
       }

@@ -171,7 +171,7 @@ class _ComicDetailPage extends State<ComicDetailPage> {
             ),
             endDrawer: CustomDrawer(
               child: CommentPage(
-                  Provider.of<ComicDetailModel>(context).rawComicId),
+                  detail: Provider.of<ComicDetailModel>(context).detail),
               widthPercent: 0.9,
             ),
             floatingActionButton: Provider.of<ComicDetailModel>(context)

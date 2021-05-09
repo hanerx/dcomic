@@ -757,7 +757,7 @@ class MangabzComicDetail extends ComicDetail {
   }
 
   @override
-  Future<ComicComment> getComments(int page) {
+  Future<List<ComicComment>> getComments(int page) {
     // TODO: implement getComments
     throw UnimplementedError();
   }

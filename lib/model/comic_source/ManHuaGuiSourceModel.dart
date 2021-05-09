@@ -1,6 +1,10 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dcomic/database/cookieDatabaseProvider.dart';
+import 'package:dcomic/database/historyDatabaseProvider.dart';
 import 'package:dcomic/model/comicCategoryModel.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,10 +14,12 @@ import 'package:dcomic/http/UniversalRequestModel.dart';
 import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:dcomic/utils/soup.dart';
 import 'package:dcomic/utils/tool_methods.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 
 class ManHuaGuiSourceModel extends BaseSourceModel {
   ManHuaGuiSourceOptions _options = ManHuaGuiSourceOptions.fromMap({});
+  ManHuaGuiUserConfig _userConfig;
 
   ManHuaGuiSourceModel() {
     init();
@@ -22,6 +28,7 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
   Future<void> init() async {
     var map = await SourceDatabaseProvider.getSourceOptions(type.name);
     _options = ManHuaGuiSourceOptions.fromMap(map);
+    _userConfig = ManHuaGuiUserConfig(_options);
   }
 
   @override
@@ -89,6 +96,9 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
                   'updatetime': 0
                 })
             .toList();
+        var history = (await HistoryDatabaseProvider(this.type.name)
+            .getReadHistory(comicId));
+        var lastChapterId = history == null ? null : history['last_chapter_id'];
         return ManHuaGuiComicDetail(
             authors,
             comicId,
@@ -102,7 +112,8 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
             title,
             updateTime,
             _options,
-            type);
+            type,
+            lastChapterId);
       }
     } catch (e) {
       throw ComicLoadingError(exception: e);
@@ -302,21 +313,306 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
       canDisable: true,
       sourceType: SourceType.LocalDecoderSource,
       deprecated: false,
-      canSubscribe: false);
+      canSubscribe: true);
 
   @override
   // TODO: implement userConfig
-  UserConfig get userConfig => InactiveUserConfig(this.type);
+  UserConfig get userConfig => _userConfig;
 
   @override
-  Future<List<FavoriteComic>> getFavoriteComics(int page) {
+  Future<List<FavoriteComic>> getFavoriteComics(int page) async {
     // TODO: implement getFavoriteComics
-    throw UnimplementedError();
+    if (_userConfig.status != UserStatus.login) {
+      throw LoginRequiredError();
+    }
+    if (page == 0) {
+      try {
+        var response =
+            await UniversalRequestModel.manHuaGuiRequestHandler.getSubscribe();
+        if (response.statusCode == 200) {
+          var soup = BeautifulSoup(response.data);
+          var list = soup.find(id: '#detail').children;
+          if (list.isEmpty) {
+            return [];
+          }
+          var data = <FavoriteComic>[];
+          var historyData =
+              await HistoryDatabaseProvider(type.name).getAllUnread();
+          var unreadList = <String, int>{};
+          for (var item in historyData.first) {
+            unreadList[item['comicId']] = item['timestamp'];
+          }
+          for (var item in list) {
+            var cover = item.children[1].children.first.children.first
+                .attributes['data-src'];
+            var comicId = item.children[1].attributes['href']
+                .replaceAll('/comic/', '')
+                .replaceAll('/', '');
+            var title = item.children[1].children[1].text;
+            var latestChapter = item.children[1].children[4].children[1].text
+                .substring(
+                    0,
+                    item.children[1].children[4].children[1].text
+                        .lastIndexOf(' '));
+            var timestamp = item.children[1].children[4].children[1].text
+                .substring(item.children[1].children[4].children[1].text
+                        .lastIndexOf(' ') +
+                    1);
+            bool update = unreadList[comicId] == null ||
+                unreadList[comicId] <
+                    ToolMethods.formatTimeStringForMangabz(timestamp);
+            data.add(FavoriteComic(cover, title, latestChapter, comicId, this,
+                update, PageType.url));
+          }
+          return data;
+        }
+      } catch (e) {
+        throw e;
+      }
+    }
+    return [];
   }
 
   @override
   // TODO: implement homePageHandler
   BaseHomePageHandler get homePageHandler => throw UnimplementedError();
+}
+
+class ManHuaGuiUserConfig extends UserConfig {
+  UserStatus _status = UserStatus.logout;
+  String _userId = '';
+
+  final ManHuaGuiSourceOptions options;
+
+  ManHuaGuiUserConfig(this.options) {
+    init();
+  }
+
+  Future<void> init() async {
+    if (await SourceDatabaseProvider.getSourceOption('manhuagui', 'login',
+        defaultValue: false)) {
+      try {
+        if (options.enableProxy) {
+          UniversalRequestModel.manHuaGuiRequestHandler
+              .setProxy(options.proxy, options.port);
+        }
+        var response =
+            await UniversalRequestModel.manHuaGuiRequestHandler.getLoginInfo();
+        if (response.statusCode == 200) {
+          var responseData = jsonDecode(response.data.toString());
+          if (responseData['status'] == 1) {
+            _userId = responseData['username'];
+            _status = UserStatus.login;
+            return true;
+          }
+        }
+      } catch (e) {}
+    }
+  }
+
+  @override
+  // TODO: implement avatar
+  String get avatar => '';
+
+  @override
+  Widget getLoginWidget(context) {
+    // TODO: implement getLoginWidget
+    TextEditingController usernameController = TextEditingController();
+    TextEditingController passwordController = TextEditingController();
+    return FlutterEasyLoading(
+        child: Scaffold(
+      appBar: AppBar(
+        title: Text('登录'),
+      ),
+      body: Scrollbar(
+        child: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.all(10),
+                child: CachedNetworkImage(
+                  imageUrl: 'https://cf.hamreus.com/images/mhg.png',
+                  httpHeaders: {'referer': 'https://www.manhuagui.com/'},
+                  progressIndicatorBuilder: (context, url, downloadProgress) =>
+                      CircularProgressIndicator(
+                          value: downloadProgress.progress),
+                  errorWidget: (context, url, error) => Icon(Icons.error),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(5),
+                child: TextField(
+                  controller: usernameController,
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: '用户名',
+                      icon: Icon(Icons.account_circle),
+                      helperText: '昵称/手机号/邮箱'),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(5),
+                child: TextField(
+                  controller: passwordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: '密码',
+                      icon: Icon(Icons.lock),
+                      helperText: '漫画柜登录密码'),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(10),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        '*本程序为第三方登录程序，存在登录风险',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                    Builder(
+                      builder: (context) {
+                        return ElevatedButton(
+                          child: Text(
+                            '登录',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          onPressed: () async {
+                            EasyLoading.instance
+                              ..indicatorType =
+                                  EasyLoadingIndicatorType.fadingCube;
+                            EasyLoading.instance
+                              ..maskType = EasyLoadingMaskType.black;
+                            EasyLoading.show(status: "登录中");
+                            try {
+                              await login(usernameController.text,
+                                  passwordController.text);
+                              EasyLoading.dismiss();
+                              Navigator.of(context).pop();
+                            } on LoginUsernameOrPasswordError catch (e) {
+                              EasyLoading.dismiss();
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content: Text('用户名或密码错误！'),
+                              ));
+                            } catch (e) {
+                              EasyLoading.dismiss();
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content: Text('俺也不知道的错误'),
+                              ));
+                            }
+                          },
+                        );
+                      },
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ));
+  }
+
+  @override
+  Widget getSettingWidget(context) {
+    // TODO: implement getSettingWidget
+    return Card(
+      child: ListView(
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        children: [
+          ListTile(
+            leading: Icon(Icons.account_circle),
+            title: Text('漫画柜用户设置'),
+            subtitle: Text('用户ID：$userId'),
+            trailing: Icon(status == UserStatus.login
+                ? Icons.cloud_done
+                : Icons.cloud_off),
+          ),
+          Divider(),
+          ListTile(
+            enabled: status == UserStatus.login,
+            title: Text('退出登录'),
+            subtitle: Text('退出登录，字面意思'),
+            onTap: () async {
+              await logout();
+              Navigator.pop(context);
+            },
+          )
+        ],
+      ),
+    );
+  }
+
+  @override
+  Future<bool> login(String username, String password) async {
+    // TODO: implement login
+    try {
+      if (options.enableProxy) {
+        UniversalRequestModel.manHuaGuiRequestHandler
+            .setProxy(options.proxy, options.port);
+      }
+      var response = await UniversalRequestModel.manHuaGuiRequestHandler
+          .login(username, password);
+      var responseData = response.data.toString();
+      var data = jsonDecode(responseData);
+      if (data['status'] == 1) {
+        for (var item in response.headers['set-cookie']) {
+          var key = item.substring(0, item.indexOf("="));
+          var value = item.substring(item.indexOf("=") + 1);
+          CookieDatabaseProvider('manhuagui').insert(key, value);
+        }
+        try {
+          var response = await UniversalRequestModel.manHuaGuiRequestHandler
+              .getLoginInfo();
+          if (response.statusCode == 200) {
+            var responseData = jsonDecode(response.data.toString());
+            if (responseData['status'] == 1) {
+              _userId = responseData['username'];
+              _status = UserStatus.login;
+              SourceDatabaseProvider.insertSourceOption<bool>(
+                  'manhuagui', 'login', true);
+              return true;
+            }
+          }
+        } catch (e) {
+          throw e;
+        }
+      } else if (data['status'] == 0) {
+        throw LoginUsernameOrPasswordError();
+      }
+    } catch (e) {
+      logger.e('class: DMZJUserConfig, action: loginFailed, exception: $e');
+      throw e;
+    }
+    return false;
+  }
+
+  @override
+  Future<bool> logout() async {
+    // TODO: implement logout
+    _status = UserStatus.logout;
+    SourceDatabaseProvider.insertSourceOption<bool>(
+        'manhuagui', 'login', false);
+    return true;
+  }
+
+  @override
+  // TODO: implement nickname
+  String get nickname => '';
+
+  @override
+  // TODO: implement status
+  UserStatus get status => _status;
+
+  @override
+  // TODO: implement userId
+  String get userId => _userId;
 }
 
 class ManHuaGuiSearchResult extends SearchResult {
@@ -455,6 +751,11 @@ class ManHuaGuiComicDetail extends ComicDetail {
   final String _updateTime;
   final ManHuaGuiSourceOptions options;
   final SourceDetail sourceDetail;
+  final String _historyChapter;
+
+  Map comments = {};
+
+  bool _isSubscribed = false;
 
   ManHuaGuiComicDetail(
       this._authors,
@@ -467,7 +768,8 @@ class ManHuaGuiComicDetail extends ComicDetail {
       this._title,
       this._updateTime,
       this.options,
-      this.sourceDetail);
+      this.sourceDetail,
+      this._historyChapter);
 
   @override
   // TODO: implement authors
@@ -494,7 +796,8 @@ class ManHuaGuiComicDetail extends ComicDetail {
     for (var item in _chapters) {
       for (var chapter in item['data']) {
         if (chapter['chapter_id'].toString() == chapterId) {
-          return ManHuaGuiComic(chapterId, item['data'], _comicId, options);
+          return ManHuaGuiComic(
+              chapterId, item['data'], _comicId, options, this);
         }
       }
     }
@@ -513,7 +816,7 @@ class ManHuaGuiComicDetail extends ComicDetail {
 
   @override
   // TODO: implement historyChapter
-  String get historyChapter => '';
+  String get historyChapter => _historyChapter;
 
   @override
   // TODO: implement hotNum
@@ -540,11 +843,30 @@ class ManHuaGuiComicDetail extends ComicDetail {
   String get updateTime => _updateTime;
 
   @override
-  bool isSubscribed = false;
+  bool get isSubscribed => _isSubscribed;
+
+  set isSubscribed(bool value) {
+    if (value) {
+      UniversalRequestModel.manHuaGuiRequestHandler.addSubscribe(comicId);
+    } else {
+      UniversalRequestModel.manHuaGuiRequestHandler.cancelSubscribe(comicId);
+    }
+    _isSubscribed = value;
+  }
 
   @override
   Future<void> getIfSubscribed() async {
     // TODO: implement getIfSubscribed
+    try {
+      var response = await UniversalRequestModel.manHuaGuiRequestHandler
+          .getIfSubscribe(comicId);
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.data);
+        if (data['status'] == 1) {
+          _isSubscribed = true;
+        }
+      }
+    } catch (e, s) {}
   }
 
   @override
@@ -554,9 +876,53 @@ class ManHuaGuiComicDetail extends ComicDetail {
   }
 
   @override
-  Future<ComicComment> getComments(int page) {
+  Future<List<ComicComment>> getComments(int page) async {
     // TODO: implement getComments
-    throw UnimplementedError();
+    try {
+      var response = await UniversalRequestModel.manHuaGuiRequestHandler
+          .getComicComments(comicId, page);
+      if (response.statusCode == 200 || response.statusCode == 304) {
+        response.data = jsonDecode(response.data);
+        var idList = response.data['commentIds'];
+        comments.addAll(response.data['comments']);
+        var data = <ComicComment>[];
+        for (String item in idList) {
+          var commentList = item.split(',');
+          var firstComment = comments[commentList.first];
+          data.add(ComicComment(
+              avatar: firstComment['avatar'],
+              nickname: firstComment['user_name'] == ""
+                  ? "匿名"
+                  : firstComment['user_name'],
+              content: firstComment['content'],
+              timestamp: ToolMethods.formatTimeString(firstComment['add_time']),
+              like: int.parse(firstComment['support_count'].toString()),
+              upload_image: null,
+              reply: commentList.sublist(1).map<Map>((e) {
+                if (comments[e] == null) {
+                  return {
+                    'avatar': 'https://avatar.dmzj.com/default.png',
+                    'nickname': '异次元',
+                    'content': '被异次元吞噬的评论'
+                  };
+                }
+                return {
+                  'avatar': comments[e]['avatar'],
+                  'nickname': comments[e]['user_name'] == ""
+                      ? "匿名"
+                      : comments[e]['user_name'],
+                  'content': comments[e]['content']
+                };
+              }).toList()));
+        }
+        return data;
+      }
+    } catch (e, s) {
+      FirebaseCrashlytics.instance
+          .recordError(e, s, reason: 'getComicCommentFailed: $comicId');
+      throw e;
+    }
+    return [];
   }
 }
 
@@ -565,6 +931,7 @@ class ManHuaGuiComic extends Comic {
   final List _chapters;
   final String _comicId;
   final ManHuaGuiSourceOptions options;
+  final ComicDetail _detail;
 
   int _previous;
   int _next;
@@ -572,7 +939,8 @@ class ManHuaGuiComic extends Comic {
   String _title;
   List<String> _pages = [];
 
-  ManHuaGuiComic(this._chapterId, this._chapters, this._comicId, this.options);
+  ManHuaGuiComic(this._chapterId, this._chapters, this._comicId, this.options,
+      this._detail);
 
   @override
   Future<void> addReadHistory(
@@ -582,7 +950,16 @@ class ManHuaGuiComic extends Comic {
       String chapterTitle,
       String chapterId}) async {
     // TODO: implement addReadHistory
-    return;
+    if (comicId == null || chapterId == null) {
+      throw IDInvalidError();
+    }
+    HistoryDatabaseProvider('manhuagui').addReadHistory(
+        comicId,
+        _detail.title,
+        _detail.cover,
+        chapterTitle,
+        pageAt,
+        DateTime.now().millisecondsSinceEpoch ~/ 1000);
   }
 
   @override
@@ -642,6 +1019,11 @@ class ManHuaGuiComic extends Comic {
         _pages = data['images']
             .map<String>((e) => 'https://i.hamreus.com' + e)
             .toList();
+        addReadHistory(
+            comicId: comicId,
+            page: 0,
+            chapterTitle: _title,
+            chapterId: chapterId);
         notifyListeners();
       }
     } catch (e) {
