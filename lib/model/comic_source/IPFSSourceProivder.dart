@@ -5,8 +5,11 @@ import 'package:dcomic/database/historyDatabaseProvider.dart';
 import 'package:dcomic/database/sourceDatabaseProvider.dart';
 import 'package:dcomic/http/IPFSSourceRequestHandler.dart';
 import 'package:dcomic/model/comicCategoryModel.dart';
+import 'package:dcomic/model/comicRankingListModel.dart';
 import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:dcomic/model/ipfsSettingProvider.dart';
+import 'package:dcomic/model/subjectDetailModel.dart';
+import 'package:dcomic/model/subjectListModel.dart';
 import 'package:dcomic/utils/tool_methods.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -297,6 +300,61 @@ class IPFSSourceModel extends BaseSourceModel {
   @override
   // TODO: implement userConfig
   IPFSUserConfig get userConfig => _userConfig;
+}
+
+class IPFSHompageHandler extends BaseHomePageHandler{
+  @override
+  Future<List<RankingComic>> getAuthorComics(String authorId, {int page = 0, bool popular = true}) {
+    // TODO: implement getAuthorComics
+    try{
+
+    }catch(e,s){
+
+    }
+  }
+
+  @override
+  Future<List<CategoryModel>> getCategory({CategoryType type}) {
+    // TODO: implement getCategory
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<RankingComic>> getCategoryDetail(String categoryId, {int page = 0, bool popular = true}) {
+    // TODO: implement getCategoryDetail
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<HomePageCardModel>> getHomePage() {
+    // TODO: implement getHomePage
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<RankingComic>> getLatestUpdate(int page) {
+    // TODO: implement getLatestUpdate
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<RankingComic>> getRankingList(int page) {
+    // TODO: implement getRankingList
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<SubjectModel> getSubject(String subjectId) {
+    // TODO: implement getSubject
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<SubjectItem>> getSubjectList(int page) {
+    // TODO: implement getSubjectList
+    throw UnimplementedError();
+  }
+  
 }
 
 class IPFSUserConfig extends UserConfig {
@@ -650,7 +708,7 @@ class IPFSComicDetail extends ComicDetail {
   }
 
   @override
-  Future<ComicComment> getComments(int page) async {
+  Future<List<ComicComment>> getComments(int page) async {
     // TODO: implement getComments
     throw UnimplementedError();
   }

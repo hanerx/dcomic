@@ -337,7 +337,7 @@ class LocalComicDetail extends ComicDetail {
       ToolMethods.formatTimestamp(_mangaObject.lastUpdateTimeStamp);
 
   @override
-  Future<ComicComment> getComments(int page) {
+  Future<List<ComicComment>> getComments(int page) {
     // TODO: implement getComments
     throw UnimplementedError();
   }
