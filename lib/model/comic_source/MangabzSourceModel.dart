@@ -876,10 +876,12 @@ class MangabzComic extends Comic {
       var response = await UniversalRequestModel.mangabzRequestHandler
           .getChapter(chapterId);
       if (response.statusCode == 200) {
-        var soup = BeautifulSoup(
-            ChineseHelper.convertToSimplifiedChinese(response.data.toString()));
-        this._title =
-            soup.find(id: '.top-title').text.replaceAll(' ', '').split('?')[2];
+        this._title = RegExp('<p class="top-title">.*</p>?')
+            .stringMatch(ChineseHelper.convertToSimplifiedChinese(
+                response.data.toString()))
+            .replaceAll(' ', '')
+            .replaceAll("</p>", '')
+            .split('?')[2];
         _pageAt = chapterId;
         switch (options.mode) {
           case 0:

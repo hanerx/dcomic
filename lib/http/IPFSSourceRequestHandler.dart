@@ -113,13 +113,41 @@ class IPFSSourceRequestHandler extends SingleDomainRequestHandler {
         options: Options(headers: await setHeader()));
   }
 
-  Future<Response> addUser(String username,Map data)async{
+  Future<Response> addUser(String username, Map data) async {
     return dio.post('/user/$username',
         data: jsonEncode(data), options: Options(headers: await setHeader()));
   }
 
-  Future<Response> updateUser(String username,Map data)async{
+  Future<Response> updateUser(String username, Map data) async {
     return dio.put('/user/$username',
         data: jsonEncode(data), options: Options(headers: await setHeader()));
+  }
+
+  Future<Response> getSubscribe() async {
+    return dio.get('/user/subscribe',
+        options: Options(headers: await setHeader()));
+  }
+
+  Future<Response> addSubscribe(String comicId) async {
+    return dio.post('/user/subscribe/$comicId',
+        options: Options(headers: await setHeader()));
+  }
+
+  Future<Response> cancelSubscribe(String comicId) async {
+    return dio.delete('/user/subscribe/$comicId',
+        options: Options(headers: await setHeader()));
+  }
+
+  Future<Response> getIfSubscribe(String comicId) async {
+    return dio.get('/user/subscribe/$comicId',
+        options: Options(headers: await setHeader()));
+  }
+
+  Future<Response> getAuthor(String authorId) {
+    return dio.get('/author/$authorId');
+  }
+
+  Future<Response> getCategoryDetail(String categoryId) {
+    return dio.get('/tag/$categoryId');
   }
 }

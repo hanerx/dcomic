@@ -743,7 +743,7 @@ class CopyMangaComic extends Comic {
     if (comicId == null || chapterId == null) {
       throw IDInvalidError();
     }
-    HistoryDatabaseProvider('dmzj').addReadHistory(
+    HistoryDatabaseProvider('copy_manga').addReadHistory(
         comicId,
         _detail.title,
         _detail.cover,

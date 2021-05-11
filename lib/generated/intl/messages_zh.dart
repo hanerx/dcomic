@@ -40,7 +40,7 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function> {
     "AppName" : MessageLookupByLibrary.simpleMessage("DComic"),
-    "AppNameUltimate" : MessageLookupByLibrary.simpleMessage("真·不撸埃斯Ultimate外拓大妈之家"),
+    "AppNameUltimate" : MessageLookupByLibrary.simpleMessage("Super DComic:Ultimate"),
     "AuthorPageTitle" : m0,
     "Cancel" : MessageLookupByLibrary.simpleMessage("取消"),
     "CannotOpenWeb" : MessageLookupByLibrary.simpleMessage("无法打开网页，请检测权限"),
@@ -63,7 +63,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "NoImage" : MessageLookupByLibrary.simpleMessage("无图片数据"),
     "Novel" : MessageLookupByLibrary.simpleMessage("轻小说"),
     "Setting" : MessageLookupByLibrary.simpleMessage("设置"),
-    "SettingPageAboutDescription" : MessageLookupByLibrary.simpleMessage("基于flutter的第三方动漫之家简单app"),
+    "SettingPageAboutDescription" : MessageLookupByLibrary.simpleMessage("基于flutter的漫画阅读器"),
     "SettingPageAboutSubtitle" : MessageLookupByLibrary.simpleMessage("想不到设置里面能塞啥"),
     "SettingPageAboutTitle" : MessageLookupByLibrary.simpleMessage("关于"),
     "SettingPageCancelDownloadTasksConfirmDescription" : MessageLookupByLibrary.simpleMessage("该操作将取消所有正在下载的进程，用于debug，是否确认？"),
@@ -131,7 +131,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "SettingPageNoMediaTitle" : MessageLookupByLibrary.simpleMessage("影藏下载内容"),
     "SettingPagePlaceholderSubtitle" : MessageLookupByLibrary.simpleMessage("想不到要拿来干啥，先占位"),
     "SettingPagePlaceholderTitle" : MessageLookupByLibrary.simpleMessage("占位符"),
-    "SettingPageProjectURL" : MessageLookupByLibrary.simpleMessage("https://github.com/hanerx/flutter_dmzj"),
+    "SettingPageProjectURL" : MessageLookupByLibrary.simpleMessage("https://github.com/hanerx/dcomic"),
     "SettingPageProjectURLTitle" : MessageLookupByLibrary.simpleMessage("开源地址"),
     "SettingPageReadDirectionHorizontal" : MessageLookupByLibrary.simpleMessage("横向方向"),
     "SettingPageReadDirectionTitle" : MessageLookupByLibrary.simpleMessage("阅读方向"),

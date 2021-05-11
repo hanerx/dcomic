@@ -4,6 +4,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dcomic/database/cookieDatabaseProvider.dart';
 import 'package:dcomic/database/historyDatabaseProvider.dart';
 import 'package:dcomic/model/comicCategoryModel.dart';
+import 'package:dcomic/model/comicRankingListModel.dart';
+import 'package:dcomic/model/subjectDetailModel.dart';
+import 'package:dcomic/model/subjectListModel.dart';
+import 'package:dcomic/view/comic_detail_page.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -71,12 +75,20 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
         var soup = BeautifulSoup(response.data);
         var contList = soup.find(id: '.cont-list');
         List authors = contList.children[3].children[1].children
-            .map<CategoryModel>((e) =>
-                CategoryModel(title: e.text, model: this, categoryId: null))
+            .map<CategoryModel>((e) => CategoryModel(
+                title: e.text,
+                model: this,
+                categoryId: e.attributes['href']
+                    .replaceAll('/author/', '')
+                    .replaceAll('/', '')))
             .toList();
         List tags = contList.children[4].children[1].children
-            .map<CategoryModel>((e) =>
-                CategoryModel(title: e.text, model: this, categoryId: null))
+            .map<CategoryModel>((e) => CategoryModel(
+                title: e.text,
+                model: this,
+                categoryId: e.attributes['href']
+                    .replaceAll('/list/', '')
+                    .replaceAll('/', '')))
             .toList();
         String description = soup.find(id: '#bookIntro').children.first.text;
         String title = soup.find(id: '.main-bar').children.first.text;
@@ -267,7 +279,7 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
 
   @override
   // TODO: implement options
-  SourceOptions get options => _options;
+  ManHuaGuiSourceOptions get options => _options;
 
   @override
   Future<List<SearchResult>> search(String keyword, {int page: 0}) async {
@@ -313,7 +325,8 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
       canDisable: true,
       sourceType: SourceType.LocalDecoderSource,
       deprecated: false,
-      canSubscribe: true);
+      canSubscribe: true,
+      haveHomePage: true);
 
   @override
   // TODO: implement userConfig
@@ -375,7 +388,297 @@ class ManHuaGuiSourceModel extends BaseSourceModel {
 
   @override
   // TODO: implement homePageHandler
-  BaseHomePageHandler get homePageHandler => throw UnimplementedError();
+  BaseHomePageHandler get homePageHandler => ManHuaGuiHompageHandler(this);
+}
+
+class ManHuaGuiHompageHandler extends BaseHomePageHandler {
+  final ManHuaGuiSourceModel model;
+
+  ManHuaGuiHompageHandler(this.model);
+
+  @override
+  Future<List<RankingComic>> getAuthorComics(String authorId,
+      {int page = 0, bool popular = true}) async {
+    // TODO: implement getAuthorComics
+    if (page > 0) {
+      return [];
+    }
+    try {
+      if (model.options.enableProxy) {
+        UniversalRequestModel.manHuaGuiRequestHandler
+            .setProxy(model.options.proxy, model.options.port);
+      }
+      var response = await UniversalRequestModel.manHuaGuiRequestHandler
+          .getAuthor(authorId);
+      if (response.statusCode == 200) {
+        var soup = BeautifulSoup(response.data);
+        List<RankingComic> list = [];
+        var content = soup.find(id: '#detail').children;
+        for (var item in content) {
+          if (!item.toString().contains("<html li>")) {
+            continue;
+          }
+          String title = item.children[1].children[1].text;
+          String author = item.children[1].children[2].children[1].text;
+          String tag = item.children[1].children[3].children[1].text;
+          var img = item.children[1].children[0].children.first;
+          String cover = img.attributes['data-src'];
+          String comicId = item.children[1].attributes['href']
+              .replaceAll('/', '')
+              .replaceAll('comic', '');
+          int timestamp = ToolMethods.formatTimeString(
+                  item.children[1].children[5].children[1].text) ~/
+              1000;
+          list.add(RankingComic(
+              cover: cover,
+              title: title,
+              types: tag,
+              authors: author,
+              comicId: comicId,
+              timestamp: timestamp,
+              headers: {'referer': "http://m.manhuagui.com"},
+              model: model));
+        }
+        return list;
+      }
+    } catch (e) {
+      throw e;
+    }
+    return [];
+  }
+
+  @override
+  Future<List<CategoryModel>> getCategory({CategoryType type}) async {
+    // TODO: implement getCategory
+    try {
+      if (model.options.enableProxy) {
+        UniversalRequestModel.manHuaGuiRequestHandler
+            .setProxy(model.options.proxy, model.options.port);
+      }
+      var response = await UniversalRequestModel.manHuaGuiRequestHandler
+          .getCategoryDetail("");
+      if (response.statusCode == 200) {
+        var soup = BeautifulSoup(response.data);
+        List<CategoryModel> list = [];
+        var content = soup.find(id: '.cat-list').children;
+        for (var item in content) {
+          var title = item.children.first.text;
+          var categoryId = item.children.first.attributes['href']
+              .replaceAll("/list/", '')
+              .replaceAll("/", "");
+          list.add(CategoryModel(
+              cover: "https://alicdn2.mangafunc.fun:12001/static/websiteV2/jpg/loading.png",
+              title: title,
+              categoryId: categoryId,
+              headers: {"referer": "https://www.copymanga.com/"},
+              model: model));
+        }
+        return list;
+      }
+    } catch (e) {
+      throw e;
+    }
+    return [];
+  }
+
+  @override
+  Future<List<RankingComic>> getCategoryDetail(String categoryId,
+      {int page = 0, bool popular = true}) async {
+    // TODO: implement getCategoryDetail
+    try {
+      if (model.options.enableProxy) {
+        UniversalRequestModel.manHuaGuiRequestHandler
+            .setProxy(model.options.proxy, model.options.port);
+      }
+      var response = await UniversalRequestModel.manHuaGuiRequestHandler
+          .getCategoryDetail(categoryId, page: page, popular: popular);
+      if (response.statusCode == 200) {
+        var soup = BeautifulSoup(response.data);
+        List<RankingComic> list = [];
+        var content = soup.find(id: '#detail').children;
+        for (var item in content) {
+          String title = item.children[1].children[1].text;
+          String author = item.children[1].children[2].children[1].text;
+          String tag = item.children[1].children[3].children[1].text;
+          var img = item.children[1].children[0].children.first;
+          String cover = img.attributes['data-src'];
+          String comicId = item.children[1].attributes['href']
+              .replaceAll('/', '')
+              .replaceAll('comic', '');
+          int timestamp = ToolMethods.formatTimeString(
+                  item.children[1].children[5].children[1].text) ~/
+              1000;
+          list.add(RankingComic(
+              cover: cover,
+              title: title,
+              types: tag,
+              authors: author,
+              comicId: comicId,
+              timestamp: timestamp,
+              headers: {'referer': "http://m.manhuagui.com"},
+              model: model));
+        }
+        return list;
+      }
+    } catch (e) {
+      throw e;
+    }
+    return [];
+  }
+
+  @override
+  Future<List<HomePageCardModel>> getHomePage() async {
+    // TODO: implement getHomePage
+    try {
+      if (model.options.enableProxy) {
+        UniversalRequestModel.manHuaGuiRequestHandler
+            .setProxy(model.options.proxy, model.options.port);
+      }
+      var response =
+          await UniversalRequestModel.manHuaGuiRequestHandler.getHompage();
+      if (response.statusCode == 200) {
+        var soup = BeautifulSoup(response.data);
+        List<HomePageCardModel> list = [];
+        var titles = soup.findAll(".bar");
+        var contents = soup.findAll('.main-list-wrap');
+        for (var i = 0; i < titles.length; i++) {
+          var title = titles[i];
+          var content = contents[i];
+          list.add(HomePageCardModel(
+              title: title.children.first.text,
+              detail: content.children.first.children
+                  .map<HomePageCardDetailModel>((e) => HomePageCardDetailModel(
+                      title: e.children.first.children[1].text,
+                      cover: e
+                          .children.first.children.first.attributes['data-src'],
+                      onPressed: (context) {
+                        var comicId = e.children.first.attributes['href']
+                            .replaceAll('/', '')
+                            .replaceAll('comic', '');
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => ComicDetailPage(
+                                  id: comicId,
+                                  title: e.children.first.children[1].text,
+                                  model: model,
+                                ),
+                            settings:
+                                RouteSettings(name: 'comic_detail_page')));
+                      }))
+                  .toList()));
+        }
+        return list;
+      }
+    } catch (e) {
+      throw e;
+    }
+    return [];
+  }
+
+  @override
+  Future<List<RankingComic>> getLatestUpdate(int page) async {
+    // TODO: implement getLatestUpdate
+    try {
+      if (model.options.enableProxy) {
+        UniversalRequestModel.manHuaGuiRequestHandler
+            .setProxy(model.options.proxy, model.options.port);
+      }
+      var response = await UniversalRequestModel.manHuaGuiRequestHandler
+          .getLatestUpdate(page: page);
+      if (response.statusCode == 200) {
+        var soup = BeautifulSoup(response.data);
+        List<RankingComic> list = [];
+        var content = soup.find(id: '#detail').children;
+        for (var item in content) {
+          if (!item.toString().contains("<html li>")) {
+            continue;
+          }
+          String title = item.children[1].children[1].text;
+          String author = item.children[1].children[2].children[1].text;
+          String tag = item.children[1].children[3].children[1].text;
+          var img = item.children[1].children[0].children.first;
+          String cover = img.attributes['data-src'];
+          String comicId = item.children[1].attributes['href']
+              .replaceAll('/', '')
+              .replaceAll('comic', '');
+          int timestamp = ToolMethods.formatTimeString(
+                  item.children[1].children[5].children[1].text) ~/
+              1000;
+          list.add(RankingComic(
+              cover: cover,
+              title: title,
+              types: tag,
+              authors: author,
+              comicId: comicId,
+              timestamp: timestamp,
+              headers: {'referer': "http://m.manhuagui.com"},
+              model: model));
+        }
+        return list;
+      }
+    } catch (e) {
+      throw e;
+    }
+    return [];
+  }
+
+  @override
+  Future<List<RankingComic>> getRankingList(int page) async {
+    // TODO: implement getRankingList
+    try {
+      if (model.options.enableProxy) {
+        UniversalRequestModel.manHuaGuiRequestHandler
+            .setProxy(model.options.proxy, model.options.port);
+      }
+      var response = await UniversalRequestModel.manHuaGuiRequestHandler
+          .getRankingList(page: page);
+      if (response.statusCode == 200) {
+        var soup = BeautifulSoup(response.data);
+        List<RankingComic> list = [];
+        var content = soup.find(id: '#detail').children;
+        for (var item in content) {
+          if (!item.toString().contains("<html li>")) {
+            continue;
+          }
+          String title = item.children[1].children[1].text;
+          String author = item.children[1].children[2].children[1].text;
+          String tag = item.children[1].children[3].children[1].text;
+          var img = item.children[1].children[0].children.first;
+          String cover = img.attributes['data-src'];
+          String comicId = item.children[1].attributes['href']
+              .replaceAll('/', '')
+              .replaceAll('comic', '');
+          int timestamp = ToolMethods.formatTimeString(
+                  item.children[1].children[5].children[1].text) ~/
+              1000;
+          list.add(RankingComic(
+              cover: cover,
+              title: title,
+              types: tag,
+              authors: author,
+              comicId: comicId,
+              timestamp: timestamp,
+              headers: {'referer': "http://m.manhuagui.com"},
+              model: model));
+        }
+        return list;
+      }
+    } catch (e) {
+      throw e;
+    }
+    return [];
+  }
+
+  @override
+  Future<SubjectModel> getSubject(String subjectId) {
+    // TODO: implement getSubject
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<SubjectItem>> getSubjectList(int page) {
+    // TODO: implement getSubjectList
+    throw UnimplementedError();
+  }
 }
 
 class ManHuaGuiUserConfig extends UserConfig {
