@@ -45,10 +45,10 @@ class S {
     );
   }
 
-  /// `Super DMZJ-Ultimate`
+  /// `Super DComic:Ultimate`
   String get AppNameUltimate {
     return Intl.message(
-      'Super DMZJ-Ultimate',
+      'Super DComic:Ultimate',
       name: 'AppNameUltimate',
       desc: '',
       args: [],
@@ -576,10 +576,10 @@ class S {
     );
   }
 
-  /// `https://github.com/hanerx/flutter_dmzj`
+  /// `https://github.com/hanerx/dcomic`
   String get SettingPageProjectURL {
     return Intl.message(
-      'https://github.com/hanerx/flutter_dmzj',
+      'https://github.com/hanerx/dcomic',
       name: 'SettingPageProjectURL',
       desc: '',
       args: [],
@@ -606,10 +606,10 @@ class S {
     );
   }
 
-  /// `A 3rd-party flutter dmzj application`
+  /// `A flutter comic reader application`
   String get SettingPageAboutDescription {
     return Intl.message(
-      'A 3rd-party flutter dmzj application',
+      'A flutter comic reader application',
       name: 'SettingPageAboutDescription',
       desc: '',
       args: [],

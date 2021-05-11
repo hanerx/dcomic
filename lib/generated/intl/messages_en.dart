@@ -40,7 +40,7 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function> {
     "AppName" : MessageLookupByLibrary.simpleMessage("DComic"),
-    "AppNameUltimate" : MessageLookupByLibrary.simpleMessage("Super DMZJ-Ultimate"),
+    "AppNameUltimate" : MessageLookupByLibrary.simpleMessage("Super DComic:Ultimate"),
     "AuthorPageTitle" : m0,
     "Cancel" : MessageLookupByLibrary.simpleMessage("cancel"),
     "CannotOpenWeb" : MessageLookupByLibrary.simpleMessage("Cannot launch web page, pls check your phone."),
@@ -63,7 +63,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "NoImage" : MessageLookupByLibrary.simpleMessage("No Image to show."),
     "Novel" : MessageLookupByLibrary.simpleMessage("Novel"),
     "Setting" : MessageLookupByLibrary.simpleMessage("Settings"),
-    "SettingPageAboutDescription" : MessageLookupByLibrary.simpleMessage("A 3rd-party flutter dmzj application"),
+    "SettingPageAboutDescription" : MessageLookupByLibrary.simpleMessage("A flutter comic reader application"),
     "SettingPageAboutSubtitle" : MessageLookupByLibrary.simpleMessage("Public licenses"),
     "SettingPageAboutTitle" : MessageLookupByLibrary.simpleMessage("About"),
     "SettingPageCancelDownloadTasksConfirmDescription" : MessageLookupByLibrary.simpleMessage("Confirm to cancel?"),
@@ -131,7 +131,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "SettingPageNoMediaTitle" : MessageLookupByLibrary.simpleMessage("Hide Save dictionary"),
     "SettingPagePlaceholderSubtitle" : MessageLookupByLibrary.simpleMessage("An useless placeholder"),
     "SettingPagePlaceholderTitle" : MessageLookupByLibrary.simpleMessage("Placeholder"),
-    "SettingPageProjectURL" : MessageLookupByLibrary.simpleMessage("https://github.com/hanerx/flutter_dmzj"),
+    "SettingPageProjectURL" : MessageLookupByLibrary.simpleMessage("https://github.com/hanerx/dcomic"),
     "SettingPageProjectURLTitle" : MessageLookupByLibrary.simpleMessage("Project page"),
     "SettingPageReadDirectionHorizontal" : MessageLookupByLibrary.simpleMessage("Horizontal"),
     "SettingPageReadDirectionTitle" : MessageLookupByLibrary.simpleMessage("Read direction"),
