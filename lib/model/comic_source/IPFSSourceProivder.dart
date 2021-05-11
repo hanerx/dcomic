@@ -220,9 +220,42 @@ class IPFSSourceModel extends BaseSourceModel {
   }
 
   @override
-  Future<List<FavoriteComic>> getFavoriteComics(int page) {
+  Future<List<FavoriteComic>> getFavoriteComics(int page) async {
     // TODO: implement getFavoriteComics
-    throw UnimplementedError();
+    if (_userConfig.status != UserStatus.login) {
+      throw LoginRequiredError();
+    }
+    try {
+      var response = await handler.getSubscribe();
+      if (response.statusCode == 200) {
+        var data = await HistoryDatabaseProvider(name).getAllUnread();
+        var unreadList = <String, int>{};
+        for (var item in data.first) {
+          unreadList[item['comicId']] = item['timestamp'];
+        }
+        return response.data['data'].map<FavoriteComic>((e) {
+          var latestChapter = '暂无数据';
+          try {
+            latestChapter = e['data'].first['data'].first['title'];
+          } catch (e) {
+            latestChapter = '解析失败';
+          }
+          bool update = unreadList[e['comic_id']] == null ||
+              unreadList[e['comic_id']] < e['timestamp'];
+          return FavoriteComic(
+              address + "/upload/ipfs/" + e['cover'],
+              e['title'],
+              latestChapter,
+              e['comic_id'],
+              this,
+              update,
+              PageType.url);
+        }).toList();
+      }
+    } catch (e) {
+      throw e;
+    }
+    return [];
   }
 
   @override
@@ -242,7 +275,7 @@ class IPFSSourceModel extends BaseSourceModel {
 
   @override
   // TODO: implement homePageHandler
-  BaseHomePageHandler get homePageHandler => throw UnimplementedError();
+  BaseHomePageHandler get homePageHandler => IPFSHompageHandler(handler, this);
 
   @override
   // TODO: implement options
@@ -295,22 +328,44 @@ class IPFSSourceModel extends BaseSourceModel {
       name: name,
       title: '分布式网络服务器：$title',
       description: description,
-      sourceType: SourceType.CloudDecoderSource);
+      sourceType: SourceType.CloudDecoderSource,
+      canSubscribe: true);
 
   @override
   // TODO: implement userConfig
   IPFSUserConfig get userConfig => _userConfig;
 }
 
-class IPFSHompageHandler extends BaseHomePageHandler{
+class IPFSHompageHandler extends BaseHomePageHandler {
+  final IPFSSourceRequestHandler handler;
+  final IPFSSourceModel model;
+
+  IPFSHompageHandler(this.handler, this.model);
+
   @override
-  Future<List<RankingComic>> getAuthorComics(String authorId, {int page = 0, bool popular = true}) {
+  Future<List<RankingComic>> getAuthorComics(String authorId,
+      {int page = 0, bool popular = true}) async {
     // TODO: implement getAuthorComics
-    try{
-
-    }catch(e,s){
-
+    try {
+      var response = await handler.getAuthor(authorId);
+      if (response.statusCode == 200) {
+        return response.data['data']
+            .map<RankingComic>((e) => RankingComic(
+                cover: handler.baseUrl + '/upload/ipfs/' + e['cover'],
+                title: e['title'],
+                model: model,
+                comicId: e['comic_id'],
+                types: e['tags']
+                    .map<String>((e) => e['title'].toString())
+                    .toList()
+                    .join('/'),
+                timestamp: e['timestamp']))
+            .toList();
+      }
+    } catch (e, s) {
+      throw e;
     }
+    return [];
   }
 
   @override
@@ -320,9 +375,33 @@ class IPFSHompageHandler extends BaseHomePageHandler{
   }
 
   @override
-  Future<List<RankingComic>> getCategoryDetail(String categoryId, {int page = 0, bool popular = true}) {
+  Future<List<RankingComic>> getCategoryDetail(String categoryId,
+      {int page = 0, bool popular = true}) async {
     // TODO: implement getCategoryDetail
-    throw UnimplementedError();
+    try {
+      var response = await handler.getCategoryDetail(categoryId);
+      if (response.statusCode == 200) {
+        return response.data['data']
+            .map<RankingComic>((e) => RankingComic(
+                cover: handler.baseUrl + '/upload/ipfs/' + e['cover'],
+                title: e['title'],
+                model: model,
+                comicId: e['comic_id'],
+                types: e['tags']
+                    .map<String>((e) => e['title'].toString())
+                    .toList()
+                    .join('/'),
+                authors: e['authors']
+                    .map<String>((e) => e['title'].toString())
+                    .toList()
+                    .join('/'),
+                timestamp: e['timestamp']))
+            .toList();
+      }
+    } catch (e, s) {
+      throw e;
+    }
+    return [];
   }
 
   @override
@@ -354,7 +433,6 @@ class IPFSHompageHandler extends BaseHomePageHandler{
     // TODO: implement getSubjectList
     throw UnimplementedError();
   }
-  
 }
 
 class IPFSUserConfig extends UserConfig {
@@ -660,6 +738,8 @@ class IPFSComicDetail extends ComicDetail {
   final IPFSSourceRequestHandler handler;
   final int hotNum;
 
+  bool _isSubscribed = false;
+
   IPFSComicDetail({
     this.authors,
     this.comicId,
@@ -677,9 +757,16 @@ class IPFSComicDetail extends ComicDetail {
   });
 
   @override
-  bool get isSubscribed => false;
+  bool get isSubscribed => _isSubscribed;
 
-  set isSubscribed(bool value) {}
+  set isSubscribed(bool value) {
+    if (value) {
+      handler.addSubscribe(comicId);
+    } else {
+      handler.cancelSubscribe(comicId);
+    }
+    _isSubscribed = value;
+  }
 
   @override
   Future<Comic> getChapter({String title, String chapterId}) async {
@@ -716,6 +803,12 @@ class IPFSComicDetail extends ComicDetail {
   @override
   Future<void> getIfSubscribed() async {
     // TODO: implement getIfSubscribed
+    try {
+      var response = await handler.getIfSubscribe(comicId);
+      if (response.statusCode == 200) {
+        _isSubscribed = true;
+      }
+    } catch (e) {}
   }
 
   @override

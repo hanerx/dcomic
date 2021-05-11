@@ -58,7 +58,26 @@ class ManHuaGuiRequestHandler extends CookiesRequestHandler {
   }
 
   Future<Response> getSubscribe() async {
-    return dio.get('/user/book/shelf',
-        options: await setHeader());
+    return dio.get('/user/book/shelf', options: await setHeader());
+  }
+
+  Future<Response> getCategoryDetail(String categoryId, {int page: 0,bool popular:true}) {
+    return dio.get('/list/$categoryId/${popular?"view.html":"update.html"}?page=${page + 1}');
+  }
+
+  Future<Response> getAuthor(String authorId) {
+    return dio.get('/author/$authorId/');
+  }
+
+  Future<Response> getLatestUpdate({int page: 0}) {
+    return dio.get('/update/?page=${page + 1}');
+  }
+
+  Future<Response> getRankingList({int page: 0}) {
+    return dio.get('/rank/?page=${page + 1}');
+  }
+
+  Future<Response> getHompage() {
+    return dio.get('/');
   }
 }
