@@ -46,6 +46,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "CannotOpenWeb" : MessageLookupByLibrary.simpleMessage("无法打开网页，请检测权限"),
     "CheckUpdateUpToDate" : MessageLookupByLibrary.simpleMessage("已经是最新版本了"),
     "ComicIdNotBound" : MessageLookupByLibrary.simpleMessage("无法自动绑定漫画ID，请尝试手动绑定或者更换漫画源"),
+    "ComicLoginRequired" : MessageLookupByLibrary.simpleMessage("当前漫画源需要登录，请进行登录操作或切换其他漫画源。"),
     "Confirm" : MessageLookupByLibrary.simpleMessage("确认"),
     "DarkSide" : MessageLookupByLibrary.simpleMessage("黑暗面"),
     "DefaultAvatar" : MessageLookupByLibrary.simpleMessage("https://avatar.dmzj.com/default.png"),

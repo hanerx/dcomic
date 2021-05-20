@@ -1,10 +1,7 @@
-import 'package:dcomic/database/historyDatabaseProvider.dart';
 import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dcomic/component/SubscribeCard.dart';
-import 'package:dcomic/database/database.dart';
-import 'package:dcomic/http/http.dart';
 import 'package:dcomic/model/baseModel.dart';
 import 'package:dcomic/view/comic_detail_page.dart';
 

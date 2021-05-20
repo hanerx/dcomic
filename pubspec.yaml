@@ -65,6 +65,7 @@ dependencies:
   firebase_crashlytics: "^2.0.0"
   firebase_auth: "^1.1.0"
   crypton: ^2.0.1
+  protobuf: ^2.0.0
   logger_flutter:
     git: https://github.com/ewertonrp/logger_flutter.git
   ipfs:

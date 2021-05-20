@@ -1,6 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dcomic/database/cookieDatabaseProvider.dart';
+import 'package:dcomic/database/sourceDatabaseProvider.dart';
+import 'package:dcomic/protobuf/comic.pb.dart';
+import 'package:dcomic/protobuf/novel_chapter.pb.dart';
+import 'package:dcomic/utils/tool_methods.dart';
 import 'package:dio/dio.dart';
 import 'package:dcomic/http/UniversalRequestModel.dart';
 
@@ -76,7 +81,7 @@ class DMZJRequestHandler extends SingleDomainRequestHandler {
     return dio.get('/classify/$categoryId-$date-$tag/$type/$page.json');
   }
 
-  Future<Response> getAuthorDetail(int authorId){
+  Future<Response> getAuthorDetail(int authorId) {
     return dio.get('/UCenter/author/$authorId.json');
   }
 }
@@ -177,5 +182,59 @@ class DMZJCommentRequestHandler extends SingleDomainRequestHandler {
       {int limit: 30, int type: 4}) {
     return dio
         .get('/v1/$type/latest/$comicId?limit=$limit&page_index=${page + 1}');
+  }
+}
+
+class DMZJV4RequestHandler extends SingleDomainRequestHandler {
+  DMZJV4RequestHandler() : super('https://nnv4api.dmzj1.com');
+
+  Future<Map> getParam({bool login: false}) async {
+    var data = {
+      "channel": Platform.operatingSystem,
+      "version": "3.0.0",
+      "timestamp":
+          (DateTime.now().millisecondsSinceEpoch / 1000).toStringAsFixed(0),
+    };
+    if (login &&
+        await SourceDatabaseProvider.getSourceOption<bool>('dmzj', 'login')) {
+      data['uid'] = await SourceDatabaseProvider.getSourceOption('dmzj', 'uid');
+    }
+    return data;
+  }
+
+  Future<NovelDetailInfoResponse> getNovelDetail(String novelId) async {
+    var response = await dio.get('/novel/detail/$novelId');
+    if (response.statusCode == 200) {
+      return NovelDetailResponse.fromBuffer(ToolMethods.decrypt(response.data))
+          .data;
+    }
+    return null;
+  }
+
+  Future<ComicDetailInfoResponse> getComicDetail(String comicId) async {
+    var response = await dio.get('/comic/detail/$comicId',
+        queryParameters: await getParam(login: true));
+    if (response.statusCode == 200) {
+      var data =
+          ComicDetailResponse.fromBuffer(ToolMethods.decrypt(response.data));
+      if (data.errno != 0) {
+        throw data.errmsg;
+      }
+      return data.data;
+    }
+    return null;
+  }
+  
+  Future<ComicChapterDetailInfoResponse> getComic(String comicId,String chapterId)async{
+    var response=await dio.get('/comic/chapter/$comicId/$chapterId',queryParameters: await getParam(login: true));
+    if (response.statusCode == 200) {
+      var data =
+      ComicChapterDetailResponse.fromBuffer(ToolMethods.decrypt(response.data));
+      if (data.errno != 0) {
+        throw data.errmsg;
+      }
+      return data.data;
+    }
+    return null;
   }
 }

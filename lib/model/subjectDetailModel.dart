@@ -1,6 +1,4 @@
-import 'package:dcomic/http/UniversalRequestModel.dart';
 import 'package:dcomic/model/baseModel.dart';
-import 'package:dcomic/model/subjectListModel.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 import 'comic_source/baseSourceModel.dart';

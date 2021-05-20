@@ -3,7 +3,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dcomic/database/historyDatabaseProvider.dart';
 import 'package:dcomic/model/comicCategoryModel.dart';
 import 'package:dcomic/model/comicRankingListModel.dart';
-import 'package:dcomic/model/comic_source/sourceProvider.dart';
 import 'package:dcomic/model/subjectDetailModel.dart';
 import 'package:dcomic/model/subjectListModel.dart';
 import 'package:dcomic/view/comic_detail_page.dart';
@@ -85,35 +84,41 @@ class DMZJSourceModel extends BaseSourceModel {
       throw IDInvalidError();
     }
     try {
-      var response = await UniversalRequestModel.dmzjRequestHandler
+      if (userConfig.status != UserStatus.login) {
+        throw LoginRequiredError();
+      }
+      var response = await UniversalRequestModel.dmzjv4requestHandler
           .getComicDetail(comicId);
-      if (response.statusCode == 200) {
-        var title = response.data['title'];
-        var cover = response.data['cover'];
-        var author = response.data['authors']
+      if (response != null) {
+        var title = response.title;
+        var cover = response.cover;
+        var author = response.authors
             .map<CategoryModel>((e) => CategoryModel(
-                title: e['tag_name'],
-                categoryId: e['tag_id'].toString(),
-                model: this))
+                title: e.tagName, categoryId: e.tagId.toString(), model: this))
             .toList();
-        var types = response.data['types']
+        var types = response.types
             .map<CategoryModel>((e) => CategoryModel(
-                title: e['tag_name'],
-                categoryId: e['tag_id'].toString(),
-                model: this))
+                title: e.tagName, categoryId: e.tagId.toString(), model: this))
             .toList();
-        var hotNum = response.data['hot_num'];
-        var subscribeNum = response.data['subscribe_num'];
-        var description = response.data['description'];
+        var hotNum = response.hotNum;
+        var subscribeNum = response.subscribeNum;
+        var description = response.description;
         var updateDate =
-            ToolMethods.formatTimestamp(response.data['last_updatetime']);
+            ToolMethods.formatTimestamp(response.lastUpdatetime.toInt());
         //状态信息需要采取特殊处理
-        var status = response.data['status']
-            .map((value) => value['tag_name'])
-            .toList()
-            .join('/');
-        var chapters = response.data['chapters']
-            .map<Map<String, dynamic>>((e) => e as Map<String, dynamic>)
+        var status =
+            response.status.map((value) => value.tagName).toList().join('/');
+        var chapters = response.chapters
+            .map<Map<String, dynamic>>((e) => {
+                  'title': e.title,
+                  'data': e.data
+                      .map((c) => {
+                            'chapter_id': c.chapterId.toString(),
+                            'chapter_title': c.chapterTitle,
+                            'updatetime': c.updatetime.toInt()
+                          })
+                      .toList()
+                })
             .toList();
         var history = (await HistoryDatabaseProvider(this.type.name)
             .getReadHistory(comicId));
@@ -134,6 +139,8 @@ class DMZJSourceModel extends BaseSourceModel {
             lastChapterId,
             type);
       }
+    } on LoginRequiredError {
+      rethrow;
     } catch (e) {
       if (_options.backupApi) {
         return this.getComicDetailBackup(comicId);
@@ -250,21 +257,35 @@ class DMZJSourceModel extends BaseSourceModel {
         return ListView.builder(
           shrinkWrap: true,
           physics: NeverScrollableScrollPhysics(),
-          itemCount: Provider.of<SystemSettingModel>(context).backupApi ? 1 : 0,
+          itemCount: Provider.of<SystemSettingModel>(context).backupApi ? 3 : 2,
           itemBuilder: (context, index) {
             var list = [
-              // ListTile(
-              //
-              //   title: Text('webApi'),
-              //   subtitle: Text('是否开启webApi'),
-              //   trailing: Switch(
-              //     value: Provider.of<DMZJConfigProvider>(context).webApi,
-              //     onChanged: (value) {
-              //       Provider.of<DMZJConfigProvider>(context, listen: false)
-              //           .webApi = value;
-              //     },
-              //   ),
-              // ),
+              ListTile(
+                title: Text('webApi'),
+                subtitle: Text('使用网页API还是使用v4接口，v4接口默认必须登录'),
+                trailing: Switch(
+                  value: Provider.of<DMZJConfigProvider>(context).webApi,
+                  onChanged: (value) {
+                    Provider.of<DMZJConfigProvider>(context, listen: false)
+                        .webApi = value;
+                  },
+                ),
+              ),
+              ListTile(
+                enabled: !Provider.of<DMZJConfigProvider>(context).webApi,
+                title: Text('大图显示'),
+                subtitle: Text('v4的api不知道为啥里面好像有两套图片数据，可能有一个是大图的另一个就是原始的小图'),
+                trailing: Switch(
+                  value: Provider.of<DMZJConfigProvider>(context).rawImage,
+                  onChanged: Provider.of<DMZJConfigProvider>(context).webApi
+                      ? null
+                      : (value) {
+                          Provider.of<DMZJConfigProvider>(context,
+                                  listen: false)
+                              .rawImage = value;
+                        },
+                ),
+              ),
               ListTile(
                 title: Text('备用API'),
                 subtitle: Text('是否开启备用API'),
@@ -729,7 +750,13 @@ class DMZJWebSourceModel extends DMZJSourceModel {
                 null) {
           var map = await SourceDatabaseProvider.getBoundComic(
               super.type.name, comicId);
+          if (!_options.webApi) {
+            return super.getComicDetail(map['bound_id']);
+          }
           return await getComicDetail(map['bound_id']);
+        }
+        if (!_options.webApi) {
+          return super.getComicDetail(comicId);
         }
         return await getComicDetail(comicId);
       } catch (e) {
@@ -740,6 +767,9 @@ class DMZJWebSourceModel extends DMZJSourceModel {
               if (comicId != null) {
                 SourceDatabaseProvider.boundComic(
                     super.type.name, comicId, item.comicId);
+              }
+              if (!_options.webApi) {
+                return super.getComicDetail(item.comicId);
               }
               return await getComicDetail(item.comicId);
             }
@@ -846,8 +876,8 @@ class DMZJWebSourceModel extends DMZJSourceModel {
   // TODO: implement type
   SourceDetail get type => SourceDetail(
       name: 'dmzj',
-      title: '动漫之家网页',
-      description: '使用大妈之家移动网页版的接口，让漫画重新可以看了',
+      title: '动漫之家混合',
+      description: '修改了源码现在可以选择protobuf模式或者网页模式了',
       canDisable: false,
       sourceType: SourceType.LocalDecoderSource,
       deprecated: false,
@@ -887,17 +917,26 @@ class DMZJConfigProvider extends SourceOptionsProvider {
     options.backupApi = value;
     notifyListeners();
   }
+
+  bool get rawImage => options.rawImage;
+
+  set rawImage(bool value) {
+    options.rawImage = value;
+    notifyListeners();
+  }
 }
 
 class DMZJSourceOptions extends SourceOptions {
   bool _webApi;
   bool _backupApi;
   bool _deepSearch;
+  bool _rawImage;
 
   DMZJSourceOptions.fromMap(Map map) {
     _webApi = map['web_api'] == '1';
     _backupApi = map['backup_api'] == '1';
     _deepSearch = map['deep_search'] == '1';
+    _rawImage = map['raw_image'] == '1';
   }
 
   @override
@@ -906,7 +945,8 @@ class DMZJSourceOptions extends SourceOptions {
     return {
       "web_api": webApi,
       "backup_api": backupApi,
-      'deep_search': _deepSearch
+      'deep_search': _deepSearch,
+      'raw_image': _rawImage
     };
   }
 
@@ -944,6 +984,14 @@ class DMZJSourceOptions extends SourceOptions {
     _deepSearch = value;
     SourceDatabaseProvider.insertSourceOption(
         'dmzj', 'deep_search', value ? '1' : '0');
+    notifyListeners();
+  }
+
+  bool get rawImage => _rawImage;
+
+  set rawImage(bool value) {
+    _rawImage = value;
+    SourceDatabaseProvider.insertSourceOption<bool>('dmzj', 'raw_image', value);
     notifyListeners();
   }
 }
@@ -1252,38 +1300,44 @@ class DMZJComic extends Comic {
       notifyListeners();
       return;
     }
-    await getComicWeb(comicId, chapterId);
-    return;
-    // try {
-    //   var response = await UniversalRequestModel.dmzjRequestHandler
-    //       .getComic(comicId, chapterId);
-    //   if (response.statusCode == 200) {
-    //     _pageAt = chapterId;
-    //     _pages =
-    //         response.data['page_url'].map<String>((e) => e.toString()).toList();
-    //     _title = response.data['title'];
-    //     if (_chapterIdList.indexOf(chapterId) > 0) {
-    //       _previous = _chapterIdList[_chapterIdList.indexOf(chapterId) - 1];
-    //     } else {
-    //       _previous = null;
-    //     }
-    //     if (_chapterIdList.indexOf(chapterId) < _chapterIdList.length - 1) {
-    //       _next = _chapterIdList[_chapterIdList.indexOf(chapterId) + 1];
-    //     } else {
-    //       _next = null;
-    //     }
-    //     notifyListeners();
-    //   }
-    // } catch (e) {
-    //   logger.e('class: DMZJComic, action: getComicFailed, exception: $e');
-    //   if (options.backupApi) {
-    //     await this.getComicBackup(comicId, chapterId);
-    //   }
-    // }
-    // await getViewPoint();
-    // addReadHistory(
-    //     comicId: comicId, page: 0, chapterTitle: _title, chapterId: chapterId);
-    // notifyListeners();
+    if (options.webApi) {
+      await getComicWeb(comicId, chapterId);
+      return;
+    }
+    try {
+      var response = await UniversalRequestModel.dmzjv4requestHandler
+          .getComic(comicId, chapterId);
+      if (response != null) {
+        _pageAt = chapterId;
+        if (options.rawImage) {
+          _pages = response.rawPages;
+        } else {
+          _pages =
+              response.smallPages.map<String>((e) => e.toString()).toList();
+        }
+        _title = response.title;
+        if (_chapterIdList.indexOf(chapterId) > 0) {
+          _previous = _chapterIdList[_chapterIdList.indexOf(chapterId) - 1];
+        } else {
+          _previous = null;
+        }
+        if (_chapterIdList.indexOf(chapterId) < _chapterIdList.length - 1) {
+          _next = _chapterIdList[_chapterIdList.indexOf(chapterId) + 1];
+        } else {
+          _next = null;
+        }
+        notifyListeners();
+      }
+    } catch (e) {
+      logger.e('class: DMZJComic, action: getComicFailed, exception: $e');
+      if (options.backupApi) {
+        await this.getComicBackup(comicId, chapterId);
+      }
+    }
+    await getViewPoint();
+    addReadHistory(
+        comicId: comicId, page: 0, chapterTitle: _title, chapterId: chapterId);
+    notifyListeners();
   }
 
   Future<void> getComicWeb(String comicId, String chapterId) async {
@@ -1844,10 +1898,10 @@ class DMZJHomePageHandler extends BaseHomePageHandler {
           var response = await UniversalRequestModel.dmzjRequestHandler
               .getAuthorDetail(int.parse(authorId));
           if (response.statusCode == 200) {
-            return response.data
+            return response.data['data']
                 .map<RankingComic>((e) => RankingComic(
                     cover: e['cover'],
-                    title: e['title'],
+                    title: e['name'],
                     comicId: e['id'].toString(),
                     types: e['status'],
                     timestamp: e['last_updatetime'],

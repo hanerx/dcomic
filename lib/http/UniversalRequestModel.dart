@@ -60,6 +60,8 @@ class UniversalRequestModel {
 
   static DMZJCommentRequestHandler dmzjCommentRequestHandler= DMZJCommentRequestHandler();
 
+  static DMZJV4RequestHandler dmzjv4requestHandler =DMZJV4RequestHandler();
+
   static GithubRequestHandler githubRequestHandler = GithubRequestHandler();
 
   static CopyMangaRequestHandler copyMangaRequestHandler=CopyMangaRequestHandler();

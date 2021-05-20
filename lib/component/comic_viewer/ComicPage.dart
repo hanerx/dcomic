@@ -57,9 +57,11 @@ class _ComicPage extends State<ComicPage> {
     if (widget.type == PageType.ipfs) {
       var bytes = await Provider.of<IPFSSettingProvider>(context, listen: false)
           .catBytes(widget.url);
-      setState(() {
-        _bytes = bytes;
-      });
+      if(mounted){
+        setState(() {
+          _bytes = bytes;
+        });
+      }
     }
   }
 

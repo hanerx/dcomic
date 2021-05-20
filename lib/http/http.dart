@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 
 // import 'package:dio_http_cache/dio_http_cache.dart';
-import 'package:dcomic/database/database.dart';
 
 class CustomHttp {
   Dio dio;

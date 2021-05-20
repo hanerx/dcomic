@@ -1,16 +1,12 @@
-import 'dart:io';
 
 import 'package:dcomic/model/mag_model/MangaComicDetailModel.dart';
-import 'package:dcomic/model/mag_model/OutputMangaModel.dart';
 import 'package:dcomic/view/mag_maker/import_mag_page.dart';
 import 'package:dcomic/view/mag_maker/output_mag_page.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:dcomic/utils/tool_methods.dart';
 import 'package:dcomic/view/mag_maker/mag_example_page.dart';
-import 'package:dcomic/view/mag_maker/new_mag_page.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
 
 import 'new_comic_detail_page.dart';
@@ -58,6 +54,22 @@ class _MagMakePage extends State<MagMakePage> {
               }
             },
           ),
+          // FlatButton(
+          //   padding: EdgeInsets.all(5),
+          //   child: Card(
+          //     child: ListTile(
+          //       title: Text('编辑已有漫画文件'),
+          //       subtitle: Text('编辑已存在的漫画文件目录'),
+          //       leading: Icon(Icons.edit),
+          //       trailing: Icon(Icons.chevron_right),
+          //     ),
+          //   ),
+          //   onPressed: () {
+          //     Navigator.of(context).push(MaterialPageRoute(
+          //         builder: (context) => EditMangaPage(),
+          //         settings: RouteSettings(name: 'edit_mag_page')));
+          //   },
+          // ),
           FlatButton(
             padding: EdgeInsets.all(5),
             child: Card(

@@ -8,7 +8,7 @@ import 'package:ipfs/ipfs.dart';
 
 class IPFSSettingProvider extends BaseModel {
   int _mode = 0;
-  static List modes = ['server', 'ipfsio', 'ipfslite'];
+  static List modes = ['server', 'ipfsio'];
   String _server = '127.0.0.1';
   int _port = 5001;
   bool _enableProxy = false;

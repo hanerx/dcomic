@@ -2,7 +2,6 @@ import 'package:dcomic/database/sourceDatabaseProvider.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:dcomic/database/database.dart';
 import 'package:dcomic/http/http.dart';
 import 'package:dcomic/model/baseModel.dart';
 import 'package:dcomic/utils/tool_methods.dart';
