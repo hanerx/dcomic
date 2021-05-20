@@ -3,7 +3,6 @@ import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dcomic/component/AuthorCard.dart';
-import 'package:dcomic/http/http.dart';
 import 'package:dcomic/model/baseModel.dart';
 
 class ComicAuthorModel extends BaseModel {

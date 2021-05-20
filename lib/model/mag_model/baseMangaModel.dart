@@ -149,6 +149,7 @@ class MangaObject {
   List<TagObject> tags;
   List<VolumeObject> data;
   String cover;
+  String rawCover;
   PageType coverPageType;
   String status;
 
@@ -190,6 +191,7 @@ class MangaObject {
           defaultDecoder: DefaultVolumeDecoder());
       cover = autoDecode(map['cover'], filepath,
           defaultDecoder: LocalPathDecoder());
+      rawCover=autoDecode(map['cover'], filepath,defaultDecoder: StringDecoder());
       if (cover != null &&
           (cover.startsWith("http://") || cover.startsWith("https://"))) {
         coverPageType = PageType.url;
@@ -320,6 +322,8 @@ class ChapterObject implements Comparable {
     }
     return 0;
   }
+
+  List<String> get rawPages=>_pages;
 
   List<String> get pages => _pages.map<String>((e) {
         var directory = Directory(basePath);

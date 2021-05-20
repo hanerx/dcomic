@@ -1,4 +1,3 @@
-import 'package:dcomic/database/database.dart';
 import 'package:dcomic/database/databaseCommon.dart';
 import 'package:dcomic/utils/log_output.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';

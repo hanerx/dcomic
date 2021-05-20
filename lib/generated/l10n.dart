@@ -1201,6 +1201,16 @@ class S {
       args: [],
     );
   }
+
+  /// `This source need login to continue, please login or try another source.`
+  String get ComicLoginRequired {
+    return Intl.message(
+      'This source need login to continue, please login or try another source.',
+      name: 'ComicLoginRequired',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

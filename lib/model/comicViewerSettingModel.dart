@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:dcomic/database/configDatabaseProvider.dart';
-import 'package:dcomic/database/database.dart';
 import 'package:dcomic/model/baseModel.dart';
 
 class ComicViewerSettingModel extends BaseModel {

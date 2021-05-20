@@ -1,6 +1,4 @@
 import 'package:dcomic/database/localMangaDatabaseProvider.dart';
-import 'package:dcomic/model/comic_source/LocalSourceModel.dart';
-import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:dcomic/model/mag_model/baseMangaModel.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 

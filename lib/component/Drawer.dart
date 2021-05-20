@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:dcomic/model/comic_source/sourceProvider.dart';
 import 'package:dcomic/view/server_controllers/server_sellect_page.dart';
@@ -7,15 +6,12 @@ import 'package:direct_select_flutter/direct_select_item.dart';
 import 'package:direct_select_flutter/direct_select_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:dcomic/database/database.dart';
 import 'package:dcomic/generated/l10n.dart';
-import 'package:dcomic/http/http.dart';
 import 'package:dcomic/model/systemSettingModel.dart';
 import 'package:dcomic/view/dark_side_page.dart';
 import 'package:dcomic/view/favorite_page.dart';
 import 'package:dcomic/view/login_page.dart';
 import 'package:dcomic/view/mag_maker/mag_make_page.dart';
-import 'package:dcomic/view/novel_pages/novel_main_page.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:provider/provider.dart';
 

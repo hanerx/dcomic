@@ -1,7 +1,4 @@
-import 'dart:convert';
 
-import 'package:dcomic/http/UniversalRequestModel.dart';
-import 'package:dcomic/http/http.dart';
 import 'package:dcomic/model/baseModel.dart';
 import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';

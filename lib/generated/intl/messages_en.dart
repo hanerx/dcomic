@@ -46,6 +46,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "CannotOpenWeb" : MessageLookupByLibrary.simpleMessage("Cannot launch web page, pls check your phone."),
     "CheckUpdateUpToDate" : MessageLookupByLibrary.simpleMessage("Already up to date"),
     "ComicIdNotBound" : MessageLookupByLibrary.simpleMessage("Cannot automatic bound comicId, try bound id by manual search"),
+    "ComicLoginRequired" : MessageLookupByLibrary.simpleMessage("This source need login to continue, please login or try another source."),
     "Confirm" : MessageLookupByLibrary.simpleMessage("confirm"),
     "DarkSide" : MessageLookupByLibrary.simpleMessage("DarkSide"),
     "DefaultAvatar" : MessageLookupByLibrary.simpleMessage("https://avatar.dmzj.com/default.png"),

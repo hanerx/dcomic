@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:dcomic/database/database.dart';
 import 'package:dcomic/generated/l10n.dart';
 import 'package:dcomic/model/comic_source/sourceProvider.dart';
 import 'package:provider/provider.dart';

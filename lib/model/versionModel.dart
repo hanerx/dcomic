@@ -3,8 +3,6 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:dcomic/database/configDatabaseProvider.dart';
-import 'package:dcomic/database/database.dart';
-import 'package:dcomic/http/http.dart';
 import 'package:dcomic/model/baseModel.dart';
 import 'package:dcomic/utils/tool_methods.dart';
 import 'package:markdown_widget/markdown_widget.dart';

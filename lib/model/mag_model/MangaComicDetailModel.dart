@@ -1,17 +1,15 @@
 import 'dart:io';
 
 import 'package:dcomic/model/baseModel.dart';
-import 'package:dcomic/model/comic_source/IPFSSourceProivder.dart';
 import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:dcomic/model/mag_model/baseMangaModel.dart';
-import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 
 class MangaComicDetailModel extends BaseModel {
   final EditMode mode;
-  final String comicId;
+  final MangaObject mangaObject;
   final String outputPath;
 
   String _cover;
@@ -27,7 +25,7 @@ class MangaComicDetailModel extends BaseModel {
 
   String error;
 
-  MangaComicDetailModel(this.mode, this.comicId, this.outputPath);
+  MangaComicDetailModel(this.mode, this.mangaObject, this.outputPath);
 
   List<TagObject> get tags => _tags;
 
@@ -38,6 +36,21 @@ class MangaComicDetailModel extends BaseModel {
   String get cover => rawPath;
 
   bool get hasCover => _cover != null;
+
+  Future<void> init()async{
+    if(mode==EditMode.edit){
+      _tags=mangaObject.tags;
+      _authors=mangaObject.authors;
+      _data=mangaObject.data.map<GroupObject>((e) => GroupObject(title: e.title,groupId: e.name,chapters: e.chapters.map<Chapter>((c) => Chapter(chapterId: c.name,timestamp: c.timestamp,title: c.title,data: c.pages)).toList())).toList();
+      _cover=mangaObject.rawCover;
+      coverController.text=_cover;
+      comicIdController.text=mangaObject.name;
+      titleController.text=mangaObject.title;
+      descriptionController.text=mangaObject.description;
+      statusController.text=mangaObject.status;
+      notifyListeners();
+    }
+  }
 
   Future<void> uploadCover() async {
     var result = await FilePicker.platform.pickFiles(type: FileType.image);

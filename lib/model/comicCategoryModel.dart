@@ -1,12 +1,9 @@
-import 'dart:convert';
 
-import 'package:dcomic/http/UniversalRequestModel.dart';
 import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dcomic/component/CategoryCard.dart';
 import 'package:dcomic/model/baseModel.dart';
-import 'package:flutter/services.dart';
 
 class ComicCategoryModel extends BaseModel {
   final BaseSourceModel model;

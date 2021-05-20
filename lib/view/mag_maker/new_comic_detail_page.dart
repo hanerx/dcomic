@@ -19,10 +19,11 @@ import 'new_group_detail_page.dart';
 
 class MangaComicDetailPage extends StatefulWidget {
   final EditMode mode;
-  final String comicId;
+  final MangaObject mangaObject;
   final String outputPath;
 
-  const MangaComicDetailPage({Key key, this.mode, this.comicId, this.outputPath})
+  const MangaComicDetailPage(
+      {Key key, this.mode, this.mangaObject, this.outputPath})
       : super(key: key);
 
   @override
@@ -37,8 +38,8 @@ class _MangaComicDetailPage extends State<MangaComicDetailPage> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return ChangeNotifierProvider(
-      create: (_) =>
-          MangaComicDetailModel(widget.mode, widget.comicId, widget.outputPath),
+      create: (_) => MangaComicDetailModel(
+          widget.mode, widget.mangaObject, widget.outputPath),
       builder: (context, child) => Scaffold(
         appBar: AppBar(
           title: Text('编辑漫画'),
@@ -46,7 +47,8 @@ class _MangaComicDetailPage extends State<MangaComicDetailPage> {
             IconButton(
                 icon: Icon(Icons.check),
                 onPressed: () async {
-                  bool result = await Provider.of<MangaComicDetailModel>(context,
+                  bool result = await Provider.of<MangaComicDetailModel>(
+                          context,
                           listen: false)
                       .updateComic();
                   if (result) {
@@ -59,7 +61,16 @@ class _MangaComicDetailPage extends State<MangaComicDetailPage> {
           ],
         ),
         body: EasyRefresh(
-          emptyWidget: Provider.of<MangaComicDetailModel>(context).error==null?null:EmptyView(message: Provider.of<MangaComicDetailModel>(context).error,),
+          emptyWidget: Provider.of<MangaComicDetailModel>(context).error == null
+              ? null
+              : EmptyView(
+                  message: Provider.of<MangaComicDetailModel>(context).error,
+                ),
+          firstRefresh: true,
+          firstRefreshWidget: LoadingCube(),
+          onRefresh: () async {
+            Provider.of<MangaComicDetailModel>(context, listen: false).init();
+          },
           child: ListView(
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
@@ -77,8 +88,8 @@ class _MangaComicDetailPage extends State<MangaComicDetailPage> {
               ),
               ListTile(
                 title: TextField(
-                  controller:
-                      Provider.of<MangaComicDetailModel>(context).titleController,
+                  controller: Provider.of<MangaComicDetailModel>(context)
+                      .titleController,
                   decoration: InputDecoration(
                       labelText: '漫画标题',
                       icon: Icon(Icons.title),
@@ -184,10 +195,12 @@ class _MangaComicDetailPage extends State<MangaComicDetailPage> {
                   Expanded(
                     child: Container(
                       height: 100,
-                      child: Provider.of<MangaComicDetailModel>(context).hasCover
+                      child: Provider.of<MangaComicDetailModel>(context)
+                              .hasCover
                           ? TextButton(
                               onPressed: () async {
-                                await Provider.of<MangaComicDetailModel>(context,
+                                await Provider.of<MangaComicDetailModel>(
+                                        context,
                                         listen: false)
                                     .uploadCover();
                               },
@@ -197,7 +210,8 @@ class _MangaComicDetailPage extends State<MangaComicDetailPage> {
                               ))
                           : TextButton.icon(
                               onPressed: () async {
-                                await Provider.of<MangaComicDetailModel>(context,
+                                await Provider.of<MangaComicDetailModel>(
+                                        context,
                                         listen: false)
                                     .uploadCover();
                               },
@@ -209,8 +223,9 @@ class _MangaComicDetailPage extends State<MangaComicDetailPage> {
                   Expanded(
                       flex: 2,
                       child: TextField(
-                          controller: Provider.of<MangaComicDetailModel>(context)
-                              .coverController,
+                          controller:
+                              Provider.of<MangaComicDetailModel>(context)
+                                  .coverController,
                           maxLines: 2,
                           decoration: InputDecoration(
                               labelText: '封皮CID',
@@ -228,9 +243,9 @@ class _MangaComicDetailPage extends State<MangaComicDetailPage> {
                     var result = await Navigator.of(context).push<GroupObject>(
                         MaterialPageRoute(
                             builder: (context) => MangaGroupDetailPage(
-                              mode: EditMode.create,
-                              outputPath: widget.outputPath,
-                            ),
+                                  mode: EditMode.create,
+                                  outputPath: widget.outputPath,
+                                ),
                             settings:
                                 RouteSettings(name: 'group_detail_page')));
                     if (result != null) {
@@ -260,7 +275,7 @@ class _MangaComicDetailPage extends State<MangaComicDetailPage> {
                                 builder: (context) => MangaGroupDetailPage(
                                       mode: EditMode.edit,
                                       group: item,
-                                  outputPath: widget.outputPath,
+                                      outputPath: widget.outputPath,
                                     ),
                                 settings:
                                     RouteSettings(name: 'group_detail_page')));

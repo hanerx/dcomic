@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:dcomic/database/configDatabaseProvider.dart';
-import 'package:dcomic/database/database.dart';
 import 'package:dcomic/model/systemSettingModel.dart';
 import 'package:dcomic/view/search_page.dart';
 import 'package:provider/provider.dart';

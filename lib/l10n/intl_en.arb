@@ -146,5 +146,6 @@
   "SettingPageIPFSSettingPageTestSubtitle": "Test the connection between IPFS network, the result will show below if test succeed.",
   "NoImage": "No Image to show.",
   "SettingPageDebugSettingPageEnableCrashlyticsTitle": "Enable Crash Analytics",
-  "SettingPageDebugSettingPageEnableCrashlyticsSubtitle": "To improve software, report your crash log to developer anonymously."
+  "SettingPageDebugSettingPageEnableCrashlyticsSubtitle": "To improve software, report your crash log to developer anonymously.",
+  "ComicLoginRequired": "This source need login to continue, please login or try another source."
 }
