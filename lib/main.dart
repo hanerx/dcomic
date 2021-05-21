@@ -32,6 +32,8 @@ import 'package:dcomic/view/ranking_page.dart';
 import 'package:dcomic/view/settings/setting_page.dart';
 import 'package:provider/provider.dart';
 import 'package:uni_links/uni_links.dart';
+// ignore: import_of_legacy_library_into_null_safe
+import 'package:firebase_performance/firebase_performance.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

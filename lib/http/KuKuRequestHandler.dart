@@ -2,6 +2,7 @@
 
 import 'package:dio/dio.dart';
 import 'package:dcomic/http/UniversalRequestModel.dart';
+import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'package:gbk2utf8/gbk2utf8.dart';
 
 class KuKuRequestHandler extends KKKKRequestHandler {
@@ -20,7 +21,7 @@ class SoKuKuRequestHandler extends SingleDomainRequestHandler {
 }
 
 class KKKKRequestHandler extends SingleDomainRequestHandler {
-  KKKKRequestHandler(String baseUrl) : super(baseUrl);
+  KKKKRequestHandler(String baseUrl) : super(baseUrl,policy: CachePolicy.request);
 
   Future<Response> getComic(String comicId) {
     return dio.get('/comiclist/$comicId',

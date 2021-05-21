@@ -8,6 +8,7 @@ import 'package:dcomic/protobuf/novel_chapter.pb.dart';
 import 'package:dcomic/utils/tool_methods.dart';
 import 'package:dio/dio.dart';
 import 'package:dcomic/http/UniversalRequestModel.dart';
+import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 
 class DMZJRequestHandler extends SingleDomainRequestHandler {
   DMZJRequestHandler() : super('https://v3api.dmzj1.com');

@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:dcomic/http/UniversalRequestModel.dart';
 import 'package:dcomic/utils/HttpProxyAdapter.dart';
 import 'package:dio/dio.dart';
 import 'package:dcomic/database/configDatabaseProvider.dart';
@@ -91,6 +92,7 @@ class IPFSSettingProvider extends BaseModel {
             ipAddr: proxyServer,
             port: proxyPort);
     }
+    dio..interceptors.add(PerformanceInterceptor());
     switch (mode) {
       case 0:
         Ipfs ipfs = Ipfs.dio(

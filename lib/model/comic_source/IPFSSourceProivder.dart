@@ -49,7 +49,7 @@ class IPFSSourceProvider {
       try {
         var response =
             await IPFSSourceRequestHandler(item, null).getServerState();
-        if (response.statusCode == 200) {
+        if ((response.statusCode == 200||response.statusCode == 304)) {
           response.data['data']['url'] = item;
           nodes.add(response.data['data']);
         }
@@ -72,7 +72,7 @@ class IPFSSourceProvider {
     try {
       var response =
           await IPFSSourceRequestHandler(address, null).getServerState();
-      if (response.statusCode == 200) {
+      if ((response.statusCode == 200||response.statusCode == 304)) {
         nodes.add(response.data['data']);
         this.address.add(address);
         SourceDatabaseProvider.insertSourceOption<List>(
@@ -161,12 +161,13 @@ class IPFSSourceModel extends BaseSourceModel {
   Future<ComicDetail> getComicDetail(String comicId) async {
     try {
       var response = await handler.getComicDetail(comicId);
-      if (response.statusCode == 200) {
+      if ((response.statusCode == 200||response.statusCode == 304)) {
         var data = response.data['data'];
         var history = (await HistoryDatabaseProvider(this.type.name)
             .getReadHistory(comicId));
         var lastChapterId = history == null ? null : history['last_chapter_id'];
         return IPFSComicDetail(
+            model: this,
             comicId: data['comic_id'],
             cover: this.address + '/upload/ipfs/' + data['cover'],
             description: data['description'],
@@ -226,7 +227,7 @@ class IPFSSourceModel extends BaseSourceModel {
     }
     try {
       var response = await handler.getSubscribe();
-      if (response.statusCode == 200) {
+      if ((response.statusCode == 200||response.statusCode == 304)) {
         var data = await HistoryDatabaseProvider(name).getAllUnread();
         var unreadList = <String, int>{};
         for (var item in data.first) {
@@ -288,7 +289,7 @@ class IPFSSourceModel extends BaseSourceModel {
     } else {
       try {
         var response = await handler.search(keyword);
-        if (response.statusCode == 200) {
+        if ((response.statusCode == 200||response.statusCode == 304)) {
           List data = response.data['data'];
           return data.map<SearchResult>((e) {
             var latestChapter = '暂无数据';
@@ -347,7 +348,7 @@ class IPFSHompageHandler extends BaseHomePageHandler {
     // TODO: implement getAuthorComics
     try {
       var response = await handler.getAuthor(authorId);
-      if (response.statusCode == 200) {
+      if ((response.statusCode == 200||response.statusCode == 304)) {
         return response.data['data']
             .map<RankingComic>((e) => RankingComic(
                 cover: handler.baseUrl + '/upload/ipfs/' + e['cover'],
@@ -379,7 +380,7 @@ class IPFSHompageHandler extends BaseHomePageHandler {
     // TODO: implement getCategoryDetail
     try {
       var response = await handler.getCategoryDetail(categoryId);
-      if (response.statusCode == 200) {
+      if ((response.statusCode == 200||response.statusCode == 304)) {
         return response.data['data']
             .map<RankingComic>((e) => RankingComic(
                 cover: handler.baseUrl + '/upload/ipfs/' + e['cover'],
@@ -642,7 +643,7 @@ class IPFSUserConfig extends UserConfig {
     // TODO: implement login
     try {
       var response = await handler.login(username, password);
-      if (response.statusCode == 200) {
+      if ((response.statusCode == 200||response.statusCode == 304)) {
         _token = response.data['data']['token'];
         _username = username;
         _status = UserStatus.login;
@@ -651,7 +652,7 @@ class IPFSUserConfig extends UserConfig {
         await SourceDatabaseProvider.insertSourceOption(
             sourceDetail.name, 'token', _token);
         var userResponse = await handler.getUserState();
-        if (userResponse.statusCode == 200) {
+        if ((userResponse.statusCode == 200||userResponse.statusCode == 304)) {
           _nickname = userResponse.data['data']['nickname'];
           _avatar = userResponse.data['data']['avatar'];
         }
@@ -668,7 +669,7 @@ class IPFSUserConfig extends UserConfig {
     // TODO: implement logout
     try {
       var response = await handler.logout();
-      if (response.statusCode == 200) {
+      if ((response.statusCode == 200||response.statusCode == 304)) {
         _status = UserStatus.logout;
         await SourceDatabaseProvider.insertSourceOption<bool>(
             sourceDetail.name, 'login', false);
@@ -736,24 +737,25 @@ class IPFSComicDetail extends ComicDetail {
   final String status;
   final IPFSSourceRequestHandler handler;
   final int hotNum;
+  final BaseSourceModel model;
 
   bool _isSubscribed = false;
 
-  IPFSComicDetail({
-    this.authors,
-    this.comicId,
-    this.cover,
-    this.description,
-    this.chapters,
-    this.historyChapter,
-    this.tags,
-    this.title,
-    this.updateTime,
-    this.sourceDetail,
-    this.status,
-    this.handler,
-    this.hotNum,
-  });
+  IPFSComicDetail(
+      {this.authors,
+      this.comicId,
+      this.cover,
+      this.description,
+      this.chapters,
+      this.historyChapter,
+      this.tags,
+      this.title,
+      this.updateTime,
+      this.sourceDetail,
+      this.status,
+      this.handler,
+      this.hotNum,
+      this.model});
 
   @override
   bool get isSubscribed => _isSubscribed;
@@ -779,7 +781,9 @@ class IPFSComicDetail extends ComicDetail {
               chapterId: chapterId,
               chapters: item['data'],
               groupId: item['name'],
-              handler: handler);
+              handler: handler,
+              model: model,
+              detail: this);
         }
       }
     }
@@ -804,7 +808,7 @@ class IPFSComicDetail extends ComicDetail {
     // TODO: implement getIfSubscribed
     try {
       var response = await handler.getIfSubscribe(comicId);
-      if (response.statusCode == 200) {
+      if ((response.statusCode == 200||response.statusCode == 304)) {
         _isSubscribed = true;
       }
     } catch (e) {}
@@ -832,6 +836,8 @@ class IPFSComic extends Comic {
   final List chapters;
   final String groupId;
   final IPFSSourceRequestHandler handler;
+  final IPFSSourceModel model;
+  final IPFSComicDetail detail;
 
   String _previous;
   String _next;
@@ -846,7 +852,9 @@ class IPFSComic extends Comic {
       @required this.chapterId,
       @required this.chapters,
       @required this.groupId,
-      @required this.handler}) {
+      @required this.handler,
+      @required this.model,
+      @required this.detail}) {
     _chapterIdList = chapters
         .map<String>((value) => value['chapter_id'].toString())
         .toList();
@@ -855,14 +863,15 @@ class IPFSComic extends Comic {
   }
 
   @override
-  Future<void> addReadHistory(
-      {String title,
-      String comicId,
-      int page,
-      String chapterTitle,
-      String chapterId}) {
+  Future<void> addReadHistory() async {
     // TODO: implement addReadHistory
-    throw UnimplementedError();
+    HistoryDatabaseProvider(model.name).addReadHistory(
+        comicId,
+        detail.title,
+        detail.cover,
+        title,
+        pageAt,
+        DateTime.now().millisecondsSinceEpoch ~/ 1000);
   }
 
   @override
@@ -886,7 +895,7 @@ class IPFSComic extends Comic {
     // TODO: implement getComic
     try {
       var response = await handler.getChapter(comicId, groupId, chapterId);
-      if (response.statusCode == 200) {
+      if ((response.statusCode == 200||response.statusCode == 304)) {
         _pageAt = chapterId;
         _title = response.data['data']['title'];
         _pages = response.data['data']['data']
