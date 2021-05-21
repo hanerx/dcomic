@@ -64,7 +64,7 @@ class MangabzSourceModel extends BaseSourceModel {
     try {
       var response =
           await UniversalRequestModel.mangabzRequestHandler.getComic(comicId);
-      if (response.statusCode == 200 || response.statusCode == 304) {
+      if ((response.statusCode == 200||response.statusCode == 304) || response.statusCode == 304) {
         var soup = BeautifulSoup(
             ChineseHelper.convertToSimplifiedChinese(response.data.toString()));
         var title =
@@ -233,7 +233,7 @@ class MangabzSourceModel extends BaseSourceModel {
     try {
       var response = await UniversalRequestModel.mangabzRequestHandler
           .search(keyword, page: page);
-      if (response.statusCode == 200) {
+      if ((response.statusCode == 200||response.statusCode == 304)) {
         var soup = BeautifulSoup(ChineseHelper.convertCharToSimplifiedChinese(
             response.data.toString()));
         var list = soup.find(id: '.mh-list');
@@ -293,7 +293,7 @@ class MangabzSourceModel extends BaseSourceModel {
       try {
         var response =
             await UniversalRequestModel.mangabzRequestHandler.getSubscribe();
-        if (response.statusCode == 200) {
+        if ((response.statusCode == 200||response.statusCode == 304)) {
           var soup = BeautifulSoup(
               ChineseHelper.convertToSimplifiedChinese(response.data));
           var children = soup.find(id: '.shelf-manga-list').children;
@@ -508,7 +508,7 @@ class MangabzUserConfig extends UserConfig {
             'User-Agent':
                 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.134 Safari/537.36'
           });
-          if (response.statusCode == 200) {
+          if ((response.statusCode == 200||response.statusCode == 304)) {
             var soup = BeautifulSoup(response.data);
             _nickname = soup.find(id: '.user-form').children.first.innerHtml;
           }
@@ -821,19 +821,14 @@ class MangabzComic extends Comic {
   }
 
   @override
-  Future<void> addReadHistory(
-      {String title,
-      String comicId,
-      int page,
-      String chapterTitle,
-      String chapterId}) async {
+  Future<void> addReadHistory() async {
     // TODO: implement addReadHistory
     HistoryDatabaseProvider('mangabz').addReadHistory(
         comicId,
         _detail.title,
         _detail.cover,
-        chapterTitle,
-        chapterId,
+        title,
+        pageAt,
         DateTime.now().millisecondsSinceEpoch ~/ 1000);
   }
 
@@ -874,7 +869,7 @@ class MangabzComic extends Comic {
     try {
       var response = await UniversalRequestModel.mangabzRequestHandler
           .getChapter(chapterId);
-      if (response.statusCode == 200) {
+      if ((response.statusCode == 200||response.statusCode == 304)) {
         this._title = RegExp('<p class="top-title">.*</p>?')
             .stringMatch(ChineseHelper.convertToSimplifiedChinese(
                 response.data.toString()))
@@ -935,8 +930,6 @@ class MangabzComic extends Comic {
         } else {
           _next = null;
         }
-        addReadHistory(
-            comicId: _comicId, chapterId: _pageAt, chapterTitle: _title);
         notifyListeners();
       }
     } catch (e) {

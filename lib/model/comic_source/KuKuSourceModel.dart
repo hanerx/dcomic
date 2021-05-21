@@ -1,3 +1,4 @@
+import 'package:dcomic/database/historyDatabaseProvider.dart';
 import 'package:dcomic/model/comicCategoryModel.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -70,7 +71,7 @@ class KuKuSourceModel extends BaseSourceModel {
           response =
               await UniversalRequestModel.kuKuRequestHandler.getComic(comicId);
       }
-      if (response.statusCode == 200) {
+      if ((response.statusCode == 200||response.statusCode == 304)) {
         var soup = BeautifulSoup(response.data);
         DomElement.Element table;
         for (var item in soup.findAll('table')) {
@@ -82,7 +83,7 @@ class KuKuSourceModel extends BaseSourceModel {
             break;
           }
         }
-        var title = table.children.first.children.first.text;
+        var title = table.children.first.children.first.text.replaceAll("漫画", '');
         var cover =
             table.children[1].children.first.children.first.attributes['src'];
         var description = table.children[2].children.first.children[1].text;
@@ -202,7 +203,7 @@ class KuKuSourceModel extends BaseSourceModel {
     try {
       var response =
           await UniversalRequestModel.soKuKuRequestHandler.search(keyword);
-      if (response.statusCode == 200) {
+      if ((response.statusCode == 200||response.statusCode == 304)) {
         var soup = BeautifulSoup(response.data);
         List<KuKuSearchResult> data = [];
         for (var item in soup.find(id: '#comicmain').children) {
@@ -388,7 +389,7 @@ class KuKuComicDetail extends ComicDetail {
     for (var item in _chapters) {
       for (var chapter in item['data']) {
         if (chapter['chapter_id'].toString() == chapterId) {
-          return KuKuComic(_comicId, chapterId, item['data'], options);
+          return KuKuComic(_comicId, chapterId, item['data'], options,this);
         }
       }
     }
@@ -460,6 +461,7 @@ class KuKuComic extends Comic {
   final String _chapterId;
   final List _chapters;
   final KuKuSourceOptions options;
+  final KuKuComicDetail detail;
   List<String> _pages = [];
   String _title;
   List<String> _chapterIdList;
@@ -469,7 +471,7 @@ class KuKuComic extends Comic {
   String _next;
   String _pageAt;
 
-  KuKuComic(this._comicId, this._chapterId, this._chapters, this.options) {
+  KuKuComic(this._comicId, this._chapterId, this._chapters, this.options, this.detail) {
     _chapterIdList = _chapters
         .map<String>((value) => value['chapter_id'].toString())
         .toList();
@@ -478,14 +480,15 @@ class KuKuComic extends Comic {
   }
 
   @override
-  Future<void> addReadHistory(
-      {String title,
-      String comicId,
-      int page,
-      String chapterTitle,
-      String chapterId}) async {
+  Future<void> addReadHistory() async {
     // TODO: implement addReadHistory
-    return;
+    HistoryDatabaseProvider('kuku').addReadHistory(
+        comicId,
+        detail.title,
+        detail.cover,
+        title,
+        pageAt,
+        DateTime.now().millisecondsSinceEpoch ~/ 1000);
   }
 
   @override

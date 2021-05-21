@@ -181,12 +181,7 @@ abstract class Comic extends BaseModel {
 
   Map<String, String> get headers;
 
-  Future<void> addReadHistory(
-      {String title,
-      String comicId,
-      int page,
-      String chapterTitle,
-      String chapterId});
+  Future<void> addReadHistory();
 
   Future<void> getComic(
       {String title, String comicId, String chapterId, String chapterTitle});

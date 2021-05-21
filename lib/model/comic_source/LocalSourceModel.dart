@@ -353,18 +353,13 @@ class LocalComic extends Comic {
   LocalComic(this._mangaObject, this._chapterObject, this._volumeObject);
 
   @override
-  Future<void> addReadHistory(
-      {String title,
-      String comicId,
-      int page,
-      String chapterTitle,
-      String chapterId}) async {
+  Future<void> addReadHistory() async {
     // TODO: implement addReadHistory
     await HistoryDatabaseProvider('local').addReadHistory(
         comicId,
         _mangaObject.title,
         _mangaObject.cover,
-        chapterTitle,
+        title,
         pageAt,
         DateTime.now().millisecondsSinceEpoch ~/ 1000);
   }
@@ -415,11 +410,6 @@ class LocalComic extends Comic {
     var item = _volumeObject.indexOf(chapterId);
     if (item != null) {
       _pageAt = item;
-      await addReadHistory(
-          chapterId: _pageAt.name,
-          comicId: _mangaObject.name,
-          title: _mangaObject.title,
-          chapterTitle: _pageAt.title);
       notifyListeners();
     }
     throw IDInvalidError();
@@ -447,11 +437,6 @@ class LocalComic extends Comic {
     if (canNext) {
       _pageAt =
           _volumeObject.chapters[_volumeObject.chapters.indexOf(_pageAt) - 1];
-      await addReadHistory(
-          chapterId: _pageAt.name,
-          comicId: _mangaObject.name,
-          title: _mangaObject.title,
-          chapterTitle: _pageAt.title);
       return true;
     }
     return false;
@@ -467,11 +452,6 @@ class LocalComic extends Comic {
     if (canPrevious) {
       _pageAt =
           _volumeObject.chapters[_volumeObject.chapters.indexOf(_pageAt) + 1];
-      await addReadHistory(
-          chapterId: _pageAt.name,
-          comicId: _mangaObject.name,
-          title: _mangaObject.title,
-          chapterTitle: _pageAt.title);
       return true;
     }
     return false;

@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_performance/firebase_performance.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -147,7 +148,17 @@ class _DebugTestPage extends State<DebugTestPage> {
                   OutlineButton(
                     child: Text('Test'),
                     onPressed: () async {
-                      print(await MangabzSourceModel().get(title: '想要成为影之实力者'));
+                      final Trace myTrace = FirebasePerformance.instance.newTrace("test_trace");
+                      myTrace.start();
+
+                      var item="";
+                      if (item != null) {
+                        myTrace.incrementMetric("item_cache_hit", 1);
+                      } else {
+                        myTrace.incrementMetric("item_cache_miss", 1);
+                      }
+
+                      myTrace.stop();
                     },
                   )
                 ],

@@ -28,6 +28,7 @@ class ComicModel extends BaseModel {
   Future<void> init() async {
     try {
       await comic.init();
+      await comic.addReadHistory();
     } catch (e, s) {
       FirebaseCrashlytics.instance.recordError(e, s,
           reason: 'chapterLoadingFailed: $comicId, chapterId: $pageAt');
@@ -40,6 +41,7 @@ class ComicModel extends BaseModel {
     notifyListeners();
     try {
       await comic.getComic(chapterId: chapterId, comicId: comicId);
+      await comic.addReadHistory();
     } catch (e, s) {
       FirebaseCrashlytics.instance.recordError(e, s,
           reason: 'chapterLoadingFailed: $comicId, chapterId: $pageAt');
@@ -68,6 +70,7 @@ class ComicModel extends BaseModel {
       bool flag = false;
       try {
         flag = await comic.next();
+        await comic.addReadHistory();
       } catch (e, s) {
         FirebaseCrashlytics.instance.recordError(e, s,
             reason: 'chapterLoadingFailed: $comicId, chapterId: $pageAt');
@@ -85,6 +88,7 @@ class ComicModel extends BaseModel {
     bool flag = false;
     try {
       flag = await comic.previous();
+      await comic.addReadHistory();
     } catch (e, s) {
       FirebaseCrashlytics.instance.recordError(e, s,
           reason: 'chapterLoadingFailed: $comicId, chapterId: $pageAt');
