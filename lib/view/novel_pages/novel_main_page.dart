@@ -1,3 +1,4 @@
+import 'package:dcomic/view/novel_pages/novel_category_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dcomic/component/search/SearchButton.dart';
@@ -45,7 +46,7 @@ class _NovelMainPage extends State<NovelMainPage> {
         body: TabBarView(
           children: [
             NovelHomePage(),
-            CategoryPage(),
+            NovelCategoryPage(),
             NovelRankingPage(),
             NovelLatestUpdatePage(),
           ],

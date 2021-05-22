@@ -1,8 +1,9 @@
 import 'package:dcomic/database/sourceDatabaseProvider.dart';
+import 'package:dcomic/http/UniversalRequestModel.dart';
+import 'package:dcomic/protobuf/novel_chapter.pb.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:dcomic/http/http.dart';
 import 'package:dcomic/model/baseModel.dart';
 import 'package:dcomic/utils/tool_methods.dart';
 import 'package:dcomic/view/novel_pages/novel_viewer_page.dart';
@@ -23,7 +24,7 @@ class NovelDetailModel extends BaseModel {
   String updateDate = '';
   String status = '加载中';
 
-  List chapters = [];
+  List<NovelChapterVolumeResponse> chapters = [];
   List<bool> expand = [];
 
   //用户信息
@@ -40,14 +41,14 @@ class NovelDetailModel extends BaseModel {
 
   Future<void> getIfSubscribe(novelID) async {
     //获取登录状态
-    login=await SourceDatabaseProvider.getSourceOption<bool>('dmzj', 'login');
+    login = await SourceDatabaseProvider.getSourceOption<bool>('dmzj', 'login');
     //确认登录状态
     if (login) {
       //获取UID
       uid = await SourceDatabaseProvider.getSourceOption('dmzj', 'uid');
       //获取订阅信息
-      CustomHttp http = CustomHttp();
-      var response = await http.getIfSubscribe(novelID.toString(), uid,type: 1);
+      var response = await UniversalRequestModel.dmzjRequestHandler
+          .getIfSubscribe(novelID.toString(), uid, type: 1);
       if (response.statusCode == 200 && response.data['code'] == 0) {
         _sub = true;
       }
@@ -62,25 +63,26 @@ class NovelDetailModel extends BaseModel {
 
   Future<void> getNovel(novelID) async {
     try {
-      CustomHttp http = CustomHttp();
-      var response = await http.getNovelDetail(novelID);
-      if (response.statusCode == 200) {
-        title = response.data['name'];
-        cover = response.data['cover'];
-        author = response.data['authors'];
-        types = response.data['types'][0];
-        hotNum = response.data['hot_hits'];
-        subscribeNum = response.data['subscribe_num'];
-        description = response.data['introduction'];
+      var response = await UniversalRequestModel.dmzjv4requestHandler
+          .getNovelDetail(novelID.toString());
+      if (response != null) {
+        title = response.name;
+        cover = response.cover;
+        author = response.authors;
+        types = response.types.join('/');
+        hotNum = response.hotHits;
+        subscribeNum = response.subscribeNum;
+        description = response.introduction;
         updateDate =
-            ToolMethods.formatTimestamp(response.data['last_update_time']);
-        status = response.data['status'];
+            ToolMethods.formatTimestamp(response.lastUpdateTime.toInt());
+        status = response.status;
         logger.i(
             'class: NovelDetailModel, action: getNovel, novelID: $novelID, title: $title, cover: $cover');
         notifyListeners();
       }
-    } catch (e,s) {
-      FirebaseCrashlytics.instance.recordError(e, s, reason: 'getNovelDetailFailed: $novelID');
+    } catch (e, s) {
+      FirebaseCrashlytics.instance
+          .recordError(e, s, reason: 'getNovelDetailFailed: $novelID');
       error = true;
       logger.e(
           'class: NovelDetailModel, action: getNovelFailed, novelID: $novelID, exception: $e');
@@ -89,10 +91,10 @@ class NovelDetailModel extends BaseModel {
 
   Future<void> getChapter(novelID) async {
     try {
-      CustomHttp http = CustomHttp();
-      var response = await http.getNovelChapter(novelID);
-      if (response.statusCode == 200) {
-        chapters = response.data;
+      var response = await UniversalRequestModel.dmzjv4requestHandler
+          .getNovelChapters(novelID.toString());
+      if (response != null) {
+        chapters = response;
         expand = chapters.map<bool>((e) => false).toList();
         notifyListeners();
       }
@@ -115,24 +117,24 @@ class NovelDetailModel extends BaseModel {
           canTapOnHeader: true,
           isExpanded: expand[chapters.indexOf(e)],
           headerBuilder: (context, state) => ListTile(
-                title: Text('${e['volume_name']}'),
+                title: Text('${e.volumeName}'),
               ),
           body: ListView.builder(
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
-              itemCount: e['chapters'].length,
+              itemCount: e.chapters.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text('${e['chapters'][index]['chapter_name']}'),
+                  title: Text('${e.chapters[index].chapterName}'),
                   onTap: () {
                     Navigator.of(context)
                         .push(MaterialPageRoute(builder: (context) {
                       return NovelViewerPage(
-                        title: e['chapters'][index]['chapter_name'],
+                        title: e.chapters[index].chapterName,
                         chapters: chapters,
                         novelID: novelID,
-                        volumeID: e['volume_id'],
-                        chapterID: e['chapters'][index]['chapter_id'],
+                        volumeID: e.volumeId,
+                        chapterID: e.chapters[index].chapterId,
                       );
                     }));
                   },
@@ -144,9 +146,8 @@ class NovelDetailModel extends BaseModel {
   bool get sub => this._sub;
 
   set sub(bool sub) {
-    CustomHttp http = CustomHttp();
     if (sub) {
-      http.addSubscribe(novelID.toString(), uid,type: 1).then((response) {
+      UniversalRequestModel.dmzjRequestHandler.addSubscribe(novelID.toString(), uid, type: 1).then((response) {
         if (response.statusCode == 200 && response.data['code'] == 0) {
           this._sub = true;
           logger.i(
@@ -155,7 +156,7 @@ class NovelDetailModel extends BaseModel {
         }
       });
     } else {
-      http.cancelSubscribe(novelID.toString(), uid,type: 1).then((response) {
+      UniversalRequestModel.dmzjRequestHandler.cancelSubscribe(novelID.toString(), uid, type: 1).then((response) {
         if (response.statusCode == 200 && response.data['code'] == 0) {
           this._sub = false;
           logger.i(

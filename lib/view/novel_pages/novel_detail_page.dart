@@ -80,8 +80,6 @@ class _NovelDetailPage extends State<NovelDetailPage> {
                 await Provider.of<NovelDetailModel>(context, listen: false)
                     .getNovel(widget.id);
                 await Provider.of<NovelDetailModel>(context, listen: false)
-                    .getChapter(widget.id);
-                await Provider.of<NovelDetailModel>(context, listen: false)
                     .getIfSubscribe(widget.id);
               },
               emptyWidget: Provider.of<NovelDetailModel>(context).error

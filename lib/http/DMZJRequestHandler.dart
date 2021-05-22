@@ -1,14 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dcomic/database/cookieDatabaseProvider.dart';
 import 'package:dcomic/database/sourceDatabaseProvider.dart';
 import 'package:dcomic/protobuf/comic.pb.dart';
 import 'package:dcomic/protobuf/novel_chapter.pb.dart';
 import 'package:dcomic/utils/tool_methods.dart';
 import 'package:dio/dio.dart';
 import 'package:dcomic/http/UniversalRequestModel.dart';
-import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
+import 'package:crypto/crypto.dart';
 
 class DMZJRequestHandler extends SingleDomainRequestHandler {
   DMZJRequestHandler() : super('https://v3api.dmzj1.com');
@@ -69,6 +68,10 @@ class DMZJRequestHandler extends SingleDomainRequestHandler {
     return dio.get('/recommend.json');
   }
 
+  Future<Response> getNovelMainPageRecommend() {
+    return dio.get('/novel/recommend.json');
+  }
+
   Future<Response> getUpdateBatch(String uid) {
     return dio.get('/recommend/batchUpdate?uid=$uid&category_id=49');
   }
@@ -82,8 +85,24 @@ class DMZJRequestHandler extends SingleDomainRequestHandler {
     return dio.get('/classify/$categoryId-$date-$tag/$type/$page.json');
   }
 
+  Future<Response> getNovelCategoryDetail(String categoryId,{int tag:0, int type:0, int page:0}){
+    return dio.get('/novel/$categoryId/$tag/$type/$page.json');
+  }
+
   Future<Response> getAuthorDetail(int authorId) {
     return dio.get('/UCenter/author/$authorId.json');
+  }
+
+  Future<Response> getNovelLatestUpdateList({int page: 0}) {
+    return dio.get('/novel/recentUpdate/$page.json');
+  }
+
+  Future<Response> getNovelRankingList({int type: 0, int tag: 0, int page: 0}) {
+    return dio.get('/novel/rank/$type/$tag/$page.json');
+  }
+
+  Future<Response> getNovelFilterTags(){
+    return dio.get('/novel/tag.json');
   }
 }
 
@@ -212,6 +231,20 @@ class DMZJV4RequestHandler extends SingleDomainRequestHandler {
     return null;
   }
 
+  Future<List<NovelChapterVolumeResponse>> getNovelChapters(
+      String novelID) async {
+    var response = await dio.get('/novel/chapter/$novelID');
+    if (response.statusCode == 200) {
+      var data =
+          NovelChapterResponse.fromBuffer(ToolMethods.decrypt(response.data));
+      if (data.errno != 0) {
+        throw data.errmsg;
+      }
+      return data.data;
+    }
+    return null;
+  }
+
   Future<ComicDetailInfoResponse> getComicDetail(String comicId) async {
     var response = await dio.get('/comic/detail/$comicId',
         queryParameters: await getParam(login: true));
@@ -221,21 +254,49 @@ class DMZJV4RequestHandler extends SingleDomainRequestHandler {
       if (data.errno != 0) {
         throw data.errmsg;
       }
+      if (data.data.chapters.length == 0) {
+        throw '解析错误';
+      }
       return data.data;
     }
     return null;
   }
-  
-  Future<ComicChapterDetailInfoResponse> getComic(String comicId,String chapterId)async{
-    var response=await dio.get('/comic/chapter/$comicId/$chapterId',queryParameters: await getParam(login: true));
+
+  Future<ComicChapterDetailInfoResponse> getComic(
+      String comicId, String chapterId) async {
+    var response = await dio.get('/comic/chapter/$comicId/$chapterId',
+        queryParameters: await getParam(login: true));
     if (response.statusCode == 200) {
-      var data =
-      ComicChapterDetailResponse.fromBuffer(ToolMethods.decrypt(response.data));
+      var data = ComicChapterDetailResponse.fromBuffer(
+          ToolMethods.decrypt(response.data));
       if (data.errno != 0) {
         throw data.errmsg;
       }
       return data.data;
     }
     return null;
+  }
+}
+
+class DMZJJuriRequestHandler extends SingleDomainRequestHandler{
+  DMZJJuriRequestHandler() : super('https://jurisdiction.dmzj1.com');
+
+  Future<Response> getNovel(int volumeID, int chapterID) {
+    var path = "/lnovel/${volumeID}_$chapterID.txt";
+    var ts = (DateTime.now().millisecondsSinceEpoch / 1000).toStringAsFixed(0);
+    var key =
+        "IBAAKCAQEAsUAdKtXNt8cdrcTXLsaFKj9bSK1nEOAROGn2KJXlEVekcPssKUxSN8dsfba51kmHM";
+    key += path;
+    key += ts;
+    key = md5.convert(utf8.encode(key)).toString().toLowerCase();
+    return dio.get(path + "?t=$ts&k=$key");
+  }
+}
+
+class DarkSideRequestHandler extends SingleDomainRequestHandler{
+  DarkSideRequestHandler() : super('https://dark-dmzj.hloli.net');
+
+  Future<Response> getDarkInfo() {
+    return dio.get('/data.json');
   }
 }

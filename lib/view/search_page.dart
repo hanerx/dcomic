@@ -94,15 +94,15 @@ class _SearchPage extends State<SearchPage> {
               model: e,
             ))
         .toList();
-    // if (Provider.of<SystemSettingModel>(context, listen: false).novel) {
-    //   tabs.add(Tab(
-    //     text: '轻小说搜索',
-    //   ));
-    //   views.add(NovelSearchTab(
-    //     keyword: keyword,
-    //     key: UniqueKey(),
-    //   ));
-    // }
+    if (Provider.of<SystemSettingModel>(context, listen: false).novel) {
+      tabs.add(Tab(
+        text: '轻小说搜索',
+      ));
+      views.add(NovelSearchTab(
+        keyword: keyword,
+        key: UniqueKey(),
+      ));
+    }
     if (Provider.of<SystemSettingModel>(context, listen: false).deepSearch) {
       tabs.add(Tab(
         text: '隐藏搜索',

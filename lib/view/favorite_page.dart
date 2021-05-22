@@ -64,17 +64,17 @@ class _FavoritePage extends State<FavoritePage> {
       ));
       list.add(TrackerFavoritePage());
     }
-    // if (Provider.of<SystemSettingModel>(context, listen: false).novel) {
-    //   tabs.add(Tab(
-    //     text: '轻小说',
-    //   ));
-    //   list.add(NovelFavoritePage(
-    //       uid: Provider.of<SourceProvider>(context)
-    //           .activeSources
-    //           .first
-    //           .userConfig
-    //           .userId));
-    // }
+    if (Provider.of<SystemSettingModel>(context, listen: false).novel) {
+      tabs.add(Tab(
+        text: '轻小说',
+      ));
+      list.add(NovelFavoritePage(
+          uid: Provider.of<SourceProvider>(context)
+              .activeSources
+              .first
+              .userConfig
+              .userId));
+    }
 
     // TODO: implement build
     return DefaultTabController(

@@ -3,13 +3,11 @@ import 'package:dcomic/component/EmptyView.dart';
 import 'package:dcomic/component/LoadingCube.dart';
 import 'package:dcomic/component/comic/SubjectListTile.dart';
 import 'package:dcomic/model/comic_source/baseSourceModel.dart';
-import 'package:dcomic/model/comic_source/sourceProvider.dart';
 import 'package:dcomic/model/subjectDetailModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_parallax/flutter_parallax.dart';
-import 'package:dcomic/http/http.dart';
 import 'package:dcomic/view/comic_detail_page.dart';
 import 'package:provider/provider.dart';
 

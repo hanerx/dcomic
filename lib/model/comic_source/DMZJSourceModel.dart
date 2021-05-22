@@ -138,24 +138,29 @@ class DMZJSourceModel extends BaseSourceModel {
             options,
             lastChapterId,
             type);
+      } else {
+        throw ComicLoadingError();
       }
     } on LoginRequiredError {
       rethrow;
     } catch (e) {
-      if (_options.backupApi) {
-        return this.getComicDetailBackup(comicId);
+      if (await SourceDatabaseProvider.getSourceOption<bool>('dmzj', 'backup_api')) {
+        try{
+          return this.getComicDetailBackup(comicId);
+        }catch(e){
+          rethrow;
+        }
       } else {
         throw ComicLoadingError(exception: e);
       }
     }
-    return null;
   }
 
   Future<ComicDetail> getComicDetailBackup(String comicId) async {
     try {
       var response = await UniversalRequestModel.dmzjapiRequestHandler
           .getComicDetailWithBackupApi(comicId);
-      if ((response.statusCode == 200||response.statusCode == 304)) {
+      if ((response.statusCode == 200 || response.statusCode == 304)) {
         var data = jsonDecode(response.data)['data'];
         var title = data['info']['title'];
         var cover = data['info']['cover'];
@@ -191,9 +196,9 @@ class DMZJSourceModel extends BaseSourceModel {
     } catch (e) {
       logger.w(
           'class: ComicDetailModel, action: detailBackupLoadingFailed, comicId: $comicId, exception: $e');
-      throw ComicLoadingError();
+
     }
-    return null;
+    throw ComicLoadingError();
   }
 
   @override
@@ -220,7 +225,7 @@ class DMZJSourceModel extends BaseSourceModel {
     try {
       var response =
           await UniversalRequestModel.dmzjRequestHandler.search(keyword, page);
-      if ((response.statusCode == 200||response.statusCode == 304)) {
+      if ((response.statusCode == 200 || response.statusCode == 304)) {
         return response.data
             .map<SearchResult>((e) => DMZJSearchResult(
                 e['authors'],
@@ -323,7 +328,7 @@ class DMZJSourceModel extends BaseSourceModel {
                 await SourceDatabaseProvider.getSourceOption<int>(
                     type.name, 'uid'),
                 page);
-        if ((response.statusCode == 200||response.statusCode == 304)) {
+        if ((response.statusCode == 200 || response.statusCode == 304)) {
           var data = await HistoryDatabaseProvider('dmzj').getAllUnread();
           var unreadList = <String, int>{};
           for (var item in data.first) {
@@ -385,7 +390,7 @@ class DMZJUserConfig extends UserConfig {
       try {
         var response =
             await UniversalRequestModel.dmzjRequestHandler.getUserInfo(_uid);
-        if ((response.statusCode == 200||response.statusCode == 304)) {
+        if ((response.statusCode == 200 || response.statusCode == 304)) {
           _avatar = response.data['cover'];
           _nickname = response.data['nickname'];
         }
@@ -629,7 +634,8 @@ class DMZJUserConfig extends UserConfig {
                     var response = await UniversalRequestModel
                         .dmzjRequestHandler
                         .getUserInfo(_uid);
-                    if ((response.statusCode == 200||response.statusCode == 304)) {
+                    if ((response.statusCode == 200 ||
+                        response.statusCode == 304)) {
                       _avatar = response.data['cover'];
                       _nickname = response.data['nickname'];
                     }
@@ -680,7 +686,7 @@ class DMZJUserConfig extends UserConfig {
             try {
               var response = await UniversalRequestModel.dmzjRequestHandler
                   .getUserInfo(_uid);
-              if ((response.statusCode == 200||response.statusCode == 304)) {
+              if ((response.statusCode == 200 || response.statusCode == 304)) {
                 _avatar = response.data['cover'];
                 _nickname = response.data['nickname'];
               }
@@ -740,6 +746,9 @@ class DMZJWebSourceModel extends DMZJSourceModel {
   @override
   Future<ComicDetail> get({String comicId, String title}) async {
     // TODO: implement get
+    if(!_options.webApi){
+      return super.get(comicId: comicId,title: title);
+    }
     if (comicId == null && title == null) {
       throw IDInvalidError();
     } else if (comicId != null) {
@@ -750,13 +759,7 @@ class DMZJWebSourceModel extends DMZJSourceModel {
                 null) {
           var map = await SourceDatabaseProvider.getBoundComic(
               super.type.name, comicId);
-          if (!_options.webApi) {
-            return super.getComicDetail(map['bound_id']);
-          }
           return await getComicDetail(map['bound_id']);
-        }
-        if (!_options.webApi) {
-          return super.getComicDetail(comicId);
         }
         return await getComicDetail(comicId);
       } catch (e) {
@@ -767,9 +770,6 @@ class DMZJWebSourceModel extends DMZJSourceModel {
               if (comicId != null) {
                 SourceDatabaseProvider.boundComic(
                     super.type.name, comicId, item.comicId);
-              }
-              if (!_options.webApi) {
-                return super.getComicDetail(item.comicId);
               }
               return await getComicDetail(item.comicId);
             }
@@ -792,7 +792,7 @@ class DMZJWebSourceModel extends DMZJSourceModel {
     try {
       var response = await UniversalRequestModel.dmzjMobileRequestHandler
           .getComicDetailWeb(comicId);
-      if ((response.statusCode == 200||response.statusCode == 304)) {
+      if ((response.statusCode == 200 || response.statusCode == 304)) {
         var jsonString =
             RegExp('initIntroData(.*);').stringMatch(response.data);
         var data = jsonDecode(jsonString.substring(
@@ -1083,7 +1083,7 @@ class DMZJComicDetail extends ComicDetail {
       var response = await UniversalRequestModel.dmzjRequestHandler
           .getIfSubscribe(comicId,
               await SourceDatabaseProvider.getSourceOption('dmzj', 'uid'));
-      if ((response.statusCode == 200||response.statusCode == 304)) {
+      if ((response.statusCode == 200 || response.statusCode == 304)) {
         _isSubscribed = response.data['code'] == 0;
       }
     } catch (e) {
@@ -1205,7 +1205,8 @@ class DMZJComicDetail extends ComicDetail {
     try {
       var response = await UniversalRequestModel.dmzjCommentRequestHandler
           .getComments(comicId, page, type: 4);
-      if ((response.statusCode == 200||response.statusCode == 304) || response.statusCode == 304) {
+      if ((response.statusCode == 200 || response.statusCode == 304) ||
+          response.statusCode == 304) {
         var idList = response.data['commentIds'];
         comments.addAll(response.data['comments']);
         var data = <ComicComment>[];
@@ -1342,7 +1343,7 @@ class DMZJComic extends Comic {
     try {
       var response = await UniversalRequestModel.dmzjMobileRequestHandler
           .getComicWeb(comicId, chapterId);
-      if ((response.statusCode == 200||response.statusCode == 304)) {
+      if ((response.statusCode == 200 || response.statusCode == 304)) {
         var data = jsonDecode(response.data);
         _title = data['chapter_name'];
         _pages = data['page_url'].map<String>((e) => e.toString()).toList();
@@ -1372,7 +1373,7 @@ class DMZJComic extends Comic {
     try {
       var response = await UniversalRequestModel.dmzjapiRequestHandler
           .getComicDetailWithBackupApi(comicId);
-      if ((response.statusCode == 200||response.statusCode == 304)) {
+      if ((response.statusCode == 200 || response.statusCode == 304)) {
         var data = jsonDecode(response.data)['data'];
         var firstLetter = data['info']['first_letter'];
         for (var item in data['list']) {
@@ -1483,7 +1484,7 @@ class DMZJComic extends Comic {
     try {
       var response = await UniversalRequestModel.dmzjRequestHandler
           .getViewpoint(_comicId, _pageAt);
-      if ((response.statusCode == 200||response.statusCode == 304)) {
+      if ((response.statusCode == 200 || response.statusCode == 304)) {
         print(
             "class: ComicModel, action: getViewPoint, responseCode: ${response.statusCode} chapterId:$_chapterId comicId:$_comicId responseData: ${response.data}");
         response.data
@@ -1587,7 +1588,7 @@ class DMZJHomePageHandler extends BaseHomePageHandler {
       try {
         var response =
             await UniversalRequestModel.dmzjRequestHandler.getCategory();
-        if ((response.statusCode == 200||response.statusCode == 304)) {
+        if ((response.statusCode == 200 || response.statusCode == 304)) {
           return response.data
               .map<CategoryModel>((e) => CategoryModel(
                     cover: e['cover'],
@@ -1616,7 +1617,7 @@ class DMZJHomePageHandler extends BaseHomePageHandler {
         var response = await UniversalRequestModel.dmzjRequestHandler
             .getCategoryDetail(
                 int.parse(categoryId), 0, 0, popular ? 0 : 1, page);
-        if ((response.statusCode == 200||response.statusCode == 304)) {
+        if ((response.statusCode == 200 || response.statusCode == 304)) {
           return response.data
               .map<RankingComic>((e) => RankingComic(
                   cover: e['cover'],
@@ -1632,7 +1633,7 @@ class DMZJHomePageHandler extends BaseHomePageHandler {
       } else {
         var response = await UniversalRequestModel.dmzjMobileRequestHandler
             .getCategoryDetail(categoryId, page: page, popular: popular);
-        if ((response.statusCode == 200||response.statusCode == 304)) {
+        if ((response.statusCode == 200 || response.statusCode == 304)) {
           return jsonDecode(response.data)
               .map<RankingComic>((e) => RankingComic(
                   cover: 'https://images.dmzj.com/${e['cover']}',
@@ -1660,7 +1661,7 @@ class DMZJHomePageHandler extends BaseHomePageHandler {
     try {
       var response =
           await UniversalRequestModel.dmzjRequestHandler.getMainPageRecommend();
-      if ((response.statusCode == 200||response.statusCode == 304)) {
+      if ((response.statusCode == 200 || response.statusCode == 304)) {
         for (var item in response.data) {
           if (allowedCategory.indexOf(item['category_id']) >= 0) {
             if (item['category_id'] == 48) {
@@ -1731,7 +1732,7 @@ class DMZJHomePageHandler extends BaseHomePageHandler {
       try {
         var response = await UniversalRequestModel.dmzjRequestHandler
             .getUpdateBatch(model.userConfig.userId);
-        if ((response.statusCode == 200||response.statusCode == 304)) {
+        if ((response.statusCode == 200 || response.statusCode == 304)) {
           return [
             HomePageCardModel(
                 title: response.data['data']['title'],
@@ -1779,7 +1780,7 @@ class DMZJHomePageHandler extends BaseHomePageHandler {
     try {
       var response =
           await UniversalRequestModel.dmzjMobileRequestHandler.getLatest(page);
-      if ((response.statusCode == 200||response.statusCode == 304)) {
+      if ((response.statusCode == 200 || response.statusCode == 304)) {
         return jsonDecode(response.data)
             .map<RankingComic>((item) => RankingComic(
                 cover: 'https://images.dmzj.com/' + item['cover'],
@@ -1805,7 +1806,7 @@ class DMZJHomePageHandler extends BaseHomePageHandler {
     try {
       var response = await UniversalRequestModel.dmzjMobileRequestHandler
           .getRankList(0, 0, 0, page);
-      if ((response.statusCode == 200||response.statusCode == 304)) {
+      if ((response.statusCode == 200 || response.statusCode == 304)) {
         return jsonDecode(response.data)
             .map<RankingComic>((item) => RankingComic(
                 cover: 'https://images.dmzj.com/' + item['cover'],
@@ -1830,7 +1831,7 @@ class DMZJHomePageHandler extends BaseHomePageHandler {
     if (model.userConfig.status == UserStatus.login) {
       var response = await UniversalRequestModel.dmzjRequestHandler
           .getSubjectList(model.userConfig.userId, page: page);
-      if ((response.statusCode == 200||response.statusCode == 304)) {
+      if ((response.statusCode == 200 || response.statusCode == 304)) {
         return response.data['data']
             .map<SubjectItem>((e) => SubjectItem(
                 cover: e['small_cover'],
@@ -1850,7 +1851,7 @@ class DMZJHomePageHandler extends BaseHomePageHandler {
     try {
       var response = await UniversalRequestModel.dmzjRequestHandler
           .getSubjectDetail(subjectId);
-      if ((response.statusCode == 200||response.statusCode == 304)) {
+      if ((response.statusCode == 200 || response.statusCode == 304)) {
         return SubjectModel(
             cover: response.data['mobile_header_pic'],
             title: response.data['title'],
@@ -1882,7 +1883,7 @@ class DMZJHomePageHandler extends BaseHomePageHandler {
         if (page == 0) {
           var response = await UniversalRequestModel.dmzjRequestHandler
               .getAuthorDetail(int.parse(authorId));
-          if ((response.statusCode == 200||response.statusCode == 304)) {
+          if ((response.statusCode == 200 || response.statusCode == 304)) {
             return response.data['data']
                 .map<RankingComic>((e) => RankingComic(
                     cover: e['cover'],
@@ -1900,7 +1901,7 @@ class DMZJHomePageHandler extends BaseHomePageHandler {
       } else {
         var response = await UniversalRequestModel.dmzjMobileRequestHandler
             .getCategoryDetail(authorId, page: page, popular: popular);
-        if ((response.statusCode == 200||response.statusCode == 304)) {
+        if ((response.statusCode == 200 || response.statusCode == 304)) {
           return jsonDecode(response.data)
               .map<RankingComic>((e) => RankingComic(
                   cover: 'https://images.dmzj.com/${e['cover']}',

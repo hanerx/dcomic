@@ -1,28 +1,20 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_performance/firebase_performance.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:dcomic/generated/l10n.dart';
 import 'package:dcomic/http/UniversalRequestModel.dart';
-import 'package:dcomic/http/http.dart';
 import 'package:dcomic/model/comic_source/KuKuSourceModel.dart';
 import 'package:dcomic/model/comic_source/ManHuaGuiSourceModel.dart';
-import 'package:dcomic/model/comic_source/MangabzSourceModel.dart';
 import 'package:dcomic/model/comic_source/baseSourceModel.dart';
-import 'package:dcomic/model/comic_source/sourceProvider.dart';
 import 'package:dcomic/utils/ProxyCacheManager.dart';
 import 'package:dcomic/utils/tool_methods.dart';
-import 'package:gbk2utf8/gbk2utf8.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:provider/provider.dart';
-import 'package:ipfs/ipfs.dart';
 
 import '../comic_detail_page.dart';
 

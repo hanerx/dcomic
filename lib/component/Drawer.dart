@@ -1,5 +1,6 @@
 import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:dcomic/model/comic_source/sourceProvider.dart';
+import 'package:dcomic/view/novel_pages/novel_main_page.dart';
 import 'package:dcomic/view/server_controllers/server_sellect_page.dart';
 import 'package:direct_select_flutter/direct_select_container.dart';
 import 'package:direct_select_flutter/direct_select_item.dart';
@@ -186,21 +187,21 @@ class CustomDrawerState extends State<CustomDrawer> {
         )
       ];
     }
-    // if (Provider.of<SystemSettingModel>(context, listen: false).novel) {
-    //   list += <Widget>[
-    //     Divider(),
-    //     ListTile(
-    //       title: Text(S.of(context).Novel),
-    //       leading: Icon(Icons.book),
-    //       onTap: () {
-    //         Navigator.of(context).pop();
-    //         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-    //           return NovelMainPage();
-    //         },settings: RouteSettings(name: 'novel_main_page')));
-    //       },
-    //     )
-    //   ];
-    // }
+    if (Provider.of<SystemSettingModel>(context, listen: false).novel) {
+      list += <Widget>[
+        Divider(),
+        ListTile(
+          title: Text(S.of(context).Novel),
+          leading: Icon(Icons.book),
+          onTap: () {
+            Navigator.of(context).pop();
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+              return NovelMainPage();
+            },settings: RouteSettings(name: 'novel_main_page')));
+          },
+        )
+      ];
+    }
 
     if (Provider.of<SourceProvider>(context, listen: false)
         .localSourceModel
