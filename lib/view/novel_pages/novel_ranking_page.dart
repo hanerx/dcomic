@@ -29,7 +29,7 @@ class _NovelRankingPage extends State<NovelRankingPage> {
   loadRankingList() async {
     var response = await UniversalRequestModel.dmzjRequestHandler
         .getNovelRankingList(type: filterType, tag: filterTag, page: page);
-    if (response.statusCode == 200 && mounted) {
+    if ((response.statusCode == 200||response.statusCode == 304) && mounted) {
       setState(() {
         if (response.data.length == 0) {
           refreshState = true;
@@ -51,7 +51,7 @@ class _NovelRankingPage extends State<NovelRankingPage> {
 
   loadRankingTag() async {
     var response = await UniversalRequestModel.dmzjRequestHandler.getNovelFilterTags();
-    if (response.statusCode == 200 && mounted) {
+    if ((response.statusCode == 200||response.statusCode == 304) && mounted) {
       setState(() {
         response.data.forEach(
             (item) => {tagTypeList[item['tag_id']] = item['tag_name']});

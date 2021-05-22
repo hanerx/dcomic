@@ -27,7 +27,7 @@ class _NovelHomePage extends State<NovelHomePage> {
 
   getMainPage() async {
     var response = await UniversalRequestModel.dmzjRequestHandler.getNovelMainPageRecommend();
-    if (response.statusCode == 200) {
+    if ((response.statusCode == 200||response.statusCode == 304)) {
       List data = response.data;
       if (this.mounted) {
         setState(() {

@@ -49,7 +49,7 @@ class NovelDetailModel extends BaseModel {
       //获取订阅信息
       var response = await UniversalRequestModel.dmzjRequestHandler
           .getIfSubscribe(novelID.toString(), uid, type: 1);
-      if (response.statusCode == 200 && response.data['code'] == 0) {
+      if ((response.statusCode == 200||response.statusCode == 304) && response.data['code'] == 0) {
         _sub = true;
       }
     }
@@ -148,7 +148,7 @@ class NovelDetailModel extends BaseModel {
   set sub(bool sub) {
     if (sub) {
       UniversalRequestModel.dmzjRequestHandler.addSubscribe(novelID.toString(), uid, type: 1).then((response) {
-        if (response.statusCode == 200 && response.data['code'] == 0) {
+        if ((response.statusCode == 200||response.statusCode == 304) && response.data['code'] == 0) {
           this._sub = true;
           logger.i(
               'class: NovelDetailModel, action: AddSubscribe, status: ${this._sub}');
@@ -157,7 +157,7 @@ class NovelDetailModel extends BaseModel {
       });
     } else {
       UniversalRequestModel.dmzjRequestHandler.cancelSubscribe(novelID.toString(), uid, type: 1).then((response) {
-        if (response.statusCode == 200 && response.data['code'] == 0) {
+        if ((response.statusCode == 200||response.statusCode == 304) && response.data['code'] == 0) {
           this._sub = false;
           logger.i(
               'class: NovelDetailModel, action: CancelSubscribe, status: ${this._sub}');

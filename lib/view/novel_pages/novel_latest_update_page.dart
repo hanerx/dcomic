@@ -25,7 +25,7 @@ class _NovelLatestUpdatePage extends State<NovelLatestUpdatePage>{
 
   getLatestList() async {
       var response = await UniversalRequestModel.dmzjRequestHandler.getNovelLatestUpdateList(page: page);
-      if (response.statusCode == 200 && mounted) {
+      if ((response.statusCode == 200||response.statusCode == 304) && mounted) {
         setState(() {
           if (response.data.length == 0) {
             refreshState = true;

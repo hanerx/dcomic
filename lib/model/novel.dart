@@ -43,7 +43,7 @@ class NovelModel extends BaseModel {
   Future<void> getNovel(int novelID, int volumeID, int chapterID) async {
     try {
       var response = await UniversalRequestModel.dmzjJuriRequestHandler.getNovel(volumeID, chapterID);
-      if (response.statusCode == 200) {
+      if ((response.statusCode == 200||response.statusCode == 304)) {
         data = response.data;
         notifyListeners();
       }

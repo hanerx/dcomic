@@ -34,7 +34,7 @@ class _NovelCategoryDetailPage extends State<NovelCategoryDetailPage> {
     var response = await UniversalRequestModel.dmzjRequestHandler
         .getNovelCategoryDetail(widget.categoryId,
             type: filterType, tag: filterTag, page: page);
-    if (response.statusCode == 200 && mounted) {
+    if ((response.statusCode == 200||response.statusCode == 304) && mounted) {
       setState(() {
         for (var item in response.data) {
           list.add(_CustomListTile(

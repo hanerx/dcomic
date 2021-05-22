@@ -34,7 +34,7 @@ class _DeepSearchTab extends State<DeepSearchTab> {
     if (keyword != null && keyword != '') {
       try {
         var response = await UniversalRequestModel.dmzjsacgRequestHandler.deepSearch(keyword);
-        if (response.statusCode == 200 && mounted) {
+        if ((response.statusCode == 200||response.statusCode == 304) && mounted) {
           var jsonData = response.data.toString().substring(
               response.data.toString().indexOf('=') + 1,
               response.data.toString().length - 1);
