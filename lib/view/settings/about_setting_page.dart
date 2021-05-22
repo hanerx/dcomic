@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:dcomic/generated/l10n.dart';
-import 'package:dcomic/http/http.dart';
 import 'package:dcomic/model/systemSettingModel.dart';
 import 'package:dcomic/model/versionModel.dart';
 import 'package:dcomic/utils/tool_methods.dart';

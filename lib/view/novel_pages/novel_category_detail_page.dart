@@ -1,14 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dcomic/http/UniversalRequestModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:dcomic/component/EmptyView.dart';
 import 'package:dcomic/component/LoadingCube.dart';
-import 'package:dcomic/http/http.dart';
 import 'package:dcomic/view/novel_pages/novel_detail_page.dart';
 
 class NovelCategoryDetailPage extends StatefulWidget {
-  final int categoryId;
+  final String categoryId;
   final String title;
 
   const NovelCategoryDetailPage({Key key, this.categoryId, this.title})
@@ -31,9 +31,9 @@ class _NovelCategoryDetailPage extends State<NovelCategoryDetailPage> {
   List tagTypeList = <String>['全部', '连载中', '已完结'];
 
   getCategoryDetail() async {
-    CustomHttp http = CustomHttp();
-    var response = await http.getNovelCategoryDetail(
-        widget.categoryId, filterTag, filterType, page);
+    var response = await UniversalRequestModel.dmzjRequestHandler
+        .getNovelCategoryDetail(widget.categoryId,
+            type: filterType, tag: filterTag, page: page);
     if (response.statusCode == 200 && mounted) {
       setState(() {
         for (var item in response.data) {
@@ -166,7 +166,7 @@ class _NovelCategoryDetailPage extends State<NovelCategoryDetailPage> {
                 });
                 await getCategoryDetail();
               },
-              emptyWidget: list.length==0?EmptyView():null,
+              emptyWidget: list.length == 0 ? EmptyView() : null,
               child: ListView.builder(
                 itemCount: list.length,
                 itemBuilder: (context, index) {
@@ -197,11 +197,15 @@ class _CustomListTile extends StatelessWidget {
         child: FlatButton(
       padding: EdgeInsets.fromLTRB(1, 0, 1, 0),
       onPressed: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return NovelDetailPage(
-            id: id,
-          );
-        },settings: RouteSettings(name: 'novel_detail_page')));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) {
+                  return NovelDetailPage(
+                    id: id,
+                  );
+                },
+                settings: RouteSettings(name: 'novel_detail_page')));
       },
       child: Card(
         child: Row(

@@ -1,11 +1,11 @@
 import 'package:dcomic/component/comic/SearchListTile.dart';
+import 'package:dcomic/http/UniversalRequestModel.dart';
 import 'package:dcomic/view/novel_pages/novel_detail_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:dcomic/component/EmptyView.dart';
 import 'package:dcomic/component/LoadingCube.dart';
-import 'package:dcomic/http/http.dart';
 
 class NovelSearchTab extends StatefulWidget {
   final String keyword;
@@ -31,8 +31,7 @@ class _NovelSearchTab extends State<NovelSearchTab> {
 
   search() async {
     if (widget.keyword != null && widget.keyword != '') {
-      CustomHttp http = CustomHttp();
-      var response = await http.search(widget.keyword, page, type: 1);
+      var response = await UniversalRequestModel.dmzjRequestHandler.search(widget.keyword, page, type: 1);
       if (response.statusCode == 200 && mounted) {
         setState(() {
           if (response.data.length == 0) {

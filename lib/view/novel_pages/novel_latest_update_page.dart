@@ -1,10 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dcomic/http/UniversalRequestModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:dcomic/component/EmptyView.dart';
 import 'package:dcomic/component/LoadingCube.dart';
-import 'package:dcomic/http/http.dart';
 import 'package:dcomic/utils/tool_methods.dart';
 import 'package:dcomic/view/novel_pages/novel_detail_page.dart';
 
@@ -24,8 +24,7 @@ class _NovelLatestUpdatePage extends State<NovelLatestUpdatePage>{
   List list = <Widget>[];
 
   getLatestList() async {
-      CustomHttp http = CustomHttp();
-      var response = await http.getNovelLatestList(page);
+      var response = await UniversalRequestModel.dmzjRequestHandler.getNovelLatestUpdateList(page: page);
       if (response.statusCode == 200 && mounted) {
         setState(() {
           if (response.data.length == 0) {

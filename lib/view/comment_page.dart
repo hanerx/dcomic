@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:dcomic/component/EmptyView.dart';
 import 'package:dcomic/component/LoadingCube.dart';
-import 'package:dcomic/http/http.dart';
 import 'package:dcomic/component/comic/CommentListTile.dart';
 import 'package:provider/provider.dart';
 import 'package:dcomic/model/comicCommentModel.dart';

@@ -67,6 +67,10 @@ class UniversalRequestModel {
 
   static DMZJV4RequestHandler dmzjv4requestHandler = DMZJV4RequestHandler();
 
+  static DMZJJuriRequestHandler dmzjJuriRequestHandler =DMZJJuriRequestHandler();
+
+  static DarkSideRequestHandler darkSideRequestHandler =DarkSideRequestHandler();
+
   static GithubRequestHandler githubRequestHandler = GithubRequestHandler();
 
   static CopyMangaRequestHandler copyMangaRequestHandler =

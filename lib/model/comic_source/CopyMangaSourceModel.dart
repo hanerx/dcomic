@@ -64,7 +64,8 @@ class CopyMangaSourceModel extends BaseSourceModel {
     try {
       var response = await UniversalRequestModel.copyMangaRequestHandler
           .getComicDetail(comicId);
-      if ((response.statusCode == 200||response.statusCode == 304) && response.data['code'] == 200) {
+      if ((response.statusCode == 200 || response.statusCode == 304) &&
+          response.data['code'] == 200) {
         var data = response.data['results']['comic'];
         var historyChapter = await getHistoryChapter(comicId);
         Map groups = response.data['results']['groups'];
@@ -168,7 +169,8 @@ class CopyMangaSourceModel extends BaseSourceModel {
       try {
         var response = await UniversalRequestModel.copyMangaRequestHandler
             .getSubscribe(page: page);
-        if ((response.statusCode == 200||response.statusCode == 304) && response.data['code'] == 200) {
+        if ((response.statusCode == 200 || response.statusCode == 304) &&
+            response.data['code'] == 200) {
           List list = response.data['results']['list'];
           List data = list.map<Map>((e) => e['comic']).toList();
           var unread = await HistoryDatabaseProvider(type.name).getAllUnread();
@@ -212,7 +214,8 @@ class CopyMangaSourceModel extends BaseSourceModel {
     try {
       var response = await UniversalRequestModel.copyMangaRequestHandler
           .search(keyword, page: page);
-      if ((response.statusCode == 200||response.statusCode == 304) && response.data['code'] == 200) {
+      if ((response.statusCode == 200 || response.statusCode == 304) &&
+          response.data['code'] == 200) {
         List data = response.data['results']['list'];
         return data
             .map<CopyMangaSearchResult>((e) => CopyMangaSearchResult(
@@ -297,7 +300,8 @@ class CopyMangaUserConfig extends UserConfig {
       try {
         var response =
             await UniversalRequestModel.copyMangaRequestHandler.getUserInfo();
-        if ((response.statusCode == 200||response.statusCode == 304) && response.data['code'] == 200) {
+        if ((response.statusCode == 200 || response.statusCode == 304) &&
+            response.data['code'] == 200) {
           var data = response.data['results'];
           _avatar = data['avatar'];
           _nickname = data['nickname'];
@@ -494,7 +498,7 @@ class CopyMangaUserConfig extends UserConfig {
     try {
       var response = await UniversalRequestModel.copyMangaRequestHandler
           .login(username, password);
-      if ((response.statusCode == 200||response.statusCode == 304)) {
+      if ((response.statusCode == 200 || response.statusCode == 304)) {
         if (response.data['code'] == 200) {
           var data = response.data['results'];
           _status = UserStatus.login;
@@ -510,9 +514,11 @@ class CopyMangaUserConfig extends UserConfig {
         } else if (response.data['code'] == 210) {
           throw LoginUsernameOrPasswordError();
         }
+      } else if (response.statusCode == 210) {
+        throw LoginUsernameOrPasswordError();
       }
-    } on LoginUsernameOrPasswordError catch (e) {
-      throw e;
+    } on LoginUsernameOrPasswordError {
+      rethrow;
     } catch (e) {}
     return false;
   }
@@ -660,7 +666,8 @@ class CopyMangaComicDetail extends ComicDetail {
       try {
         var response = await UniversalRequestModel.copyMangaRequestHandler
             .getIfSubscribe(comicId);
-        if ((response.statusCode == 200||response.statusCode == 304) && response.data['code'] == 200) {
+        if ((response.statusCode == 200 || response.statusCode == 304) &&
+            response.data['code'] == 200) {
           _isSubscribed = response.data['results']['collect'] != null;
         }
       } catch (e) {
@@ -781,7 +788,8 @@ class CopyMangaComic extends Comic {
     try {
       var response = await UniversalRequestModel.copyMangaRequestHandler
           .getComic(comicId, chapterId);
-      if ((response.statusCode == 200||response.statusCode == 304) && response.data['code'] == 200) {
+      if ((response.statusCode == 200 || response.statusCode == 304) &&
+          response.data['code'] == 200) {
         var data = response.data['results'];
         _pageAt = chapterId;
         _title = data['chapter']['name'];
@@ -860,7 +868,7 @@ class CopyMangaHomepageHandler extends BaseHomePageHandler {
     try {
       var response =
           await UniversalRequestModel.copyMangaRequestHandler.getCategory();
-      if ((response.statusCode == 200||response.statusCode == 304)) {
+      if ((response.statusCode == 200 || response.statusCode == 304)) {
         List tags = response.data['results']['theme'];
         return tags
             .map<CategoryModel>((e) => CategoryModel(
@@ -887,7 +895,7 @@ class CopyMangaHomepageHandler extends BaseHomePageHandler {
     try {
       var response = await UniversalRequestModel.copyMangaRequestHandler
           .getTagList(categoryId: categoryId, page: page, popular: popular);
-      if ((response.statusCode == 200||response.statusCode == 304)) {
+      if ((response.statusCode == 200 || response.statusCode == 304)) {
         List data = response.data['results']['list'];
         return data
             .map<RankingComic>((e) => RankingComic(
@@ -922,7 +930,7 @@ class CopyMangaHomepageHandler extends BaseHomePageHandler {
     try {
       var response =
           await UniversalRequestModel.copyMangaRequestHandler.getHomepage();
-      if ((response.statusCode == 200||response.statusCode == 304)) {
+      if ((response.statusCode == 200 || response.statusCode == 304)) {
         List<HomePageCardModel> data = [];
         Map recommendComic = response.data['results']['recComics'];
         data.add(HomePageCardModel(
@@ -1058,7 +1066,7 @@ class CopyMangaHomepageHandler extends BaseHomePageHandler {
     try {
       var response = await UniversalRequestModel.copyMangaRequestHandler
           .getTagList(popular: false, page: page);
-      if ((response.statusCode == 200||response.statusCode == 304)) {
+      if ((response.statusCode == 200 || response.statusCode == 304)) {
         List data = response.data['results']['list'];
         return data
             .map<RankingComic>((e) => RankingComic(
@@ -1093,7 +1101,7 @@ class CopyMangaHomepageHandler extends BaseHomePageHandler {
     try {
       var response = await UniversalRequestModel.copyMangaRequestHandler
           .getTagList(popular: true, page: page);
-      if ((response.statusCode == 200||response.statusCode == 304)) {
+      if ((response.statusCode == 200 || response.statusCode == 304)) {
         List data = response.data['results']['list'];
         return data
             .map<RankingComic>((e) => RankingComic(
@@ -1128,7 +1136,7 @@ class CopyMangaHomepageHandler extends BaseHomePageHandler {
     try {
       var response = await UniversalRequestModel.copyMangaRequestHandler
           .getSubjectList(page: page);
-      if ((response.statusCode == 200||response.statusCode == 304)) {
+      if ((response.statusCode == 200 || response.statusCode == 304)) {
         List results = response.data['results']['list'];
         return results
             .map<SubjectItem>((e) => SubjectItem(
@@ -1154,7 +1162,9 @@ class CopyMangaHomepageHandler extends BaseHomePageHandler {
           .getSubjectDetail(subjectId);
       var contentResponse = await UniversalRequestModel.copyMangaRequestHandler
           .getSubjectDetailContent(subjectId);
-      if ((response.statusCode == 200||response.statusCode == 304) && (contentResponse.statusCode == 200||contentResponse.statusCode == 304)) {
+      if ((response.statusCode == 200 || response.statusCode == 304) &&
+          (contentResponse.statusCode == 200 ||
+              contentResponse.statusCode == 304)) {
         return SubjectModel(
             title: ChineseHelper.convertToSimplifiedChinese(
                 response.data['results']['title']),
@@ -1189,7 +1199,7 @@ class CopyMangaHomepageHandler extends BaseHomePageHandler {
     try {
       var response = await UniversalRequestModel.copyMangaRequestHandler
           .getTagList(authorId: authorId, page: page, popular: popular);
-      if ((response.statusCode == 200||response.statusCode == 304)) {
+      if ((response.statusCode == 200 || response.statusCode == 304)) {
         List data = response.data['results']['list'];
         return data
             .map<RankingComic>((e) => RankingComic(

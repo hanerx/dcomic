@@ -1,12 +1,12 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dcomic/http/UniversalRequestModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:dcomic/component/EmptyView.dart';
 import 'package:dcomic/component/LoadingCube.dart';
-import 'package:dcomic/http/http.dart';
 import 'package:dcomic/model/comic_source/DMZJSourceModel.dart';
 import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:dcomic/model/comic_source/sourceProvider.dart';
@@ -32,8 +32,8 @@ class _DarkSidePage extends State<DarkSidePage> {
   var data;
 
   getDarkInfo() async {
-    CustomHttp http = CustomHttp();
-    var response = await http.getDarkInfo();
+    var response =
+        await UniversalRequestModel.darkSideRequestHandler.getDarkInfo();
     if (response.statusCode == 200 && mounted) {
       setState(() {
         list.clear();
@@ -215,10 +215,12 @@ class DarkCustomListTile extends StatelessWidget {
                   },
                   settings: RouteSettings(name: 'comic_detail_page')));
         } else {
-          CustomHttp http = CustomHttp();
-          var response = await http.getComicDetail(comicId);
-          if (response.statusCode == 200 &&
-              response.data['chapters'].length > 0) {
+          var response;
+          try {
+            response = await UniversalRequestModel.dmzjv4requestHandler
+                .getComicDetail(comicId);
+          } catch (e) {}
+          if (response != null) {
             Navigator.push(
                 context,
                 MaterialPageRoute(

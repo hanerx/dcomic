@@ -1,12 +1,13 @@
 
+import 'package:dcomic/http/UniversalRequestModel.dart';
+import 'package:dcomic/protobuf/novel_chapter.pb.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
-import 'package:dcomic/http/http.dart';
 import 'package:dcomic/model/baseModel.dart';
 
 class NovelModel extends BaseModel {
   String title;
-  List chapters;
+  List<NovelChapterVolumeResponse> chapters;
   int novelID;
   int volumeID;
   int chapterID;
@@ -29,11 +30,11 @@ class NovelModel extends BaseModel {
 
   void initChapterList() {
     for (var item in chapters) {
-      for (var chapter in item['chapters']) {
+      for (var chapter in item.chapters) {
         chapterList.add({
-          'chapterID': chapter['chapter_id'],
-          'volumeID': item['volume_id'],
-          'title': chapter['chapter_name']
+          'chapterID': chapter.chapterId,
+          'volumeID': item.volumeId,
+          'title': chapter.chapterName
         });
       }
     }
@@ -41,8 +42,7 @@ class NovelModel extends BaseModel {
 
   Future<void> getNovel(int novelID, int volumeID, int chapterID) async {
     try {
-      CustomHttp http = CustomHttp();
-      var response = await http.getNovel(novelID, volumeID, chapterID);
+      var response = await UniversalRequestModel.dmzjJuriRequestHandler.getNovel(volumeID, chapterID);
       if (response.statusCode == 200) {
         data = response.data;
         notifyListeners();
@@ -99,9 +99,9 @@ class NovelModel extends BaseModel {
           isExpanded: expand[chapters.indexOf(e)],
           headerBuilder: (context, state) => ListTile(
                 title: Text(
-                  '${e['volume_name']}',
+                  '${e.volumeName}',
                   style: TextStyle(
-                      color: e['volume_id'] == volumeID
+                      color: e.volumeId == volumeID
                           ? Theme.of(context).textSelectionColor
                           : null),
                 ),
@@ -109,22 +109,22 @@ class NovelModel extends BaseModel {
           body: ListView.builder(
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
-              itemCount: e['chapters'].length,
+              itemCount: e.chapters.length,
               itemBuilder: (context, index) {
                 return ListTile(
                   title: Text(
-                    '${e['chapters'][index]['chapter_name']}',
+                    '${e.chapters[index].chapterName}',
                     style: TextStyle(
-                        color: e['chapters'][index]['chapter_id'] == chapterID
+                        color: e.chapters[index].chapterId == chapterID
                             ? Theme.of(context).textSelectionColor
                             : null),
                   ),
                   onTap: () {
-                    title = e['chapters'][index]['chapter_name'];
+                    title = e.chapters[index].chapterName;
                     chapters = chapters;
                     novelID = novelID;
-                    volumeID = e['volume_id'];
-                    chapterID = e['chapters'][index]['chapter_id'];
+                    volumeID = e.volumeId;
+                    chapterID = e.chapters[index].chapterId;
                     getNovel(novelID, volumeID, chapterID);
                     Navigator.pop(context);
                   },

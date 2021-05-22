@@ -1,10 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dcomic/http/UniversalRequestModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:dcomic/component/EmptyView.dart';
 import 'package:dcomic/component/LoadingCube.dart';
-import 'package:dcomic/http/http.dart';
 import 'package:dcomic/utils/tool_methods.dart';
 
 import 'novel_detail_page.dart';
@@ -23,13 +23,12 @@ class _NovelRankingPage extends State<NovelRankingPage> {
   int page = 0;
   bool refreshState = false;
   List list = <Widget>[];
-  List typeTypeList = <String>['按人气','按订阅'];
+  List typeTypeList = <String>['按人气', '按订阅'];
   Map tagTypeList = <int, String>{};
 
   loadRankingList() async {
-    CustomHttp http = CustomHttp();
-    var response =
-    await http.getNovelRankList(filterType, filterTag, page);
+    var response = await UniversalRequestModel.dmzjRequestHandler
+        .getNovelRankingList(type: filterType, tag: filterTag, page: page);
     if (response.statusCode == 200 && mounted) {
       setState(() {
         if (response.data.length == 0) {
@@ -51,12 +50,11 @@ class _NovelRankingPage extends State<NovelRankingPage> {
   }
 
   loadRankingTag() async {
-    CustomHttp http = CustomHttp();
-    var response = await http.getNovelFilterTags();
+    var response = await UniversalRequestModel.dmzjRequestHandler.getNovelFilterTags();
     if (response.statusCode == 200 && mounted) {
       setState(() {
         response.data.forEach(
-                (item) => {tagTypeList[item['tag_id']] = item['tag_name']});
+            (item) => {tagTypeList[item['tag_id']] = item['tag_name']});
       });
     }
   }
@@ -96,8 +94,7 @@ class _NovelRankingPage extends State<NovelRankingPage> {
                               ListTile(
                                 leading: Icon(Icons.category),
                                 title: Text('按分类'),
-                                subtitle:
-                                Text(tagTypeList[filterTag]),
+                                subtitle: Text(tagTypeList[filterTag]),
                                 trailing: PopupMenuButton(
                                   child: Icon(Icons.arrow_drop_down),
                                   onSelected: (int value) {
@@ -115,8 +112,7 @@ class _NovelRankingPage extends State<NovelRankingPage> {
                                     var data = <PopupMenuItem<int>>[];
                                     tagTypeList.forEach((key, value) {
                                       data.add(PopupMenuItem(
-                                          child: Text(value),
-                                          value: key));
+                                          child: Text(value), value: key));
                                     });
                                     return data;
                                   },
@@ -125,11 +121,9 @@ class _NovelRankingPage extends State<NovelRankingPage> {
                               ListTile(
                                 leading: Icon(Icons.list),
                                 title: Text('按种类'),
-                                subtitle:
-                                Text(typeTypeList[filterType]),
+                                subtitle: Text(typeTypeList[filterType]),
                                 trailing: PopupMenuButton(
-                                    child:
-                                    Icon(Icons.arrow_drop_down),
+                                    child: Icon(Icons.arrow_drop_down),
                                     onSelected: (int value) {
                                       setState(() {
                                         filterType = value;
@@ -141,15 +135,12 @@ class _NovelRankingPage extends State<NovelRankingPage> {
                                         Navigator.pop(context);
                                       });
                                     },
-                                    itemBuilder:
-                                        (BuildContext context) {
-                                      var data =
-                                      <PopupMenuItem<int>>[];
+                                    itemBuilder: (BuildContext context) {
+                                      var data = <PopupMenuItem<int>>[];
                                       typeTypeList.forEach((item) {
                                         data.add(PopupMenuItem(
                                           child: Text(item),
-                                          value: typeTypeList
-                                              .indexOf(item),
+                                          value: typeTypeList.indexOf(item),
                                         ));
                                       });
                                       return data;
@@ -167,8 +158,8 @@ class _NovelRankingPage extends State<NovelRankingPage> {
             firstRefreshWidget: LoadingCube(),
             firstRefresh: true,
             scrollController: ScrollController(),
-            emptyWidget: list.length==0?EmptyView():null,
-            onRefresh: ()async{
+            emptyWidget: list.length == 0 ? EmptyView() : null,
+            onRefresh: () async {
               setState(() {
                 refreshState = true;
                 page = 0;
@@ -176,7 +167,7 @@ class _NovelRankingPage extends State<NovelRankingPage> {
               });
               await loadRankingList();
             },
-            onLoad: ()async{
+            onLoad: () async {
               setState(() {
                 refreshState = true;
                 page++;
@@ -215,91 +206,100 @@ class _CustomListTile extends StatelessWidget {
     // TODO: implement build
     return IntrinsicHeight(
         child: FlatButton(
-          padding: EdgeInsets.fromLTRB(1, 0, 1, 0),
-          onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return NovelDetailPage(id: novelID,);
-            },settings: RouteSettings(name:'novel_detail_page')));
-          },
-          child: Card(
-            child: Row(
-              children: <Widget>[
-                CachedNetworkImage(
-                  imageUrl: '$cover',
-                  httpHeaders: {'referer': 'http://images.dmzj.com'},
-                  progressIndicatorBuilder: (context, url, downloadProgress) =>
-                      Center(child: CircularProgressIndicator(value: downloadProgress.progress),),
-                  errorWidget: (context, url, error) => Icon(Icons.error),
-                  width: 100,
-                ),
-                Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(10, 2, 0, 0),
-                      child: Column(
-                        children: <Widget>[
-                          Expanded(
-                            child: Align(
-                              alignment: Alignment.topLeft,
-                              child: Text(
-                                title,
-                                style: TextStyle(fontSize: 16),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Row(
-                                  children: <Widget>[
-                                    Icon(
-                                      Icons.supervisor_account,
-                                      color: Colors.grey[500],
-                                    ),
-                                    Text(
-                                      authors,
-                                      style: TextStyle(color: Colors.grey[500]),
-                                    ),
-                                  ],
-                                )),
-                          ),
-                          Expanded(
-                            child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Row(
-                                  children: <Widget>[
-                                    Icon(
-                                      Icons.category,
-                                      color: Colors.grey[500],
-                                    ),
-                                    Text(
-                                      types,
-                                      style: TextStyle(color: Colors.grey[500]),
-                                    ),
-                                  ],
-                                )),
-                          ),
-                          Expanded(
-                            child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Row(
-                                  children: <Widget>[
-                                    Icon(
-                                      Icons.history,
-                                      color: Colors.grey[500],
-                                    ),
-                                    Text(
-                                      formatDate,
-                                      style: TextStyle(color: Colors.grey[500]),
-                                    ),
-                                  ],
-                                )),
-                          )
-                        ],
-                      ),
-                    ))
-              ],
+      padding: EdgeInsets.fromLTRB(1, 0, 1, 0),
+      onPressed: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) {
+                  return NovelDetailPage(
+                    id: novelID,
+                  );
+                },
+                settings: RouteSettings(name: 'novel_detail_page')));
+      },
+      child: Card(
+        child: Row(
+          children: <Widget>[
+            CachedNetworkImage(
+              imageUrl: '$cover',
+              httpHeaders: {'referer': 'http://images.dmzj.com'},
+              progressIndicatorBuilder: (context, url, downloadProgress) =>
+                  Center(
+                child:
+                    CircularProgressIndicator(value: downloadProgress.progress),
+              ),
+              errorWidget: (context, url, error) => Icon(Icons.error),
+              width: 100,
             ),
-          ),
-        ));
+            Expanded(
+                child: Padding(
+              padding: EdgeInsets.fromLTRB(10, 2, 0, 0),
+              child: Column(
+                children: <Widget>[
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        title,
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Row(
+                          children: <Widget>[
+                            Icon(
+                              Icons.supervisor_account,
+                              color: Colors.grey[500],
+                            ),
+                            Text(
+                              authors,
+                              style: TextStyle(color: Colors.grey[500]),
+                            ),
+                          ],
+                        )),
+                  ),
+                  Expanded(
+                    child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Row(
+                          children: <Widget>[
+                            Icon(
+                              Icons.category,
+                              color: Colors.grey[500],
+                            ),
+                            Text(
+                              types,
+                              style: TextStyle(color: Colors.grey[500]),
+                            ),
+                          ],
+                        )),
+                  ),
+                  Expanded(
+                    child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Row(
+                          children: <Widget>[
+                            Icon(
+                              Icons.history,
+                              color: Colors.grey[500],
+                            ),
+                            Text(
+                              formatDate,
+                              style: TextStyle(color: Colors.grey[500]),
+                            ),
+                          ],
+                        )),
+                  )
+                ],
+              ),
+            ))
+          ],
+        ),
+      ),
+    ));
   }
 }
