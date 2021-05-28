@@ -9,16 +9,17 @@ class CopyMangaRequestHandler extends SingleDomainRequestHandler {
   CopyMangaRequestHandler() : super('https://api.copymanga.com/');
 
   Future<Options> setHeader([Map<String, dynamic> headers]) async {
+    if (headers == null) {
+      headers = {};
+    }
     if (await SourceDatabaseProvider.getSourceOption<bool>(
         'copy_manga', 'login',
         defaultValue: false)) {
       String token =
           await SourceDatabaseProvider.getSourceOption('copy_manga', 'token');
-      if (headers == null) {
-        headers = {};
-      }
       headers['authorization'] = 'Token $token';
     }
+    headers['region']=await SourceDatabaseProvider.getSourceOption('copy_manga', 'region',defaultValue: '1');
     return Options(headers: headers);
   }
 

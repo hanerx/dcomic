@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:lpinyin/lpinyin.dart';
+import 'package:provider/provider.dart';
 
 class CopyMangaSourceModel extends BaseSourceModel {
   CopyMangaUserConfig _userConfig = CopyMangaUserConfig();
@@ -73,7 +74,8 @@ class CopyMangaSourceModel extends BaseSourceModel {
         for (var item in groups.values) {
           var chapter = await UniversalRequestModel.copyMangaRequestHandler
               .getChapters(comicId, item['path_word'], limit: item['count']);
-          if (chapter.statusCode == 200 && chapter.data['code'] == 200) {
+          if ((chapter.statusCode == 200 || chapter.statusCode == 304) &&
+              chapter.data['code'] == 200) {
             List chapterData = chapter.data['results']['list']
                 .map<Map>((e) => {
                       'chapter_id': e['uuid'],
@@ -201,7 +203,28 @@ class CopyMangaSourceModel extends BaseSourceModel {
   @override
   Widget getSettingWidget(context) {
     // TODO: implement getSettingWidget
-    return Container();
+    return ChangeNotifierProvider(
+        create: (_) => CopyMangaConfigProvider(_options),
+        builder: (context, child) {
+          return ListView(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            children: [
+              ListTile(
+                title: Text('选择线路'),
+                subtitle: Text(
+                    "${Provider.of<CopyMangaConfigProvider>(context).region ? '大陆线路' : '港澳台线路'}"),
+                trailing: Switch(
+                  value: Provider.of<CopyMangaConfigProvider>(context).region,
+                  onChanged: (value) {
+                    Provider.of<CopyMangaConfigProvider>(context, listen: false)
+                        .region = value;
+                  },
+                ),
+              )
+            ],
+          );
+        });
   }
 
   @override
@@ -254,11 +277,26 @@ class CopyMangaSourceModel extends BaseSourceModel {
   BaseHomePageHandler get homePageHandler => CopyMangaHomepageHandler(this);
 }
 
+class CopyMangaConfigProvider extends SourceOptionsProvider {
+  CopyMangaSourceOptions options;
+
+  CopyMangaConfigProvider(this.options) : super(options);
+
+  bool get region => options.region;
+
+  set region(bool value) {
+    options.region = value;
+    notifyListeners();
+  }
+}
+
 class CopyMangaSourceOptions extends SourceOptions {
   bool _active = false;
+  bool _region = false;
 
   CopyMangaSourceOptions.fromMap(Map map) {
     _active = map['active'] == '1';
+    _region = map['region'] == '1';
   }
 
   bool get active => _active;
@@ -267,6 +305,15 @@ class CopyMangaSourceOptions extends SourceOptions {
     _active = value;
     SourceDatabaseProvider.insertSourceOption<bool>(
         'copy_manga', 'active', value);
+    notifyListeners();
+  }
+
+  bool get region => _region;
+
+  set region(bool value) {
+    _region = value;
+    SourceDatabaseProvider.insertSourceOption<bool>(
+        'copy_manga', 'region', value);
     notifyListeners();
   }
 
