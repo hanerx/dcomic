@@ -32,7 +32,7 @@ class _NovelSearchTab extends State<NovelSearchTab> {
   search() async {
     if (widget.keyword != null && widget.keyword != '') {
       var response = await UniversalRequestModel.dmzjRequestHandler.search(widget.keyword, page, type: 1);
-      if (response.statusCode == 200 && mounted) {
+      if ((response.statusCode == 200||response.statusCode == 304) && mounted) {
         setState(() {
           if (response.data.length == 0) {
             refreshState = true;

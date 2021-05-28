@@ -17,7 +17,7 @@ class NovelFavoriteModel extends BaseModel {
     try {
       var response = await UniversalRequestModel.dmzjRequestHandler
           .getSubscribe(int.parse(uid), page, type: 1);
-      if (response.statusCode == 200) {
+      if ((response.statusCode == 200||response.statusCode == 304)) {
         for (var item in response.data) {
           bool unread = item['sub_readed'] == 0;
           item['unread'] = unread;
