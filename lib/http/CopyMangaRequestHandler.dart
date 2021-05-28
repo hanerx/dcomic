@@ -19,7 +19,7 @@ class CopyMangaRequestHandler extends SingleDomainRequestHandler {
           await SourceDatabaseProvider.getSourceOption('copy_manga', 'token');
       headers['authorization'] = 'Token $token';
     }
-    headers['region']=await SourceDatabaseProvider.getSourceOption('copy_manga', 'region',defaultValue: '1');
+    headers['region']=await SourceDatabaseProvider.getSourceOption('copy_manga', 'region',defaultValue: '0');
     return Options(headers: headers);
   }
 
