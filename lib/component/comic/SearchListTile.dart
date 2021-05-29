@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dcomic/component/comic/BaseListTile.dart';
+import 'package:dcomic/utils/ProxyCacheManager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dcomic/utils/tool_methods.dart';
@@ -39,7 +40,19 @@ class SearchListTile extends StatelessWidget {
                     value: downloadProgress.progress),
               ),
             ),
-        errorWidget: (context, url, error) => Icon(Icons.error),
+        errorWidget: (context, url, error) => CachedNetworkImage(
+          imageUrl: cover,
+          httpHeaders: headers,
+          cacheManager: BadCertificateCacheManager(),
+          progressIndicatorBuilder:
+              (context, url, downloadProgress) => Container(
+            child: Center(
+              child: CircularProgressIndicator(
+                  value: downloadProgress.progress),
+            ),
+          ),
+          errorWidget: (context, url, error) => Icon(Icons.error),
+        ),
       ),
       detail: <Widget>[
         Text(
