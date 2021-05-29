@@ -241,7 +241,7 @@ class _DebugTestPage extends State<DebugTestPage> {
             child: CachedNetworkImage(
               imageUrl:
                   'https://i.pximg.net/img-original/img/2019/08/04/00/12/45/76062188_p0.jpg',
-              cacheManager: ProxyCacheManager('192.168.123.47', 7890),
+              cacheManager: ProxyCacheManager(ipAddr:'192.168.123.47', port:7890),
               httpHeaders: {'referer': 'https://www.pixiv.net/'},
             ),
           )

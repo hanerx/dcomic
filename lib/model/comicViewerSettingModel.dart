@@ -12,6 +12,9 @@ class ComicViewerSettingModel extends BaseModel {
   bool _animation = true;
   bool _autoDark = false;
   bool _enableViewpoint = false;
+
+
+
   ViewerConfigDatabaseProvider _databaseProvider =
       ViewerConfigDatabaseProvider();
   static const List backgroundColors = [

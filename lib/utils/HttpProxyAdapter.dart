@@ -18,3 +18,12 @@ class HttpProxyAdapter extends DefaultHttpClientAdapter {
     };
   }
 }
+
+class BadCertificateAdapter extends DefaultHttpClientAdapter {
+  BadCertificateAdapter() {
+    onHttpClientCreate = (client) {
+      client.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+    };
+  }
+}

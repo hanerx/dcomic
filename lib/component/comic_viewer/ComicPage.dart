@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:dcomic/model/ipfsSettingProvider.dart';
+import 'package:dcomic/utils/ProxyCacheManager.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -191,19 +192,32 @@ class _ComicPage extends State<ComicPage> {
             child: CircularProgressIndicator(value: downloadProgress.progress),
           ),
         )),
-        errorWidget: (context, url, error) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.error,
-                color: Colors.redAccent,
-              ),
-              Text(
-                '$error',
-                style: TextStyle(color: Colors.redAccent),
-              )
-            ],
+        errorWidget: (context, url, error) => CachedNetworkImage(
+          fit: widget.cover ? BoxFit.cover : BoxFit.contain,
+          imageUrl: widget.url,
+          httpHeaders: widget.headers,
+          cacheManager: BadCertificateCacheManager(),
+          progressIndicatorBuilder: (context, url, downloadProgress) => Center(
+              child: Container(
+                height: 500,
+                child: Center(
+                  child: CircularProgressIndicator(value: downloadProgress.progress),
+                ),
+              )),
+          errorWidget: (context, url, error) => Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.error,
+                  color: Colors.redAccent,
+                ),
+                Text(
+                  '$error',
+                  style: TextStyle(color: Colors.redAccent),
+                )
+              ],
+            ),
           ),
         ),
       ),
