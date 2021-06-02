@@ -124,3 +124,68 @@ const ComicChapterDetailInfoResponse$json = const {
 
 /// Descriptor for `ComicChapterDetailInfoResponse`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List comicChapterDetailInfoResponseDescriptor = $convert.base64Decode('Ch5Db21pY0NoYXB0ZXJEZXRhaWxJbmZvUmVzcG9uc2USHAoJQ2hhcHRlcklkGAEgASgFUglDaGFwdGVySWQSGAoHQ29taWNJZBgCIAEoBVIHQ29taWNJZBIUCgVUaXRsZRgDIAEoCVIFVGl0bGUSFAoFT3JkZXIYBCABKAVSBU9yZGVyEhYKBlN0YXR1cxgFIAEoBVIGU3RhdHVzEh4KClNtYWxsUGFnZXMYBiADKAlSClNtYWxsUGFnZXMSFgoGTGVuZ3RoGAcgASgFUgZMZW5ndGgSGgoIUmF3UGFnZXMYCCADKAlSCFJhd1BhZ2VzEhoKCEZpbGVTaXplGAkgASgFUghGaWxlU2l6ZQ==');
+@$core.Deprecated('Use comicUpdateListResponseDescriptor instead')
+const ComicUpdateListResponse$json = const {
+  '1': 'ComicUpdateListResponse',
+  '2': const [
+    const {'1': 'Errno', '3': 1, '4': 1, '5': 5, '10': 'Errno'},
+    const {'1': 'Errmsg', '3': 2, '4': 1, '5': 9, '10': 'Errmsg'},
+    const {'1': 'Data', '3': 3, '4': 3, '5': 11, '6': '.dmzj.comic.ComicUpdateListItemResponse', '10': 'Data'},
+  ],
+};
+
+/// Descriptor for `ComicUpdateListResponse`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List comicUpdateListResponseDescriptor = $convert.base64Decode('ChdDb21pY1VwZGF0ZUxpc3RSZXNwb25zZRIUCgVFcnJubxgBIAEoBVIFRXJybm8SFgoGRXJybXNnGAIgASgJUgZFcnJtc2cSOwoERGF0YRgDIAMoCzInLmRtemouY29taWMuQ29taWNVcGRhdGVMaXN0SXRlbVJlc3BvbnNlUgREYXRh');
+@$core.Deprecated('Use comicUpdateListItemResponseDescriptor instead')
+const ComicUpdateListItemResponse$json = const {
+  '1': 'ComicUpdateListItemResponse',
+  '2': const [
+    const {'1': 'ComicId', '3': 1, '4': 1, '5': 5, '10': 'ComicId'},
+    const {'1': 'Title', '3': 2, '4': 1, '5': 9, '10': 'Title'},
+    const {'1': 'Islong', '3': 3, '4': 1, '5': 8, '10': 'Islong'},
+    const {'1': 'Authors', '3': 4, '4': 1, '5': 9, '10': 'Authors'},
+    const {'1': 'Types', '3': 5, '4': 1, '5': 9, '10': 'Types'},
+    const {'1': 'Cover', '3': 6, '4': 1, '5': 9, '10': 'Cover'},
+    const {'1': 'Status', '3': 7, '4': 1, '5': 9, '10': 'Status'},
+    const {'1': 'LastUpdateChapterName', '3': 8, '4': 1, '5': 9, '10': 'LastUpdateChapterName'},
+    const {'1': 'LastUpdateChapterId', '3': 9, '4': 1, '5': 5, '10': 'LastUpdateChapterId'},
+    const {'1': 'LastUpdatetime', '3': 10, '4': 1, '5': 3, '10': 'LastUpdatetime'},
+  ],
+};
+
+/// Descriptor for `ComicUpdateListItemResponse`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List comicUpdateListItemResponseDescriptor = $convert.base64Decode('ChtDb21pY1VwZGF0ZUxpc3RJdGVtUmVzcG9uc2USGAoHQ29taWNJZBgBIAEoBVIHQ29taWNJZBIUCgVUaXRsZRgCIAEoCVIFVGl0bGUSFgoGSXNsb25nGAMgASgIUgZJc2xvbmcSGAoHQXV0aG9ycxgEIAEoCVIHQXV0aG9ycxIUCgVUeXBlcxgFIAEoCVIFVHlwZXMSFAoFQ292ZXIYBiABKAlSBUNvdmVyEhYKBlN0YXR1cxgHIAEoCVIGU3RhdHVzEjQKFUxhc3RVcGRhdGVDaGFwdGVyTmFtZRgIIAEoCVIVTGFzdFVwZGF0ZUNoYXB0ZXJOYW1lEjAKE0xhc3RVcGRhdGVDaGFwdGVySWQYCSABKAVSE0xhc3RVcGRhdGVDaGFwdGVySWQSJgoOTGFzdFVwZGF0ZXRpbWUYCiABKANSDkxhc3RVcGRhdGV0aW1l');
+@$core.Deprecated('Use comicRankListResponseDescriptor instead')
+const ComicRankListResponse$json = const {
+  '1': 'ComicRankListResponse',
+  '2': const [
+    const {'1': 'Errno', '3': 1, '4': 1, '5': 5, '10': 'Errno'},
+    const {'1': 'Errmsg', '3': 2, '4': 1, '5': 9, '10': 'Errmsg'},
+    const {'1': 'Data', '3': 3, '4': 3, '5': 11, '6': '.dmzj.comic.ComicRankListItemResponse', '10': 'Data'},
+  ],
+};
+
+/// Descriptor for `ComicRankListResponse`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List comicRankListResponseDescriptor = $convert.base64Decode('ChVDb21pY1JhbmtMaXN0UmVzcG9uc2USFAoFRXJybm8YASABKAVSBUVycm5vEhYKBkVycm1zZxgCIAEoCVIGRXJybXNnEjkKBERhdGEYAyADKAsyJS5kbXpqLmNvbWljLkNvbWljUmFua0xpc3RJdGVtUmVzcG9uc2VSBERhdGE=');
+@$core.Deprecated('Use comicRankListItemResponseDescriptor instead')
+const ComicRankListItemResponse$json = const {
+  '1': 'ComicRankListItemResponse',
+  '2': const [
+    const {'1': 'ComicId', '3': 1, '4': 1, '5': 5, '10': 'ComicId'},
+    const {'1': 'Title', '3': 2, '4': 1, '5': 9, '10': 'Title'},
+    const {'1': 'Authors', '3': 3, '4': 1, '5': 9, '10': 'Authors'},
+    const {'1': 'Status', '3': 4, '4': 1, '5': 9, '10': 'Status'},
+    const {'1': 'Cover', '3': 5, '4': 1, '5': 9, '10': 'Cover'},
+    const {'1': 'Types', '3': 6, '4': 1, '5': 9, '10': 'Types'},
+    const {'1': 'LastUpdatetime', '3': 7, '4': 1, '5': 3, '10': 'LastUpdatetime'},
+    const {'1': 'LastUpdateChapterName', '3': 8, '4': 1, '5': 9, '10': 'LastUpdateChapterName'},
+    const {'1': 'ComicPy', '3': 9, '4': 1, '5': 9, '10': 'ComicPy'},
+    const {'1': 'Num', '3': 10, '4': 1, '5': 5, '10': 'Num'},
+    const {'1': 'TagId', '3': 11, '4': 1, '5': 5, '10': 'TagId'},
+    const {'1': 'ChapterName', '3': 12, '4': 1, '5': 9, '10': 'ChapterName'},
+    const {'1': 'ChapterId', '3': 13, '4': 1, '5': 5, '10': 'ChapterId'},
+  ],
+};
+
+/// Descriptor for `ComicRankListItemResponse`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List comicRankListItemResponseDescriptor = $convert.base64Decode('ChlDb21pY1JhbmtMaXN0SXRlbVJlc3BvbnNlEhgKB0NvbWljSWQYASABKAVSB0NvbWljSWQSFAoFVGl0bGUYAiABKAlSBVRpdGxlEhgKB0F1dGhvcnMYAyABKAlSB0F1dGhvcnMSFgoGU3RhdHVzGAQgASgJUgZTdGF0dXMSFAoFQ292ZXIYBSABKAlSBUNvdmVyEhQKBVR5cGVzGAYgASgJUgVUeXBlcxImCg5MYXN0VXBkYXRldGltZRgHIAEoA1IOTGFzdFVwZGF0ZXRpbWUSNAoVTGFzdFVwZGF0ZUNoYXB0ZXJOYW1lGAggASgJUhVMYXN0VXBkYXRlQ2hhcHRlck5hbWUSGAoHQ29taWNQeRgJIAEoCVIHQ29taWNQeRIQCgNOdW0YCiABKAVSA051bRIUCgVUYWdJZBgLIAEoBVIFVGFnSWQSIAoLQ2hhcHRlck5hbWUYDCABKAlSC0NoYXB0ZXJOYW1lEhwKCUNoYXB0ZXJJZBgNIAEoBVIJQ2hhcHRlcklk');
