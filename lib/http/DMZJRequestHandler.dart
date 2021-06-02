@@ -85,7 +85,8 @@ class DMZJRequestHandler extends SingleDomainRequestHandler {
     return dio.get('/classify/$categoryId-$date-$tag/$type/$page.json');
   }
 
-  Future<Response> getNovelCategoryDetail(String categoryId,{int tag:0, int type:0, int page:0}){
+  Future<Response> getNovelCategoryDetail(String categoryId,
+      {int tag: 0, int type: 0, int page: 0}) {
     return dio.get('/novel/$categoryId/$tag/$type/$page.json');
   }
 
@@ -101,7 +102,7 @@ class DMZJRequestHandler extends SingleDomainRequestHandler {
     return dio.get('/novel/rank/$type/$tag/$page.json');
   }
 
-  Future<Response> getNovelFilterTags(){
+  Future<Response> getNovelFilterTags() {
     return dio.get('/novel/tag.json');
   }
 }
@@ -208,7 +209,7 @@ class DMZJCommentRequestHandler extends SingleDomainRequestHandler {
 class DMZJV4RequestHandler extends SingleDomainRequestHandler {
   DMZJV4RequestHandler() : super('https://nnv4api.dmzj1.com');
 
-  Future<Map> getParam({bool login: false}) async {
+  Future<Map<String,dynamic>> getParam({bool login: false}) async {
     var data = {
       "channel": Platform.operatingSystem,
       "version": "3.0.0",
@@ -276,9 +277,45 @@ class DMZJV4RequestHandler extends SingleDomainRequestHandler {
     }
     return null;
   }
+
+  Future<List<ComicUpdateListItemResponse>> getUpdateList(
+      {String type: '0', int page: 0}) async {
+    var response = await dio.get('/comic/update/list/$type/$page',
+        queryParameters: await getParam(login: true));
+    if (response.statusCode == 200) {
+      var data = ComicUpdateListResponse.fromBuffer(
+          ToolMethods.decrypt(response.data));
+      if (data.errno != 0) {
+        throw data.errmsg;
+      }
+      return data.data;
+    }
+    return null;
+  }
+
+  Future<List<ComicRankListItemResponse>> getRankingList(
+      {int tagId: 0, int byTime: 0, int rankType: 0, int page: 0}) async {
+    Map<String,dynamic> map={
+      'tag_id': tagId,
+      'by_time': byTime,
+      'rank_type': rankType,
+      'page': page
+    };
+    map.addAll(await getParam(login: true));
+    var response = await dio.get('/comic/rank/list', queryParameters: map);
+    if (response.statusCode == 200) {
+      var data =
+          ComicRankListResponse.fromBuffer(ToolMethods.decrypt(response.data));
+      if (data.errno != 0) {
+        throw data.errmsg;
+      }
+      return data.data;
+    }
+    return null;
+  }
 }
 
-class DMZJJuriRequestHandler extends SingleDomainRequestHandler{
+class DMZJJuriRequestHandler extends SingleDomainRequestHandler {
   DMZJJuriRequestHandler() : super('https://jurisdiction.dmzj1.com');
 
   Future<Response> getNovel(int volumeID, int chapterID) {
@@ -293,7 +330,7 @@ class DMZJJuriRequestHandler extends SingleDomainRequestHandler{
   }
 }
 
-class DarkSideRequestHandler extends SingleDomainRequestHandler{
+class DarkSideRequestHandler extends SingleDomainRequestHandler {
   DarkSideRequestHandler() : super('https://dark-dmzj.hloli.net');
 
   Future<Response> getDarkInfo() {

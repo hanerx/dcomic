@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dcomic/component/comic/BaseListTile.dart';
 import 'package:dcomic/model/comic_source/baseSourceModel.dart';
+import 'package:dcomic/utils/ProxyCacheManager.dart';
 import 'package:dcomic/utils/tool_methods.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +39,20 @@ class HistoryListTile extends StatelessWidget {
                 value: downloadProgress.progress),
           ),
         ),
-        errorWidget: (context, url, error) => Icon(Icons.error),
+        errorWidget: (context, url, error) => CachedNetworkImage(
+          imageUrl: '$cover',
+          fit: BoxFit.cover,
+          cacheManager: BadCertificateCacheManager(),
+          httpHeaders: {'referer': 'http://images.dmzj.com'},
+          progressIndicatorBuilder: (context, url, downloadProgress) =>Container(
+            child: Center(
+              child: CircularProgressIndicator(
+                  value: downloadProgress.progress),
+            ),
+          ),
+          errorWidget: (context, url, error) => Icon(Icons.error),
+          width: 100,
+        ),
         width: 100,
       ),
       detail: <Widget>[

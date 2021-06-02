@@ -29,7 +29,7 @@ import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:provider/provider.dart';
 
 class DMZJSourceModel extends BaseSourceModel {
-  DMZJSourceOptions _options = DMZJSourceOptions.fromMap({});
+  DMZJSourceOptions _options = DMZJWebSourceOptions.fromMap({});
   DMZJUserConfig _userConfig = DMZJUserConfig();
 
   DMZJSourceModel() {
@@ -38,7 +38,7 @@ class DMZJSourceModel extends BaseSourceModel {
 
   Future<void> init() async {
     var map = await SourceDatabaseProvider.getSourceOptions(type.name);
-    _options = DMZJSourceOptions.fromMap(map);
+    _options = DMZJWebSourceOptions.fromMap(map);
   }
 
   @override
@@ -53,9 +53,9 @@ class DMZJSourceModel extends BaseSourceModel {
                 null) {
           var map =
               await SourceDatabaseProvider.getBoundComic(type.name, comicId);
-          return await getComicDetail(map['bound_id']);
+          return await this.getComicDetail(map['bound_id']);
         }
-        return await getComicDetail(comicId);
+        return await this.getComicDetail(comicId);
       } catch (e) {
         if (title != null) {
           var list = await search(title);
@@ -65,7 +65,7 @@ class DMZJSourceModel extends BaseSourceModel {
                 SourceDatabaseProvider.boundComic(
                     type.name, comicId, item.comicId);
               }
-              return await getComicDetail(item.comicId);
+              return await this.getComicDetail(item.comicId);
             }
           }
           throw ComicIdNotBoundError(comicId);
@@ -144,10 +144,11 @@ class DMZJSourceModel extends BaseSourceModel {
     } on LoginRequiredError {
       rethrow;
     } catch (e) {
-      if (await SourceDatabaseProvider.getSourceOption<bool>('dmzj', 'backup_api')) {
-        try{
+      if (await SourceDatabaseProvider.getSourceOption<bool>(
+          'dmzj', 'backup_api')) {
+        try {
           return this.getComicDetailBackup(comicId);
-        }catch(e){
+        } catch (e) {
           rethrow;
         }
       } else {
@@ -196,7 +197,6 @@ class DMZJSourceModel extends BaseSourceModel {
     } catch (e) {
       logger.w(
           'class: ComicDetailModel, action: detailBackupLoadingFailed, comicId: $comicId, exception: $e');
-
     }
     throw ComicLoadingError();
   }
@@ -257,7 +257,7 @@ class DMZJSourceModel extends BaseSourceModel {
   Widget getSettingWidget(context) {
     // TODO: implement getSettingWidget
     return ChangeNotifierProvider(
-      create: (_) => DMZJConfigProvider(_options),
+      create: (_) => DMZJConfigProvider(options),
       builder: (context, child) {
         return ListView.builder(
           shrinkWrap: true,
@@ -312,7 +312,7 @@ class DMZJSourceModel extends BaseSourceModel {
 
   @override
   // TODO: implement options
-  SourceOptions get options => _options;
+  DMZJSourceOptions get options => _options;
 
   @override
   // TODO: implement userConfig
@@ -726,28 +726,15 @@ class DMZJUserConfig extends UserConfig {
 }
 
 class DMZJWebSourceModel extends DMZJSourceModel {
-  @override
-  // TODO: implement _options
-  DMZJSourceOptions get _options => _webSourceOptions;
-
-  DMZJWebSourceOptions _webSourceOptions = DMZJWebSourceOptions.fromMap({});
-
   DMZJWebSourceModel() {
-    init();
-  }
-
-  @override
-  Future<void> init() async {
-    // TODO: implement init
-    var map = await SourceDatabaseProvider.getSourceOptions(type.name);
-    _webSourceOptions = DMZJWebSourceOptions.fromMap(map);
+    super.init();
   }
 
   @override
   Future<ComicDetail> get({String comicId, String title}) async {
     // TODO: implement get
-    if(!_options.webApi){
-      return super.get(comicId: comicId,title: title);
+    if (!options.webApi) {
+      return super.get(comicId: comicId, title: title);
     }
     if (comicId == null && title == null) {
       throw IDInvalidError();
@@ -759,9 +746,9 @@ class DMZJWebSourceModel extends DMZJSourceModel {
                 null) {
           var map = await SourceDatabaseProvider.getBoundComic(
               super.type.name, comicId);
-          return await getComicDetail(map['bound_id']);
+          return await getComicDetailWeb(map['bound_id']);
         }
-        return await getComicDetail(comicId);
+        return await getComicDetailWeb(comicId);
       } catch (e) {
         if (title != null) {
           var list = await search(title);
@@ -771,7 +758,7 @@ class DMZJWebSourceModel extends DMZJSourceModel {
                 SourceDatabaseProvider.boundComic(
                     super.type.name, comicId, item.comicId);
               }
-              return await getComicDetail(item.comicId);
+              return await getComicDetailWeb(item.comicId);
             }
           }
           throw ComicIdNotBoundError(comicId);
@@ -785,7 +772,7 @@ class DMZJWebSourceModel extends DMZJSourceModel {
     throw ComicLoadingError();
   }
 
-  Future<ComicDetail> getComicDetail(String comicId) async {
+  Future<ComicDetail> getComicDetailWeb(String comicId) async {
     if (comicId == null) {
       throw IDInvalidError();
     }
@@ -883,10 +870,6 @@ class DMZJWebSourceModel extends DMZJSourceModel {
       deprecated: false,
       canSubscribe: true,
       haveHomePage: true);
-
-  @override
-  // TODO: implement options
-  SourceOptions get options => _options;
 
   @override
   Widget getSettingWidget(context) {
@@ -1777,6 +1760,9 @@ class DMZJHomePageHandler extends BaseHomePageHandler {
   @override
   Future<List<RankingComic>> getLatestUpdate(int page) async {
     // TODO: implement getLatestUpdate
+    if (!model.options.webApi) {
+      return getLatestUpdateApi(page);
+    }
     try {
       var response =
           await UniversalRequestModel.dmzjMobileRequestHandler.getLatest(page);
@@ -1800,9 +1786,36 @@ class DMZJHomePageHandler extends BaseHomePageHandler {
     return [];
   }
 
+  Future<List<RankingComic>> getLatestUpdateApi(int page) async {
+    try {
+      var response = await UniversalRequestModel.dmzjv4requestHandler
+          .getUpdateList(page: page);
+      if (response != null) {
+        return response
+            .map<RankingComic>((e) => RankingComic(
+                cover: e.cover,
+                title: e.title,
+                comicId: e.comicId.toString(),
+                types: e.types,
+                authors: e.authors,
+                timestamp: e.lastUpdatetime.toInt(),
+                headers: {'referer': 'https://m.dmzj.com'},
+                model: model))
+            .toList();
+      }
+    } catch (e, s) {
+      FirebaseCrashlytics.instance
+          .recordError(e, s, reason: 'dmzjGetLatestUpdateFailed: $page');
+    }
+    return [];
+  }
+
   @override
   Future<List<RankingComic>> getRankingList(int page) async {
     // TODO: implement getRankingList
+    if (!model.options.webApi) {
+      return getRankingListApi(page);
+    }
     try {
       var response = await UniversalRequestModel.dmzjMobileRequestHandler
           .getRankList(0, 0, 0, page);
@@ -1817,6 +1830,30 @@ class DMZJHomePageHandler extends BaseHomePageHandler {
                 headers: {'referer': 'https://m.dmzj.com'},
                 model: model,
                 comicId: item['id'].toString()))
+            .toList();
+      }
+    } catch (e, s) {
+      FirebaseCrashlytics.instance
+          .recordError(e, s, reason: 'dmzjRankingListLoadingFail');
+    }
+    return [];
+  }
+
+  Future<List<RankingComic>> getRankingListApi(int page) async {
+    try {
+      var response = await UniversalRequestModel.dmzjv4requestHandler
+          .getRankingList(page: page);
+      if (response != null) {
+        return response
+            .map<RankingComic>((e) => RankingComic(
+                cover: e.cover,
+                title: e.title,
+                comicId: e.comicId.toString(),
+                types: e.types,
+                authors: e.authors,
+                timestamp: e.lastUpdatetime.toInt(),
+                headers: {'referer': 'https://m.dmzj.com'},
+                model: model))
             .toList();
       }
     } catch (e, s) {

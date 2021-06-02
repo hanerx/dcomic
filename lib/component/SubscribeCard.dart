@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dcomic/model/comic_source/baseSourceModel.dart';
+import 'package:dcomic/utils/ProxyCacheManager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dcomic/generated/l10n.dart';
@@ -128,7 +129,16 @@ class _Card extends StatelessWidget {
       progressIndicatorBuilder: (context, url, downloadProgress) => Center(
         child: CircularProgressIndicator(value: downloadProgress.progress),
       ),
-      errorWidget: (context, url, error) => Icon(Icons.error),
+      errorWidget: (context, url, error) => CachedNetworkImage(
+        fit: BoxFit.cover,
+        imageUrl: '$cover',
+        cacheManager: BadCertificateCacheManager(),
+        httpHeaders: {'referer': 'http://images.dmzj.com'},
+        progressIndicatorBuilder: (context, url, downloadProgress) => Center(
+          child: CircularProgressIndicator(value: downloadProgress.progress),
+        ),
+        errorWidget: (context, url, error) => Icon(Icons.error),
+      ),
     );
   }
 }
