@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
@@ -57,17 +58,20 @@ class _HorizontalPageView extends State<HorizontalPageView> {
   _HorizontalPageView() {
     _controller = PageController(initialPage: 1);
     print("class: HorizontalPageView, action: listenChannel");
-    _channel = EventChannel("top.hanerx/volume")
-        .receiveBroadcastStream()
-        .listen((event) {
-      if (event == 0) {
-        print("class: HorizontalPageView, action: VolumeUp, event: $event");
-        previousPage();
-      } else if (event == 1) {
-        print("class: HorizontalPageView, action: VolumeDown, event: $event");
-        nextPage();
-      }
-    });
+    if(Platform.isAndroid){
+      _channel = EventChannel("top.hanerx/volume")
+          .receiveBroadcastStream()
+          .listen((event) {
+        if (event == 0) {
+          print("class: HorizontalPageView, action: VolumeUp, event: $event");
+          previousPage();
+        } else if (event == 1) {
+          print("class: HorizontalPageView, action: VolumeDown, event: $event");
+          nextPage();
+        }
+      });
+    }
+
   }
 
   @override
