@@ -189,7 +189,7 @@ class DMZJImageRequestHandler extends SingleDomainRequestHandler {
 }
 
 class DMZJSACGRequestHandler extends SingleDomainRequestHandler {
-  DMZJSACGRequestHandler() : super('http://s.acg.dmzj.com');
+  DMZJSACGRequestHandler() : super('http://s.acg.dmzj1.com');
 
   Future<Response> deepSearch(String keyword) {
     return dio.get('/comicsum/search.php?s=$keyword&callback=');

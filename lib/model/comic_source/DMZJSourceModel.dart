@@ -230,7 +230,7 @@ class DMZJSourceModel extends BaseSourceModel {
             .map<SearchResult>((e) => DMZJSearchResult(
                 e['authors'],
                 e['id'].toString(),
-                e['cover'],
+                e['cover'].replaceAll("dmzj",'dmzj1'),
                 e['types'],
                 e['title'],
                 e['last_name']))
