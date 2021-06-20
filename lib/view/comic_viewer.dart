@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -40,10 +42,12 @@ class _ComicViewPage extends State<ComicViewPage>
     SystemChrome.setEnabledSystemUIOverlays(
         [SystemUiOverlay.top, SystemUiOverlay.bottom]);
     print("class: ComicViewer, action: volumeChannelCancel");
-    EventChannel("top.hanerx/volume")
-        .receiveBroadcastStream()
-        .listen((event) {})
-        .cancel();
+    if(Platform.isAndroid){
+      EventChannel("top.hanerx/volume")
+          .receiveBroadcastStream()
+          .listen((event) {})
+          .cancel();
+    }
     super.dispose();
   }
 

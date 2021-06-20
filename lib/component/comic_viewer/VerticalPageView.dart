@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
@@ -65,17 +66,20 @@ class _VerticalPageView extends State<VerticalPageView> {
     super.initState();
     _controller = new ScrollController(initialScrollOffset: 0);
     print("class: VerticalPageView, action: listenChannel");
-    _channel = EventChannel("top.hanerx/volume")
-        .receiveBroadcastStream()
-        .listen((event) {
-      if (event == 0) {
-        print("class: VerticalPageView, action: VolumeUp, event: $event");
-        this.previousPage();
-      } else if (event == 1) {
-        print("class: VerticalPageView, action: VolumeDown, event: $event");
-        this.nextPage();
-      }
-    });
+    if(Platform.isAndroid){
+      _channel = EventChannel("top.hanerx/volume")
+          .receiveBroadcastStream()
+          .listen((event) {
+        if (event == 0) {
+          print("class: VerticalPageView, action: VolumeUp, event: $event");
+          this.previousPage();
+        } else if (event == 1) {
+          print("class: VerticalPageView, action: VolumeDown, event: $event");
+          this.nextPage();
+        }
+      });
+    }
+
     _controller.addListener(() async {
       if (_controller.hasClients) {
         if ((_controller.position.pixels - position).abs() > 500) {

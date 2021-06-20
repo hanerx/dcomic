@@ -340,7 +340,7 @@ class CopyMangaUserConfig extends UserConfig {
 
   Future<void> init() async {
     _status = await SourceDatabaseProvider.getSourceOption<bool>(
-            'copy_manga', 'login')
+            'copy_manga', 'login', defaultValue: false)
         ? UserStatus.login
         : UserStatus.logout;
     if (_status == UserStatus.login) {
