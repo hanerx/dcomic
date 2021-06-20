@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dcomic/database/cookieDatabaseProvider.dart';
@@ -879,18 +880,28 @@ class MangabzComic extends Comic {
         _pageAt = chapterId;
         switch (options.mode) {
           case 0:
-            UniversalRequestModel.mangabzRequestHandler.clearCache();
+            // UniversalRequestModel.mangabzRequestHandler.clearCache();
             var eval =
                 RegExp('eval(.*);?').stringMatch(response.data.toString());
-            this._pages = jsonDecode(await ToolMethods.eval('$eval;newImgs',
-                    url: '${options.url}'))
+
+            var res = await ToolMethods.eval('$eval;newImgs', url: '${options.url}');
+            if(Platform.isIOS){
+              res = res.replaceAll('(', '[').replaceAll(')', ']');
+            }
+
+            this._pages = jsonDecode(res)
                 .map<String>((e) => e.toString())
                 .toList();
             break;
           case 1:
-            this._pages = jsonDecode(await ToolMethods.eval('newImgs',
-                    url:
-                        '${UniversalRequestModel.mangabzRequestHandler.baseUrl}/$chapterId'))
+
+            var res = await ToolMethods.eval('newImgs',
+                url: '${UniversalRequestModel.mangabzRequestHandler.baseUrl}/$chapterId');
+            if(Platform.isIOS){
+              res = res.replaceAll('(', '[').replaceAll(')', ']');
+            }
+
+            this._pages = jsonDecode(res)
                 .map<String>((e) => e.toString())
                 .toList();
             break;
@@ -914,6 +925,10 @@ class MangabzComic extends Comic {
             List<String> result =
                 await ToolMethods.evalList(codes, url: options.url);
             for (var item in result) {
+              if(Platform.isIOS){
+                item = item.replaceAll('(', '[').replaceAll(')', ']');
+
+              }
               pages +=
                   jsonDecode(item).map<String>((e) => e.toString()).toList();
             }
