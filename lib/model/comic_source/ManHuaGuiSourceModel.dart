@@ -1310,6 +1310,9 @@ class ManHuaGuiComic extends Comic {
           scripts[3].text
         ], url: 'about:blank');
         var data = jsonDecode(jsonDecode(result.last));
+
+        Map<String, dynamic> data = jsonDecode(result.last);
+
         _title = data['chapterTitle'];
         _next = data['nextId'];
         _previous = data['prevId'];
