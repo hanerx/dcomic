@@ -1572,7 +1572,7 @@ class DMZJHomePageHandler extends BaseHomePageHandler {
         var response =
             await UniversalRequestModel.dmzjRequestHandler.getCategory();
         if ((response.statusCode == 200 || response.statusCode == 304)) {
-          return response.data
+          return response.data['data']
               .map<CategoryModel>((e) => CategoryModel(
                     cover: e['cover'],
                     title: e['title'],
