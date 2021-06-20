@@ -10,7 +10,7 @@ import 'package:dcomic/http/UniversalRequestModel.dart';
 import 'package:crypto/crypto.dart';
 
 class DMZJRequestHandler extends SingleDomainRequestHandler {
-  DMZJRequestHandler() : super('https://v3api.dmzj1.com');
+  DMZJRequestHandler() : super('https://nnv3api.muwai.com');
 
   Future<Response> getUserInfo(String uid) async {
     return dio.get('/UCenter/comics/$uid.json');
@@ -207,7 +207,7 @@ class DMZJCommentRequestHandler extends SingleDomainRequestHandler {
 }
 
 class DMZJV4RequestHandler extends SingleDomainRequestHandler {
-  DMZJV4RequestHandler() : super('https://nnv4api.dmzj1.com');
+  DMZJV4RequestHandler() : super('https://nnv4api.muwai.com');
 
   Future<Map<String,dynamic>> getParam({bool login: false}) async {
     var data = {
