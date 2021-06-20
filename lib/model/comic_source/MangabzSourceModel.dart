@@ -348,7 +348,7 @@ class MangabzUserConfig extends UserConfig {
 
   Future<void> init() async {
     _status =
-        await SourceDatabaseProvider.getSourceOption<bool>('mangabz', 'login')
+        await SourceDatabaseProvider.getSourceOption<bool>('mangabz', 'login', defaultValue: false)
             ? UserStatus.login
             : UserStatus.logout;
     _nickname =

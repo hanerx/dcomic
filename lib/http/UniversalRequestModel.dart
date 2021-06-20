@@ -11,6 +11,7 @@ import 'package:firebase_performance/firebase_performance.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:gbk2utf8/gbk2utf8.dart';
 import 'package:path_provider/path_provider.dart';
+import 'dart:io' show Directory, Platform;
 
 import 'MangabzRequestHandler.dart';
 
@@ -19,8 +20,16 @@ class CacheDatabase {
 
   static Future<DbCacheStore> get store async {
     if (_store == null) {
-      var value = await getExternalStorageDirectory();
+      var value;
+
+      if(Platform.isIOS){
+        value = await getApplicationDocumentsDirectory();
+      } else {
+        value = await getExternalStorageDirectory();
+      }
+
       _store = DbCacheStore(databasePath: value.path + '/cache/dio');
+
     }
     return _store;
   }

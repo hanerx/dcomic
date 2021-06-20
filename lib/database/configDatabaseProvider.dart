@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dcomic/database/databaseCommon.dart';
 import 'package:dcomic/utils/log_output.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -246,7 +248,7 @@ class SystemConfigDatabaseProvider extends ConfigDatabaseProvider {
   }
 
   Future<String> get downloadPath async => await get<String>('download_path',
-      defaultValue: (await getExternalStorageDirectory()).path);
+      defaultValue: (Platform.isIOS ? await getApplicationDocumentsDirectory() : await getExternalStorageDirectory()).path);
 
   set downloadPath(Future<String> downloadPath) {
     downloadPath.then((value) => insert<String>('download_path', value));
