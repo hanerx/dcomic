@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dcomic/database/cookieDatabaseProvider.dart';
@@ -1310,7 +1311,12 @@ class ManHuaGuiComic extends Comic {
           scripts[3].text
         ], url: 'about:blank');
 
-        Map<String, dynamic> data = jsonDecode(result.last);
+        var data;
+        if(Platform.isIOS){
+          data = jsonDecode(result.last);
+        } else {
+          data = jsonDecode(jsonDecode(result.last));
+        }
 
         _title = data['chapterTitle'];
         _next = data['nextId'];
