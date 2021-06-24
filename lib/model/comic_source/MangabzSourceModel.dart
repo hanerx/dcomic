@@ -880,7 +880,6 @@ class MangabzComic extends Comic {
         _pageAt = chapterId;
         switch (options.mode) {
           case 0:
-            // UniversalRequestModel.mangabzRequestHandler.clearCache();
             var eval =
                 RegExp('eval(.*);?').stringMatch(response.data.toString());
 
@@ -948,7 +947,7 @@ class MangabzComic extends Comic {
         notifyListeners();
       }
     } catch (e) {
-      throw ComicLoadingError();
+      throw ComicLoadingError(exception: e);
     }
   }
 

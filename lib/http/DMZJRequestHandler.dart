@@ -197,7 +197,7 @@ class DMZJSACGRequestHandler extends SingleDomainRequestHandler {
 }
 
 class DMZJCommentRequestHandler extends SingleDomainRequestHandler {
-  DMZJCommentRequestHandler() : super('https://v3comment.dmzj1.com');
+  DMZJCommentRequestHandler() : super('https://v3comment.muwai.com');
 
   Future<Response> getComments(String comicId, int page,
       {int limit: 30, int type: 4}) {
@@ -299,7 +299,7 @@ class DMZJV4RequestHandler extends SingleDomainRequestHandler {
       'tag_id': tagId,
       'by_time': byTime,
       'rank_type': rankType,
-      'page': page
+      'page': page+1
     };
     map.addAll(await getParam(login: true));
     var response = await dio.get('/comic/rank/list', queryParameters: map);
