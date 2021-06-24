@@ -299,7 +299,7 @@ class DMZJV4RequestHandler extends SingleDomainRequestHandler {
       'tag_id': tagId,
       'by_time': byTime,
       'rank_type': rankType,
-      'page': page
+      'page': page+1
     };
     map.addAll(await getParam(login: true));
     var response = await dio.get('/comic/rank/list', queryParameters: map);
