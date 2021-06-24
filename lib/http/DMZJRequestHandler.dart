@@ -189,7 +189,7 @@ class DMZJImageRequestHandler extends SingleDomainRequestHandler {
 }
 
 class DMZJSACGRequestHandler extends SingleDomainRequestHandler {
-  DMZJSACGRequestHandler() : super('http://s.acg.dmzj1.com');
+  DMZJSACGRequestHandler() : super('http://s.acg.dmzj.com');
 
   Future<Response> deepSearch(String keyword) {
     return dio.get('/comicsum/search.php?s=$keyword&callback=');
@@ -197,7 +197,7 @@ class DMZJSACGRequestHandler extends SingleDomainRequestHandler {
 }
 
 class DMZJCommentRequestHandler extends SingleDomainRequestHandler {
-  DMZJCommentRequestHandler() : super('https://v3comment.dmzj1.com');
+  DMZJCommentRequestHandler() : super('https://v3comment.muwai.com');
 
   Future<Response> getComments(String comicId, int page,
       {int limit: 30, int type: 4}) {

@@ -45,7 +45,7 @@ class _DeepSearchTab extends State<DeepSearchTab> {
             }
             for (var item in data) {
               list.add(SearchListTile(
-                cover: item['cover'],
+                cover: item['cover'].replaceAll('dmzj.com','dmzj1.com'),
                 title: item['comic_name'],
                 tag: '暂无数据',
                 authors: item['comic_author'],
