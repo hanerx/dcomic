@@ -169,10 +169,14 @@ class DMZJInterfaceRequestHandler extends CookiesRequestHandler {
 }
 
 class DMZJAPIRequestHandler extends SingleDomainRequestHandler {
-  DMZJAPIRequestHandler() : super('https://api.dmzj1.com');
+  DMZJAPIRequestHandler() : super('https://api.dmzj.com');
 
   Future<Response> getComicDetailWithBackupApi(String comicId) {
     return dio.get('/dynamic/comicinfo/$comicId.json');
+  }
+
+  Future<Response> getComicWithBackupApi(String comicId, String chapterId) {
+    return dio.get('/dynamic/comicread/$comicId/$chapterId.json');
   }
 }
 
@@ -209,7 +213,7 @@ class DMZJCommentRequestHandler extends SingleDomainRequestHandler {
 class DMZJV4RequestHandler extends SingleDomainRequestHandler {
   DMZJV4RequestHandler() : super('https://nnv4api.muwai.com');
 
-  Future<Map<String,dynamic>> getParam({bool login: false}) async {
+  Future<Map<String, dynamic>> getParam({bool login: false}) async {
     var data = {
       "channel": Platform.operatingSystem,
       "version": "3.0.0",
@@ -295,11 +299,11 @@ class DMZJV4RequestHandler extends SingleDomainRequestHandler {
 
   Future<List<ComicRankListItemResponse>> getRankingList(
       {int tagId: 0, int byTime: 0, int rankType: 0, int page: 0}) async {
-    Map<String,dynamic> map={
+    Map<String, dynamic> map = {
       'tag_id': tagId,
       'by_time': byTime,
       'rank_type': rankType,
-      'page': page+1
+      'page': page + 1
     };
     map.addAll(await getParam(login: true));
     var response = await dio.get('/comic/rank/list', queryParameters: map);

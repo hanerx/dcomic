@@ -55,7 +55,15 @@ class DMZJSourceModel extends BaseSourceModel {
               await SourceDatabaseProvider.getBoundComic(type.name, comicId);
           return await this.getComicDetail(map['bound_id']);
         }
-        return await this.getComicDetail(comicId);
+        try {
+          return await this.getComicDetail(comicId);
+        } catch (e) {
+          if (options.backupApi) {
+            return await this.getComicDetailBackup(comicId);
+          } else {
+            rethrow;
+          }
+        }
       } catch (e) {
         if (title != null) {
           var list = await search(title);
@@ -230,10 +238,35 @@ class DMZJSourceModel extends BaseSourceModel {
             .map<SearchResult>((e) => DMZJSearchResult(
                 e['authors'],
                 e['id'].toString(),
-                e['cover'].replaceAll("dmzj",'dmzj1'),
+                e['cover'].replaceAll("dmzj", 'dmzj1'),
                 e['types'],
                 e['title'],
                 e['last_name']))
+            .toList();
+      }
+    } catch (e) {
+      throw ComicSearchError(e);
+    }
+    return [];
+  }
+
+  Future<List<SearchResult>> searchBackup(String keyword, {int page: 0}) async {
+    // TODO: implement search
+    if (page > 0) {
+      return [];
+    }
+    try {
+      var response = await UniversalRequestModel.dmzjsacgRequestHandler
+          .deepSearch(keyword);
+      if ((response.statusCode == 200 || response.statusCode == 304)) {
+        return response.data
+            .map<SearchResult>((e) => DMZJSearchResult(
+                e['comic_author'],
+                e['id'].toString(),
+                e['cover'].replaceAll("dmzj", 'dmzj1'),
+                '暂无数据',
+                e['comic_name'],
+                e['last_update_chapter_name']))
             .toList();
       }
     } catch (e) {
@@ -748,7 +781,15 @@ class DMZJWebSourceModel extends DMZJSourceModel {
               super.type.name, comicId);
           return await getComicDetailWeb(map['bound_id']);
         }
-        return await getComicDetailWeb(comicId);
+        try {
+          return await getComicDetailWeb(comicId);
+        } catch (e) {
+          if (options.backupApi) {
+            return await getComicDetailBackup(comicId);
+          } else {
+            rethrow;
+          }
+        }
       } catch (e) {
         if (title != null) {
           var list = await search(title);
@@ -1315,7 +1356,8 @@ class DMZJComic extends Comic {
     } catch (e) {
       logger.e('class: DMZJComic, action: getComicFailed, exception: $e');
       if (options.backupApi) {
-        await this.getComicBackup(comicId, chapterId);
+        // await this.getComicBackup(comicId, chapterId);
+        await this.getComicBackup2(comicId, chapterId);
       }
     }
     await getViewPoint();
@@ -1345,11 +1387,37 @@ class DMZJComic extends Comic {
       logger
           .e("action:error, chapterId:$chapterId, comicId:$comicId, error:$e");
       if (options.backupApi) {
-        await this.getComicBackup(comicId, chapterId);
+        // await this.getComicBackup(comicId, chapterId);
+        await this.getComicBackup2(comicId, chapterId);
       }
     }
     await getViewPoint();
     notifyListeners();
+  }
+
+  Future<void> getComicBackup2(String comicId,String chapterId) async{
+    try{
+      var response=await UniversalRequestModel.dmzjapiRequestHandler.getComicWithBackupApi(comicId, chapterId);
+      if((response.statusCode==200||response.statusCode==304)){
+        var data = jsonDecode(response.data);
+        _title=data['chapter_name'];
+        _pages=data['page'].map<String>((e) => e.toString()).toList();;
+        if (_chapterIdList.indexOf(chapterId) > 0) {
+          _previous = _chapterIdList[_chapterIdList.indexOf(chapterId) - 1];
+        } else {
+          _previous = null;
+        }
+        if (_chapterIdList.indexOf(chapterId) < _chapterIdList.length - 1) {
+          _next = _chapterIdList[_chapterIdList.indexOf(chapterId) + 1];
+        } else {
+          _next = null;
+        }
+        notifyListeners();
+      }
+    }catch(e){
+      logger
+          .e("action:error, chapterId:$chapterId, comicId:$comicId, error:$e");
+    }
   }
 
   Future<void> getComicBackup(String comicId, String chapterId) async {

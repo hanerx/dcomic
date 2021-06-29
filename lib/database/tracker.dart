@@ -29,7 +29,7 @@ class TracingComic {
     id = map['id'];
     title = map['title'];
     comicId = map['comicId'];
-    cover = map['cover'];
+    cover = map['cover'].replaceAll('dmzj1','dmzj');
     data = jsonDecode(map['data']);
   }
 
