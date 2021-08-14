@@ -29,17 +29,18 @@ class HomePageCard extends StatelessWidget {
       child: Card(
           elevation: 0,
           child: new Container(
-            child: Wrap(
-              alignment: WrapAlignment.center,
+            child: Column(
+              // alignment: WrapAlignment.center,
               children: <Widget>[
-                ClipRRect(
+                Expanded(child: ClipRRect(
                   child: CachedNetworkImage(
+                    fit: BoxFit.cover,
                     imageUrl: '$imageUrl',
                     httpHeaders: {'referer': 'http://images.dmzj.com'},
                     progressIndicatorBuilder:
                         (context, url, downloadProgress) =>
-                            CircularProgressIndicator(
-                                value: downloadProgress.progress),
+                        Center(child: CircularProgressIndicator(
+                            value: downloadProgress.progress),),
                     errorWidget: (context, url, error) => CachedNetworkImage(
                       imageUrl: '$imageUrl',
                       cacheManager: BadCertificateCacheManager(),
@@ -52,7 +53,7 @@ class HomePageCard extends StatelessWidget {
                     ),
                   ),
                   borderRadius: BorderRadius.circular(5),
-                ),
+                ),),
                 Row(
                   children: [
                     Expanded(

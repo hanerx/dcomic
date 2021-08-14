@@ -67,6 +67,7 @@ dependencies:
   firebase_performance: "^0.7.0+3"
   crypton: ^2.0.1
   protobuf: ^2.0.0
+  flutter_adapter: ^1.0.4
   logger_flutter:
     git: https://github.com/ewertonrp/logger_flutter.git
   ipfs:

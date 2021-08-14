@@ -1,7 +1,10 @@
 import 'package:dcomic/model/comic_source/baseSourceModel.dart';
 import 'package:dcomic/model/comic_source/sourceProvider.dart';
+import 'package:dcomic/view/download_page.dart';
+import 'package:dcomic/view/history_page.dart';
 import 'package:dcomic/view/novel_pages/novel_main_page.dart';
 import 'package:dcomic/view/server_controllers/server_sellect_page.dart';
+import 'package:dcomic/view/settings/setting_page.dart';
 import 'package:direct_select_flutter/direct_select_container.dart';
 import 'package:direct_select_flutter/direct_select_item.dart';
 import 'package:direct_select_flutter/direct_select_list.dart';
@@ -17,6 +20,10 @@ import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:provider/provider.dart';
 
 class CustomDrawer extends StatefulWidget {
+  final GlobalKey<NavigatorState> navigatorKey;
+
+  const CustomDrawer({Key key, this.navigatorKey}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -40,6 +47,14 @@ class CustomDrawerState extends State<CustomDrawer> {
   void initState() {
     // TODO: implement initState
     super.initState();
+  }
+
+  NavigatorState getNavigatorState(context) {
+    if (widget.navigatorKey == null) {
+      return Navigator.of(context);
+    } else {
+      return widget.navigatorKey.currentState;
+    }
   }
 
   @override
@@ -94,7 +109,7 @@ class CustomDrawerState extends State<CustomDrawer> {
               color: Colors.white,
             ),
             onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(
+              getNavigatorState(context).push(MaterialPageRoute(
                   builder: (context) => LoginPage(),
                   settings: RouteSettings(name: 'login_page')));
             },
@@ -141,30 +156,40 @@ class CustomDrawerState extends State<CustomDrawer> {
         title: Text(S.of(context).Favorite),
         leading: Icon(Icons.favorite),
         onTap: () {
-          Navigator.of(context).pop();
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) {
-                    return FavoritePage();
-                  },
-                  settings: RouteSettings(name: 'favorite_page')));
+          if (widget.navigatorKey == null) {
+            getNavigatorState(context).pop();
+          }
+          getNavigatorState(context).push(MaterialPageRoute(
+              builder: (context) {
+                return FavoritePage();
+              },
+              settings: RouteSettings(name: 'favorite_page')));
         },
       ),
       ListTile(
         title: Text(S.of(context).History),
         leading: Icon(Icons.history),
         onTap: () {
-          Navigator.of(context).pop();
-          Navigator.of(context).pushNamed("history");
+          if (widget.navigatorKey == null) {
+            getNavigatorState(context).pop();
+          }
+
+          getNavigatorState(context).push(MaterialPageRoute(
+              builder: (context) => HistoryPage(),
+              settings: RouteSettings(name: 'history_page')));
         },
       ),
       ListTile(
         title: Text(S.of(context).Download),
         leading: Icon(Icons.file_download),
         onTap: () {
-          Navigator.of(context).pop();
-          Navigator.of(context).pushNamed("download");
+          if (widget.navigatorKey == null) {
+            getNavigatorState(context).pop();
+          }
+          getNavigatorState(context).push(MaterialPageRoute(
+              builder: (context) => DownloadPage(),
+              settings: RouteSettings(name: 'download_page')));
+          ;
         },
       )
     ];
@@ -175,14 +200,14 @@ class CustomDrawerState extends State<CustomDrawer> {
           title: Text(S.of(context).DarkSide),
           leading: Icon(Icons.block),
           onTap: () {
-            Navigator.of(context).pop();
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) {
-                      return DarkSidePage();
-                    },
-                    settings: RouteSettings(name: 'dark_side_page')));
+            if (widget.navigatorKey == null) {
+              getNavigatorState(context).pop();
+            }
+            getNavigatorState(context).push(MaterialPageRoute(
+                builder: (context) {
+                  return DarkSidePage();
+                },
+                settings: RouteSettings(name: 'dark_side_page')));
           },
         )
       ];
@@ -194,10 +219,14 @@ class CustomDrawerState extends State<CustomDrawer> {
           title: Text(S.of(context).Novel),
           leading: Icon(Icons.book),
           onTap: () {
-            Navigator.of(context).pop();
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-              return NovelMainPage();
-            },settings: RouteSettings(name: 'novel_main_page')));
+            if (widget.navigatorKey == null) {
+              getNavigatorState(context).pop();
+            }
+            getNavigatorState(context).push(MaterialPageRoute(
+                builder: (context) {
+                  return NovelMainPage();
+                },
+                settings: RouteSettings(name: 'novel_main_page')));
           },
         )
       ];
@@ -213,7 +242,7 @@ class CustomDrawerState extends State<CustomDrawer> {
           title: Text('.manga制作器'),
           leading: Icon(Icons.edit),
           onTap: () {
-            Navigator.of(context).push(MaterialPageRoute(
+            getNavigatorState(context).push(MaterialPageRoute(
                 builder: (context) => MagMakePage(),
                 settings: RouteSettings(name: 'mag_make_page')));
           },
@@ -232,7 +261,7 @@ class CustomDrawerState extends State<CustomDrawer> {
           title: Text('分布式服务器管理器'),
           leading: Icon(FontAwesome5.server),
           onTap: () {
-            Navigator.of(context).push(MaterialPageRoute(
+            getNavigatorState(context).push(MaterialPageRoute(
                 builder: (context) => ServerSelectPage(),
                 settings: RouteSettings(name: 'server_select_page')));
           },
@@ -245,8 +274,12 @@ class CustomDrawerState extends State<CustomDrawer> {
         title: Text(S.of(context).Setting),
         leading: Icon(Icons.settings),
         onTap: () {
-          Navigator.of(context).pop();
-          Navigator.of(context).pushNamed("settings");
+          if (widget.navigatorKey == null) {
+            getNavigatorState(context).pop();
+          }
+          getNavigatorState(context).push(MaterialPageRoute(
+              builder: (context) => SettingPage(),
+              settings: RouteSettings(name: 'settings')));
         },
       )
     ];
