@@ -1,3 +1,4 @@
+import 'package:dcomic/model/RouterModel.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,6 +8,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_adapter/adapter_screen.dart';
+import 'package:flutter_adapter/flexible_state.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -48,6 +51,10 @@ class App extends StatelessWidget {
     return MultiProvider(providers: [
       ChangeNotifierProvider<SystemSettingModel>(
         create: (_) => SystemSettingModel(),
+        lazy: false,
+      ),
+      ChangeNotifierProvider<RouterModel>(
+        create: (_) => RouterModel(context),
         lazy: false,
       ),
       ChangeNotifierProvider<ComicViewerSettingModel>(
@@ -158,33 +165,37 @@ class _MainFrame extends State<MainFrame> {
             platform: TargetPlatform.iOS,
             buttonTheme: ButtonThemeData(buttonColor: Colors.blue),
             appBarTheme: AppBarTheme(brightness: Brightness.dark)),
-        home: Provider.of<SourceProvider>(context).lock
-            ? MainPage()
-            : Scaffold(
-                body: Center(
-                  child: Container(
-                    height: 200,
-                    child: Column(
-                      children: [
-                        Text(
-                          'DComic',
-                          style: TextStyle(
-                              fontSize: 35,
-                              color: Theme.of(context).primaryColor,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          'Loading the everything~',
-                          style: TextStyle(
-                              fontSize: 20,
-                              color: Theme.of(context).disabledColor,
-                              fontWeight: FontWeight.bold),
-                        )
-                      ],
+        home: ScreenAdaptWidget(
+          platform: TEAdaptPlatform.padLandscape.toString(),
+          autoOrientation: true,
+          child: Provider.of<SourceProvider>(context).lock
+              ? MainPage()
+              : Scaffold(
+            body: Center(
+              child: Container(
+                height: 200,
+                child: Column(
+                  children: [
+                    Text(
+                      'DComic',
+                      style: TextStyle(
+                          fontSize: 35,
+                          color: Theme.of(context).primaryColor,
+                          fontWeight: FontWeight.bold),
                     ),
-                  ),
+                    Text(
+                      'Loading the everything~',
+                      style: TextStyle(
+                          fontSize: 20,
+                          color: Theme.of(context).disabledColor,
+                          fontWeight: FontWeight.bold),
+                    )
+                  ],
                 ),
-              ));
+              ),
+            ),
+          ),
+        ));
   }
 }
 
@@ -196,7 +207,7 @@ class MainPage extends StatefulWidget {
   }
 }
 
-class _MainPage extends State<MainPage> {
+class _MainPage extends FlexibleState<MainPage> {
   Future<Null> initUniLinks() async {
     getUriLinksStream().listen((Uri event) {
       print(
@@ -235,8 +246,8 @@ class _MainPage extends State<MainPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
+  Widget buildPhone(BuildContext context) {
+    // TODO: implement buildPhone
     return DefaultTabController(
       length: 4,
       child: new Scaffold(
@@ -269,6 +280,59 @@ class _MainPage extends State<MainPage> {
             ],
           ),
           drawer: CustomDrawer()),
+    );
+  }
+
+  GlobalKey<NavigatorState> _navigator=GlobalKey<NavigatorState>();
+
+  @override
+  Widget buildPadLandscape(BuildContext context) {
+    // TODO: implement buildPadLandscape
+    return Row(
+      children: [
+        Expanded(child: CustomDrawer(navigatorKey: _navigator,),flex: 1,),
+        Expanded(child: Navigator(
+          key: _navigator,
+          initialRoute: '',
+          onGenerateRoute: (val){
+            return PageRouteBuilder(pageBuilder: (BuildContext nContext,
+                Animation<double> animation,
+                Animation<double> secondaryAnimation)=>DefaultTabController(
+                length: 4,
+                child: new Scaffold(
+                  appBar: new AppBar(
+                    elevation: 0,
+                    title: Text(S.of(context).AppName),
+                    actions: <Widget>[SearchButton()],
+                    bottom: TabBar(
+                      tabs: <Widget>[
+                        new Tab(
+                          text: S.of(context).MainPageTabHome,
+                        ),
+                        new Tab(
+                          text: S.of(context).MainPageTabCategory,
+                        ),
+                        new Tab(
+                          text: S.of(context).MainPageTabRanking,
+                        ),
+                        new Tab(
+                          text: S.of(context).MainPageTabLatest,
+                        )
+                      ],
+                    ),
+                  ),
+                  body: TabBarView(
+                    children: <Widget>[
+                      new HomePage(),
+                      CategoryPage(),
+                      RankingPage(),
+                      LatestUpdatePage(),
+                    ],
+                  ),
+                )));
+          },
+        ),flex: 4,)
+      ],
     );
   }
 }

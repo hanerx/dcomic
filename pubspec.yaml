@@ -11,7 +11,7 @@ description: A simple comic viewer application
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.4.15+57
+version: 1.4.16-beta.1+58
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -67,6 +67,7 @@ dependencies:
   firebase_performance: "^0.7.0+3"
   crypton: ^2.0.1
   protobuf: ^2.0.0
+  flutter_adapter: ^1.0.4
   logger_flutter:
     git: https://github.com/ewertonrp/logger_flutter.git
   ipfs:

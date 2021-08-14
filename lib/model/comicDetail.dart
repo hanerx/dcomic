@@ -66,6 +66,7 @@ class ComicDetailModel extends BaseModel {
 
   //章节信息
   List get chapters => detail == null ? [] : detail.getChapters();
+
   bool _reverse = false;
 
   //最后浏览记录
@@ -77,7 +78,7 @@ class ComicDetailModel extends BaseModel {
 
   Map data;
 
-  PageType get pageType=>detail==null?PageType.url:detail.pageType;
+  PageType get pageType => detail == null ? PageType.url : detail.pageType;
 
   ComicDetailModel(this._model, this._title, this._comicId) {
     init().then((value) =>
@@ -153,7 +154,8 @@ class ComicDetailModel extends BaseModel {
     );
   }
 
-  Widget _buildButton(context, chapter, chapterIdList) {
+  Widget _buildButton(context, chapter, chapterIdList,
+      {GlobalKey<NavigatorState> navigatorKey}) {
     //创建章节UI
     // print(
     //     'chapter: ${chapter['chapter_id']}, lastChapterId: $lastChapterId, status: ${chapter['chapter_id'].toString() == Provider.of<ComicDetailModel>(context).lastChapterId}');
@@ -167,15 +169,25 @@ class ComicDetailModel extends BaseModel {
       Comic comic = await detail.getChapter(
           title: chapter['chapter_title'],
           chapterId: chapter['chapter_id'].toString());
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) {
-                return ComicViewPage(
-                  comic: comic,
-                );
-              },
-              settings: RouteSettings(name: 'comic_view_page')));
+      if (navigatorKey == null) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) {
+                  return ComicViewPage(
+                    comic: comic,
+                  );
+                },
+                settings: RouteSettings(name: 'comic_view_page')));
+      } else {
+        navigatorKey.currentState.pushReplacement(MaterialPageRoute(
+            builder: (context) {
+              return ComicViewPage(
+                comic: comic,
+              );
+            },
+            settings: RouteSettings(name: 'comic_view_page')));
+      }
     });
   }
 
@@ -245,7 +257,7 @@ class ComicDetailModel extends BaseModel {
     }, width: 80);
   }
 
-  List<Widget> buildChapterWidgetList(context) {
+  List<Widget> buildChapterWidgetList(context,{GlobalKey<NavigatorState> navigatorKey}) {
     List<Widget> lists = [];
     for (var item in this.chapters) {
       // 生成每版的章节ID列表
@@ -281,7 +293,7 @@ class ComicDetailModel extends BaseModel {
               crossAxisCount: 3,
               children: chapterList
                   .map<Widget>(
-                      (value) => _buildButton(context, value, item['data']))
+                      (value) => _buildButton(context, value, item['data'],navigatorKey: navigatorKey))
                   .toList(),
             )
           ],
@@ -304,6 +316,31 @@ class ComicDetailModel extends BaseModel {
                     title: Text('${chapter['chapter_title']}'),
                     subtitle: Text(
                         '更新时间：${ToolMethods.formatTimestamp(chapter['updatetime'])} 章节ID：${chapter['chapter_id']}'),
+                    onTap: () async {
+                      Comic comic = await detail.getChapter(
+                          title: chapter['chapter_title'],
+                          chapterId: chapter['chapter_id'].toString());
+                      if (navigatorKey == null) {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) {
+                                  return ComicViewPage(
+                                    comic: comic,
+                                  );
+                                },
+                                settings: RouteSettings(name: 'comic_view_page')));
+                      } else {
+
+                        navigatorKey.currentState.pushReplacement(MaterialPageRoute(
+                            builder: (context) {
+                              return ComicViewPage(
+                                comic: comic,
+                              );
+                            },
+                            settings: RouteSettings(name: 'comic_view_page')));
+                      }
+                    },
                   );
                 })
           ],
