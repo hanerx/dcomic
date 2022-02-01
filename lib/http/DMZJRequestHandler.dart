@@ -108,7 +108,7 @@ class DMZJRequestHandler extends SingleDomainRequestHandler {
 }
 
 class DMZJIRequestHandler extends SingleDomainRequestHandler {
-  DMZJIRequestHandler() : super('https://i.dmzj1.com');
+  DMZJIRequestHandler() : super('https://i.dmzj.com');
 
   Future<Response> login(String username, String password) async {
     return dio.get(
