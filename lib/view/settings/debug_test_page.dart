@@ -99,7 +99,7 @@ class _DebugTestPage extends State<DebugTestPage> {
             child: Center(
               child: Column(
                 children: [
-                  OutlineButton(
+                  OutlinedButton(
                     child: Text('Test'),
                     onPressed: () async {
                       var response = await UniversalRequestModel
@@ -122,7 +122,7 @@ class _DebugTestPage extends State<DebugTestPage> {
             child: Center(
               child: Column(
                 children: [
-                  OutlineButton(
+                  OutlinedButton(
                     child: Text('Test'),
                     onPressed: () async {
                       print((await KuKuSourceModel().get(title: '哥布林杀手'))
@@ -137,7 +137,7 @@ class _DebugTestPage extends State<DebugTestPage> {
             child: Center(
               child: Column(
                 children: [
-                  OutlineButton(
+                  OutlinedButton(
                     child: Text('Test'),
                     onPressed: () async {
                       final Trace myTrace = FirebasePerformance.instance.newTrace("test_trace");
@@ -161,7 +161,7 @@ class _DebugTestPage extends State<DebugTestPage> {
             child: Center(
               child: Column(
                 children: [
-                  OutlineButton(
+                  OutlinedButton(
                     child: Text('Test'),
                     onPressed: () async {
                       var comic = await (await ManHuaGuiSourceModel()
@@ -208,7 +208,7 @@ class _DebugTestPage extends State<DebugTestPage> {
             child: Center(
               child: Column(
                 children: [
-                  OutlineButton(
+                  OutlinedButton(
                     child: Text('Test'),
                     onPressed: () async {
                       // Ipfs ipfs = Ipfs(baseUrl: 'hanerx.top',port: 5001);

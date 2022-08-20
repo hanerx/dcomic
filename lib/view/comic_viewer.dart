@@ -153,23 +153,23 @@ class _ComicViewPage extends State<ComicViewPage>
                                   currentIndex: 1,
                                   items: [
                                     BottomNavigationBarItem(
-                                      title: Text('上一话'),
+                                      label: '上一话',
                                       icon: Icon(Icons.arrow_drop_up),
                                     ),
                                     BottomNavigationBarItem(
-                                      title: Text('吐槽'),
+                                      label: '吐槽',
                                       icon: Icon(Icons.message),
                                     ),
                                     BottomNavigationBarItem(
-                                      title: Text('目录'),
+                                      label: '目录',
                                       icon: Icon(Icons.list),
                                     ),
                                     BottomNavigationBarItem(
-                                      title: Text('设置'),
+                                      label: '设置',
                                       icon: Icon(Icons.settings),
                                     ),
                                     BottomNavigationBarItem(
-                                      title: Text('下一话'),
+                                      label: '下一话',
                                       icon: Icon(Icons.arrow_drop_down),
                                     ),
                                   ],

@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+// import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:dcomic/model/novel.dart';
 import 'package:provider/provider.dart';
 
@@ -92,7 +92,8 @@ class _NovelViewerPage extends State<NovelViewerPage>
                   footer: BezierBounceFooter(),
                   child: Column(
                         children: [
-                          HtmlWidget(Provider.of<NovelModel>(context).data),
+                          // HtmlWidget(Provider.of<NovelModel>(context).data),
+                          Text(Provider.of<NovelModel>(context).data)
                         ],
                       ),
                   onRefresh: ()async{
@@ -152,15 +153,15 @@ class _NovelViewerPage extends State<NovelViewerPage>
                           currentIndex: 1,
                           items: [
                             BottomNavigationBarItem(
-                              title: Text('上一话'),
+                              label: '上一话',
                               icon: Icon(Icons.arrow_drop_up),
                             ),
                             BottomNavigationBarItem(
-                              title: Text('目录'),
+                              label: '目录',
                               icon: Icon(Icons.list),
                             ),
                             BottomNavigationBarItem(
-                              title: Text('下一话'),
+                              label:'下一话',
                               icon: Icon(Icons.arrow_drop_down),
                             ),
                           ],
