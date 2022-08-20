@@ -6,7 +6,7 @@ import 'package:dcomic/http/UniversalRequestModel.dart';
 import 'package:dio/dio.dart';
 
 class CopyMangaRequestHandler extends SingleDomainRequestHandler {
-  CopyMangaRequestHandler() : super('https://api.copymanga.com/');
+  CopyMangaRequestHandler() : super('https://api.copymanga.org/');
 
   Future<Options> setHeader([Map<String, dynamic> headers]) async {
     if (headers == null) {

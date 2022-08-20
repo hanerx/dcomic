@@ -142,14 +142,14 @@ class _MagGuidePage extends State<MagGuidePage> {
         type: BottomNavigationBarType.fixed,
         items: [
           BottomNavigationBarItem(
-              icon: Icon(Icons.arrow_left), title: Text('上一步')),
+              icon: Icon(Icons.arrow_left), label: '上一步'),
           BottomNavigationBarItem(
               icon: Icon(_play ? Icons.pause : Icons.play_arrow),
-              title: Text(_play ? '暂停' : '播放')),
+              label: _play ? '暂停' : '播放'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.settings), title: Text('设置')),
+              icon: Icon(Icons.settings), label: '设置'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.arrow_right), title: Text('下一步'))
+              icon: Icon(Icons.arrow_right), label: '下一步')
         ],
         onTap: (index) {
           switch (index) {

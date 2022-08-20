@@ -11,6 +11,7 @@ import 'package:dcomic/utils/log_output.dart';
 import 'package:logger/logger.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:version/version.dart';
+import 'package:webview_flutter_plus/webview_flutter_plus.dart';
 
 class ToolMethods {
   static String formatTimestamp(int timestamp) {
@@ -98,6 +99,7 @@ class ToolMethods {
   static Future<String> eval(String eval,
       {String url: 'http://www.mangabz.com/'}) async {
     FlutterWebviewPlugin webView = FlutterWebviewPlugin();
+    WebViewPlusController controller;
     String data;
     webView.onStateChanged.listen((viewState) async {
       if (viewState.type == WebViewState.finishLoad) {
