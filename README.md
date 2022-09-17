@@ -4,6 +4,9 @@
 
 ​	这是一个简单奇怪的漫画阅读器，前身是动漫之家的第三方APP，现在是一个多源解析的漫画阅读器，灵感来自于 [tachiyomi](https://github.com/tachiyomiorg/tachiyomi) 不过不同的是首页还是用的动漫之家的首页
 
+**End of Support, New Version Will In New Depot**
+[https://github.com/hanerx/DComicReborn](https://github.com/hanerx/DComicReborn)
+
 ~~**还是那句话，大家暗搓搓用，不允许发布到任何公共社交平台上，如果影响较大就直接删库**~~
 
 **由于动漫之家的服务器启用了新的接口，新接口采用加密算法，初步猜测是aes或者魔改的base64，因为无法读取所以动漫之家漫画源的接口会逐步停止支持**
